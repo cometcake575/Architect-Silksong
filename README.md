@@ -8,8 +8,10 @@ The advanced event system means you can hook any event to any action, ranging fr
 
 Architect's in-game level sharer also makes it really easy to share your custom maps with others, without needing to manage sharing the files yourself.
 
+Download: Coming Soon!
+
 Read the guide at: https://starshooter.gitbook.io/architect/architect-silksong/
 
-Join the Discord server at: https://discord.gg/buU2PH2N6Q
+Join the Discord server at: https://discord.gg/buU2PH2N6Q/
 
-Download: Soon (Join the Discord server for the beta)
+Ko-Fi: https://ko-fi.com/cometcake575/
