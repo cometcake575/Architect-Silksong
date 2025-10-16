@@ -7,4 +7,4 @@ The mod will be released on Thunderstore shortly.
 
 You can find the guide to using the mod [here](https://starshooter.gitbook.io/architect/architect-silksong).
 
-[<img src="https://github.com/user-attachments/assets/6ae1cc82-1efa-4192-982a-f4c11c21e3b2" alt="Donate on Ko-Fi" width="300"/>](<https://ko-fi.com/cometcake575>)
+Ko-Fi: [https://ko-fi.com/cometcake575](https://ko-fi.com/cometcake575)
