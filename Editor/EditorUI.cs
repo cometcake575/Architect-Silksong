@@ -168,9 +168,9 @@ public static class EditorUI
 
         MakeToolButton(CursorObject.Instance, 230, 40);
         MakeToolButton(EraserObject.Instance, 190, 40);
-        MakeToolButton(DragObject.Instance, 150, 40);
-        
         MakeToolButton(PickObject.Instance, 250, 0);
+        
+        MakeToolButton(DragObject.Instance, 150, 40);
         MakeToolButton(LockObject.Instance, 210, 0);
         MakeToolButton(TileChangerObject.Instance, 170, 0);
         MakeToolButton(ResetObject.Instance, 130, 0);
