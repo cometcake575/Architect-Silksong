@@ -4,7 +4,7 @@ namespace Architect.Objects.Tools;
 
 public class BlankObject() : ToolObject("blank", Storage.Settings.Blank, -8)
 {
-    public static BlankObject Instance = new();
+    public static readonly BlankObject Instance = new();
     
     public override string GetName() => "";
 

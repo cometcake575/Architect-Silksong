@@ -18,10 +18,8 @@ public static class Categories
     public static readonly Category Platforming = RegisterCategory("Platforming", 2);
     /** Enemies and bosses */
     public static readonly Category Enemies = RegisterCategory("Enemies", 1);
-    public static readonly Category Utility = RegisterCategory("Utility", 9);
     /** Utility objects for things like trigger zones and object removers */
-    /** Collectible objects */
-    public static readonly Category Collectibles;// = RegisterCategory("Collectibles", 8);
+    public static readonly Category Utility = RegisterCategory("Utility", 9);
     /** Objects relating to giving or limiting abilities */
     public static readonly Category Abilities = RegisterCategory("Abilities", 7);
     /** Every object in a single category */
