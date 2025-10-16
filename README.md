@@ -1,10 +1,15 @@
-# Architect: Silksong
-This repository is for the Silksong version of Architect, a Hollow Knight level editor.
+## Architect
 
-The mod will be released on Thunderstore shortly.
+Architect is a Silksong level editor, used for creating and sharing your own custom maps.
 
-You can find the guide to using Architect [here](https://starshooter.gitbook.io/architect/architect-silksong).
+The mod is designed to be simple but powerful, with a ton of different things you can place down with loads of configuration options, including enemies, platforms, levers, gates and even your own custom textures and sounds!
 
-Support Discord: [https://starshooter.gitbook.io/architect/architect-silksong](https://starshooter.gitbook.io/architect/architect-silksong)
+The advanced event system means you can hook any event to any action, ranging from simple levers and doors to fully custom arenas or puzzles!
 
-Ko-Fi: [https://ko-fi.com/cometcake575](https://ko-fi.com/cometcake575)
+Architect's in-game level sharer also makes it really easy to share your custom maps with others, without needing to manage sharing the files yourself.
+
+Read the guide at: https://starshooter.gitbook.io/architect/architect-silksong/
+
+Join the Discord server at: https://discord.gg/buU2PH2N6Q
+
+Download: Soon (Join the Discord server for the beta)
