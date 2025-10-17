@@ -66,6 +66,7 @@ public static class PlacementManager
         }
 
         var map = GetTilemap();
+        if (!map || data.TilemapChanges.IsNullOrEmpty()) return;
         foreach (var (x, y) in data.TilemapChanges)
         {
             if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);

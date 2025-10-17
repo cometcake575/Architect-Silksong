@@ -188,6 +188,7 @@ public class ToggleTile(List<(int, int)> tiles, bool empty) : IEdit, IScheduledE
     public void Execute()
     {
         var map = PlacementManager.GetTilemap();
+        if (!map) return;
         foreach (var (x, y) in tiles)
         {
             if (empty) map.ClearTile(x, y, 0);

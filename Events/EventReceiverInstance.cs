@@ -26,6 +26,14 @@ public class EventReceiverInstance : MonoBehaviour
         if (calls < requiredCalls) return;
         
         calls = 0;
-        ReceiverType.Trigger.Invoke(gameObject);
+
+        try
+        {
+            ReceiverType.Trigger.Invoke(gameObject);
+        }
+        catch (Exception exception)
+        {
+            ArchitectPlugin.Logger.LogError(exception);
+        }
     }
 }

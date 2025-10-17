@@ -29,7 +29,7 @@ public class TileChangerObject() : ToolObject("tile_changer", Storage.Settings.T
     public override void Click(Vector3 mousePosition, bool first)
     {
         var map = PlacementManager.GetTilemap();
-        if (!map.GetTileAtPosition(EditManager.GetWorldPos(mousePosition), out var x, out var y)) return;
+        if (!map || !map.GetTileAtPosition(EditManager.GetWorldPos(mousePosition), out var x, out var y)) return;
 
         var pos = (x, y);
         if (_lastPos == pos && !first) return;
