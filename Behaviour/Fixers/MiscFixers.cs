@@ -100,6 +100,16 @@ public static class MiscFixers
                     Event = line.Event
                 }).ToList();
             });
+
+        _ = new Hook(typeof(CustomSceneManager).GetMethod(nameof(CustomSceneManager.UpdateAppearanceRegion),
+                BindingFlags.NonPublic | BindingFlags.Instance),
+            (Action<CustomSceneManager, bool> orig, CustomSceneManager self, bool forceImmediate) =>
+            {
+                try
+                {
+                    orig(self, forceImmediate);
+                } catch (ArgumentNullException) { } catch (NullReferenceException) { }
+            });
     }
 
     private delegate string ToStringOrig(ref LocalisedString self, bool allowBlankText);
@@ -270,7 +280,7 @@ public static class MiscFixers
 
     public static void SetMetronomeDelay(GameObject obj, float delay)
     {
-        obj.GetComponent<TimedTicker>().timeElapsed = delay;
+        obj.GetComponent<TimedTicker>().timeElapsed = -delay;
     }
     
     private class MetronomeReactivator : MonoBehaviour

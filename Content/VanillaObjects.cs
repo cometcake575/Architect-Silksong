@@ -389,6 +389,11 @@ public static class VanillaObjects
             postSpawnAction:InteractableFixers.FixCogLever)
             .WithBroadcasterGroup(BroadcasterGroup.Levers)
             .WithConfigGroup(ConfigGroup.Levers));
+        
+        AddEnemy("Cogwork Choirbug", "song_auto_1",
+            ("Cog_04", "Black Thread States Thread Only Variant/Normal World/Song Automaton 01")).DoFlipX();
+        AddEnemy("Cogwork Cleanser", "song_auto_2",
+            ("Cog_04", "Black Thread States Thread Only Variant/Black Thread World/Group (1)/Song Automaton 02"));
     }
 
     private static void AddWispObjects()
