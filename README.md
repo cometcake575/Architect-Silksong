@@ -8,7 +8,7 @@ The advanced event system means you can hook any event to any action, ranging fr
 
 Architect's in-game level sharer also makes it really easy to share your custom maps with others, without needing to manage sharing the files yourself.
 
-Download: Coming Soon!
+Download: https://thunderstore.io/c/hollow-knight-silksong/p/cometcake575/Architect/
 
 Read the guide at: https://starshooter.gitbook.io/architect/architect-silksong/
 
