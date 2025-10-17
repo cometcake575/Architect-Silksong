@@ -382,6 +382,11 @@ public static class AbilityObjects
                         RefreshCrystalUI();
                     }
                 };
+                self.OnHazardRespawn += () =>
+                {
+                    ActiveCrystals.Clear();
+                    RefreshCrystalUI();
+                };
             });
 
         _ = new Hook(typeof(HeroController).GetMethod("HeroDashPressed", 
