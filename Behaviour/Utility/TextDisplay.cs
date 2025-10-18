@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class TextDisplay : NPCControlBase
+public class TextDisplay : NPCControlBase, IDisplayable
 {
     public string text;
     

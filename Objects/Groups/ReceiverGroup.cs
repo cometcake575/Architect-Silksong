@@ -66,10 +66,10 @@ public static class ReceiverGroup
         }))
     ]);
     
-    public static readonly List<EventReceiverType> TextDisplay = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("display_text", "ShowText", o =>
+    public static readonly List<EventReceiverType> Displayable = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("display_text", "Show", o =>
         {
-            o.GetComponent<TextDisplay>().Display();
+            o.GetComponent<IDisplayable>().Display();
         }))
     ]);
     

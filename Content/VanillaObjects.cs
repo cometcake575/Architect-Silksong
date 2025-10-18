@@ -273,7 +273,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Gold Ring", "harpoon_ring",
             ("Peak_05", "chair_lift_ring/Harpoon Ring Citadel"), postSpawnAction:MiscFixers.FixRing).DoFlipX()
-            .WithBroadcasterGroup(BroadcasterGroup.Rings));
+            .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
         
         Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp", "weaver_heat_lamp",
             ("Peak_05", "weaver_heat_lamp (2)/Lamp"), preloadAction:MiscFixers.FixLamp)
@@ -311,7 +311,7 @@ public static class VanillaObjects
     {
         Categories.Platforming.Add(new PreloadObject("Grey Ring", "harpoon_ring_pinstress",
             ("Coral_34", "Harpoon Ring Pinstress Rope (4)"), postSpawnAction:MiscFixers.FixRing).DoFlipX()
-            .WithBroadcasterGroup(BroadcasterGroup.Rings));
+            .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"))
             .WithConfigGroup(ConfigGroup.Judge);
@@ -429,7 +429,7 @@ public static class VanillaObjects
             ("Shellwood_10", "weaver_harp_sign"),
             description:"Use <br> for a new line, <page> for a new page,\n" +
                         "and <hpage> for one where Hornet speaks.\n\n" +
-                        "Use <color>, <b>, <i>, <s> and <u> to format text\n" +
+                        "Use <color>, <b>, <i>, <s> and <u> to format text.\n" +
                         "For example: '<b><color=#FF0000>YOU</color></b>'",
             preloadAction:o => 
                 o.transform.GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>())

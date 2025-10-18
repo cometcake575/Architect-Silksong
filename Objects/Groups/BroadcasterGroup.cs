@@ -30,7 +30,9 @@ public static class BroadcasterGroup
     
     public static readonly List<string> AbilityCrystal = ["OnCollect", "OnRegen"];
     
-    public static readonly List<string> Rings = ["OnGrab", "OnRelease"];
+    public static readonly List<string> HarpoonRings = ["OnGrab", "OnRelease"];
+    
+    public static readonly List<string> Choice = ["Yes", "No"];
     
     public static readonly List<string> ObjectAnchor = ["OnReverse"];
     

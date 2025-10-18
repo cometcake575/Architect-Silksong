@@ -618,6 +618,27 @@ public static class ConfigGroup
             }).WithDefaultValue(0).WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> Choice = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Text", "choice_text", (o, value) =>
+            {
+                o.GetComponent<ChoiceDisplay>().text = value.GetValue();
+            }).WithDefaultValue("Sample Text")),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Currency Type", "choice_currency", (o, value) =>
+            {
+                var val = value.GetValue();
+                var choice = o.GetComponent<ChoiceDisplay>();
+                if (val == 0) choice.cost = 0;
+                choice.currencyType = val == 1 ? CurrencyType.Money : CurrencyType.Shard;
+            }).WithOptions("None", "Rosaries", "Shell Shards").WithDefaultValue(0).WithPriority(1)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Cost", "choice_cost", (o, value) =>
+            {
+                o.GetComponent<ChoiceDisplay>().cost = value.GetValue();
+            }).WithDefaultValue(0))
+    ]);
+
     public static readonly List<ConfigType> Png = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("PNG URL", "png_url",

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Architect.Placements;
 using SSMP.Api.Client;
 using SSMP.Api.Server;
@@ -8,18 +9,23 @@ namespace Architect.Multiplayer.Ssmp;
 
 public class SsmpManager : CoopManager
 {
-    private static ArchitectClientAddon _clientAddon;
+    private object _clientAddon;
+
+    private ArchitectClientAddon GetClientAddon()
+    {
+        return (ArchitectClientAddon) _clientAddon;
+    }
     
     protected override void Setup()
     {
         _clientAddon = new ArchitectClientAddon();
-        ClientAddon.RegisterAddon(_clientAddon);
+        ClientAddon.RegisterAddon(GetClientAddon());
         ServerAddon.RegisterAddon(new ArchitectServerAddon());
     }
 
     public override bool IsActive()
     {
-        return _clientAddon.API.NetClient.IsConnected;
+        return GetClientAddon().API.NetClient.IsConnected;
     }
 
     public override void ResetRoom(string room)

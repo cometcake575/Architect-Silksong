@@ -29,6 +29,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateRelay());
         
         Categories.Utility.Add(CreateTextDisplay());
+        Categories.Utility.Add(CreateChoiceDisplay());
         
         Categories.Utility.Add(CreatePlayerHook());
         Categories.Utility.Add(CreateEnemyBarrier());
@@ -77,6 +78,11 @@ public static class UtilityObjects
                         .Select(p => p.gameObject.GetOrAddComponent<Disabler>()).ToArray();
                 }, "Removes colliders touching this object.\n" +
                    "Trigger zones such as hazard respawn points do not count.")
+            .WithConfigGroup(ConfigGroup.Generic)
+            .WithReceiverGroup(ReceiverGroup.Generic));
+        
+        Categories.Utility.Add(CreateObjectRemover("render_remover", "Remove Renderer", 
+                FindObjectsToDisable<Renderer>, "Removes the nearest renderer.")
             .WithConfigGroup(ConfigGroup.Generic)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
@@ -294,11 +300,31 @@ public static class UtilityObjects
                 description: "Displays a piece of text.\n\n" +
                              "Use <br> for a new line, <page> for a new page,\n" +
                              "and <hpage> for one where Hornet speaks.\n\n" +
-                             "Use <color>, <b>, <i>, <s> and <u> to format text\n" +
+                             "Use <color>, <b>, <i>, <s> and <u> to format text.\n" +
                              "For example: '<b><color=#FF0000>YOU</color></b>'")
-            .WithReceiverGroup(ReceiverGroup.TextDisplay)
+            .WithReceiverGroup(ReceiverGroup.Displayable)
             .WithConfigGroup(ConfigGroup.TextDisplay)
             .WithBroadcasterGroup(BroadcasterGroup.TextDisplay);
+    }
+
+    private static PlaceableObject CreateChoiceDisplay()
+    {
+        var display = new GameObject("Choice Display");
+        display.SetActive(false);
+        Object.DontDestroyOnLoad(display);
+        
+        display.AddComponent<ChoiceDisplay>();
+
+        return new CustomObject("Choice Display", "choice_display",
+                display,
+                sprite: ResourceUtils.LoadSpriteResource("choice_display", FilterMode.Point, ppu:10),
+                description: "Displays a piece of text.\n\n" +
+                             "Use <br> for a new line.\n" +
+                             "Use <color>, <b>, <i>, <s> and <u> to format text.\n" +
+                             "For example: '<b><color=#FF0000>YOU</color></b>'")
+            .WithReceiverGroup(ReceiverGroup.Displayable)
+            .WithBroadcasterGroup(BroadcasterGroup.Choice)
+            .WithConfigGroup(ConfigGroup.Choice);
     }
 
     private static PlaceableObject CreateObjectSpawner()
@@ -450,7 +476,7 @@ public static class UtilityObjects
         return RemoverActions[editor.triggerName].Invoke(editor.gameObject);
     }
 
-    private static Disabler[] FindObjectsToDisable<T>(GameObject disabler) where T : UnityEngine.Behaviour
+    private static Disabler[] FindObjectsToDisable<T>(GameObject disabler) where T : Component
     {
         var objects = disabler.scene.GetRootGameObjects()
             .Where(obj => !obj.name.StartsWith("[Architect] "))
