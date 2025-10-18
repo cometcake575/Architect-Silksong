@@ -250,7 +250,7 @@ public class ObjectAnchor : PreviewableBehaviour
 
     public static void Init()
     {
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.TakeDamage)),
+        typeof(HeroController).Hook(nameof(HeroController.TakeDamage),
             (Action<HeroController, GameObject, CollisionSide, int, HazardType, DamagePropertyFlags> orig, 
                 HeroController self, 
                 GameObject go, 

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
-using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,8 +21,7 @@ public static class MiscFixers
 
         #region Bench fixes
 
-        _ = new Hook(typeof(GameManager).GetMethod("GetRespawnInfo",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(GameManager).Hook("GetRespawnInfo",
             (GetRespawnInfo orig, GameManager self, out string scene, out string marker) =>
             {
                 var savedRespawnScene = self.playerData.respawnScene;
@@ -44,8 +41,7 @@ public static class MiscFixers
                 }
             });
 
-        _ = new Hook(typeof(GameManager).GetMethod("FindEntryPoint",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(GameManager).Hook("FindEntryPoint",
             (Func<GameManager, string, Scene, Vector2?> orig, GameManager self, string name, Scene scene) =>
             {
                 var point = orig(self, name, scene);
@@ -60,7 +56,7 @@ public static class MiscFixers
                 return point;
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.LocateSpawnPoint)),
+        typeof(HeroController).Hook(nameof(HeroController.LocateSpawnPoint),
             (Func<HeroController, Transform> orig, HeroController self) =>
             {
                 var point = orig(self);
@@ -77,13 +73,11 @@ public static class MiscFixers
 
         #endregion
 
-        _ = new Hook(typeof(LocalisedString).GetMethod(nameof(LocalisedString.ToString),
-                BindingFlags.Instance | BindingFlags.Public,
-                null, [typeof(bool)], null),
+        typeof(LocalisedString).Hook(nameof(LocalisedString.ToString),
             (ToStringOrig orig, ref LocalisedString self, bool allowBlankText) =>
-                self.Sheet == "ArchitectMod" ? self.Key : orig(ref self, allowBlankText));
+                self.Sheet == "ArchitectMod" ? self.Key : orig(ref self, allowBlankText), typeof(bool));
 
-        _ = new Hook(typeof(DialogueBox).GetMethod(nameof(DialogueBox.ParseTextForDialogueLines)),
+        typeof(DialogueBox).Hook(nameof(DialogueBox.ParseTextForDialogueLines),
             (Func<string, List<DialogueBox.DialogueLine>> orig, string text) =>
             {
                 var lines = orig(Regex.Replace(text.Replace("<br>", "\n"),
@@ -101,8 +95,7 @@ public static class MiscFixers
                 }).ToList();
             });
 
-        _ = new Hook(typeof(CustomSceneManager).GetMethod(nameof(CustomSceneManager.UpdateAppearanceRegion),
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(CustomSceneManager).Hook(nameof(CustomSceneManager.UpdateAppearanceRegion),
             (Action<CustomSceneManager, bool> orig, CustomSceneManager self, bool forceImmediate) =>
             {
                 try
@@ -326,7 +319,7 @@ public static class MiscFixers
     
     public class Shakra : MonoBehaviour
     {
-        public string text = "Poshanka";
+        public string text = "Sample Text";
 
         private void Start()
         {

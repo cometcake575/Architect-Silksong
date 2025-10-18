@@ -1,6 +1,6 @@
 using System;
+using Architect.Utils;
 using GlobalEnums;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -11,7 +11,7 @@ public class CustomTransitionPoint : MonoBehaviour
 
     public static void Init()
     {
-        _ = new Hook(typeof(TransitionPoint).GetMethod(nameof(TransitionPoint.GetGatePosition)),
+        typeof(TransitionPoint).Hook(nameof(TransitionPoint.GetGatePosition),
             (Func<TransitionPoint, GatePosition> orig, TransitionPoint self) =>
             {
                 var ctp = self.GetComponent<CustomTransitionPoint>();

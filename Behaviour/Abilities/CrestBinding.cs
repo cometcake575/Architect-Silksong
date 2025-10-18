@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using Architect.Content.Custom;
+using Architect.Utils;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ public class CrestBinding : Binding
     
     public static void InitCrestBindings()
     {
-        _ = new Hook(typeof(ToolItemManager).GetMethod(nameof(ToolItemManager.SetEquippedCrest)),
+        typeof(ToolItemManager).Hook(nameof(ToolItemManager.SetEquippedCrest),
             (Action<string> orig, string crest) =>
             {
                 if (_isOverridingCrest && crest != _forcedCrest)
@@ -28,15 +28,14 @@ public class CrestBinding : Binding
                 orig(crest);
             });
         
-        _ = new Hook(typeof(ToolItemManager).GetMethod(nameof(ToolItemManager.SendEquippedChangedEvent)),
+        typeof(ToolItemManager).Hook(nameof(ToolItemManager.SendEquippedChangedEvent),
             (Action<bool> orig, bool force) =>
             {
                 if (_isOverridingCrest && PlayerData.instance.CurrentCrestID != _forcedCrest) return;
                 orig(force);
             });
         
-        _ = new Hook(typeof(GameManager).GetMethod("SaveGame", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(GameManager).Hook("SaveGame",
             (Action<GameManager, int, Action<bool>, bool, AutoSaveName> orig, 
                 GameManager self, 
                 int saveSlot,
@@ -46,7 +45,7 @@ public class CrestBinding : Binding
             {
                 ogCallback += _ => RefreshCrest();
                 orig(self, saveSlot, ogCallback, withAutoSave, autoSaveName);
-            });
+            }, typeof(int), typeof(Action<bool>), typeof(bool), typeof(AutoSaveName));
         
         _ = new Hook(typeof(InventoryToolCrest).GetProperty(nameof(InventoryToolCrest.IsHidden))!.GetGetMethod(),
             (Func<InventoryToolCrest, bool> orig, InventoryToolCrest self) => _isOverridingCrest || orig(self));

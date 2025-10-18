@@ -36,6 +36,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> TextDisplay = ["OnClose"];
     
+    public static readonly List<string> Interaction = ["OnInteract"];
+    
     public static readonly List<string> PlayerHooks = [
         "FaceLeft",
         "FaceRight",

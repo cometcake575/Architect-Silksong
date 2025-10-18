@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Architect.Behaviour.Custom;
-using MonoMod.RuntimeDetour;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -27,8 +26,7 @@ public class CameraBorder : MonoBehaviour
 
     public static void Init()
     {
-        _ = new Hook(typeof(CameraController).GetMethod("LateUpdate",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(CameraController).Hook("LateUpdate", 
             (Action<CameraController> orig, CameraController self) =>
             {
                 orig(self);

@@ -10,7 +10,6 @@ using Architect.Objects.Placeable;
 using Architect.Objects.Tools;
 using Architect.Storage;
 using Architect.Utils;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -98,7 +97,7 @@ public static class EditorUI
             new Vector3(50, 45, 0), Vector2.zero, Vector2.zero);
         currentScene.textComponent.alignment = TextAnchor.LowerLeft;
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.SceneInit)),
+        typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);

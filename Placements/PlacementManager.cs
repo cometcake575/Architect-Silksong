@@ -7,8 +7,8 @@ using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events;
 using Architect.Storage;
+using Architect.Utils;
 using JetBrains.Annotations;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -77,7 +77,7 @@ public static class PlacementManager
 
     public static void Init()
     {
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.SceneInit)),
+        typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);

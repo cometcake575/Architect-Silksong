@@ -29,26 +29,23 @@ public static class HazardFixers
                 cmh.useSelfForAngle = true;
                 _cogDamager = o;
             }));
-        
-        _ = new Hook(typeof(PlayMakerFSM).GetMethod("Awake",
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<PlayMakerFSM> orig, PlayMakerFSM self) =>
-            {
-                orig(self);
 
-                if (self.FsmName == "Control" && self.gameObject.name == "Wisp Fireball(Clone)")
+        HookUtils.OnFsmAwake += fsm =>
+        {
+            
+            if (fsm.FsmName == "Control" && fsm.gameObject.name == "Wisp Fireball(Clone)")
+            {
+                var obj = fsm.FsmVariables.FindFsmGameObject("Wisp Fireball Master");
+                fsm.GetState("Request Attack").AddAction(() =>
                 {
-                    var obj = self.FsmVariables.FindFsmGameObject("Wisp Fireball Master");
-                    self.GetState("Request Attack").AddAction(() =>
+                    if (!obj.Value && _lanternTime <= 0)
                     {
-                        if (!obj.Value && _lanternTime <= 0)
-                        {
-                            _lanternTime = 1;
-                            self.SendEvent("APPROVED");
-                        }
-                    }, 2);
-                }
-            });
+                        _lanternTime = 1;
+                        fsm.SendEvent("APPROVED");
+                    }
+                }, 2);
+            }
+        };
     }
 
     public static void Update() => _lanternTime -= Time.deltaTime;

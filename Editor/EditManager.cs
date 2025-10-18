@@ -111,40 +111,34 @@ public static class EditManager
     
     public static void Init()
     {
-        _ = new Hook(typeof(GameManager).GetMethod("EnterHero",
-            BindingFlags.NonPublic | BindingFlags.Instance), OnSceneLoad);
+        typeof(GameManager).Hook("EnterHero", OnSceneLoad);
         
-        _ = new Hook(typeof(InputHandler).GetMethod("SetCursorVisible", 
-            BindingFlags.NonPublic | BindingFlags.Instance), EnableCursor);
+        typeof(InputHandler).Hook("SetCursorVisible", EnableCursor);
         
-        _ = new Hook(typeof(QuitToMenu).GetMethod("Start",
-            BindingFlags.NonPublic | BindingFlags.Instance), 
-            (Func<QuitToMenu, IEnumerator> orig, QuitToMenu self) =>
+        typeof(QuitToMenu).Hook("Start", (Func<QuitToMenu, IEnumerator> orig, QuitToMenu self) =>
             {
                 IsEditing = false;
                 return orig(self); 
             });
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanTakeDamage)), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanTakeDamage), BlockAction);
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanTakeDamageIgnoreInvul)), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanTakeDamageIgnoreInvul), BlockAction);
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanOpenInventory)), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanOpenInventory), BlockAction);
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanDash)), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanDash), BlockAction);
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanHarpoonDash)), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanHarpoonDash), BlockAction);
 
-        _ = new Hook(typeof(PersistentBoolItem).GetMethod("Awake",
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<PersistentBoolItem> orig, PersistentBoolItem self) =>
+        typeof(PersistentBoolItem).Hook("Awake", (Action<PersistentBoolItem> orig, PersistentBoolItem self) =>
+        {
+            if (self.gameObject.name.StartsWith("[Architect] ") && Settings.TestMode)
             {
-                if (self.gameObject.name.StartsWith("[Architect] ") && Settings.TestMode)
-                {
-                    self.OnGetSaveState += (out bool value) => value = false;
-                }
-                orig(self);
-            });
+                self.OnGetSaveState += (out bool value) => value = false;
+            }
+            orig(self);
+        });
         
         SetupGroupSelectionBox();
     }

@@ -74,16 +74,14 @@ public class Binoculars : MonoBehaviour
 
     public static void Init()
     {
-        _ = new Hook(typeof(CameraController).GetMethod("LateUpdate",
-            BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(CameraController).Hook("LateUpdate",
             (Action<CameraController> orig, CameraController self) =>
             {
                 if (BinocularsActive) return;
                 orig(self);
             });
         
-        _ = new Hook(typeof(HeroController).GetMethod("Move",
-            BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("Move",
             (Action<HeroController, float, bool> orig, HeroController self, float moveDir, bool useInp) =>
             {
                 if (BinocularsActive) return;

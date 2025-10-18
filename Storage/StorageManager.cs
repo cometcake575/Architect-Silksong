@@ -9,8 +9,8 @@ using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Storage.Sharer;
+using Architect.Utils;
 using JetBrains.Annotations;
-using MonoMod.RuntimeDetour;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,7 +34,7 @@ public static class StorageManager
         Directory.CreateDirectory(DataPath + "Assets/");
         Directory.CreateDirectory(DataPath + "ModAssets/");
         
-        _ = new Hook(typeof(GameManager).GetMethod(nameof(GameManager.SaveGame)), 
+        typeof(GameManager).Hook(nameof(GameManager.SaveGame), 
             (Action<GameManager, Action<bool>> orig, GameManager self, Action<bool> callback) => 
             { 
                 SaveFavourites(FavouritesCategory.Favourites);
@@ -52,7 +52,7 @@ public static class StorageManager
                 ScheduledEdits.Clear();
 
                 orig(self, callback);
-            });
+            }, typeof(Action<bool>));
     }
     
     public static void SaveScene(string scene, LevelData level)

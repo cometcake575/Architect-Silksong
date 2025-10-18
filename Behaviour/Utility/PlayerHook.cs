@@ -14,77 +14,70 @@ public class PlayerHook : MonoBehaviour
     
     public static void Init()
     {
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.FlipSprite)),
+        typeof(HeroController).Hook(nameof(HeroController.FlipSprite),
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
                 PlayerEvent(self.cState.facingRight ? "FaceRight" : "FaceLeft");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("HeroJump", 
-                BindingFlags.Instance | BindingFlags.NonPublic, 
-                null, [typeof(bool)], null),
+        typeof(HeroController).Hook("HeroJump",
             (Action<HeroController, bool> orig, HeroController self, bool checkSprint) =>
             {
                 orig(self, checkSprint);
                 PlayerEvent("Jump");
-            });
+            }, typeof(bool));
 
-        _ = new Hook(typeof(HeroController).GetMethod("DoWallJump", 
-                BindingFlags.Instance | BindingFlags.NonPublic),
+        typeof(HeroController).Hook("DoWallJump",
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
                 PlayerEvent("WallJump");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("DoDoubleJump", 
-                BindingFlags.Instance | BindingFlags.NonPublic),
+        typeof(HeroController).Hook("DoDoubleJump",
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
                 PlayerEvent("DoubleJump");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("HeroDash", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("HeroDash",
             (Action<HeroController, bool> orig, HeroController self, bool start) =>
             {
                 orig(self, start);
                 PlayerEvent("Dash");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("BackOnGround", 
-                BindingFlags.Instance | BindingFlags.NonPublic),
+        typeof(HeroController).Hook("BackOnGround",
             (Action<HeroController, bool> orig, HeroController self, bool force) =>
             {
                 orig(self, force);
                 PlayerEvent("Land");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.DoHardLanding)),
+        typeof(HeroController).Hook(nameof(HeroController.DoHardLanding),
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
                 PlayerEvent("HardLand");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("DoAttack", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("DoAttack",
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
                 PlayerEvent("Attack");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.AddHealth)),
+        typeof(HeroController).Hook(nameof(HeroController.AddHealth),
             (Action<HeroController, int> orig, HeroController self, int amount) =>
             {
                 orig(self, amount);
                 PlayerEvent("OnHeal");
             });
 
-        _ = new Hook(typeof(PlayerData).GetMethod(nameof(PlayerData.TakeHealth)),
+        typeof(PlayerData).Hook(nameof(PlayerData.TakeHealth),
             (Action<PlayerData, int, bool, bool> orig, PlayerData self, int amount,
                 bool hasBlue, bool breakMask) =>
             {
@@ -92,14 +85,11 @@ public class PlayerHook : MonoBehaviour
                 PlayerEvent("OnDamage");
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("Awake", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<HeroController> orig, HeroController self) =>
-            {
-                orig(self);
-                self.OnDeath += () => PlayerEvent("OnDeath");
-                self.OnHazardRespawn += () => PlayerEvent("OnHazardRespawn");
-            });
+        HookUtils.OnHeroAwake += self =>
+        {
+            self.OnDeath += () => PlayerEvent("OnDeath");
+            self.OnHazardRespawn += () => PlayerEvent("OnHazardRespawn");
+        };
     }
 
     private static void PlayerEvent(string triggerName)

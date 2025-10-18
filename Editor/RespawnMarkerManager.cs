@@ -1,8 +1,6 @@
 using System;
-using System.Reflection;
 using Architect.Storage;
 using Architect.Utils;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -37,8 +35,7 @@ public static class RespawnMarkerManager
         _marker.AddComponent<SpriteRenderer>().sprite = ResourceUtils.LoadSpriteResource("respawn_text", ppu: 64);
         _icon.AddComponent<SpriteRenderer>().sprite = ResourceUtils.LoadSpriteResource("respawn_marker", ppu: 64);
 
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.Awake),
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook(nameof(HeroController.Awake),
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
@@ -55,7 +52,7 @@ public static class RespawnMarkerManager
         private void Start()
         {
             _marker.SetActive(true);
-            _pd = HeroController.instance.playerData;
+            _pd = PlayerData.instance;
         }
 
         private void Update()

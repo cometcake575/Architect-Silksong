@@ -329,7 +329,7 @@ public static class VanillaObjects
             ("Bone_East_15", "bell_bench/RestBench"),
             preloadAction: MiscFixers.FixBench, preview: true));
 
-        Categories.Misc.Add(new PreloadObject("Shakra", "shakra", 
+        Categories.Misc.Add(new PreloadObject("Shakra Ally", "shakra", 
                 ("Shellwood_01",
                     "Black Thread States/Black Thread World/Shakra Guard Scene/Scene Folder/Mapper StandGuard NPC"),
                 postSpawnAction:MiscFixers.FixShakra)

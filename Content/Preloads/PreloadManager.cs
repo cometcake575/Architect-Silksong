@@ -34,8 +34,7 @@ public static class PreloadManager
         AudioListener.pause = true;
         
         // Waits for the GameManager to be ready before preloading
-        _ = new Hook(typeof(GameManager).GetMethod("Awake", 
-            BindingFlags.NonPublic | BindingFlags.Instance), DoPreload);
+        typeof(GameManager).Hook("Awake", DoPreload);
         
         SetupCanvas();
     }

@@ -23,6 +23,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateTriggerZone());
+        Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateTimer());
         Categories.Utility.Add(CreateKeyListener());
         Categories.Utility.Add(CreateRelay());
@@ -400,6 +401,30 @@ public static class UtilityObjects
                 description: "Can broadcast events when entered or exited.")
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZone);
+    }
+
+    private static PlaceableObject CreateInteraction()
+    {
+        CustomInteraction.Init();
+        
+        var point = new GameObject("Interaction");
+
+        var collider = point.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        collider.size = new Vector2(3.2f, 3.2f);
+
+        point.AddComponent<CustomInteraction>();
+
+        point.SetActive(false);
+        Object.DontDestroyOnLoad(point);
+
+        return new CustomObject("Interaction", "interaction",
+                point,
+                sprite: ResourceUtils.LoadSpriteResource("interaction", FilterMode.Point, ppu:10),
+                description: "Hovering text appears when the player stands in the interaction's range,\n" +
+                             "broadcasts an event when interacted with.")
+            .WithConfigGroup(ConfigGroup.Interaction)
+            .WithBroadcasterGroup(BroadcasterGroup.Interaction);
     }
 
     private static PlaceableObject CreateObjectRemover(string id, string name,

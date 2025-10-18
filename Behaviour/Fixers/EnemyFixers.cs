@@ -11,20 +11,15 @@ public static class EnemyFixers
 {
     public static void Init()
     {
-        _ = new Hook(typeof(PlayMakerFSM).GetMethod("Awake",
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<PlayMakerFSM> orig, PlayMakerFSM self) =>
+        HookUtils.OnFsmAwake += fsm =>
+        {
+            if (fsm.FsmName == "Control" && fsm.gameObject.name == "Last Judge Charge Bomb(Clone)")
             {
-                orig(self);
-
-                if (self.FsmName == "Control" && self.gameObject.name == "Last Judge Charge Bomb(Clone)")
-                {
-                    self.GetState("Antic").DisableAction(2);
-                }
-            });
+                fsm.GetState("Antic").DisableAction(2);
+            }
+        };
         
-        _ = new Hook(typeof(HealthManager).GetMethod("ApplyDamageScaling",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HealthManager).Hook("ApplyDamageScaling",
             (Func<HealthManager, HitInstance, HitInstance> orig, HealthManager self, HitInstance hit) => 
                 self.GetComponent<DisableHealthScaling>() ? hit : orig(self, hit));
     }

@@ -122,27 +122,22 @@ public class Wind : MonoBehaviour
 
     public static void Init()
     {
-        _ = new Hook(typeof(HeroController).GetMethod("Update",
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<HeroController> orig, HeroController self) =>
-            {
-                orig(self);
-                if (HeroController.instance.cState.jumping
-                    || HeroController.instance.cState.doubleJumping
-                    || HeroController.instance.cState.wallJumping) _actuallyJumping = true;
-                else if (HeroController.instance.GetComponent<Rigidbody2D>().linearVelocity.y <= 0) _actuallyJumping = false;
-            });
+        HookUtils.OnHeroUpdate += _ =>
+        {
+            if (HeroController.instance.cState.jumping
+                || HeroController.instance.cState.doubleJumping
+                || HeroController.instance.cState.wallJumping) _actuallyJumping = true;
+            else if (HeroController.instance.GetComponent<Rigidbody2D>().linearVelocity.y <= 0) _actuallyJumping = false;
+        };
 
-        _ = new Hook(typeof(HeroController).GetMethod("BackOnGround",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("BackOnGround",
             (Action<HeroController, bool> orig, HeroController self, bool force) =>
             {
                 _actuallyJumping = false;
                 orig(self, force);
             });
 
-        _ = new Hook(typeof(HeroController).GetMethod("JumpReleased",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("JumpReleased",
             (Action<HeroController> orig, HeroController self) =>
             {
                 if (!_actuallyJumping)

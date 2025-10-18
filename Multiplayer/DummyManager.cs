@@ -8,6 +8,11 @@ public class DummyManager : CoopManager
 {
     protected override void Setup() { }
     
+    public override bool IsActive()
+    {
+        return false;
+    }
+
     public override void ResetRoom(string room) { }
     
     public override void ShareEvent(string room, string name) { }

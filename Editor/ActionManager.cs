@@ -4,7 +4,7 @@ using System.Linq;
 using Architect.Multiplayer;
 using Architect.Placements;
 using Architect.Storage;
-using MonoMod.RuntimeDetour;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Editor;
@@ -18,13 +18,14 @@ public static class ActionManager
 
     public static void Init()
     {
-        _ = new Hook(typeof(GameManager).GetMethod(nameof(GameManager.LoadScene)),
-            (Action<GameManager, string> orig, GameManager self, string scene) =>
+        typeof(HeroController).Hook(nameof(HeroController.SceneInit),
+            (Action<HeroController> orig, HeroController self) =>
             {
-                orig(self, scene);
-                if (_lastScene != scene)
+                orig(self);
+                
+                if (_lastScene != GameManager.instance.sceneName)
                 {
-                    _lastScene = scene;
+                    _lastScene = GameManager.instance.sceneName;
                     Before.Clear();
                     After.Clear();
                 }
@@ -39,7 +40,7 @@ public static class ActionManager
         if (result != null)
         {
             result.Execute();
-            result.MultiplayerShare();
+            MultiplayerShare(result);
             After.Add(result);
             Before.RemoveAt(Before.Count - 1);
         }
@@ -54,7 +55,7 @@ public static class ActionManager
         if (result != null)
         {
             result.Execute();
-            result.MultiplayerShare();
+            MultiplayerShare(result);
             Before.Add(result);
         }
         else After.Clear();
@@ -67,7 +68,7 @@ public static class ActionManager
         _lastScene = GameManager.instance.sceneName;
         
         edit.Execute();
-        edit.MultiplayerShare();
+        MultiplayerShare(edit);
         
         After.Clear();
         Before.Add(edit);
@@ -77,6 +78,12 @@ public static class ActionManager
     {
         if (_lastScene == scene) edit.Execute();
         else edit.Execute(scene);
+    }
+
+    public static void MultiplayerShare(IEdit edit)
+    {
+        if (!CoopManager.Instance.IsActive()) return;
+        edit.MultiplayerShare();
     }
 }
 

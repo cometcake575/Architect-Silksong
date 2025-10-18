@@ -48,7 +48,7 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
-    public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Generic, [
+    public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
             {
@@ -539,7 +539,7 @@ public static class ConfigGroup
 
     static ConfigGroup()
     {
-        _ = new Hook(typeof(HealthManager).GetMethod(nameof(HealthManager.IsBlockingByDirection)),
+        typeof(HealthManager).Hook(nameof(HealthManager.IsBlockingByDirection),
             (Func<HealthManager, int, AttackTypes, SpecialTypes, bool> orig, HealthManager self, int cardinalDirection,
                 AttackTypes attackType, SpecialTypes specialType) => self.GetComponent<EnemyInvulnerabilityMarker>() || 
                                                                      orig(self, cardinalDirection, 
@@ -685,6 +685,7 @@ public static class ConfigGroup
 
     private static readonly int ActiveRegion = LayerMask.NameToLayer("ActiveRegion");
     private static readonly int SoftTerrain = LayerMask.NameToLayer("Soft Terrain");
+
     public static readonly List<ConfigType> TriggerZone = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Trigger Type", "trigger_type",
@@ -695,10 +696,39 @@ public static class ConfigGroup
 
                         o.layer = val == 3 ? ActiveRegion : SoftTerrain;
                     })
-                .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Kratt", "Bell Baby").WithDefaultValue(0)),
+                .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Kratt", "Beastling").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Trigger Layer", "trigger_layer",
                 (o, value) => { o.GetOrAddComponent<TriggerZone>().layer = value.GetValue(); }))
+    ]);
+        
+    public static readonly List<ConfigType> Interaction = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Label", "interaction_label",
+                    (o, value) =>
+                    {
+                        if (!Enum.TryParse<InteractableBase.PromptLabels>(CustomInteraction.Labels[value.GetValue()],
+                                out var result)) return; 
+                        o.GetComponent<CustomInteraction>().interactLabel = result;
+                    }).WithOptions(CustomInteraction.Labels).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Hide on Interact", "interaction_hide",
+                    (o, value) =>
+                    {
+                        o.GetComponent<CustomInteraction>().hideOnInteract = value.GetValue();
+                    }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Offset", "interaction_offset_x",
+                    (o, value) =>
+                    {
+                        o.GetComponent<CustomInteraction>().xOffset = value.GetValue();
+                    }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Offset", "interaction_offset_y",
+                    (o, value) =>
+                    {
+                        o.GetComponent<CustomInteraction>().yOffset = value.GetValue();
+                    }).WithDefaultValue(2.5f))
     ]);
 
     public static readonly List<ConfigType> HazardRespawn = GroupUtils.Merge(Generic, [

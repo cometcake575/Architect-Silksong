@@ -16,7 +16,8 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "2.0.3")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "2.1.0")]
+[BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin
 {
     internal static ArchitectPlugin Instance;
@@ -31,6 +32,8 @@ public class ArchitectPlugin : BaseUnityPlugin
         
         Logger = base.Logger;
         Logger.LogInfo("Architect has loaded!");
+        
+        HookUtils.Init();
         
         StorageManager.Init();
         Settings.Init(Config);

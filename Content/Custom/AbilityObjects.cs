@@ -291,49 +291,47 @@ public static class AbilityObjects
     #region Hooks
     private static void SetupBindingHooks()
     {
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanDash)),
+        typeof(HeroController).Hook(nameof(HeroController.CanDash),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "dash")
                                                                       || (ActiveCrystals.GetValueOrDefault("dash", 0) > 0
                                                                           && InputHandler.Instance.inputActions
                                                                               .Dash.WasPressed));
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanHarpoonDash)),
+        typeof(HeroController).Hook(nameof(HeroController.CanHarpoonDash),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "harpoon")
                                                                       || ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0);
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.IsFacingNearSlideableWall)),
+        typeof(HeroController).Hook(nameof(HeroController.IsFacingNearSlideableWall),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "wall_jump"));
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanPlayNeedolin)),
+        typeof(HeroController).Hook(nameof(HeroController.CanPlayNeedolin),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "needolin"));
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanSuperJump)),
+        typeof(HeroController).Hook(nameof(HeroController.CanSuperJump),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "super_jump"));
 
-        _ = new Hook(
-            typeof(PlayerData).GetProperty(nameof(PlayerData.CurrentSilkRegenMax))!.GetGetMethod(),
+        _ = new Hook(typeof(PlayerData).GetProperty(nameof(PlayerData.CurrentSilkRegenMax))!.GetGetMethod(),
             (Func<PlayerData, int> orig, PlayerData self) => 
                 BindingCheck(true, "silk_heart") ? orig(self) : 0);
         
-        _ = new Hook(typeof(HeroController).GetMethod("CanWallJump", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("CanWallJump",
             (Func<HeroController, bool, bool> orig, HeroController self, bool checkControlState)
                 => BindingCheck(orig(self, checkControlState), "wall_jump"));
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.CanDoubleJump)),
+        typeof(HeroController).Hook(nameof(HeroController.CanDoubleJump),
             (Func<HeroController, bool, bool> orig, HeroController self, bool checkControlState)
                 => BindingCheck(orig(self, checkControlState), "double_jump")
                    || (ActiveCrystals.GetValueOrDefault("wings", 0) > 0 && 
                        InputHandler.Instance.inputActions.Jump.WasPressed));
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.SetStartWithBrolly)),
+        typeof(HeroController).Hook(nameof(HeroController.SetStartWithBrolly),
             (Action<HeroController> orig, HeroController self) =>
             {
                 if (!BindingCheck(true, "drift")) return;
                 orig(self);
             });
         
-        _ = new Hook(typeof(HeroController).GetMethod(nameof(HeroController.SetStartWithDoubleJump)),
+        typeof(HeroController).Hook(nameof(HeroController.SetStartWithDoubleJump),
             (Action<HeroController> orig, HeroController self) =>
             {
                 if (!BindingCheck(true, "double_jump")
@@ -342,8 +340,7 @@ public static class AbilityObjects
                 orig(self);
             });
         
-        _ = new Hook(typeof(HeroController).GetMethod("CanFloat", 
-                BindingFlags.NonPublic | BindingFlags.Instance), 
+        typeof(HeroController).Hook("CanFloat",
             (Func<HeroController, bool, bool> orig, HeroController self, bool checkControlState)
                 => BindingCheck(orig(self, checkControlState), "drift"));
 
@@ -369,28 +366,24 @@ public static class AbilityObjects
     
     private static void SetupCrystalHooks()
     {
-        _ = new Hook(typeof(HeroController).GetMethod("Awake", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<HeroController> orig, HeroController self) =>
+        HookUtils.OnHeroAwake += self =>
+        {
+            self.OnDoubleJumped += () =>
             {
-                orig(self);
-                self.OnDoubleJumped += () =>
+                if (ActiveCrystals.ContainsKey("wings"))
                 {
-                    if (ActiveCrystals.ContainsKey("wings"))
-                    {
-                        ActiveCrystals["wings"] -= 1;
-                        RefreshCrystalUI();
-                    }
-                };
-                self.OnHazardRespawn += () =>
-                {
-                    ActiveCrystals.Clear();
+                    ActiveCrystals["wings"] -= 1;
                     RefreshCrystalUI();
-                };
-            });
+                }
+            };
+            self.OnHazardRespawn += () =>
+            {
+                ActiveCrystals.Clear();
+                RefreshCrystalUI();
+            };
+        };
 
-        _ = new Hook(typeof(HeroController).GetMethod("HeroDashPressed", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
+        typeof(HeroController).Hook("HeroDashPressed",
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
@@ -401,26 +394,22 @@ public static class AbilityObjects
                 }
             });
 
-        _ = new Hook(typeof(PlayMakerFSM).GetMethod("Awake", 
-                BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<PlayMakerFSM> orig, PlayMakerFSM self) =>
+        HookUtils.OnFsmAwake += fsm =>
+        {
+            if (fsm.FsmName == "Harpoon Dash")
             {
-                orig(self);
-
-                if (self.FsmName == "Harpoon Dash")
+                var silk = fsm.FsmVariables.FindFsmInt("Current Silk");
+                fsm.GetState("Can Do?").AddAction(() =>
                 {
-                    var silk = self.FsmVariables.FindFsmInt("Current Silk");
-                    self.GetState("Can Do?").AddAction(() =>
+                    if (ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0)
                     {
-                        if (ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0)
-                        {
-                            ActiveCrystals["harpoon"] -= 1;
-                            silk.Value = 1;
-                            RefreshCrystalUI();
-                        }
-                    }, 2);
-                }
-            });
+                        ActiveCrystals["harpoon"] -= 1;
+                        silk.Value = 1;
+                        RefreshCrystalUI();
+                    }
+                }, 2);
+            }
+        };
     }
     #endregion
 }
