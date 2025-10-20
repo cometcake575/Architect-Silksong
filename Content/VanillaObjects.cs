@@ -205,8 +205,33 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.CloverPod));
         
         Categories.Platforming.Add(new PreloadObject("Memory Platform", "memory_ground_plat",
-            ("Memory_Needolin", "memory_ground_plat (2)"),
+            ("Memory_Red", "Scenery Groups/Entry Scenery/memory_ground_plat (6)"),
             preloadAction:MiscFixers.FixMemoryPlat));
+        
+        Categories.Platforming.Add(new PreloadObject("Silk Pod", "silk_pod",
+            ("Memory_Red", "Scenery Groups/Entry Scenery/red_memory_silk_pod0007 (15)")));
+        
+        Categories.Platforming.Add(new PreloadObject("Honey Pod", "hive_pod",
+            ("Memory_Red", "Scenery Groups/Hive Scenery/Hive_Break_01")));
+
+        
+        AddSolid("Deepnest Platform 1", "deepnest_platform_01",
+            ("Memory_Red", "Scenery Groups/Deepnest Scenery/plat_float_07"));
+        AddSolid("Deepnest Platform 2", "deepnest_platform_02",
+            ("Memory_Red", "Scenery Groups/Deepnest Scenery/deepnest_platform_05"));
+        AddSolid("Deepnest Platform 3", "deepnest_platform_03",
+            ("Memory_Red", "Scenery Groups/Deepnest Scenery/deepnest_platform_03"));
+        AddSolid("Deepnest Platform 4", "deepnest_platform_04",
+            ("Memory_Red", "Scenery Groups/Deepnest Scenery/deepnest_platform_04"));
+        AddSolid("Deepnest Platform 5", "deepnest_platform_05",
+            ("Memory_Red", "Scenery Groups/Deepnest Scenery/deepnest_platform_01"));
+        
+        AddSolid("Hive Platform 1", "hive_platform_03",
+            ("Memory_Red", "Scenery Groups/Hive Scenery/hive_plat_04 (1)"));
+        AddSolid("Hive Platform 2", "hive_platform_02",
+            ("Memory_Red", "Scenery Groups/Hive Scenery/hive_plat_02"));
+        AddSolid("Hive Platform 3", "hive_platform_01",
+            ("Memory_Red", "Scenery Groups/Hive Scenery/hive_plat_01"));
         
         Categories.Interactable.Add(new PreloadObject("Clover Statue", "clover_statue",
             ("Clover_02c", "Memory Orb Group/Clover_Statue_Break Orb"),
@@ -329,11 +354,23 @@ public static class VanillaObjects
             ("Bone_East_15", "bell_bench/RestBench"),
             preloadAction: MiscFixers.FixBench, preview: true));
 
-        Categories.Misc.Add(new PreloadObject("Shakra Ally", "shakra", 
+        Categories.Misc.Add(new PreloadObject("Shakra NPC", "shakra", 
                 ("Shellwood_01",
                     "Black Thread States/Black Thread World/Shakra Guard Scene/Scene Folder/Mapper StandGuard NPC"),
                 postSpawnAction:MiscFixers.FixShakra)
             .WithConfigGroup(ConfigGroup.Shakra));
+
+        Categories.Misc.Add(new PreloadObject("Sherma NPC", "sherma_1", 
+                ("Song_Enclave",
+                    "Black Thread States/Normal World/Enclave States/States/Level 2/Sherma Enclave NPC"),
+                postSpawnAction:MiscFixers.FixSherma)
+            .WithConfigGroup(ConfigGroup.Npcs));
+
+        Categories.Misc.Add(new PreloadObject("Sherma Caretaker NPC", "sherma_2", 
+                ("Song_Enclave",
+                    "Black Thread States/Black Thread World/Enclave Act 3/Sherma Caretaker"),
+                postSpawnAction:MiscFixers.FixShermaCaretaker)
+            .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Shakra Ring", "mapper_ring",
                 ("Shadow_02",

@@ -48,12 +48,15 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
-    public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
             {
-                o.GetComponent<MiscFixers.Shakra>().text = value.GetValue();
-            }).WithDefaultValue("Sample Text").WithPriority(-1)),
+                o.GetComponent<MiscFixers.Npc>().text = value.GetValue();
+            }).WithDefaultValue("Sample Text").WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>
             {

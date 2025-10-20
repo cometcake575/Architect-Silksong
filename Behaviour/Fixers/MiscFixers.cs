@@ -316,11 +316,25 @@ public static class MiscFixers
     {
         obj.AddComponent<Shakra>();
     }
+
+    public static void FixSherma(GameObject obj)
+    {
+        obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
+        obj.AddComponent<Sherma>();
+    }
+
+    public static void FixShermaCaretaker(GameObject obj)
+    {
+        obj.AddComponent<ShermaCaretaker>();
+    }
     
-    public class Shakra : MonoBehaviour
+    public class Npc : MonoBehaviour
     {
         public string text = "Sample Text";
-
+    }
+    
+    public class Shakra : Npc
+    {
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Dialogue");
@@ -329,6 +343,33 @@ public static class MiscFixers
             var state = fsm.GetState("Act 3 Meet");
             state.DisableAction(0);
             var dialogue = (RunDialogue) state.actions[1];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
+    public class Sherma : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Conversation Control");
+            fsm.GetState("Asleep").AddAction(() => fsm.SendEvent("WAKE"), 0);
+            fsm.GetState("Choice").AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            var dialogue = (RunDialogue) fsm.GetState("Repeat").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
+    public class ShermaCaretaker : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Start Asleep?").AddAction(() => fsm.SendEvent("FINSIHED"), 0);
+            fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINSIHED"), 0);
+            fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            var dialogue = (RunDialogue) fsm.GetState("Repeat").actions[2];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
         }

@@ -74,10 +74,9 @@ public static class ActionManager
         Before.Add(edit);
     }
 
-    public static void ReceiveAction(IEdit edit, string scene)
+    public static void ReceiveAction(IEdit edit)
     {
-        if (_lastScene == scene) edit.Execute();
-        else edit.Execute(scene);
+        edit.Execute();
     }
 
     public static void MultiplayerShare(IEdit edit)
@@ -90,8 +89,6 @@ public static class ActionManager
 public interface IEdit
 {
     void Execute();
-    
-    void Execute(string scene);
     
     IEdit Undo();
 
@@ -114,10 +111,11 @@ public class PlaceObject(List<ObjectPlacement> placements) : IEdit, IScheduledEd
         }
     }
     
+    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, this);
-    }
+    }*/
     
     public IEdit Undo() => new EraseObject(placements);
 
@@ -139,10 +137,11 @@ public class ToggleLock(ObjectPlacement placement) : IEdit
         placement.ToggleLocked();
     }
     
+    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, new ScheduledToggleLock(placement.GetId()));
-    }
+    }*/
     
     public IEdit Undo() => new ToggleLock(placement);
 
@@ -167,11 +166,12 @@ public class EraseObject(List<ObjectPlacement> placements) : IEdit
         foreach (var o in placements) o.Destroy();
     }
     
+    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, new ScheduledErase(placements
             .Select(o => o.GetId()).ToList()));
-    }
+    }*/
     
     public IEdit Undo() => new PlaceObject(placements);
 
@@ -206,10 +206,11 @@ public class ToggleTile(List<(int, int)> tiles, bool empty) : IEdit, IScheduledE
         map.Build();
     }
     
+    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, this);
-    }
+    }*/
     
     public IEdit Undo() => new ToggleTile(tiles, !empty);
 
@@ -232,11 +233,12 @@ public class MoveObjects(List<(ObjectPlacement, Vector3, Vector3)> data) : IEdit
         foreach (var (obj, pos, _) in data) obj.Move(pos);
     }
     
+    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, new ScheduledMove(data.Select(edit => 
             (edit.Item1.GetId(), edit.Item2)).ToList()));
-    }
+    }*/
     
     public IEdit Undo()
     {
@@ -282,7 +284,7 @@ public class ResetRoom : IEdit
         data.TilemapChanges.Clear();
     }
 
-    public void Execute(string scene)
+    public static void Execute(string scene)
     {
         StorageManager.SaveScene(scene, new LevelData([], []));
     }

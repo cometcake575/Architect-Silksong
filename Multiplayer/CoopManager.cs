@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Architect.Events;
-using Architect.Multiplayer.Ssmp;
 using Architect.Placements;
 using UnityEngine;
 
@@ -12,9 +11,7 @@ public abstract class CoopManager
     
     public static void Init()
     {
-        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("ssmp")) Instance = new SsmpManager();
-        else Instance = new DummyManager();
-        
+        Instance = new DummyManager();
         Instance.Setup();
     }
     

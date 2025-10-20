@@ -505,13 +505,13 @@ public static class UtilityObjects
     {
         var point = new GameObject("Hazard Respawn Point");
 
+        point.SetActive(false);
+        Object.DontDestroyOnLoad(point);
+
         point.AddComponent<HazardRespawnTrigger>().respawnMarker = point.AddComponent<CustomHazardRespawnMarker>();
 
         var collider = point.AddComponent<CircleCollider2D>();
         collider.isTrigger = true;
-
-        point.SetActive(false);
-        Object.DontDestroyOnLoad(point);
 
         return new CustomObject("Hazard Respawn Point", "hazard_respawn_point", point, 
             sprite:ResourceUtils.LoadSpriteResource("hazard_respawn_point"),

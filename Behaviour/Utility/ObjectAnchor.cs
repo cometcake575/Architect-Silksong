@@ -32,6 +32,7 @@ public class ObjectAnchor : PreviewableBehaviour
     
     private float _currentRotationSpeed;
     private float _currentSpeed;
+    private bool _startFlipped;
     private bool _flipped;
     private float _offset;
     private float _pauseRemaining;
@@ -61,8 +62,12 @@ public class ObjectAnchor : PreviewableBehaviour
         _offset = startOffset;
         rotation = startRotation + transform.rotation.eulerAngles.z;
         _currentSpeed = speed;
-        
-        if (speed < 0) _flipped = true;
+
+        if (speed < 0)
+        {
+            _startFlipped = true;
+            _flipped = true;
+        }
 
         // Moving platform fix so the player sticks to the platform
         // Uses a Motion Parent object as the parent and not the anchor itself as the anchor can be disabled
@@ -157,9 +162,9 @@ public class ObjectAnchor : PreviewableBehaviour
                     _previewInMotion = true;
                     _offset = startOffset;
 
-                    if (_flipped)
+                    if (_flipped != _startFlipped)
                     {
-                        _flipped = false;
+                        _flipped = !_flipped;
                         speed = -speed;
                         rotationSpeed = -rotationSpeed;
                     }
