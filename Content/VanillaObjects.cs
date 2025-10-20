@@ -366,7 +366,7 @@ public static class VanillaObjects
                 postSpawnAction:MiscFixers.FixSherma)
             .WithConfigGroup(ConfigGroup.Npcs));
 
-        Categories.Misc.Add(new PreloadObject("Sherma Caretaker NPC", "sherma_2", 
+        Categories.Misc.Add(new PreloadObject("Caretaker Sherma NPC", "sherma_2", 
                 ("Song_Enclave",
                     "Black Thread States/Black Thread World/Enclave Act 3/Sherma Caretaker"),
                 postSpawnAction:MiscFixers.FixShermaCaretaker)
