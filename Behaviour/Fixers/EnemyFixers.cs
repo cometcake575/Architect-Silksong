@@ -85,13 +85,11 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Dormant").AddAction(() => fsm.SetState("Idle"));
 
-        var ground = obj.transform.position.y;
-        
-        fsm.FsmVariables.FindFsmFloat("Ground Y").Value = ground;
-        fsm.FsmVariables.FindFsmFloat("Jump Y").Value = ground + 5.78f;
-        fsm.FsmVariables.FindFsmFloat("Censer Bot Y").Value = ground - 3.64f;
-        fsm.FsmVariables.FindFsmFloat("Censer Top Y").Value = ground + 7.18f;
-        fsm.FsmVariables.FindFsmFloat("Stomp Y").Value = ground + 4.58f;
+        var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        var jumpY = fsm.FsmVariables.FindFsmFloat("Jump Y");
+        var censerBotY = fsm.FsmVariables.FindFsmFloat("Censer Bot Y");
+        var censerTopY = fsm.FsmVariables.FindFsmFloat("Censer Top Y");
+        var stompY = fsm.FsmVariables.FindFsmFloat("Stomp Y");
 
         var centre = obj.transform.position.x;
         fsm.FsmVariables.FindFsmFloat("Centre X").Value = centre;
@@ -126,8 +124,28 @@ public static class EnemyFixers
         
         var corpseFsm = ede.GetInstantiatedCorpse(AttackTypes.Nail).LocateMyFSM("Control");
 
-        ((CheckYPosition)corpseFsm.GetState("Fall").Actions[2]).compareTo = ground;
-        ((SetPosition)corpseFsm.GetState("Land").Actions[0]).y = ground;
+        var fall = (CheckYPosition)corpseFsm.GetState("Fall").Actions[2];
+        var land = (SetPosition)corpseFsm.GetState("Land").Actions[0];
+        
+        AdjustGroundPos();
+        return;
+        
+        void AdjustGroundPos()
+        {
+            if (HeroController.instance.TryFindGroundPoint(out var pos, obj.transform.position, 
+                    true))
+            {
+                var ground = pos.y;
+                groundY.Value = ground;
+                jumpY.Value = ground + 5.78f;
+                censerBotY.Value = ground - 3.64f;
+                censerTopY.Value = ground + 7.18f;
+                stompY.Value = ground + 4.58f;
+                
+                fall.compareTo = ground;
+                land.y = ground;
+            }
+        }
     }
 
     public static void RemoveConstrainPosition(GameObject obj)
@@ -206,5 +224,16 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Init").AddAction(() => fsm.SendEvent("SPEAR SPAWNER"), 2);
         fsm.GetState("Memory Arena Clamp").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
+    public static void FixSkrill(GameObject obj)
+    {
+        var sourcePos = obj.transform.position;
+        var fsm = obj.LocateMyFSM("Behaviour");
+        fsm.GetState("Hidden").AddAction(() =>
+        {
+            if ((HeroController.instance.transform.position - sourcePos).sqrMagnitude < 1024) return;
+            fsm.SendEvent("HERO GONE");
+        }, 0, true);
     }
 }

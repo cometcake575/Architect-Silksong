@@ -297,7 +297,11 @@ public static class ConfigGroup
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Render Layer", "obj_layer",
-                (o, value) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); },
+                (o, value) =>
+                {
+                    foreach (var comp in o.GetComponentsInChildren<SpriteRenderer>())
+                        comp.sortingOrder = value.GetValue();
+                },
                 (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Z Offset", "obj_z",
