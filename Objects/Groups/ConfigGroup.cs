@@ -302,7 +302,8 @@ public static class ConfigGroup
                     foreach (var comp in o.GetComponentsInChildren<SpriteRenderer>())
                         comp.sortingOrder = value.GetValue();
                 },
-                (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })),
+                (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
+                .WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Z Offset", "obj_z",
                 (o, value) => { o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue()); },
@@ -313,7 +314,8 @@ public static class ConfigGroup
                         CursorManager.Offset.z += value.GetValue();
                     }
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
-                }))
+                })
+                .WithDefaultValue(0))
     ]);
 
     private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
@@ -361,6 +363,14 @@ public static class ConfigGroup
             ))
     ]);
 
+    private static readonly ConfigType alphaColour = ConfigurationManager.RegisterConfigType(
+        new FloatConfigType("Colour A", "colour_alpha", (o, value) =>
+        {
+            var sr = o.GetComponent<SpriteRenderer>();
+            var color = sr.color;
+            color.a = value.GetValue();
+            sr.color = color;
+        }).WithDefaultValue(1));
     public static readonly List<ConfigType> Colours = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Colour R", "colour_red", (o, value) =>
@@ -407,14 +417,7 @@ public static class ConfigGroup
                 color.b = value.GetValue();
                 sr.color = color;
             }).WithDefaultValue(1)),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Colour A", "colour_alpha", (o, value) =>
-            {
-                var sr = o.GetComponent<SpriteRenderer>();
-                var color = sr.color;
-                color.a = value.GetValue();
-                sr.color = color;
-            }).WithDefaultValue(1))
+        alphaColour
     ]));
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
@@ -689,7 +692,7 @@ public static class ConfigGroup
                 .WithOptions("Local", "Global").WithDefaultValue(1))
     ]);
 
-    public static readonly List<ConfigType> Mp4 = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> Mp4 = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("MP4 URL", "mp4_url",
                 (o, value) => { o.GetOrAddComponent<Mp4Object>().url = value.GetValue(); }, (o, value, context) =>
@@ -702,13 +705,23 @@ public static class ConfigGroup
                 }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Play on Start", "mp4_start_playing",
-                (o, value) => { o.GetOrAddComponent<Mp4Object>().playOnStart = value.GetValue(); }).WithPriority(-1)),
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<Mp4Object>().playOnStart = value.GetValue();
+                }).WithDefaultValue(true).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Loop Video", "mp4_loop",
-                (o, value) => { o.GetComponent<VideoPlayer>().isLooping = value.GetValue(); })),
+                    (o, value) =>
+                    {
+                        if (!value.GetValue()) return;
+                        o.GetComponent<VideoPlayer>().isLooping = value.GetValue();
+                    })
+                .WithDefaultValue(false)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Playback Speed", "mp4_speed",
-                (o, value) => { o.GetComponent<VideoPlayer>().playbackSpeed = value.GetValue(); }))
+                (o, value) => { o.GetComponent<VideoPlayer>().playbackSpeed = value.GetValue(); })
+                .WithDefaultValue(1)),
+        alphaColour
     ]);
 
     private static readonly int ActiveRegion = LayerMask.NameToLayer("ActiveRegion");

@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "2.2.1")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "2.2.2")]
 public class ArchitectPlugin : BaseUnityPlugin
 {
     internal static ArchitectPlugin Instance;
