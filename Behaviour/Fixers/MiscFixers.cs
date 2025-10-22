@@ -312,15 +312,77 @@ public static class MiscFixers
         }
     }
 
+    public static void FixGarmond(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.fsmTemplate = null;
+
+        var endPoint = new GameObject("Battle End Point")
+        {
+            transform = { position = obj.transform.position }
+        };
+        fsm.GetState("Wait An Additional Frame")
+            .AddAction(() => { fsm.FsmVariables.FindFsmGameObject("Battle End Point").Value = endPoint; }, 0);
+
+        obj.AddComponent<Garmond>();
+    }
+
     public static void FixShakra(GameObject obj)
     {
         obj.AddComponent<Shakra>();
+    }
+
+    private static readonly int EnemyLayer = LayerMask.NameToLayer("Enemies");
+    public static void FixSecondSentinel(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.fsmTemplate = null;
+        fsm.GetState("Ally Wake").AddAction(() =>
+        {
+            // Finds target cursor
+            var cursor = fsm.FsmVariables.FindFsmGameObject("Target Cursor").value;
+            var cursorFsm = cursor.LocateMyFSM("Control");
+            var target = cursorFsm.FsmVariables.FindFsmGameObject("Current Target");
+
+            // Modifies the cursor's logic to target any enemy
+            var getTarget = cursorFsm.GetState("Get Target");
+            getTarget.DisableAction(0);
+            getTarget.AddAction(() =>
+            {
+                var enemy = Object
+                    .FindObjectsByType<Collider2D>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    .Where(h => h.gameObject != obj && h.gameObject.layer == EnemyLayer)
+                    .OrderBy(h => (h.transform.position - obj.transform.position).sqrMagnitude)
+                    .FirstOrDefault();
+                if (enemy && (enemy.transform.position - obj.transform.position).sqrMagnitude < 512) 
+                    target.value = enemy.gameObject;
+            }, 1);
+        }, 5);
     }
 
     public static void FixSherma(GameObject obj)
     {
         obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
         obj.AddComponent<Sherma>();
+    }
+
+    public static void PreFixArchitect(GameObject obj)
+    {
+        obj.transform.parent.DetachChildren();
+        obj.transform.SetPositionZ(0.006f);
+        
+        obj.GetComponentInChildren<BoxCollider2D>().size = new Vector2(7, 2);
+        obj.GetComponent<InteractableBase>().interactLabel = InteractableBase.PromptLabels.Speak;
+    }
+
+    public static void FixArchitect(GameObject obj)
+    {
+        obj.AddComponent<ArchitectNpc>();
+    }
+
+    public static void FixCaretaker(GameObject obj)
+    {
+        obj.AddComponent<Caretaker>();
     }
 
     public static void FixShermaCaretaker(GameObject obj)
@@ -331,6 +393,18 @@ public static class MiscFixers
     public class Npc : MonoBehaviour
     {
         public string text = "Sample Text";
+    }
+    
+    public class Garmond : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.transform.Find("Victory NPC").gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[1];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
     }
     
     public class Shakra : Npc
@@ -361,13 +435,48 @@ public static class MiscFixers
         }
     }
     
+    public class ArchitectNpc : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Behaviour");
+            fsm.GetState("Start Pos").AddAction(() => fsm.SendEvent("BOTTOM"), 0);
+            fsm.GetState("Met?").AddAction(() => fsm.SendEvent("FALSE"), 0);
+            fsm.GetState("Is Act 3?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            
+            var meet = fsm.GetState("Meet Dlg");
+            meet.DisableAction(1);
+            var dialogue = (RunDialogue) meet.actions[2];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+            
+            fsm.GetState("Shop Up").AddAction(() => fsm.SendEvent("SHOP CLOSED"), 0);
+            fsm.GetState("Will Leave?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        }
+    }
+    
+    public class Caretaker : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Gone?").AddAction(() => fsm.SendEvent("FALSE"), 0);
+            fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("Will Offer Snare?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("Lv1 Meet?").AddAction(() => fsm.SendEvent("SPEAK"), 0);
+            var dialogue = (RunDialogue) fsm.GetState("Lv1 Meet").actions[1];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
     public class ShermaCaretaker : Npc
     {
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Control");
-            fsm.GetState("Start Asleep?").AddAction(() => fsm.SendEvent("FINSIHED"), 0);
-            fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINSIHED"), 0);
+            fsm.GetState("Start Asleep?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
             fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
             var dialogue = (RunDialogue) fsm.GetState("Repeat").actions[2];
             dialogue.Sheet = "ArchitectMod";

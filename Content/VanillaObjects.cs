@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -8,7 +11,9 @@ using Architect.Objects.Placeable;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
+using Unity.Collections;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Content;
 
@@ -356,11 +361,31 @@ public static class VanillaObjects
             ("Bone_East_15", "bell_bench/RestBench"),
             preloadAction: MiscFixers.FixBench, preview: true));
 
-        Categories.Misc.Add(new PreloadObject("Shakra NPC", "shakra",
+        Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
+                ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
+                postSpawnAction: MiscFixers.FixGarmond)
+            .WithConfigGroup(ConfigGroup.Npcs));
+
+        Categories.Misc.Add(new PreloadObject("Shakra NPC (Ally)", "shakra",
                 ("Shellwood_01",
                     "Black Thread States/Black Thread World/Shakra Guard Scene/Scene Folder/Mapper StandGuard NPC"),
                 postSpawnAction: MiscFixers.FixShakra)
             .WithConfigGroup(ConfigGroup.Shakra));
+        
+        Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally", 
+            ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
+            postSpawnAction: MiscFixers.FixSecondSentinel));
+
+        Categories.Misc.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
+                ("Under_17", "Architect Scene/Chair/pillar E/pillar D/pillar C/pillar B/pillar A/seat/Architect NPC"),
+                preloadAction: MiscFixers.PreFixArchitect, postSpawnAction: MiscFixers.FixArchitect)
+            .WithConfigGroup(ConfigGroup.Npcs));
+
+        Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
+                ("Song_Enclave",
+                    "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Caretaker"),
+                postSpawnAction: MiscFixers.FixCaretaker)
+            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
 
         Categories.Misc.Add(new PreloadObject("Sherma NPC", "sherma_1",
                 ("Song_Enclave",

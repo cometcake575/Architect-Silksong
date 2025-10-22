@@ -20,6 +20,8 @@ public class ObjectDuplicator : MonoBehaviour
         }
 
         var obj = _placement.SpawnObject();
+        if (!obj) return;
+        
         obj.name += " Copy " + Guid.NewGuid();
         obj.RemoveComponent<PersistentBoolItem>();
         obj.SetActive(true);

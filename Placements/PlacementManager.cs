@@ -62,7 +62,11 @@ public static class PlacementManager
         foreach (var placement in data.Placements)
         {
             if (EditManager.IsEditing) placement.PlaceGhost();
-            else Objects[placement.GetId()] = placement.SpawnObject();
+            else
+            {
+                var obj = placement.SpawnObject();
+                if (obj) Objects[placement.GetId()] = obj;
+            }
         }
 
         var map = GetTilemap();

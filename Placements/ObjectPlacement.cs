@@ -150,20 +150,23 @@ public class ObjectPlacement(
         if (type.Preview)
         {
             var preview = SpawnObject();
-            preview.transform.SetParent(_previewObject.transform);
-            preview.transform.localPosition = Vector3.zero;
-
-            foreach (var renderer in preview.GetComponentsInChildren<Renderer>())
+            if (preview)
             {
-                renderer.enabled = false;
-            }
+                preview.transform.SetParent(_previewObject.transform);
+                preview.transform.localPosition = Vector3.zero;
 
-            foreach (var behaviour in preview.GetComponentsInChildren<PreviewableBehaviour>())
-            {
-                behaviour.isAPreview = true;
+                foreach (var renderer in preview.GetComponentsInChildren<Renderer>())
+                {
+                    renderer.enabled = false;
+                }
+
+                foreach (var behaviour in preview.GetComponentsInChildren<PreviewableBehaviour>())
+                {
+                    behaviour.isAPreview = true;
+                }
+
+                preview.SetActive(true);
             }
-            
-            preview.SetActive(true);
         }
 
         _offset = PreviewUtils.FixPreview(_previewRenderer, type, flipped, rot, scale);
@@ -188,6 +191,12 @@ public class ObjectPlacement(
 
     public GameObject SpawnObject()
     {
+        if (!type.Prefab)
+        {
+            ArchitectPlugin.Logger.LogError($"Error - Prefab of {type.GetName()} is missing, cannot spawn");
+            return null;
+        }
+        
         var obj = Object.Instantiate(type.Prefab, _position, type.Prefab.transform.rotation);
         obj.name = $"[Architect] {type.GetName()} ({id})";
 
