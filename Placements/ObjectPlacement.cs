@@ -38,7 +38,7 @@ public class ObjectPlacement(
 
     public bool Touching(Vector3 mousePos)
     {
-        if (!_previewObject) return false;
+        if (!_previewObject || !_previewRenderer || !_previewRenderer.sprite) return false;
 
         var pos = EditManager.GetWorldPos(mousePos, offset:_previewObject.transform.position.z);
         

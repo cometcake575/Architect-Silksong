@@ -12,10 +12,7 @@ public abstract class CoopManager
     public static void Init()
     {
         Instance = new DummyManager();
-        Instance.Setup();
     }
-    
-    protected abstract void Setup();
     
     public abstract bool IsActive();
     

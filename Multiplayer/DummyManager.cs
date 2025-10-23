@@ -6,8 +6,6 @@ namespace Architect.Multiplayer;
 
 public class DummyManager : CoopManager
 {
-    protected override void Setup() { }
-    
     public override bool IsActive()
     {
         return false;

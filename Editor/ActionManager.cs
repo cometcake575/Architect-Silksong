@@ -81,7 +81,9 @@ public static class ActionManager
 
     public static void MultiplayerShare(IEdit edit)
     {
+        ArchitectPlugin.Logger.LogInfo("Trying to share");
         if (!CoopManager.Instance.IsActive()) return;
+        ArchitectPlugin.Logger.LogInfo("About to share");
         edit.MultiplayerShare();
     }
 }
@@ -293,6 +295,8 @@ public class ResetRoom : IEdit
 
     public void MultiplayerShare()
     {
+        ArchitectPlugin.Logger.LogInfo("Doing share");
         CoopManager.Instance.ResetRoom(GameManager.instance.sceneName);
+        ArchitectPlugin.Logger.LogInfo("Done share");
     }
 }

@@ -94,7 +94,7 @@ public class PlayerHook : MonoBehaviour
 
     private static void PlayerEvent(string triggerName)
     {
-        foreach (var obj in PlayerListeners) obj?.BroadcastEvent(triggerName);
+        foreach (var obj in PlayerListeners.ToArray()) obj?.BroadcastEvent(triggerName);
     }
     
     private void OnEnable()

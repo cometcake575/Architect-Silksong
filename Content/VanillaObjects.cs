@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -11,9 +8,7 @@ using Architect.Objects.Placeable;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
-using Unity.Collections;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Architect.Content;
 
