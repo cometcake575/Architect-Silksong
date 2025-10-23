@@ -888,7 +888,16 @@ public static class ConfigGroup
                 }))
     ]);
 
-    public static readonly List<ConfigType> RoomClearer = GroupUtils.Merge(Generic, [
+    public static readonly List<ConfigType> Remover = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Filter", "remover_filter",
+                (o, value) =>
+                {
+                    o.GetComponent<ObjectRemover>().filter = value.GetValue();
+                }))
+    ]);
+
+    public static readonly List<ConfigType> RoomClearer = GroupUtils.Merge(Remover, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Remove Transitions", "remove_transitions",
                     (o, value) => { o.GetOrAddComponent<RoomClearerConfig>().removeTransitions = value.GetValue(); })

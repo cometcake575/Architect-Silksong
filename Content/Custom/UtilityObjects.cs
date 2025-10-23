@@ -15,7 +15,7 @@ namespace Architect.Content.Custom;
 
 public static class UtilityObjects
 {
-    private static readonly Dictionary<string, Func<GameObject, Disabler[]>> RemoverActions = [];
+    private static readonly Dictionary<string, Func<GameObject, string, Disabler[]>> RemoverActions = [];
     
     public static void Init()
     {
@@ -59,7 +59,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateSceneBorderRemover());
         
         Categories.Utility.Add(CreateObjectRemover("collision_remover", "Remove Collider",
-                disabler =>
+                (disabler, filter) =>
                 {
                     List<Collider2D> results1 = [];
                     List<Collider2D> results2 = [];
@@ -75,18 +75,19 @@ public static class UtilityObjects
                         results2
                     );
                     return results1.Concat(results2)
+                        .Where(i => i.name.Contains(filter))
                         .Select(p => p.gameObject.GetOrAddComponent<Disabler>()).ToArray();
                 }, "Removes colliders touching this object.\n" +
                    "Trigger zones such as hazard respawn points do not count.")
-            .WithConfigGroup(ConfigGroup.Generic)
+            .WithConfigGroup(ConfigGroup.Remover)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
         Categories.Utility.Add(CreateObjectRemover("render_remover", "Remove Renderer", 
                 FindObjectsToDisable<Renderer>, "Removes the nearest renderer.")
-            .WithConfigGroup(ConfigGroup.Generic)
+            .WithConfigGroup(ConfigGroup.Remover)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
-        Categories.Utility.Add(CreateObjectRemover("object_remover", "Remove Object", o =>
+        Categories.Utility.Add(CreateObjectRemover("object_remover", "Remove Object", (o, _) =>
             {
                 var config = o.GetComponent<ObjectRemoverConfig>();
                 GameObject point = null;
@@ -104,7 +105,7 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.ObjectRemover)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
-        Categories.Utility.Add(CreateObjectRemover("room_remover", "Clear Room", o =>
+        Categories.Utility.Add(CreateObjectRemover("room_remover", "Clear Room", (o, filter) =>
                 {
                     var clearer = o.GetComponent<RoomClearerConfig>();
 
@@ -113,6 +114,7 @@ public static class UtilityObjects
                     var objects = o.scene.GetRootGameObjects().Where(obj =>
                         !obj.name.StartsWith("[Architect]")
                         && !obj.name.StartsWith("_SceneManager")
+                        && obj.name.Contains(filter)
                     );
             
                     if (clearer.removeOther)
@@ -454,7 +456,7 @@ public static class UtilityObjects
     }
 
     private static PlaceableObject CreateObjectRemover(string id, string name,
-        [CanBeNull] Func<GameObject, Disabler[]> action, string desc)
+        [CanBeNull] Func<GameObject, string, Disabler[]> action, string desc)
     {
         var obj = new GameObject($"Object Remover ({id})");
         Object.DontDestroyOnLoad(obj);
@@ -473,13 +475,13 @@ public static class UtilityObjects
 
     public static Disabler[] GetObjects(ObjectRemover editor)
     {
-        return RemoverActions[editor.triggerName].Invoke(editor.gameObject);
+        return RemoverActions[editor.triggerName].Invoke(editor.gameObject, editor.filter);
     }
 
-    private static Disabler[] FindObjectsToDisable<T>(GameObject disabler) where T : Component
+    private static Disabler[] FindObjectsToDisable<T>(GameObject disabler, string filter) where T : Component
     {
         var objects = disabler.scene.GetRootGameObjects()
-            .Where(obj => !obj.name.StartsWith("[Architect] "))
+            .Where(obj => !obj.name.StartsWith("[Architect] ") && obj.name.Contains(filter))
             .SelectMany(root => root.GetComponentsInChildren<T>(true))
             .Select(obj => obj.gameObject);
 

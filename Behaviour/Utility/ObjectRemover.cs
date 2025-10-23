@@ -8,6 +8,7 @@ namespace Architect.Behaviour.Utility;
 public class ObjectRemover : MonoBehaviour
 {
     public string triggerName;
+    public string filter;
 
     private Disabler[] _toggle;
 
