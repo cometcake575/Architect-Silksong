@@ -328,6 +328,8 @@ public static class MiscFixers
         
         fsm.GetState("Idle").DisableAction(8);
         fsm.GetState("Chase Target").DisableAction(29);
+        
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("QUICK FIGHT"), 0);
 
         obj.AddComponent<Garmond>();
     }
