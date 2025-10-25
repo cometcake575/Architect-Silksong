@@ -319,6 +319,9 @@ public static class MiscFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.fsmTemplate = null;
 
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("QUICK TARGET"), 0);
+        fsm.GetState("Black Thread?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
         var endPoint = new GameObject("Battle End Point")
         {
             transform = { position = obj.transform.position }
@@ -329,8 +332,6 @@ public static class MiscFixers
         fsm.GetState("Idle").DisableAction(8);
         fsm.GetState("Chase Target").DisableAction(29);
         
-        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("QUICK FIGHT"), 0);
-
         obj.AddComponent<Garmond>();
     }
 
