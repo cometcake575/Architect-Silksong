@@ -231,6 +231,8 @@ public static class EditorUI
         EditManager.CurrentlyFlipped = false;
         EditManager.SetRotation(0);
         EditManager.SetScale(1);
+
+        CursorManager.ObjectChanged = true;
         
         var isPrefab = false;
         

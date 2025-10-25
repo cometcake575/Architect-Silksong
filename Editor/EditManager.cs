@@ -45,6 +45,7 @@ public static class EditManager
             EditorUI.ScaleText.text = CurrentScale.ToString(CultureInfo.InvariantCulture);
             
             CursorManager.NeedsRefresh = true;
+            CursorManager.ObjectChanged = true;
         }
     }
 

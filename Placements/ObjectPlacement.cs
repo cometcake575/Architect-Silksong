@@ -164,7 +164,7 @@ public class ObjectPlacement(
                 {
                     behaviour.isAPreview = true;
                 }
-
+                
                 preview.SetActive(true);
             }
         }

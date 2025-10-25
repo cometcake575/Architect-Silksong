@@ -114,4 +114,9 @@ public static class HazardFixers
             constraint.constraintActive = true;
         }
     }
+
+    public static void FixSpikeBall(GameObject obj)
+    {
+        obj.transform.GetChild(1).SetAsFirstSibling();
+    }
 }

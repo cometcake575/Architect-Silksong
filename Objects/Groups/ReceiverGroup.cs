@@ -179,6 +179,17 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> SpikeBall = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("swing_1", "Swing", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("TRAP");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("swing_2", "SwingTwice", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("TRAP DOUBLE");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Transitions = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("transition", "Transition", o =>
         {

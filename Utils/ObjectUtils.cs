@@ -20,6 +20,12 @@ public static class ObjectUtils
         if (comp) Object.Destroy(comp);
     }
     
+    public static T ReplaceComponent<T>(this GameObject obj) where T : Component
+    {
+        obj.RemoveComponent<T>();
+        return obj.AddComponent<T>();
+    }
+    
     public static void BroadcastEvent(this GameObject obj, string triggerName)
     {
         EventManager.BroadcastEvent(obj, triggerName);

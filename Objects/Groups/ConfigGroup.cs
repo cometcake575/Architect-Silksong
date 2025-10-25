@@ -10,7 +10,6 @@ using Architect.Editor;
 using Architect.Storage;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
-using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
@@ -314,8 +313,7 @@ public static class ConfigGroup
                         CursorManager.Offset.z += value.GetValue();
                     }
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
-                })
-                .WithDefaultValue(0))
+                }).WithDefaultValue(0))
     ]);
 
     private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
@@ -363,7 +361,7 @@ public static class ConfigGroup
             ))
     ]);
 
-    private static readonly ConfigType alphaColour = ConfigurationManager.RegisterConfigType(
+    private static readonly ConfigType AlphaColour = ConfigurationManager.RegisterConfigType(
         new FloatConfigType("Colour A", "colour_alpha", (o, value) =>
         {
             var sr = o.GetComponent<SpriteRenderer>();
@@ -417,7 +415,7 @@ public static class ConfigGroup
                 color.b = value.GetValue();
                 sr.color = color;
             }).WithDefaultValue(1)),
-        alphaColour
+        AlphaColour
     ]));
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
@@ -698,7 +696,7 @@ public static class ConfigGroup
                 (o, value) => { o.GetOrAddComponent<Mp4Object>().url = value.GetValue(); }, (o, value, context) =>
                 {
                     var player = o.GetOrAddComponent<VideoPlayer>();
-                    player.playbackSpeed = 0;
+                    if (player.playbackSpeed > 0) player.playbackSpeed = 0;
                     CustomAssetManager.DoLoadVideo(player,
                         context == ConfigurationManager.PreviewContext.Cursor ? null : o.transform.GetScaleX(),
                         value.GetValue());
@@ -721,7 +719,7 @@ public static class ConfigGroup
             new FloatConfigType("Playback Speed", "mp4_speed",
                 (o, value) => { o.GetComponent<VideoPlayer>().playbackSpeed = value.GetValue(); })
                 .WithDefaultValue(1)),
-        alphaColour
+        AlphaColour
     ]);
 
     private static readonly int ActiveRegion = LayerMask.NameToLayer("ActiveRegion");

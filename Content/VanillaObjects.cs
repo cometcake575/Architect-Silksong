@@ -320,6 +320,11 @@ public static class VanillaObjects
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
             ("Shadow_02", "moss_crumble_plat")));
+        
+        Categories.Hazards.Add(new PreloadObject("Groal's Spike Ball", "swing_trap_spike",
+            ("Shadow_18", "Battle Scene/stake_trap_swing_repeater"), description:"Only has collision when swinging.", 
+            preloadAction:HazardFixers.FixSpikeBall)
+            .WithReceiverGroup(ReceiverGroup.SpikeBall));
     }
 
     private static void AddMistObjects()

@@ -314,6 +314,8 @@ public static class MiscFixers
 
     public static void FixGarmond(GameObject obj)
     {
+        obj.RemoveComponent<ConstrainPosition>();
+        
         var fsm = obj.LocateMyFSM("Control");
         fsm.fsmTemplate = null;
 
@@ -323,6 +325,9 @@ public static class MiscFixers
         };
         fsm.GetState("Wait An Additional Frame")
             .AddAction(() => { fsm.FsmVariables.FindFsmGameObject("Battle End Point").Value = endPoint; }, 0);
+        
+        fsm.GetState("Idle").DisableAction(8);
+        fsm.GetState("Chase Target").DisableAction(29);
 
         obj.AddComponent<Garmond>();
     }
@@ -337,6 +342,9 @@ public static class MiscFixers
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.fsmTemplate = null;
+        
+        fsm.GetState("Ally Setup").DisableAction(2);
+        
         fsm.GetState("Ally Wake").AddAction(() =>
         {
             // Finds target cursor
