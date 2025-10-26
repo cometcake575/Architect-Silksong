@@ -285,7 +285,7 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Gates));
 
         Categories.Hazards.Add(new PreloadObject("Slab Spike Ball", "slab_spike_ball",
-            ("Slab_21", "slab_spike_ball"),
+            ("Slab_21", "slab_spike_ball"), description:"Hangs from a chain.",
             preloadAction: InteractableFixers.FixSpikeBall));
         Categories.Hazards.Add(new PreloadObject("Slab Spinning Blade", "slab_prob_blade",
             ("Slab_21", "trap_spinning_blade_S_bend_slab_jail (4)/prop_blade"),

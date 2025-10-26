@@ -342,7 +342,7 @@ public static class EditorUI
                 if (val.Length == 0) EditManager.Config.Remove(type.Id);
                 else EditManager.Config[type.Id] = type.Deserialize(inp.GetValue());
 
-                CursorManager.NeedsRefresh = true;
+                CursorManager.ObjectChanged = true;
             });
             
             y -= 12;
