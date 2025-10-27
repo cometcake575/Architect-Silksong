@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Architect.Utils;
 using GlobalEnums;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -89,6 +87,9 @@ public class PlayerHook : MonoBehaviour
         {
             self.OnDeath += () => PlayerEvent("OnDeath");
             self.OnHazardRespawn += () => PlayerEvent("OnHazardRespawn");
+
+            HeroPerformanceRegion.StartedPerforming += () => PlayerEvent("NeedolinStart");
+            HeroPerformanceRegion.StoppedPerforming += () => PlayerEvent("NeedolinStop");
         };
     }
 

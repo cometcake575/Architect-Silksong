@@ -6,6 +6,7 @@ using Architect.Objects.Placeable;
 using Architect.Utils;
 using GlobalEnums;
 using UnityEngine;
+using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
 namespace Architect.Content.Custom;
@@ -18,14 +19,14 @@ public static class MiscObjects
         Categories.Misc.AddStart(CreateCircle());
         Categories.Misc.AddStart(CreateSquare());
         
-        Categories.Misc.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true)
+        Categories.Misc.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
             .WithConfigGroup(ConfigGroup.Mp4));
         
-        Categories.Misc.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false)
+        Categories.Misc.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
             .WithConfigGroup(ConfigGroup.Wav)
             .WithReceiverGroup(ReceiverGroup.Playable));
         
-        Categories.Misc.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true)
+        Categories.Misc.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false)
             .WithConfigGroup(ConfigGroup.Png)
             .WithReceiverGroup(ReceiverGroup.Mp4));
         
@@ -207,11 +208,14 @@ public static class MiscObjects
             .WithConfigGroup(ConfigGroup.Frost);
     }
 
-    private static PlaceableObject CreateAsset<T>(string name, string id, bool addRenderer) where T : MonoBehaviour
+    private static PlaceableObject CreateAsset<T>(string name, string id, bool addRenderer, 
+        bool addVideo) where T : MonoBehaviour
     {
         var asset = new GameObject("Custom Asset");
 
         if (addRenderer) asset.AddComponent<SpriteRenderer>().sprite = ArchitectPlugin.BlankSprite;
+        if (addVideo) asset.AddComponent<VideoPlayer>();
+        
         asset.AddComponent<T>();
         Object.DontDestroyOnLoad(asset);
         asset.SetActive(false);

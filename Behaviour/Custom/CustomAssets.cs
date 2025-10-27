@@ -36,7 +36,7 @@ public class Mp4Object : MonoBehaviour, IPlayable
     private void Awake()
     {
         if (string.IsNullOrEmpty(url)) return;
-        _player = gameObject.AddComponent<VideoPlayer>();
+        _player = gameObject.GetComponent<VideoPlayer>();
         CustomAssetManager.DoLoadVideo(_player, transform.GetScaleX(), url);
     }
 

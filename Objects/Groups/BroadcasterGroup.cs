@@ -55,6 +55,8 @@ public static class BroadcasterGroup
         "OnHazardRespawn",
         "OnDamage",
         "OnDeath",
-        "OnHeal"
+        "OnHeal",
+        "NeedolinStart",
+        "NeedolinStop"
     ];
 }
