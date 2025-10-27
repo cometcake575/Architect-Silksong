@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Architect.Behaviour.Custom;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using GlobalSettings;
 using HutongGames.PlayMaker.Actions;
 using TeamCherry.Localization;
 using UnityEngine;
@@ -103,16 +105,53 @@ public static class MiscFixers
                     orig(self, forceImmediate);
                 } catch (ArgumentNullException) { } catch (NullReferenceException) { }
             });
+
+        typeof(SimpleCounter).Hook(nameof(SimpleCounter.Start),
+            (Action<SimpleCounter> orig, SimpleCounter self) =>
+            {
+                if (self.GetComponent<CustomFleaCounter>()) return;
+                orig(self);
+            });
+
+        HookUtils.OnFsmAwake += fsm =>
+        {
+            if (fsm.FsmName != "Area Title Control") return;
+
+            var header = fsm.FsmVariables.FindFsmString("Title Sup");
+            var footer = fsm.FsmVariables.FindFsmString("Title Sub");
+            var body = fsm.FsmVariables.FindFsmString("Title Main");
+            
+            fsm.GetState("Init all").AddAction(() =>
+            {
+                if (!_overrideAreaText) return;
+
+                header.value = _areaHeader;
+                footer.value = _areaFooter;
+                body.value = _areaBody;
+
+                _overrideAreaText = false;
+            });
+        };
     }
 
     private delegate string ToStringOrig(ref LocalisedString self, bool allowBlankText);
     
     public delegate void GetRespawnInfo(GameManager self, out string a, out string b);
     
-    // Fixes an exception on the bench when a copy is instantiated
     public static void FixBench(GameObject bench)
     {
         Object.DestroyImmediate(bench.transform.GetChild(2).gameObject);
+        bench.AddComponent<CustomBench>();
+    }
+
+    public class CustomBench : MonoBehaviour
+    {
+        private void Start()
+        {
+            var angle = transform.GetRotation2D();
+            if (angle == 0) return;
+            gameObject.AddComponent<RestBenchTilt>().tilt = angle;
+        }
     }
 
     public static void MarkRing(GameObject obj)
@@ -493,5 +532,167 @@ public static class MiscFixers
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
         }
+    }
+
+    public static void FixFleaCounter(GameObject obj)
+    {
+        obj.transform.GetChild(2).gameObject.AddComponent<PngObject>();
+        obj.AddComponent<CustomFleaCounter>();
+    }
+
+    private static readonly List<CustomFleaCounter> FleaCounters = [];
+    
+    private static bool _overrideAreaText;
+    private static string _areaHeader;
+    private static string _areaBody;
+    private static string _areaFooter;
+    
+    public class CustomFleaCounter : MonoBehaviour
+    {
+        private static readonly Color Gold = UI.MaxItemsTextColor;
+        private static readonly Color Silver = new(0.45f, 0.45f, 0.5f);
+        private static readonly Color Bronze = new(0.4f, 0.2f, 0.05f);
+        
+        private SimpleCounter _counter;
+        
+        public string header; 
+        public string footer; 
+        
+        public int currentCount;
+        
+        public int gold = int.MaxValue;
+        public int silver = int.MaxValue;
+        public int bronze = int.MaxValue;
+        
+        public bool high;
+
+        private Color _color;
+        private Color _prevColor;
+
+        private string _currentEvent;
+        
+        private void Awake()
+        {
+            _counter = GetComponent<SimpleCounter>();
+            _counter.counterText.text = currentCount.ToString();
+            
+            transform.SetScale2D(Vector2.one);
+            
+            RefreshGold(false);
+        }
+
+        public void Increment()
+        {
+            currentCount++;
+            _counter.counterText.text = currentCount.ToString();
+            
+            RefreshGold(true);
+        }
+
+        public void Decrement()
+        {
+            currentCount--;
+            _counter.counterText.text = currentCount.ToString();
+            
+            RefreshGold(true);
+        }
+
+        public void Announce()
+        {
+            _overrideAreaText = true;
+            _areaHeader = header;
+            _areaBody = currentCount.ToString();
+            _areaFooter = footer;
+            
+            AreaTitle.Instance.gameObject.SetActive(true);
+        }
+
+        private void RefreshGold(bool effect)
+        {
+            if (high)
+            {
+                if (currentCount >= gold)
+                {
+                    _color = Gold;
+                    _currentEvent = "OnGold";
+                }
+                else if (currentCount >= silver)
+                {
+                    _color = Silver;
+                    _currentEvent = "OnSilver";
+                }
+                else if (currentCount >= bronze)
+                {
+                    _color = Bronze;
+                    _currentEvent = "OnBronze";
+                }
+                else
+                {
+                    _color = Color.white;
+                    _currentEvent = "OnWhite";
+                }
+            }
+            else
+            {
+                if (currentCount < gold)
+                {
+                    _color = Gold;
+                    _currentEvent = "OnGold";
+                }
+                else if (currentCount < silver)
+                {
+                    _color = Silver;
+                    _currentEvent = "OnSilver";
+                }
+                else if (currentCount < bronze)
+                {
+                    _color = Bronze;
+                    _currentEvent = "OnBronze";
+                }
+                else
+                {
+                    _color = Color.white;
+                    _currentEvent = "OnWhite";
+                }
+            }
+
+            var doEvent = false;
+            if (_color != _prevColor && effect)
+            {
+                _counter.hitTargetEffect.SetActive(true);
+                doEvent = true;
+            }
+
+            _counter.counterText.color = _color;
+            _prevColor = _color;
+            
+            if (doEvent) gameObject.BroadcastEvent(_currentEvent);
+        }
+
+        private void OnEnable()
+        {
+            FleaCounters.Add(this);
+        }
+        
+        private void OnDisable()
+        {
+            FleaCounters.Remove(this);
+        }
+
+        private void Update()
+        {
+            gameObject.transform.SetPosition2D(new Vector2(0, FleaCounters.IndexOf(this) * 1.5f));
+        }
+    }
+
+    public static void FixConfetti(GameObject obj)
+    {
+        var system = obj.GetComponent<ParticleSystem>();
+        
+        var main = system.main;
+        main.maxParticles = 100000;
+
+        var emission = system.emission;
+        emission.rateOverTime = 0;
     }
 }

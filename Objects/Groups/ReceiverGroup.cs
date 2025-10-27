@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Architect.Behaviour.Custom;
+using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Events;
 using UnityEngine;
@@ -66,10 +67,32 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Confetti = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("confetti_burst", "Burst", o =>
+        {
+            o.GetComponent<ParticleSystem>().Emit(200);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Displayable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("display_text", "Show", o =>
         {
             o.GetComponent<IDisplayable>().Display();
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> FleaCounter = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("increment_score", "Increment", o =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().Increment();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("decrement_score", "Decrement", o =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().Decrement();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("show_score", "ShowTitle", o =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().Announce();
         }))
     ]);
     

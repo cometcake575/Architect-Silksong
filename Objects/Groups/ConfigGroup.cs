@@ -190,6 +190,10 @@ public static class ConfigGroup
     public static readonly List<ConfigType> Levers = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Pulled", "lever_stay_pulled"))
     ]);
+    
+    public static readonly List<ConfigType> Buttons = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Pushed", "button_stay_pushed"))
+    ]);
 
     public static readonly List<ConfigType> Frost = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
@@ -419,14 +423,27 @@ public static class ConfigGroup
     ]));
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
-            ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale", 
-                (o, value) => 
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
+                (o, value) =>
                 {
                     var body = o.GetOrAddComponent<Rigidbody2D>();
                     body.gravityScale = value.GetValue();
                     body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
                 }
             ))
+    ]);
+
+    public static readonly List<ConfigType> Benches = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(new BoolConfigType("Save Respawn", "bench_spawn",
+            (o, value) =>
+            {
+                if (value.GetValue()) return;
+                var burst = o.LocateMyFSM("Bench Control").GetState("Rest Burst");
+                burst.DisableAction(9);
+                burst.DisableAction(10);
+                burst.DisableAction(11);
+            }
+        ).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> ObjectSpinner = GroupUtils.Merge(Generic, [
@@ -739,6 +756,44 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Trigger Layer", "trigger_layer",
                 (o, value) => { o.GetOrAddComponent<TriggerZone>().layer = value.GetValue(); }))
+    ]);
+
+    public static readonly List<ConfigType> FleaCounter = GroupUtils.Merge(Png, [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Start Score", "flea_counter_start", (o, value) =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().currentCount = value.GetValue();
+        }).WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Bronze Score", "flea_counter_first", (o, value) =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().bronze = value.GetValue();
+        }).WithDefaultValue(5).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Silver Score", "flea_counter_second", (o, value) =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().silver = value.GetValue();
+        }).WithDefaultValue(10).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Gold Score", "flea_counter_third", (o, value) =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().gold = value.GetValue();
+        }).WithDefaultValue(15).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "flea_counter_mode", (o, value) =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().high = value.GetValue() == 0;
+        }).WithOptions("Highest", "Lowest").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Title Header", "flea_counter_header", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.CustomFleaCounter>().header = value.GetValue();
+            }).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Title Footer", "flea_counter_footer", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.CustomFleaCounter>().footer = value.GetValue();
+            }).WithPriority(-1))
     ]);
         
     public static readonly List<ConfigType> Interaction = GroupUtils.Merge(Stretchable, [

@@ -1,4 +1,5 @@
 using System;
+using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -16,6 +17,7 @@ public static class VanillaObjects
 {
     public static void Init()
     {
+        AddFleaObjects();
         AddMossObjects();
         AddMarrowObjects();
         AddDocksObjects();
@@ -106,10 +108,8 @@ public static class VanillaObjects
 
     private static void AddRoadObjects()
     {
-        AddEnemy("Muckroach", "dustroach",
-            ("Dust_05", "Dustroach"));
-        AddEnemy("Roachcatcher", "roachcatcher",
-            ("Dust_02", "Roachfeeder Short"));
+        AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
+        AddEnemy("Roachcatcher", "roachcatcher", ("Dust_02", "Roachfeeder Short"));
         AddEnemy("Roachfeeder", "roachfeeder",
             ("Dust_02", "Black Thread States Thread Only Variant/Normal World/Roachfeeder Tall")).DoFlipX();
 
@@ -132,7 +132,8 @@ public static class VanillaObjects
                 ("Song_09", "Hornet_pressure_plate_small_persistent"),
                 preloadAction: InteractableFixers.FixButtonPreload,
                 postSpawnAction: InteractableFixers.FixButton)
-            .WithBroadcasterGroup(BroadcasterGroup.Buttons));
+            .WithBroadcasterGroup(BroadcasterGroup.Buttons)
+            .WithConfigGroup(ConfigGroup.Buttons));
         Categories.Interactable.Add(new PreloadObject("Citadel Gate", "citadel_gate",
                 ("Song_09", "Citadel Switch Gate"))
             .WithReceiverGroup(ReceiverGroup.Gates));
@@ -359,7 +360,8 @@ public static class VanillaObjects
     {
         Categories.Misc.Add(new PreloadObject("Bell Bench", "bell_bench",
             ("Bone_East_15", "bell_bench/RestBench"),
-            preloadAction: MiscFixers.FixBench, preview: true));
+            preloadAction: MiscFixers.FixBench, preview: true)
+            .WithConfigGroup(ConfigGroup.Benches));
 
         Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
                 ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
@@ -663,6 +665,26 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
             .WithConfigGroup(ConfigGroup.Breakable));
+    }
+
+    private static void AddFleaObjects()
+    {
+        Categories.Misc.Add(new PreloadObject("Score Counter", "flea_counter",
+            ("Aqueduct_05_festival", "Flea Games Counter"), preloadAction: MiscFixers.FixFleaCounter, 
+            description:"If the mode is 'Highest', the score changes colour above each milestone.\n" +
+                        "If the mode is 'Lowest', the score changes colour below each milestone.",
+            sprite: ResourceUtils.LoadSpriteResource("flea_counter", ppu:64))
+            .WithConfigGroup(ConfigGroup.FleaCounter)
+            .WithReceiverGroup(ReceiverGroup.FleaCounter)
+            .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
+        
+        Categories.Misc.Add(new PreloadObject("Confetti Burst", "confetti_burst",
+            ("Aqueduct_05_festival", "Caravan_States/Flea_Games_Start_effect/confetti_burst (1)"),
+            description:"Appears when the 'Burst' trigger is run.",
+            sprite: ResourceUtils.LoadSpriteResource("confetti_burst", ppu:1500),
+            preloadAction: MiscFixers.FixConfetti)
+            .WithReceiverGroup(ReceiverGroup.Confetti)
+            .WithRotationGroup(RotationGroup.All));
     }
 
     private static void AddMossObjects()

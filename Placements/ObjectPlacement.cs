@@ -129,7 +129,8 @@ public class ObjectPlacement(
     public void Move(Vector3 newWorldPos)
     {
         _position = newWorldPos + _dragOffset;
-        if (_previewObject) _previewObject.transform.position = _position + _offset;
+        if (_previewObject) _previewObject.transform.position = (_position + _offset)
+            .Where(z: _previewObject.transform.position.z);
     }
 
     public void PlaceGhost()

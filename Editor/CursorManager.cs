@@ -90,7 +90,9 @@ public static class CursorManager
             _needsFullRefresh = true;
             return;
         }
+        _cursorObject.transform.localScale = obj.LossyScale * EditManager.CurrentScale;
         ObjectChanged = false;
+        
         _canFullRefreshTime = Time.time + 2;
         
         Offset.z += obj.ZPosition + 0.001f;
