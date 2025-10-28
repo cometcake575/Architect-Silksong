@@ -1,5 +1,4 @@
 using System;
-using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -170,7 +169,7 @@ public static class VanillaObjects
                 ("Aqueduct_05_caravan", "Caravan_States/Fleatopia/Caravan Lech/Caravan Lech Wounded"),
                 postSpawnAction: MiscFixers.FixKratt)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable)
-            .WithConfigGroup(ConfigGroup.Gravity));
+            .WithConfigGroup(ConfigGroup.TriggerActivator));
 
         Categories.Platforming.Add(new PreloadObject("Trapped Wardenfly", "swamp_barnacle_slab_fly",
             ("Aqueduct_04", "Swamp Barnacle Slab Fly")));
@@ -316,6 +315,11 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixBloatroach);
         AddEnemy("Miremite", "swamp_goomba",
             ("Shadow_02", "Black Thread States Thread Only Variant/Normal World/Swamp Goomba")).DoFlipX();
+        
+        AddSolid("Bilewater Platform 1", "swamp_plat_1",
+            ("Shadow_02", "plank_plat (4)"), preloadAction:MiscFixers.FixBilePlat);
+        AddSolid("Bilewater Platform 2", "swamp_plat_2",
+            ("Shadow_26", "gloom_lift_destroy/gloom_lift_set/gloom_plat_lift destroy"));
 
         Categories.Platforming.Add(new PreloadObject("Muck Pod", "swap_bounce_pod",
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
@@ -415,7 +419,7 @@ public static class VanillaObjects
                     .Actions[1]).gameObject.Value;
                 Categories.Misc.Add(new CustomObject("Beastling", "bellbeast_child", obj,
                         postSpawnAction: MiscFixers.FixBellBaby)
-                    .WithConfigGroup(ConfigGroup.Gravity)
+                    .WithConfigGroup(ConfigGroup.TriggerActivator)
                     .WithBroadcasterGroup(BroadcasterGroup.Hittable));
             }));
 

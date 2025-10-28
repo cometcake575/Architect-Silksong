@@ -242,7 +242,12 @@ public static class MiscFixers
         obj.AddComponent<Kratt>();
     }
 
-    public class Kratt : MonoBehaviour;
+    public class TriggerActivator : MonoBehaviour
+    {
+        public int layer;
+    }
+
+    public class Kratt : TriggerActivator;
     
     public static void FixLamp(GameObject obj)
     {
@@ -291,7 +296,7 @@ public static class MiscFixers
         fsm.GetState("Tink React").AddAction(() => obj.BroadcastEvent("OnHit"));
     }
 
-    public class BellBaby : MonoBehaviour;
+    public class BellBaby : TriggerActivator;
 
     public static void FixMetronome(GameObject obj)
     {
@@ -694,5 +699,10 @@ public static class MiscFixers
 
         var emission = system.emission;
         emission.rateOverTime = 0;
+    }
+
+    public static void FixBilePlat(GameObject obj)
+    {
+        obj.transform.GetChild(1).SetAsFirstSibling();
     }
 }

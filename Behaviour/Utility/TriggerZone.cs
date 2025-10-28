@@ -27,10 +27,12 @@ public class TriggerZone : MonoBehaviour
                 if (!tz || tz.layer != layer) return;
                 break;
             case 4:
-                if (!other.gameObject.GetComponent<MiscFixers.Kratt>()) return;
+                var kr = other.gameObject.GetComponent<MiscFixers.Kratt>();
+                if (!kr || kr.layer != layer) return;
                 break;
             case 5:
-                if (!other.gameObject.GetComponent<MiscFixers.BellBaby>()) return;
+                var bb = other.gameObject.GetComponent<MiscFixers.BellBaby>();
+                if (!bb || bb.layer != layer) return;
                 break;
         }
 

@@ -422,13 +422,19 @@ public static class ConfigGroup
         AlphaColour
     ]));
 
-    public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> TriggerActivator = GroupUtils.Merge(Visible, [
             ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
                 (o, value) =>
                 {
                     var body = o.GetOrAddComponent<Rigidbody2D>();
                     body.gravityScale = value.GetValue();
                     body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new IntConfigType("Trigger Layer", "activator_layer",
+                (o, value) =>
+                {
+                    o.GetComponent<MiscFixers.TriggerActivator>().layer = value.GetValue();
                 }
             ))
     ]);
@@ -843,7 +849,7 @@ public static class ConfigGroup
             }).WithDefaultValue(5).WithPriority(-1))
     ]);
 
-    public static readonly List<ConfigType> MapperRing = GroupUtils.Merge(Gravity, [
+    public static readonly List<ConfigType> MapperRing = GroupUtils.Merge(TriggerActivator, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Fall Over", "ring_fall", (o, value) =>
             {
