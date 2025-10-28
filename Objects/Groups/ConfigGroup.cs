@@ -763,7 +763,7 @@ public static class ConfigGroup
             new IntConfigType("Trigger Layer", "trigger_layer",
                 (o, value) =>
                 {
-                    var zone = o.AddComponent<TriggerZone>();
+                    var zone = o.GetComponent<TriggerZone>();
                     zone.layer = value.GetValue();
                     zone.usingLayer = true;
                 }))
