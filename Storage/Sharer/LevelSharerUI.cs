@@ -26,7 +26,7 @@ public static class LevelSharerUI
     private static int _index;
     private static List<Dictionary<string, string>> _orderedCurrentLevels;
     private static List<Dictionary<string, string>> _currentLevels;
-    private static readonly List<(Text, Text, Text, GameObject, GameObject, Image)> DownloadChoices = [];
+    private static readonly List<(Text, Text, Text, GameObject, GameObject, GameObject, GameObject, Image)> DownloadChoices = [];
 
     [CanBeNull]
     public static string APIKey
@@ -294,10 +294,12 @@ public static class LevelSharerUI
 
     private static void SetupLevelsArea()
     {
-        var status = UIUtils.MakeLabel("Download Status", _levelSharerObj, new Vector2(0, 10),
+        var status = UIUtils.MakeLabel("Download Status", _levelSharerObj, new Vector2(0, 40),
             new Vector2(0.5f, 0), new Vector2(0.5f, 0)).textComponent;
         status.alignment = TextAnchor.UpperCenter;
-        status.text = "Warning: Downloading a level will overwrite\nany changes you have made yourself!";
+        status.text = "Warning!\n\n" +
+                      "Downloading a level will overwrite any changes you have made yourself\n" +
+                      "Downloading a save will overwrite save slot 4";
 
         var y = 135;
         for (var i = 0; i < LEVELS_PER_PAGE; i++)
@@ -320,20 +322,33 @@ public static class LevelSharerUI
                 HorizontalWrapMode.Wrap).textComponent;
             desc.fontSize = 8;
 
-            var (btn, label) = UIUtils.MakeTextButton($"Level Download {i}", "Download", 
-                _levelSharerObj, new Vector2(320, y+45), 
+            var (btn, label) = UIUtils.MakeTextButton($"Level Download {i}", "Download Level", 
+                _levelSharerObj, new Vector2(320, y+55), 
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                size:new Vector2(110, 40));
+                size:new Vector2(160, 40));
             btn.gameObject.SetActive(false);
             label.gameObject.SetActive(false);
             UninteractableWhenDownloading.Add(btn);
+
+            var (saveBtn, saveLabel) = UIUtils.MakeTextButton($"Save Download {i}", "Download Save", 
+                _levelSharerObj, new Vector2(320, y+35), 
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                size:new Vector2(160, 40));
+            saveBtn.gameObject.SetActive(false);
+            saveLabel.gameObject.SetActive(false);
+            UninteractableWhenDownloading.Add(saveBtn);
             
-            DownloadChoices.Add((count, name, desc, btn.gameObject, label.gameObject, img));
+            DownloadChoices.Add((count, name, desc, btn.gameObject, label.gameObject,
+                saveBtn.gameObject, saveLabel.gameObject, img));
             
             var k = i;
+            
             btn.onClick.AddListener(() => _ = SharerRequests
                 .DownloadLevel(_orderedCurrentLevels[_index * LEVELS_PER_PAGE + k]["level_id"], status));
-
+            
+            saveBtn.onClick.AddListener(() => _ = SharerRequests
+                .DownloadSave(_orderedCurrentLevels[_index * LEVELS_PER_PAGE + k]["level_id"], status));
+            
             y -= 70;
         }
 
@@ -368,7 +383,7 @@ public static class LevelSharerUI
 
         for (var i = 0; i < LEVELS_PER_PAGE; i++)
         {
-            DownloadChoices[i].Item6.sprite = ArchitectPlugin.BlankSprite;
+            DownloadChoices[i].Item8.sprite = ArchitectPlugin.BlankSprite;
 
             var index = _index * LEVELS_PER_PAGE + i;
             if (_orderedCurrentLevels.Count > index)
@@ -379,7 +394,12 @@ public static class LevelSharerUI
                 DownloadChoices[i].Item3.text = _orderedCurrentLevels[index]["level_desc"];
                 DownloadChoices[i].Item4.SetActive(true);
                 DownloadChoices[i].Item5.SetActive(true);
-                ArchitectPlugin.Instance.StartCoroutine(GetSprite(DownloadChoices[i].Item6, _index,
+
+                var hasSave = _orderedCurrentLevels[index]["has_save"] == "true";
+                DownloadChoices[i].Item6.SetActive(hasSave);
+                DownloadChoices[i].Item7.SetActive(hasSave);
+                
+                ArchitectPlugin.Instance.StartCoroutine(GetSprite(DownloadChoices[i].Item8, _index,
                     _orderedCurrentLevels[index]["url"]));
             }
             else
@@ -389,6 +409,8 @@ public static class LevelSharerUI
                 DownloadChoices[i].Item3.text = "";
                 DownloadChoices[i].Item4.SetActive(false);
                 DownloadChoices[i].Item5.SetActive(false);
+                DownloadChoices[i].Item6.SetActive(false);
+                DownloadChoices[i].Item7.SetActive(false);
             }
         }
     }
@@ -438,13 +460,16 @@ public static class LevelSharerUI
         var upload = MakeUploadButton("Upload", new Vector2(-30, 60));
         var delete = MakeUploadButton("Delete", new Vector2(-30, 40));
 
-        var nameBox = MakeUploadBox("Level Name", new Vector2(-110, 70));
-        var descBox = MakeUploadBox("Level Description", new Vector2(-110, 50));
-        var iconBox = MakeUploadBox("Level Icon", new Vector2(-110, 30));
+        var nameBox = MakeUploadBox("Level Name", new Vector2(-110, 90));
+        var descBox = MakeUploadBox("Level Description", new Vector2(-110, 70));
+        var iconBox = MakeUploadBox("Level Icon", new Vector2(-110, 50));
+        var saveBox = MakeUploadBox("Level Save", new Vector2(-110, 30));
+        saveBox.characterValidation = InputField.CharacterValidation.Integer;
 
-        MakeUploadLabel("Name", new Vector2(-210, 70));
-        MakeUploadLabel("Description", new Vector2(-210, 50));
-        MakeUploadLabel("Icon URL (Optional)", new Vector2(-210, 30));
+        MakeUploadLabel("Name", new Vector2(-220, 90));
+        MakeUploadLabel("Description", new Vector2(-220, 70));
+        MakeUploadLabel("Icon URL (Optional)", new Vector2(-220, 50));
+        MakeUploadLabel("Save File Index (Optional)", new Vector2(-220, 30));
 
         InteractableWhenLoggedIn.Add(upload);
         InteractableWhenLoggedIn.Add(delete);
@@ -452,9 +477,13 @@ public static class LevelSharerUI
         InteractableWhenLoggedIn.Add(nameBox);
         InteractableWhenLoggedIn.Add(descBox);
         InteractableWhenLoggedIn.Add(iconBox);
+        InteractableWhenLoggedIn.Add(saveBox);
 
         upload.onClick.AddListener(() =>
-            _ = SharerRequests.UploadLevel(nameBox.text, descBox.text, iconBox.text, error));
+        {
+            int.TryParse(saveBox.text, out var saveNumber);
+            _ = SharerRequests.UploadLevel(nameBox.text, descBox.text, iconBox.text, saveNumber, error);
+        });
         delete.onClick.AddListener(() => _ = SharerRequests.DeleteLevel(nameBox.text, error));
     }
 

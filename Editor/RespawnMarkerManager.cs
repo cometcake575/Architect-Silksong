@@ -78,7 +78,7 @@ public static class RespawnMarkerManager
         
         private void OnDisable()
         {
-            _marker?.SetActive(false);
+            if (_marker) _marker.SetActive(false);
         }
     }
 }

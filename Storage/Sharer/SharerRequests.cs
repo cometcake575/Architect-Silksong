@@ -47,7 +47,7 @@ public static class SharerRequests
         LevelSharerUI.RefreshActiveOptions();
     }
 
-    internal static async Task UploadLevel(string name, string desc, string iconUrl, Text status)
+    internal static async Task UploadLevel(string name, string desc, string iconUrl, int saveNumber, Text status)
     {
         var form = new WWWForm();
 
@@ -61,6 +61,22 @@ public static class SharerRequests
 
         var jsonBytes = Encoding.UTF8.GetBytes(jsonData);
         form.AddBinaryData("level", jsonBytes, "level.json", "application/json");
+
+        var done = new TaskCompletionSource<bool>();
+        ArchitectPlugin.Logger.LogInfo(saveNumber);
+        if (Platform.IsSaveSlotIndexValid(saveNumber))
+        {
+            Platform.Current.ReadSaveSlot(saveNumber, bytes =>
+            {
+                if (bytes != null)
+                {
+                    form.AddBinaryData("save", bytes, "save.dat", "application/octet-stream");
+                }
+                done.SetResult(true);
+            });
+        }
+
+        await done.Task;
 
         var request = UnityWebRequest.Post(URL + "/upload", form);
 
@@ -137,7 +153,7 @@ public static class SharerRequests
         LevelSharerUI.CurrentlyDownloading = true;
         LevelSharerUI.RefreshActiveOptions();
         
-        status.text = "Downloading...";
+        status.text = "Downloading Level...";
 
         var jsonBody = JsonUtility.ToJson(new DownloadRequestData
         {
@@ -170,6 +186,54 @@ public static class SharerRequests
         ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadLevelData(data, levelId, status));
 
         PlacementManager.InvalidateScene();
+    }
+    
+    internal static async Task DownloadSave(string levelId, Text status)
+    {
+        LevelSharerUI.CurrentlyDownloading = true;
+        LevelSharerUI.RefreshActiveOptions();
+        
+        status.text = "Downloading Save...";
+
+        const int saveSlot = 4;
+
+        var jsonBody = JsonUtility.ToJson(new DownloadRequestData
+        {
+            level_id = levelId
+        });
+        
+        var request = new UnityWebRequest(URL + "/download_save", "POST");
+
+        var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        var operation = request.SendWebRequest();
+        await operation;
+        if (request.responseCode != 200)
+        {
+            var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+            var msg = response.GetValueOrDefault("error", "Error occured when downloading");
+            status.text = msg;
+            LevelSharerUI.CurrentlyDownloading = false;
+            LevelSharerUI.RefreshActiveOptions();
+            return;
+        }
+
+        var data = request.downloadHandler.data;
+        var done = new TaskCompletionSource<bool>();
+
+        Platform.Current.WriteSaveSlot(saveSlot, data, _ => done.SetResult(true));
+        UIManager.instance.slotFour.Prepare(GameManager.instance, true, false);
+        
+        await Task.WhenAll(done.Task, Task.Delay(1000));
+
+        status.text = "Download Complete";
+        
+        LevelSharerUI.CurrentlyDownloading = false;
+        LevelSharerUI.RefreshActiveOptions();
     }
     
     [Serializable]
