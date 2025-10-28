@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Api;
 using Architect.Behaviour.Utility;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -51,14 +52,26 @@ public static class PlacementManager
         _sceneName = "Invalid";
     }
 
-    private static void LoadLevel(LevelData data)
+    private static void LoadLevel(LevelData data, string sceneName)
     {
+        var ext = MapLoader.GetModData(sceneName);
+        
         EventManager.ResetReceivers();
         PlayerHook.PlayerListeners.Clear();
         AbilityObjects.ActiveCrystals.Clear();
         AbilityObjects.RefreshCrystalUI();
         
         Objects.Clear();
+
+        if (ext != null)
+        {
+            foreach (var placement in ext.Placements)
+            {
+                var obj = placement.SpawnObject();
+                if (obj) Objects[placement.GetId()] = obj;
+            }
+        }
+
         foreach (var placement in data.Placements)
         {
             if (EditManager.IsEditing) placement.PlaceGhost();
@@ -70,12 +83,26 @@ public static class PlacementManager
         }
 
         var map = GetTilemap();
-        if (!map || data.TilemapChanges.IsNullOrEmpty()) return;
-        foreach (var (x, y) in data.TilemapChanges)
+        if (!map) return;
+
+        if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
         {
-            if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-            else map.ClearTile(x, y, 0);
+            foreach (var (x, y) in ext.TilemapChanges)
+            {
+                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                else map.ClearTile(x, y, 0);
+            }
         }
+
+        if (!data.TilemapChanges.IsNullOrEmpty())
+        {
+            foreach (var (x, y) in data.TilemapChanges)
+            {
+                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                else map.ClearTile(x, y, 0);
+            }
+        }
+
         map.Build();
     }
 
@@ -87,7 +114,7 @@ public static class PlacementManager
                 orig(self);
                 
                 if (!PreloadManager.HasPreloaded) return;
-                LoadLevel(GetLevelData());
+                LoadLevel(GetLevelData(), GameManager.instance.sceneName);
             });
     }
 
