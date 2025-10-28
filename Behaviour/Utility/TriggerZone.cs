@@ -8,6 +8,7 @@ public class TriggerZone : MonoBehaviour
 {
     public int mode;
     public int layer;
+    public bool usingLayer;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -24,15 +25,15 @@ public class TriggerZone : MonoBehaviour
                 break;
             case 3:
                 var tz = other.gameObject.GetComponent<TriggerZone>();
-                if (!tz || tz.layer != layer) return;
+                if (!tz || (tz.layer != layer && usingLayer)) return;
                 break;
             case 4:
                 var kr = other.gameObject.GetComponent<MiscFixers.Kratt>();
-                if (!kr || kr.layer != layer) return;
+                if (!kr || (kr.layer != layer && usingLayer)) return;
                 break;
             case 5:
                 var bb = other.gameObject.GetComponent<MiscFixers.BellBaby>();
-                if (!bb || bb.layer != layer) return;
+                if (!bb || (bb.layer != layer && usingLayer)) return;
                 break;
         }
 

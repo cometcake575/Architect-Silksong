@@ -761,7 +761,12 @@ public static class ConfigGroup
                 .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Kratt", "Beastling").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Trigger Layer", "trigger_layer",
-                (o, value) => { o.GetOrAddComponent<TriggerZone>().layer = value.GetValue(); }))
+                (o, value) =>
+                {
+                    var zone = o.AddComponent<TriggerZone>();
+                    zone.layer = value.GetValue();
+                    zone.usingLayer = true;
+                }))
     ]);
 
     public static readonly List<ConfigType> FleaCounter = GroupUtils.Merge(Png, [
