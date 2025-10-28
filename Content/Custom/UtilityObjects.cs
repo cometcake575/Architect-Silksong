@@ -481,7 +481,8 @@ public static class UtilityObjects
     private static Disabler[] FindObjectsToDisable<T>(GameObject disabler, string filter) where T : Component
     {
         var objects = disabler.scene.GetRootGameObjects()
-            .Where(obj => !obj.name.StartsWith("[Architect] ") && obj.name.Contains(filter))
+            .Where(obj => !obj.name.StartsWith("[Architect] ") && obj.name.Contains(filter) &&
+                          !obj.GetComponent<CustomTransitionPoint>())
             .SelectMany(root => root.GetComponentsInChildren<T>(true))
             .Select(obj => obj.gameObject);
 
