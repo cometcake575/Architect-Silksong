@@ -21,6 +21,7 @@ public static class UtilityObjects
     {
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
+        Categories.Utility.Add(CreateObjectMover());
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateTriggerZone());
         Categories.Utility.Add(CreateInteraction());
@@ -387,6 +388,25 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.ObjectAnchor)
             .WithReceiverGroup(ReceiverGroup.ObjectAnchor)
             .WithBroadcasterGroup(BroadcasterGroup.ObjectAnchor);
+    }
+
+    private static PlaceableObject CreateObjectMover()
+    {
+        var mover = new GameObject("Object Mover");
+        mover.SetActive(false);
+        Object.DontDestroyOnLoad(mover);
+        
+        mover.AddComponent<ObjectMover>();
+
+        return new CustomObject("Object Mover", "object_mover",
+                mover,
+                sprite: ResourceUtils.LoadSpriteResource("object_mover", FilterMode.Point),
+                description: "Teleports an object to another position relative to itself, the mover or the player.\n\n" +
+                             "This should be used for individual teleports.\n" +
+                             "To move an object as if on a track, use the Moving Object Anchor.\n" +
+                             "To rotate an object over time, use the Object Spinner.")
+            .WithConfigGroup(ConfigGroup.ObjectMover)
+            .WithReceiverGroup(ReceiverGroup.ObjectMover);
     }
 
     private static PlaceableObject CreateObjectSpinner()

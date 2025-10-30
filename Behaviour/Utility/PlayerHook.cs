@@ -110,7 +110,7 @@ public class PlayerHook : MonoBehaviour
 
     public static void KillPlayer(GameObject o)
     {
-        HeroController.instance.TakeDamage(o, CollisionSide.other, 999, HazardType.ENEMY);
+        HeroController.instance.TakeDamage(o, CollisionSide.other, 999, HazardType.SPIKES);
     }
 
     public static void DamagePlayer(GameObject o)

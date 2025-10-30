@@ -35,6 +35,7 @@ public static class MiscObjects
         Categories.Hazards.Add(CreateFrost());
         
         Categories.Platforming.Add(CreateWind());
+        // Categories.Platforming.Add(CreateDreamBlock());
 
         Categories.Hazards.Add(CreateCustomHazard("White Thorns", "white_thorns",
         [
@@ -161,6 +162,33 @@ public static class MiscObjects
                 description: "Applies a force to players and some objects when inside the wind's hitbox.")
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Wind);
+    }
+
+    public static PlaceableObject CreateDreamBlock()
+    {
+        DreamBlock.Init();
+
+        var obj = new GameObject("Dream Block");
+        Object.DontDestroyOnLoad(obj);
+
+        obj.layer = LayerMask.NameToLayer("Terrain");
+
+        obj.AddComponent<BoxCollider2D>().size *= 10;
+
+        var col = obj.AddComponent<BoxCollider2D>();
+        col.isTrigger = true;
+        col.size *= 9.8f;
+
+        obj.SetActive(false);
+        obj.AddComponent<DreamBlock>();
+
+        obj.AddComponent<SpriteRenderer>().sprite =
+            ResourceUtils.LoadSpriteResource("Dream.dream_block", FilterMode.Point);
+
+        obj.transform.SetPositionZ(0.01f);
+
+        return new CustomObject("Dream Block", "dream_block", obj)
+            .WithConfigGroup(ConfigGroup.DreamBlock);
     }
 
     private static PlaceableObject CreateSilkSphere()

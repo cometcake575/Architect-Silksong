@@ -297,6 +297,16 @@ public static class ConfigGroup
             }).WithDefaultValue(1).WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> DreamBlock = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Show Particles", "show_particles_dream",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    o.GetComponent<DreamBlock>().SetupParticles();
+                }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Render Layer", "obj_layer",
@@ -528,6 +538,45 @@ public static class ConfigGroup
                     o.GetComponent<ObjectAnchor>().moving = value.GetValue();
                 }
             ).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> ObjectMover = GroupUtils.Merge(Generic, [
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Object ID", "mover_target", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().targetId = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("X Offset", "mover_x_offset", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().xOffset = value.GetValue();
+                }
+            ).WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Y Offset", "mover_y_offset", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().yOffset = value.GetValue();
+                }
+            ).WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Rotation", "mover_rot", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().rotation = value.GetValue();
+                }
+            ).WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Clear Velocity", "mover_clear_vel", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().clearVelocity = value.GetValue();
+                }
+            ).WithDefaultValue(true)),
+            ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Position Source", "mover_mode", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().moveMode = value.GetValue();
+                }
+            ).WithOptions("Mover", "Self", "Player").WithDefaultValue(0))
     ]);
 
     public static readonly List<ConfigType> Enemies = GroupUtils.Merge(Visible, [

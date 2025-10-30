@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>2.6.1</Version>
+    <Version>2.7.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +41,8 @@
     <EmbeddedResource Include="Resources/Bindings/*.wav"/>
     <EmbeddedResource Include="Resources/Spikes/*.png"/>
     <EmbeddedResource Include="Resources/Spikes/*.wav"/>
+    <EmbeddedResource Include="Resources/Dream/*.png"/>
+    <EmbeddedResource Include="Resources/Dream/*.wav"/>
     <EmbeddedResource Include="Resources/Cherry/*.png"/>
   </ItemGroup>
 

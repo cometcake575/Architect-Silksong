@@ -173,6 +173,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> ObjectMover = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("mover_move", "Move", o =>
+        {
+            o.GetComponent<ObjectMover>().Move();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Relay = [
         EventManager.RegisterReceiverType(new EventReceiverType("do_relay", "Call", o =>
         {
