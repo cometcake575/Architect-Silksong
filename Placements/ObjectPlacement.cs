@@ -154,7 +154,6 @@ public class ObjectPlacement(
             if (preview)
             {
                 preview.transform.SetParent(_previewObject.transform);
-                preview.transform.localPosition = Vector3.zero;
 
                 foreach (var renderer in preview.GetComponentsInChildren<Renderer>())
                 {
@@ -167,6 +166,8 @@ public class ObjectPlacement(
                 }
                 
                 preview.SetActive(true);
+                preview.transform.localPosition = Vector3.zero;
+                preview.transform.localScale = Vector3.one;
             }
         }
 

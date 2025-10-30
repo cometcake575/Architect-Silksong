@@ -379,6 +379,11 @@ public static class MiscFixers
         obj.AddComponent<Garmond>();
     }
 
+    public static void FixGreenPrince(GameObject obj)
+    {
+        obj.AddComponent<GreenPrince>();
+    }
+
     public static void FixShakra(GameObject obj)
     {
         obj.AddComponent<Shakra>();
@@ -474,6 +479,19 @@ public static class MiscFixers
             var dialogue = (RunDialogue) state.actions[1];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+        }
+    }
+    
+    public class GreenPrince : Npc
+    {
+        private void Start()
+        {
+            var npc = GetComponent<BasicNPC>();
+            var txt = npc.repeatText;
+            txt.Sheet = "ArchitectMod";
+            txt.Key = text;
+            npc.talkText = [txt];
+            npc.repeatText = txt;
         }
     }
     

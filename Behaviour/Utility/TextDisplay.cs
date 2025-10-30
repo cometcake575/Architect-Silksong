@@ -39,7 +39,8 @@ public class TextDisplay : NPCControlBase, IDisplayable
         {
             ShowDecorators = true,
             Alignment = alignment,
-            OffsetY = offsetY
+            OffsetY = offsetY,
+            TextColor = Color.white
         };
     }
 

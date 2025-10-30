@@ -288,6 +288,7 @@ public static class LevelSharerUI
     {
         var jsonResponse = await SharerRequests.SendSearchRequest(_descriptionInput.text, _creatorInput.text);
         _currentLevels = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonResponse);
+        _currentLevels.Reverse();
         _index = 0;
         RefreshCurrentLevels();
     }

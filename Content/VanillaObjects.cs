@@ -239,6 +239,11 @@ public static class VanillaObjects
                 ("Clover_02c", "Memory Orb Group/Clover_Statue_Break Orb"),
                 postSpawnAction: InteractableFixers.FixCloverStatue)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+
+        Categories.Misc.Add(new PreloadObject("Green Prince", "green_prince",
+            ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
+            postSpawnAction: MiscFixers.FixGreenPrince)
+            .WithConfigGroup(ConfigGroup.Npcs));
     }
 
     private static void AddMoorObjects()
@@ -438,7 +443,7 @@ public static class VanillaObjects
 
     private static void AddMemoriumObjects()
     {
-        AddSolid("Memorium Platform 1", "memorium_plat_1", ("Arborium_01", "Arborium Plat Mid"));
+        AddSolid("Memorium Platform 1", "memorium_plat_1", ("Arborium_01", "Arborium Plat Mid (1)"));
     }
     
     private static void AddCogworksObjects()
