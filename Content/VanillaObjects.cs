@@ -193,8 +193,9 @@ public static class VanillaObjects
 
     private static void AddMemoryObjects()
     {
-        Categories.Enemies.Add(new PreloadObject("Wingsmould", "white_palace_fly",
-            ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)")).DoFlipX());
+        Categories.Enemies.Add(new PreloadObject("Wingmould", "white_palace_fly",
+            ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)")).DoFlipX())
+            .WithConfigGroup(ConfigGroup.SimpleEnemies);
 
         Categories.Interactable.Add(new PreloadObject("Clover Plant", "clover_pod_activator",
                 ("Clover_02c", "grove_pod (1)/Clover Bounce Pod Activator"),
@@ -460,7 +461,7 @@ public static class VanillaObjects
         
         AddSolid("Surface Platform", "plat_float_06", ("Abandoned_town", "plat_float_06"));
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
-            postSpawnAction: EnemyFixers.FixSkrill);
+            postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
     }
 
     private static void AddMemoriumObjects()
@@ -716,6 +717,11 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.FleaCounter)
             .WithReceiverGroup(ReceiverGroup.FleaCounter)
             .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
+        
+        Categories.Misc.AddStart(new PreloadObject("Fleamaster NPC", "fleamaster_npc",
+            ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Flea Games Host NPC"),
+            preloadAction: MiscFixers.FixFleamaster)
+            .WithConfigGroup(ConfigGroup.Npcs));
 
         /*
         Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",

@@ -52,7 +52,13 @@ public static class ConfigGroup
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
             {
                 o.GetComponent<MiscFixers.Npc>().text = value.GetValue();
-            }).WithDefaultValue("Sample Text").WithPriority(-1))
+            }).WithDefaultValue("Sample Text").WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Needolin Dialogue", "needolin_on", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.RemoveComponentsInChildren<NeedolinTextOwner>();
+            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
@@ -618,20 +624,16 @@ public static class ConfigGroup
                 {
                     o.GetComponent<ObjectMover>().moveMode = value.GetValue();
                 }
-            ).WithOptions("Mover", "Self", "Player").WithDefaultValue(0))
-    ]);
-
-    public static readonly List<ConfigType> Enemies = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(
-            new IntConfigType("Health", "enemy_hp",
-                (o, value) => { o.GetComponent<HealthManager>().hp = value.GetValue(); })),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Enable Health Scaling", "enemy_hp_scale",
+            ).WithOptions("Mover", "Self", "Player").WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Position Source ID", "mover_mode_2", 
                 (o, value) =>
                 {
-                    if (value.GetValue()) return;
-                    o.AddComponent<EnemyFixers.DisableHealthScaling>();
-                }).WithDefaultValue(true)),
+                    o.GetComponent<ObjectMover>().moveTarget = value.GetValue();
+                }
+            ).WithPriority(1))
+    ]);
+
+    public static readonly List<ConfigType> SimpleEnemies = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Shell Shard Drops", "shell_shard",
                 (o, value) => { o.GetComponent<HealthManager>().SetShellShards(value.GetValue()); })),
@@ -650,7 +652,20 @@ public static class ConfigGroup
                 {
                     if (!value.GetValue()) return;
                     o.AddComponent<EnemyInvulnerabilityMarker>();
-                })),
+                }))
+    ]);
+
+    public static readonly List<ConfigType> Enemies = GroupUtils.Merge(SimpleEnemies, [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Health", "enemy_hp",
+                (o, value) => { o.GetComponent<HealthManager>().hp = value.GetValue(); })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Enable Health Scaling", "enemy_hp_scale",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.AddComponent<EnemyFixers.DisableHealthScaling>();
+                }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Dead", "enemy_stay_dead",
             (o, item) =>
             {
@@ -663,9 +678,10 @@ public static class ConfigGroup
     {
         typeof(HealthManager).Hook(nameof(HealthManager.IsBlockingByDirection),
             (Func<HealthManager, int, AttackTypes, SpecialTypes, bool> orig, HealthManager self, int cardinalDirection,
-                AttackTypes attackType, SpecialTypes specialType) => self.GetComponent<EnemyInvulnerabilityMarker>() || 
-                                                                     orig(self, cardinalDirection, 
-                                                                         attackType, specialType));
+                    AttackTypes attackType, SpecialTypes specialType) =>
+                self.GetComponent<EnemyInvulnerabilityMarker>() ||
+                orig(self, cardinalDirection,
+                    attackType, specialType));
     }
 
     private class EnemyInvulnerabilityMarker : MonoBehaviour;

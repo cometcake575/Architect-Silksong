@@ -562,6 +562,22 @@ public static class MiscFixers
         }
     }
     
+    public class Fleamaster : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Outro Wave?").AddAction(() => fsm.SendEvent("CANCEL"), 0);
+            fsm.GetState("Intro Type").AddAction(() => fsm.SendEvent("INTRO"), 0);
+            fsm.GetState("Choice").AddAction(() => fsm.SendEvent("DECLINE"), 0);
+            fsm.GetState("Decline").AddAction(() => fsm.SendEvent("CONVO_END"), 0);
+
+            var dialogue = (RunDialogue)fsm.GetState("Intro").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
     public class ShermaCaretaker : Npc
     {
         private void Start()
@@ -741,5 +757,10 @@ public static class MiscFixers
     public static void FixBilePlat(GameObject obj)
     {
         obj.transform.GetChild(1).SetAsFirstSibling();
+    }
+
+    public static void FixFleamaster(GameObject obj)
+    {
+        obj.AddComponent<Fleamaster>();
     }
 }

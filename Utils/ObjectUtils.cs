@@ -33,7 +33,7 @@ public static class ObjectUtils
     
     public static void RemoveComponentsInChildren<T>(this GameObject obj) where T : Component
     {
-        var comps = obj.GetComponentsInChildren<T>();
+        var comps = obj.GetComponentsInChildren<T>(true);
         foreach (var comp in comps) Object.Destroy(comp);
     }
     

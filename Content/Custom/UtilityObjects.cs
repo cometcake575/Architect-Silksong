@@ -439,7 +439,8 @@ public static class UtilityObjects
         return new CustomObject("Object Mover", "object_mover",
                 mover,
                 sprite: ResourceUtils.LoadSpriteResource("object_mover", FilterMode.Point),
-                description: "Teleports an object to another position relative to itself, the mover or the player.\n\n" +
+                description: "Teleports an object to another position relative to itself, the mover, the player\n" +
+                             "or another object. Position Source ID (an Object ID) overrides Position Source.\n\n" +
                              "This should be used for individual teleports.\n" +
                              "To move an object as if on a track, use the Moving Object Anchor.\n" +
                              "To rotate an object over time, use the Object Spinner.")
