@@ -13,7 +13,8 @@ public class ObjectAnchor : PreviewableBehaviour
 {
     private static readonly Material TrailMaterial = new(Shader.Find("Sprites/Default"));
     
-    public string targetId;
+    public string targetId = "";
+    public string parentId = "";
     
     public float trackDistance;
     public float startOffset;
@@ -64,6 +65,11 @@ public class ObjectAnchor : PreviewableBehaviour
         {
             if (isAPreview) _setup = false;
             return;
+        }
+
+        if (PlacementManager.Objects.TryGetValue(parentId, out var parent))
+        {
+            transform.parent.SetParent(parent.transform, true);
         }
         
         _offset = startOffset;

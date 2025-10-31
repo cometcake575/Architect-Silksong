@@ -419,8 +419,9 @@ public static class UtilityObjects
         return new CustomObject("Moving Object Anchor", "object_anchor",
                 anchor,
                 sprite: ResourceUtils.LoadSpriteResource("object_anchor", FilterMode.Point),
-                description: "Used to move objects around, as if on a track.\n\n" +
-                             "Find the ID of the object to move by clicking it with the Cursor tool.\n\n" +
+                description: "Used to move objects around, as if on a track.\n" +
+                             "If the Parent ID is set the track will follow it around.\n\n" +
+                             "Find the ID of the object to move (and the parent) by clicking them with the Cursor tool.\n\n" +
                              "Hold the 'P' keybind to preview the movement of placed objects.",
                 preview: true)
             .WithConfigGroup(ConfigGroup.ObjectAnchor)

@@ -532,6 +532,12 @@ public static class ConfigGroup
                     o.GetComponent<ObjectAnchor>().targetId = value.GetValue();
                 }
             )),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Parent ID (Optional)", "anchor_parent", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectAnchor>().parentId = value.GetValue();
+                }
+            )),
             ConfigurationManager.RegisterConfigType(new FloatConfigType("Track Length", "anchor_dist", 
                 (o, value) => 
                 {
