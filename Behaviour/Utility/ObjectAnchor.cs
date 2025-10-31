@@ -4,7 +4,6 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using JetBrains.Annotations;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -49,6 +48,14 @@ public class ObjectAnchor : PreviewableBehaviour
     private bool _previewInMotion;
     private TrailRenderer _previewTrail;
 
+    private void Awake()
+    {
+        if (isAPreview) return;
+        var anchorParent = new GameObject("[Architect] Anchor Parent").transform;
+        anchorParent.position = transform.position;
+        transform.SetParent(anchorParent, true);
+    }
+
     private void Setup()
     {
         _setup = true;
@@ -71,7 +78,7 @@ public class ObjectAnchor : PreviewableBehaviour
 
         // Moving platform fix so the player sticks to the platform
         // Uses a Motion Parent object as the parent and not the anchor itself as the anchor can be disabled
-        if (target.layer == 8 && stickPlayer && !isAPreview)
+        if (target.layer == 8 && stickPlayer)
         {
             if (!target.transform.parent)
             {
@@ -81,6 +88,11 @@ public class ObjectAnchor : PreviewableBehaviour
             }
             target.AddComponent<StickPlayer>();
             
+            target = target.transform.parent.gameObject;
+        }
+
+        if (target.GetComponent<ObjectAnchor>())
+        {
             target = target.transform.parent.gameObject;
         }
         
