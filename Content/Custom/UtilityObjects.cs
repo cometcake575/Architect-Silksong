@@ -302,7 +302,7 @@ public static class UtilityObjects
         relay.SetActive(false);
         Object.DontDestroyOnLoad(relay);
 
-        return new CustomObject("Fake Needolin", "fake_performance",
+        return new CustomObject("Fake Needolin Performance", "fake_performance",
                 relay,
                 sprite: ResourceUtils.LoadSpriteResource("fake_performance", FilterMode.Point, ppu:64),
                 description: "Acts like the Needolin is playing at this object's position when it is active.")
