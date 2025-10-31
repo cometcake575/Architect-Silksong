@@ -1109,6 +1109,14 @@ public static class ConfigGroup
         )
     ]);
 
+    public static readonly List<ConfigType> ObjectEnabler = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Path", "enabler_path",
+                (o, value) => { o.AddComponent<ObjectEnabler>().objectPath = value.GetValue(); })
+                .WithPriority(-1)
+        )
+    ]);
+
     public static readonly List<ConfigType> Hazards = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Damages Enemies", "damages_enemies",

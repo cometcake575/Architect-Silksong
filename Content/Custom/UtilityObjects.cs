@@ -36,7 +36,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreatePlayerHook());
         Categories.Utility.Add(CreateEnemyBarrier());
-        Categories.Utility.Add(CreateObjectRemover("enemy_remover", "Remove Enemy", 
+        Categories.Utility.Add(CreateObjectRemover("enemy_remover", "Disable Enemy", 
                 FindObjectsToDisable<HealthManager>, "Removes the nearest enemy.\n\n" +
                                                      "This should be placed at the enemy's spawn point, not its\n" +
                                                      "current position, or it will not work when exiting edit mode.")
@@ -46,13 +46,13 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateTeleportPoint());
         
         Categories.Utility.Add(CreateHazardRespawnPoint());
-        Categories.Utility.Add(CreateObjectRemover("hrp_remover", "Remove Hazard Respawn Point",
+        Categories.Utility.Add(CreateObjectRemover("hrp_remover", "Disable Hazard Respawn Point",
                 FindObjectsToDisable<HazardRespawnTrigger>, "Removes the nearest Hazard Respawn Point.")
             .WithConfigGroup(ConfigGroup.Generic)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
         Categories.Utility.Add(CreateTransitionPoint());
-        Categories.Utility.Add(CreateObjectRemover("door_remover", "Remove Transition", 
+        Categories.Utility.Add(CreateObjectRemover("door_remover", "Disable Transition", 
                 FindObjectsToDisable<TransitionPoint>, "Removes the nearest door to another room.")
             .WithConfigGroup(ConfigGroup.Generic)
             .WithReceiverGroup(ReceiverGroup.Generic));
@@ -61,7 +61,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateCameraBorder());
         Categories.Utility.Add(CreateSceneBorderRemover());
         
-        Categories.Utility.Add(CreateObjectRemover("collision_remover", "Remove Collider",
+        Categories.Utility.Add(CreateObjectRemover("collision_remover", "Disable Collider",
                 (disabler, filter) =>
                 {
                     List<Collider2D> results1 = [];
@@ -85,12 +85,12 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.Remover)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
-        Categories.Utility.Add(CreateObjectRemover("render_remover", "Remove Renderer", 
+        Categories.Utility.Add(CreateObjectRemover("render_remover", "Disable Renderer", 
                 FindObjectsToDisable<Renderer>, "Removes the nearest renderer.")
             .WithConfigGroup(ConfigGroup.Remover)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
-        Categories.Utility.Add(CreateObjectRemover("object_remover", "Remove Object", (o, _) =>
+        Categories.Utility.Add(CreateObjectRemover("object_remover", "Disable Object", (o, _) =>
             {
                 var config = o.GetComponent<ObjectRemoverConfig>();
                 GameObject point = null;
@@ -102,11 +102,14 @@ public static class UtilityObjects
                     }
                     catch (ArgumentException) { }
 
+                if (point && point.GetComponent<Enabler>()) return [];
                 return point is not null ? [point.GetOrAddComponent<Disabler>()] : [];
             }, "Removes any vanilla objects from the game.\n\n" +
                "The path to an object can be found with tools such as Unity Explorer.")
             .WithConfigGroup(ConfigGroup.ObjectRemover)
             .WithReceiverGroup(ReceiverGroup.Generic));
+        
+        Categories.Utility.Add(CreateObjectEnabler());
         
         Categories.Utility.Add(CreateObjectRemover("room_remover", "Clear Room", (o, filter) =>
                 {
@@ -531,6 +534,25 @@ public static class UtilityObjects
 
         return new CustomObject(name, id, obj, desc, sprite:sprite, preview:true)
             .WithReceiverGroup(ReceiverGroup.Generic);
+    }
+
+    private static PlaceableObject CreateObjectEnabler()
+    {
+        var obj = new GameObject("Object Enabler");
+        Object.DontDestroyOnLoad(obj);
+        obj.SetActive(false);
+
+        obj.AddComponent<ObjectEnabler>();
+
+        var sprite = ResourceUtils.LoadSpriteResource("object_enabler", FilterMode.Point);
+        obj.layer = 10;
+        obj.transform.position = new Vector3(0, 0, -2);
+
+        return new CustomObject("Enable Object", "object_enabler", obj, 
+                "Enables a disabled object.\n\n" +
+                "The path to an object can be found with tools such as Unity Explorer.", sprite:sprite, preview:true)
+            .WithReceiverGroup(ReceiverGroup.Generic)
+            .WithConfigGroup(ConfigGroup.ObjectEnabler);
     }
 
     public static Disabler[] GetObjects(ObjectRemover editor)
