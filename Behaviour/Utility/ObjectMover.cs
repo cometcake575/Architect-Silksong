@@ -45,6 +45,7 @@ public class ObjectMover : MonoBehaviour
     public void Move()
     {
         if (!_target) return;
+        if (!_source) return;
 
         if (clearVelocity) _rb2d.linearVelocity = Vector2.zero;
 
