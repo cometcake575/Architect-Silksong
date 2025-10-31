@@ -431,6 +431,39 @@ public static class ConfigGroup
             }).WithDefaultValue(1)),
         AlphaColour
     ]));
+    
+    public static readonly List<ConfigType> Colourer = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Object ID", "colourer_target", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().targetId = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Applied", "colourer_active", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().startApplied = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour R", "colourer_red", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().r = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour G", "colourer_green", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().g = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour B", "colourer_blue", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().b = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour A", "colourer_alpha", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().a = value.GetValue();
+            }).WithDefaultValue(1))
+    ];
 
     public static readonly List<ConfigType> TriggerActivator = GroupUtils.Merge(Visible, [
             ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
@@ -447,6 +480,15 @@ public static class ConfigGroup
                     o.GetComponent<MiscFixers.TriggerActivator>().layer = value.GetValue();
                 }
             ))
+    ]);
+
+    public static readonly List<ConfigType> FakePerformance = GroupUtils.Merge(Generic, [
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Range Multiplier", "perform_range",
+                (o, value) =>
+                {
+                    o.GetComponent<FakePerformanceRegion>().rangeMult = value.GetValue();
+                }
+            ).WithDefaultValue(1))
     ]);
 
     public static readonly List<ConfigType> Benches = GroupUtils.Merge(Visible, [

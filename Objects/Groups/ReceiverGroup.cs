@@ -220,6 +220,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Colourer = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_colour", "ApplyColour", o =>
+        {
+            o.GetComponent<ObjectColourer>().Apply();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Transitions = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("transition", "Transition", o =>
         {

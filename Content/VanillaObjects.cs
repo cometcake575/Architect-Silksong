@@ -16,7 +16,6 @@ public static class VanillaObjects
 {
     public static void Init()
     {
-        AddFleaObjects();
         AddMossObjects();
         AddMarrowObjects();
         AddDocksObjects();
@@ -41,6 +40,7 @@ public static class VanillaObjects
         AddDuctObjects();
         AddAbyssObjects();
         AddMemoryObjects();
+        AddFleaObjects();
         AddMiscObjects();
     }
 
@@ -240,7 +240,7 @@ public static class VanillaObjects
                 postSpawnAction: InteractableFixers.FixCloverStatue)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
 
-        Categories.Misc.Add(new PreloadObject("Green Prince", "green_prince",
+        Categories.Misc.Add(new PreloadObject("Green Prince NPC", "green_prince",
             ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
             postSpawnAction: MiscFixers.FixGreenPrince)
             .WithConfigGroup(ConfigGroup.Npcs));
@@ -330,6 +330,28 @@ public static class VanillaObjects
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
             ("Shadow_02", "moss_crumble_plat")));
+        
+        Categories.Hazards.Add(new PreloadObject("Stake Trap", "bilewater_trap",
+            ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
+            preloadAction: o => o.transform.SetPositionZ(0.006f),
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Fire").AddAction(() => fsm.SetState("Idle"));
+            }).DoFlipX().WithRotationGroup(RotationGroup.All)
+            .WithReceiverGroup(ReceiverGroup.Trap));
+        
+        Categories.Hazards.Add(new PreloadObject("Spike Ball", "swing_trap_small",
+            ("Shadow_10", "Spike Ball Folder/stake_trap_swing"), preloadAction: o =>
+            {
+                o.transform.SetPositionZ(3.65f);
+                o.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
+                o.transform.GetChild(1).GetChild(0).GetChild(1).gameObject.SetActive(false);
+                o.transform.GetChild(1).GetChild(0).GetChild(2).gameObject.SetActive(false);
+                o.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(false);
+                o.transform.GetChild(1).GetChild(1).GetChild(2).gameObject.SetActive(false);
+                o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+            }).WithRotationGroup(RotationGroup.All).WithReceiverGroup(ReceiverGroup.Trap));
         
         Categories.Hazards.Add(new PreloadObject("Groal's Spike Ball", "swing_trap_spike",
             ("Shadow_18", "Battle Scene/stake_trap_swing_repeater"), description:"Only has collision when swinging.", 
@@ -678,7 +700,15 @@ public static class VanillaObjects
 
     private static void AddFleaObjects()
     {
-        Categories.Misc.Add(new PreloadObject("Score Counter", "flea_counter",
+        Categories.Misc.AddStart(new PreloadObject("Confetti Burst", "confetti_burst",
+            ("Aqueduct_05_festival", "Caravan_States/Flea_Games_Start_effect/confetti_burst (1)"),
+            description:"Appears when the 'Burst' trigger is run.",
+            sprite: ResourceUtils.LoadSpriteResource("confetti_burst", ppu:1500),
+            preloadAction: MiscFixers.FixConfetti)
+            .WithReceiverGroup(ReceiverGroup.Confetti)
+            .WithRotationGroup(RotationGroup.All));
+        
+        Categories.Misc.AddStart(new PreloadObject("Score Counter", "flea_counter",
             ("Aqueduct_05_festival", "Flea Games Counter"), preloadAction: MiscFixers.FixFleaCounter, 
             description:"If the mode is 'Highest', the score changes colour above each milestone.\n" +
                         "If the mode is 'Lowest', the score changes colour below each milestone.",
@@ -686,14 +716,11 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.FleaCounter)
             .WithReceiverGroup(ReceiverGroup.FleaCounter)
             .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
-        
-        Categories.Misc.Add(new PreloadObject("Confetti Burst", "confetti_burst",
-            ("Aqueduct_05_festival", "Caravan_States/Flea_Games_Start_effect/confetti_burst (1)"),
-            description:"Appears when the 'Burst' trigger is run.",
-            sprite: ResourceUtils.LoadSpriteResource("confetti_burst", ppu:1500),
-            preloadAction: MiscFixers.FixConfetti)
-            .WithReceiverGroup(ReceiverGroup.Confetti)
-            .WithRotationGroup(RotationGroup.All));
+
+        /*
+        Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",
+            ("Aqueduct_05_festival",
+                "Caravan_States/Flea Festival/Flea Game - Dodging/Active While Playing/Dodge Plat L")));*/
     }
 
     private static void AddMossObjects()

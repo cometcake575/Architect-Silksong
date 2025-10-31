@@ -23,11 +23,13 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());
         Categories.Utility.Add(CreateObjectSpawner());
+        Categories.Utility.Add(CreateObjectColourer());
         Categories.Utility.Add(CreateTriggerZone());
         Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateTimer());
         Categories.Utility.Add(CreateKeyListener());
         Categories.Utility.Add(CreateRelay());
+        Categories.Utility.Add(CreateFakePerformance());
         
         Categories.Utility.Add(CreateTextDisplay());
         Categories.Utility.Add(CreateChoiceDisplay());
@@ -245,7 +247,7 @@ public static class UtilityObjects
         return new CustomObject("Player Hook", "player_hook", playerHook,
                 description:"Can detect certain inputs or actions from the player such as jumping or landing,\n" +
                             "and perform certain triggers such as damaging or killing the player.",
-                sprite:ResourceUtils.LoadSpriteResource("player_listener", FilterMode.Point, ppu:50))
+                sprite:ResourceUtils.LoadSpriteResource("player_listener", FilterMode.Point, ppu:64))
             .WithBroadcasterGroup(BroadcasterGroup.PlayerHooks)
             .WithReceiverGroup(ReceiverGroup.PlayerHooks)
             .WithConfigGroup(ConfigGroup.Generic);
@@ -287,6 +289,24 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.Relay)
             .WithBroadcasterGroup(BroadcasterGroup.Callable)
             .WithReceiverGroup(ReceiverGroup.Relay);
+    }
+
+    private static PlaceableObject CreateFakePerformance()
+    {
+        FakePerformanceRegion.Init();
+        
+        var relay = new GameObject("Fake Needolin");
+
+        relay.AddComponent<FakePerformanceRegion>();
+
+        relay.SetActive(false);
+        Object.DontDestroyOnLoad(relay);
+
+        return new CustomObject("Fake Needolin", "fake_performance",
+                relay,
+                sprite: ResourceUtils.LoadSpriteResource("fake_performance", FilterMode.Point, ppu:64),
+                description: "Acts like the Needolin is playing at this object's position when it is active.")
+            .WithConfigGroup(ConfigGroup.FakePerformance);
     }
 
     private static PlaceableObject CreateTextDisplay()
@@ -347,6 +367,24 @@ public static class UtilityObjects
                              "The original object should have 'Start Enabled' set to false.")
             .WithConfigGroup(ConfigGroup.Duplicator)
             .WithReceiverGroup(ReceiverGroup.Duplicator);
+    }
+
+    private static PlaceableObject CreateObjectColourer()
+    {
+        var colourer = new GameObject("Object Colourer");
+        colourer.SetActive(false);
+        Object.DontDestroyOnLoad(colourer);
+
+        colourer.AddComponent<ObjectColourer>();
+
+        return new CustomObject("Object Colourer", "object_colourer",
+                colourer,
+                sprite: ResourceUtils.LoadSpriteResource("object_colourer", FilterMode.Point),
+                description: "Changes the colour of an object.\n" +
+                             "This works with most objects, but not all of them.\n\n" +
+                             "Find the ID of the object to copy using the Cursor tool.")
+            .WithConfigGroup(ConfigGroup.Colourer)
+            .WithReceiverGroup(ReceiverGroup.Colourer);
     }
 
     private static PlaceableObject CreateTimer()

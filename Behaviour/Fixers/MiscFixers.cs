@@ -7,6 +7,7 @@ using Architect.Objects.Placeable;
 using Architect.Utils;
 using GlobalSettings;
 using HutongGames.PlayMaker.Actions;
+using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -132,7 +133,25 @@ public static class MiscFixers
                 _overrideAreaText = false;
             });
         };
+
+        _ = new Hook(typeof(tk2dSprite).GetProperty("color")!.GetSetMethod(),
+            (Action<tk2dSprite, Color> orig, tk2dSprite self, Color color) =>
+            {
+                var cl = self.GetComponentInParent<ColorLock>();
+                if (cl && cl.enabled) return;
+                orig(self, color);
+            });
+
+        _ = new Hook(typeof(SpriteRenderer).GetProperty("color")!.GetSetMethod(),
+            (Action<SpriteRenderer, Color> orig, SpriteRenderer self, Color color) =>
+            {
+                var cl = self.GetComponentInParent<ColorLock>();
+                if (cl && cl.enabled) return;
+                orig(self, color);
+            });
     }
+    
+    public class ColorLock : MonoBehaviour;
 
     private delegate string ToStringOrig(ref LocalisedString self, bool allowBlankText);
     

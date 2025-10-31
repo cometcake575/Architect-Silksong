@@ -200,7 +200,7 @@ public abstract class PlaceableObject : SelectableObject
             return PrepareSpriteWithTk2D(sprite, false);
         }
 
-        var sprSource = Prefab.GetComponentInChildren<SpriteSource>();
+        var sprSource = Prefab.GetComponentInChildren<SpriteSource>(true);
         var source = sprSource?.gameObject ?? Prefab;
         
         var cSprite = source.GetComponentInChildren<tk2dSprite>();
