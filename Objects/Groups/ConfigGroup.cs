@@ -1125,6 +1125,15 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     o.RemoveComponentsInChildren<DamageEnemies>();
                 })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Damages Player", "damages_player",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.RemoveComponentsInChildren<DamageHero>();
+                    o.RemoveComponentsInChildren<CogMultiHitter>();
+                })
         )
     ]);
 
