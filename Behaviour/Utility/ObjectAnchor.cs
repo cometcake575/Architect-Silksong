@@ -67,7 +67,7 @@ public class ObjectAnchor : PreviewableBehaviour
             return;
         }
 
-        if (PlacementManager.Objects.TryGetValue(parentId, out var parent))
+        if (!isAPreview && PlacementManager.Objects.TryGetValue(parentId, out var parent))
         {
             transform.parent.SetParent(parent.transform, true);
         }

@@ -692,17 +692,17 @@ public static class MiscFixers
             }
             else
             {
-                if (currentCount < gold)
+                if (currentCount <= gold)
                 {
                     _color = Gold;
                     _currentEvent = "OnGold";
                 }
-                else if (currentCount < silver)
+                else if (currentCount <= silver)
                 {
                     _color = Silver;
                     _currentEvent = "OnSilver";
                 }
-                else if (currentCount < bronze)
+                else if (currentCount <= bronze)
                 {
                     _color = Bronze;
                     _currentEvent = "OnBronze";

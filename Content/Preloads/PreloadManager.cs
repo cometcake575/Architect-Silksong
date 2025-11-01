@@ -113,9 +113,10 @@ public static class PreloadManager
         
         foreach (var pair in ToPreload)
         {
+            while (_activePreloads >= 4) yield return null;
+            
             var process = Addressables.LoadSceneAsync("Scenes/" + pair.Key, 
                 LoadSceneMode.Additive);
-            while (_activePreloads >= 3) yield return null;
             _activePreloads++;
             manager.StartCoroutine(PreloadScene(process, pair.Value));
         }
