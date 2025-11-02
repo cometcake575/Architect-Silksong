@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Architect.Config.Types;
 using Architect.Events;
+using Architect.Multiplayer;
 using Architect.Objects;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
@@ -51,6 +52,9 @@ public static class EditorUI
     private static Button _configButton;
     private static Button _broadcastersButton;
     private static Button _receiversButton;
+    
+    private static GameObject _shareLevelButton;
+    private static GameObject _shareLevelLabel;
     
     private static AttributeType _currentOption = AttributeType.Config;
 
@@ -174,6 +178,24 @@ public static class EditorUI
         MakeToolButton(TileChangerObject.Instance, 170, 0);
         MakeToolButton(ResetObject.Instance, 130, 0);
 
+        var shareBtn = UIUtils.MakeTextButton(
+            "Share Level", 
+            $"Share Room ({CoopManager.Instance.Name})",
+            _canvasObj,
+            new Vector3(-215, 95),
+            new Vector2(1, 0),
+            new Vector2(1, 0),
+            size: new Vector2(250, 35)
+            );
+        _shareLevelButton = shareBtn.Item1.gameObject;
+        _shareLevelLabel = shareBtn.Item2.gameObject;
+        
+        shareBtn.Item1.onClick.AddListener(() =>
+        {
+            if (!CoopManager.Instance.IsActive()) return;
+            CoopManager.Instance.ShareScene(GameManager.instance.sceneName);
+        });
+
         var middle = new Vector2(0.5f, 0.5f);
         ResetRocketTime = UIUtils.MakeLabel(
             "Reset Time",
@@ -206,6 +228,10 @@ public static class EditorUI
             
             foreach (var obj in DisableWhenPlaying) obj.SetActive(paused);
             foreach (var obj in EnableWhenPlaying) obj.SetActive(!paused);
+
+            var share = paused && CoopManager.Instance.IsActive();
+            _shareLevelButton.SetActive(share);
+            _shareLevelLabel.SetActive(share);
         }
     }
 

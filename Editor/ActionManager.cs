@@ -81,9 +81,7 @@ public static class ActionManager
 
     public static void MultiplayerShare(IEdit edit)
     {
-        ArchitectPlugin.Logger.LogInfo("Trying to share");
         if (!CoopManager.Instance.IsActive()) return;
-        ArchitectPlugin.Logger.LogInfo("About to share");
         edit.MultiplayerShare();
     }
 }
@@ -102,22 +100,21 @@ public interface IScheduledEdit
     void ExecuteScheduled(LevelData levelData);
 }
 
-public class PlaceObject(List<ObjectPlacement> placements) : IEdit, IScheduledEdit
+public class PlaceObjects(List<ObjectPlacement> placements) : IEdit, IScheduledEdit
 {
     public void Execute()
     {
         foreach (var obj in placements)
         {
             PlacementManager.GetLevelData().Placements.Add(obj);
-            obj.PlaceGhost();
+            if (EditManager.IsEditing) obj.PlaceGhost();
         }
     }
     
-    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, this);
-    }*/
+    }
     
     public IEdit Undo() => new EraseObject(placements);
 
@@ -139,11 +136,10 @@ public class ToggleLock(ObjectPlacement placement) : IEdit
         placement.ToggleLocked();
     }
     
-    /*
-    public void Execute(string scene)
+    public static void Execute(string scene, string id)
     {
-        StorageManager.ScheduleEdit(scene, new ScheduledToggleLock(placement.GetId()));
-    }*/
+        StorageManager.ScheduleEdit(scene, new ScheduledToggleLock(id));
+    }
     
     public IEdit Undo() => new ToggleLock(placement);
 
@@ -168,14 +164,12 @@ public class EraseObject(List<ObjectPlacement> placements) : IEdit
         foreach (var o in placements) o.Destroy();
     }
     
-    /*
-    public void Execute(string scene)
+    public static void Execute(string scene, List<string> removals)
     {
-        StorageManager.ScheduleEdit(scene, new ScheduledErase(placements
-            .Select(o => o.GetId()).ToList()));
-    }*/
+        StorageManager.ScheduleEdit(scene, new ScheduledErase(removals));
+    }
     
-    public IEdit Undo() => new PlaceObject(placements);
+    public IEdit Undo() => new PlaceObjects(placements);
 
     public void MultiplayerShare()
     {
@@ -208,17 +202,16 @@ public class ToggleTile(List<(int, int)> tiles, bool empty) : IEdit, IScheduledE
         map.Build();
     }
     
-    /*
     public void Execute(string scene)
     {
         StorageManager.ScheduleEdit(scene, this);
-    }*/
+    }
     
     public IEdit Undo() => new ToggleTile(tiles, !empty);
 
     public void MultiplayerShare()
     {
-        CoopManager.Instance.ToggleTiles(GameManager.instance.sceneName, tiles);
+        CoopManager.Instance.ToggleTiles(GameManager.instance.sceneName, tiles, empty);
     }
 
     public void ExecuteScheduled(LevelData levelData)
@@ -235,12 +228,10 @@ public class MoveObjects(List<(ObjectPlacement, Vector3, Vector3)> data) : IEdit
         foreach (var (obj, pos, _) in data) obj.Move(pos);
     }
     
-    /*
-    public void Execute(string scene)
+    public static void Execute(string scene, List<(string, Vector3)> movements)
     {
-        StorageManager.ScheduleEdit(scene, new ScheduledMove(data.Select(edit => 
-            (edit.Item1.GetId(), edit.Item2)).ToList()));
-    }*/
+        StorageManager.ScheduleEdit(scene, new ScheduledMove(movements));
+    }
     
     public IEdit Undo()
     {
@@ -256,7 +247,7 @@ public class MoveObjects(List<(ObjectPlacement, Vector3, Vector3)> data) : IEdit
             .Select(o => (o.Item1.GetId(), o.Item2)).ToList());
     }
 
-    public class ScheduledMove(List<(string, Vector3 pos)> data) : IScheduledEdit
+    public class ScheduledMove(List<(string, Vector3)> data) : IScheduledEdit
     {
         public void ExecuteScheduled(LevelData levelData)
         {

@@ -148,7 +148,7 @@ public abstract class PlaceableObject : SelectableObject
         
         EditManager.RegisterLastPos(pos);
         
-        ActionManager.PerformAction(new PlaceObject([obj]));
+        ActionManager.PerformAction(new PlaceObjects([obj]));
     }
 
     public ObjectPlacement PreparePlacement(Vector3 pos)

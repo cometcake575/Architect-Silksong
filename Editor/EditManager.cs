@@ -1,6 +1,4 @@
-using System.Reflection;
 using GlobalEnums;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using System;
 using System.Collections;
@@ -26,6 +24,8 @@ namespace Architect.Editor;
 public static class EditManager
 {
     public static bool IsEditing;
+    public static bool ReloadRequired;
+    
     private static float _lastEditToggle;
 
     private static int _hotbarIndex;
@@ -189,9 +189,13 @@ public static class EditManager
         var paused = GameManager.instance.isPaused;
         var actions = InputHandler.Instance.inputActions;
 
-        if (!paused && Settings.ToggleEditor.WasPressed && 
-            !HeroController.instance.controlReqlinquished &&
-            !_loadPos && !HeroController.instance.cState.dead) ToggleEditor();
+        if (!paused && !HeroController.instance.controlReqlinquished &&
+            !_loadPos && !HeroController.instance.cState.dead)
+        {
+            if (Settings.ToggleEditor.WasPressed) ToggleEditor();
+            else if (ReloadRequired) ReloadScene();
+        }
+
         EditorUI.RefreshVisibility(IsEditing, paused);
 
         if (paused)
@@ -368,7 +372,7 @@ public static class EditManager
             ));
         }
 
-        ActionManager.PerformAction(new PlaceObject(newPlacements));
+        ActionManager.PerformAction(new PlaceObjects(newPlacements));
         foreach (var obj in newPlacements)
         {
             ToggleSelectedObject(obj, false);
@@ -478,6 +482,8 @@ public static class EditManager
     // Stores the player's current position in _posToLoad in order to keep them in the same place
     private static void ReloadScene()
     {
+        ReloadRequired = false;
+        
         _lockArea = GameCameras.instance.cameraController.CurrentLockArea?.transform.GetPath();
         
         _loadPos = true;

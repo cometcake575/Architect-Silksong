@@ -133,7 +133,12 @@ public static class ConfigGroup
             new BoolConfigType("Start Enabled", "relay_start_active", (o, value) =>
             {
                 o.GetComponent<Relay>().startActivated = value.GetValue();
-            }).WithDefaultValue(true).WithPriority(-1))
+            }).WithDefaultValue(true).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Broadcast over Multiplayer", "relay_multiplayer", (o, value) =>
+            {
+                o.GetComponent<Relay>().multiplayerBroadcast = value.GetValue();
+            }).WithDefaultValue(false))
     ];
     
     public static readonly List<ConfigType> Timer =  GroupUtils.Merge(Generic, [

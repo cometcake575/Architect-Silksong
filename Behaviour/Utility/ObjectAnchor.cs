@@ -43,6 +43,8 @@ public class ObjectAnchor : PreviewableBehaviour
     private PositionConstraint _constraint;
     private RigidbodyConstraints2D _rigidbodyConstraints;
     [CanBeNull] private Rigidbody2D _rb2d;
+
+    private MonoBehaviour _disableWhenMoving;
     
     // Used for preview
     private Vector3 _previewPos;
@@ -116,6 +118,10 @@ public class ObjectAnchor : PreviewableBehaviour
         }
         
         _constraint = target.GetOrAddComponent<PositionConstraint>();
+        
+        // Gets AmbientSway if present to disable it
+        _disableWhenMoving = target.GetComponent<AmbientSway>();
+        
         _rb2d = target.GetComponentInChildren<Rigidbody2D>();
         
         _constraint.AddSource(new ConstraintSource
@@ -137,6 +143,7 @@ public class ObjectAnchor : PreviewableBehaviour
         else
         {
             _constraint.constraintActive = true;
+            if (_disableWhenMoving) _disableWhenMoving.enabled = false;
             if (_rb2d)
             {
                 _rigidbodyConstraints = _rb2d.constraints;
@@ -149,6 +156,7 @@ public class ObjectAnchor : PreviewableBehaviour
     {
         if (!_constraint) return;
         _constraint.constraintActive = false;
+        if (_disableWhenMoving) _disableWhenMoving.enabled = true;
         if (_rb2d) _rb2d.constraints = _rigidbodyConstraints;
         
         if (isAPreview) ReleasePreview();
@@ -158,6 +166,7 @@ public class ObjectAnchor : PreviewableBehaviour
     {
         if (!_constraint) return;
         _constraint.constraintActive = true;
+        if (_disableWhenMoving) _disableWhenMoving.enabled = false;
         if (_rb2d) _rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
     }
 

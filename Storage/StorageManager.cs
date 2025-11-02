@@ -224,4 +224,9 @@ public static class StorageManager
 
         return data;
     }
+    
+    public static void WipeScheduledEdits(string scene)
+    {
+        ScheduledEdits.Remove(scene);
+    }
 }
