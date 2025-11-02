@@ -42,7 +42,10 @@ public static class EventManager
 
     public static void Broadcast(string eventName, bool multiplayer)
     {
-        if (multiplayer) CoopManager.Instance.ShareEvent(GameManager.instance.sceneName, eventName);
+        if (multiplayer && CoopManager.Instance.IsActive())
+        {
+            CoopManager.Instance.ShareEvent(GameManager.instance.sceneName, eventName);
+        }
         
         if (!Receivers.TryGetValue(eventName, out var connectedReceivers)) return;
         connectedReceivers.RemoveAll(o => !o);

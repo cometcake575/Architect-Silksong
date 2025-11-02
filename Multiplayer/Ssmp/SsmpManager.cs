@@ -139,6 +139,11 @@ public class SsmpManager : CoopManager
         }
     }
 
+    public override void RefreshRoom()
+    {
+        _clientAddon.RefreshRoom();
+    }
+
     public static byte[][] Split(byte[] array, int size)
     {
         var count = Mathf.CeilToInt((float)array.Length / size);

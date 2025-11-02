@@ -8,6 +8,7 @@ using System.Linq;
 using Architect.Config;
 using Architect.Config.Types;
 using Architect.Content.Preloads;
+using Architect.Multiplayer;
 using Architect.Objects;
 using Architect.Objects.Categories;
 using Architect.Objects.Groups;
@@ -453,6 +454,8 @@ public static class EditManager
             HeroController.instance.transform.position = _posToLoad;
             _loadPos = false;
             _noclipPos = _posToLoad;
+
+            if (CoopManager.Instance.IsActive()) CoopManager.Instance.RefreshRoom();
         }
 
         if (HoveredObject != null)

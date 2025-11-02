@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +21,10 @@ public class ArchitectClientAddon : ClientAddon
     protected override string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
     public override bool NeedsNetwork => true;
     public override uint ApiVersion => 1;
+    
+    private object _updateManager;
+    private MethodInfo _setEnterSceneData;
+    private MethodInfo _getCurrentAnimationClip;
 
     public override void Initialize(IClientApi clientApi)
     {
@@ -27,7 +32,7 @@ public class ArchitectClientAddon : ClientAddon
 
         var netReceiver = clientApi.NetClient.GetNetworkReceiver<PacketId>(this,
             id => id.GetData());
-
+        
         netReceiver.RegisterPacketHandler<ClearPacketData>(PacketId.Clear, HandleClear);
         netReceiver.RegisterPacketHandler<PlacePacketData>(PacketId.Place, HandlePlace);
         netReceiver.RegisterPacketHandler<ErasePacketData>(PacketId.Erase, HandleErase);
@@ -35,6 +40,16 @@ public class ArchitectClientAddon : ClientAddon
         netReceiver.RegisterPacketHandler<EventPacketData>(PacketId.Event, HandleEvent);
         netReceiver.RegisterPacketHandler<MovePacketData>(PacketId.Move, HandleMove);
         netReceiver.RegisterPacketHandler<TilePacketData>(PacketId.Tiles, HandleTiles);
+        
+        var updateManagerProperty = API.NetClient.GetType().GetProperty("UpdateManager");
+        _updateManager = updateManagerProperty!.GetGetMethod().Invoke(API.NetClient, []);
+        _setEnterSceneData = _updateManager.GetType().GetMethod("SetEnterSceneData");
+        
+        var animationManagerField = API.ClientManager.GetType().GetField("_animationManager", 
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        var animationManager = animationManagerField!.GetValue(API.ClientManager);
+        _getCurrentAnimationClip = animationManager.GetType().GetMethod("GetCurrentAnimationClip",
+            BindingFlags.Public | BindingFlags.Static);
     }
 
     private static void HandleClear(ClearPacketData packet)
@@ -142,5 +157,19 @@ public class ArchitectClientAddon : ClientAddon
         ArchitectPlugin.Logger.LogInfo("Receiving Event Packet");
         if (packet.SceneName != GameManager.instance.sceneName) return;
         EventManager.Broadcast(packet.Event, false);
+    }
+
+    public void RefreshRoom()
+    {
+        ArchitectPlugin.Logger.LogInfo("Refreshing Room");
+        var ht = HeroController.instance.transform;
+        var id = _getCurrentAnimationClip.Invoke(null, []);
+        _setEnterSceneData
+            .Invoke(_updateManager, [
+                GameManager.instance.sceneName, 
+                new SSMP.Math.Vector2(ht.position.x, ht.position.y),
+                ht.GetScaleX() > 0,
+                Convert.ToUInt16(id)
+            ]);
     }
 }

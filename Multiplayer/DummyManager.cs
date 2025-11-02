@@ -11,7 +11,9 @@ public class DummyManager : CoopManager
     public override bool IsActive() => false;
 
     public override void ResetRoom(string room) { }
-    
+
+    public override void RefreshRoom() {}
+
     public override void ShareEvent(string room, string name) { }
 
     public override void MoveObjects(string room, List<(string, Vector3)> _) { }

@@ -34,6 +34,8 @@ public abstract class CoopManager
     
     public abstract void ShareScene(string room);
     
+    public abstract void RefreshRoom();
+    
     public abstract void ShareEvent(string room, string name);
 
     public void ReceiveEvent(string room, string name)
