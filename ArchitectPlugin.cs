@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "2.10.0")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "2.10.1")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin
 {
@@ -43,13 +43,7 @@ public class ArchitectPlugin : BaseUnityPlugin
         HazardFixers.Init();
         
         Categories.Init();
-        
         PreloadManager.Init();
-        
-        VanillaObjects.Init();
-        UtilityObjects.Init();
-        AbilityObjects.Init();
-        MiscObjects.Init();
         
         ActionManager.Init();
         CoopManager.Init();
@@ -57,6 +51,11 @@ public class ArchitectPlugin : BaseUnityPlugin
         EditManager.Init();
         CursorManager.Init();
         EditorUI.Init();
+        
+        VanillaObjects.Init();
+        UtilityObjects.Init();
+        AbilityObjects.Init();
+        MiscObjects.Init();
         
         RespawnMarkerManager.Init();
         

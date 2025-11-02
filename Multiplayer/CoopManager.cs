@@ -12,7 +12,7 @@ public abstract class CoopManager
     
     public static void Init()
     {
-        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("ssmp")) Instance = new SsmpManager();
+        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("ssmp")) SsmpManagerInitializer.Init();
         else Instance = new DummyManager();
     }
 
