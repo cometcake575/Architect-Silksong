@@ -116,22 +116,23 @@ public static class MiscFixers
 
         HookUtils.OnFsmAwake += fsm =>
         {
-            if (fsm.FsmName != "Area Title Control") return;
-
-            var header = fsm.FsmVariables.FindFsmString("Title Sup");
-            var footer = fsm.FsmVariables.FindFsmString("Title Sub");
-            var body = fsm.FsmVariables.FindFsmString("Title Main");
-            
-            fsm.GetState("Init all").AddAction(() =>
+            if (fsm.FsmName == "Area Title Control")
             {
-                if (!_overrideAreaText) return;
+                var header = fsm.FsmVariables.FindFsmString("Title Sup");
+                var footer = fsm.FsmVariables.FindFsmString("Title Sub");
+                var body = fsm.FsmVariables.FindFsmString("Title Main");
 
-                header.value = _areaHeader;
-                footer.value = _areaFooter;
-                body.value = _areaBody;
+                fsm.GetState("Init all").AddAction(() =>
+                {
+                    if (!_overrideAreaText) return;
 
-                _overrideAreaText = false;
-            });
+                    header.value = _areaHeader;
+                    footer.value = _areaFooter;
+                    body.value = _areaBody;
+
+                    _overrideAreaText = false;
+                });
+            } else if (fsm.name == "door_act3_wakeUp") fsm.GetState("Init").DisableAction(1);
         };
 
         _ = new Hook(typeof(tk2dSprite).GetProperty("color")!.GetSetMethod(),

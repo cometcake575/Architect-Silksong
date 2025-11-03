@@ -243,7 +243,7 @@ public static class EditManager
                 if (EditorUI.CurrentCategory == PrefabsCategory.Instance) EditorUI.RefreshCurrentPage();
             }
 
-            if (Settings.Overwrite.IsPressed)
+            if (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed)
             {
                 var newObj = PlacementManager.FindObject(Input.mousePosition);
                 if (HoveredObject != newObj)
@@ -347,16 +347,27 @@ public static class EditManager
             var updatedConfig = new List<ConfigValue>();
 
             foreach (var conf in obj.Config)
-                if (conf is StringConfigValue value)
+                switch (conf)
                 {
-                    var val = value.GetValue();
-                    updatedConfig.Add(converts.TryGetValue(val, out var convert)
-                        ? ConfigurationManager.DeserializeConfigValue(conf.GetTypeId(), convert)
-                        : conf);
-                }
-                else
-                {
-                    updatedConfig.Add(conf);
+                    case StringConfigValue value:
+                    {
+                        var val = value.GetValue();
+                        updatedConfig.Add(converts.TryGetValue(val, out var convert)
+                            ? ConfigurationManager.DeserializeConfigValue(conf.GetTypeId(), convert)
+                            : conf);
+                        break;
+                    }
+                    case IdConfigValue value:
+                    {
+                        var val = value.GetValue();
+                        updatedConfig.Add(converts.TryGetValue(val, out var convert)
+                            ? ConfigurationManager.DeserializeConfigValue(conf.GetTypeId(), convert)
+                            : conf);
+                        break;
+                    }
+                    default:
+                        updatedConfig.Add(conf);
+                        break;
                 }
 
             newPlacements.Add(new ObjectPlacement(

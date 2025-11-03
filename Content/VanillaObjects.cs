@@ -32,7 +32,6 @@ public static class VanillaObjects
         AddMemoriumObjects();
         AddCogworksObjects();
         AddCitadelObjects();
-        AddCradleObjects();
         AddSlabObjects();
         AddPeakObjects();
         AddBileObjects();
@@ -41,6 +40,7 @@ public static class VanillaObjects
         AddAbyssObjects();
         AddMemoryObjects();
         AddFleaObjects();
+        AddSurfaceObjects();
         AddMiscObjects();
     }
 
@@ -143,7 +143,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Metronome));
     }
 
-    private static void AddCradleObjects()
+    private static void AddSurfaceObjects()
     {
         Categories.Platforming.Add(new PreloadObject("Cradle Nut", "cradle_nut",
             ("Cradle_Destroyed_Challenge_01", "Cradle Challenge Pea Break")));
@@ -156,6 +156,11 @@ public static class VanillaObjects
             new Vector2(2.353f, 0.813f),
             new Vector2(3.454f, -1.574f)
         ]));
+        
+        AddSolid("Surface Platform", "plat_float_06", ("Abandoned_town", "plat_float_06"));
+        
+        AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
+            postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
     }
 
     private static void AddDuctObjects()
@@ -458,10 +463,6 @@ public static class VanillaObjects
                 uiSprite: ResourceUtils.LoadSpriteResource("updraft_ui"))
             .WithConfigGroup(ConfigGroup.Updraft)
             .WithRotateAction(MiscFixers.DelayRotation));
-        
-        AddSolid("Surface Platform", "plat_float_06", ("Abandoned_town", "plat_float_06"));
-        AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
-            postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
     }
 
     private static void AddMemoriumObjects()

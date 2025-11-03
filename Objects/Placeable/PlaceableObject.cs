@@ -6,7 +6,9 @@ using Architect.Editor;
 using Architect.Events;
 using Architect.Objects.Groups;
 using Architect.Placements;
+using Architect.Storage;
 using Architect.Utils;
+using BepInEx;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -141,9 +143,21 @@ public abstract class PlaceableObject : SelectableObject
     {
         if (!first) return;
 
+        if (EditManager.HoveredObject != null && Settings.GrabId.IsPressed)
+        {
+            if (EditorUI.ConfigIds.Count <= 0) return;
+            
+            var i = EditorUI.ConfigIds
+                .FirstOrDefault(o => o.Item1.text.IsNullOrWhiteSpace());
+            if (i == default) i = EditorUI.ConfigIds[0];
+            
+            i.Item1.text = EditManager.HoveredObject.GetId();
+            i.Item2();
+            return;
+        }
+
         var pos = EditManager.GetWorldPos(mousePosition, true);
         pos.z = ZPosition;
-        
         var obj = PreparePlacement(pos);
         
         EditManager.RegisterLastPos(pos);

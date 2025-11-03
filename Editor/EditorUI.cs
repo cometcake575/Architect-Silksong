@@ -334,6 +334,7 @@ public static class EditorUI
     }
 
     private static GameObject _configTab; 
+    public static readonly List<(InputField, Action)> ConfigIds = []; 
     private static GameObject _broadcasterTab;
     private static GameObject _receiverTab;
 
@@ -343,6 +344,7 @@ public static class EditorUI
     private static void SetupConfigTab(List<ConfigType> group)
     {
         _configTab = PrepareTab("Config Tab");
+        ConfigIds.Clear();
         _configButton.transform.SetAsLastSibling();
 
         var y = 20 + 12 * group.Count;
@@ -360,18 +362,28 @@ public static class EditorUI
 
             var inp = type.CreateInput(_configTab, btn, new Vector3(142, y), 
                 EditManager.Config.GetValueOrDefault(type.Id)?.SerializeValue());
+
+            if (inp is IdConfigElement element)
+            {
+                ConfigIds.Add((element.GetField(), Apply));
+            }
             
-            btn.onClick.AddListener(() =>
+            btn.onClick.AddListener(Apply);
+            
+            y -= 12;
+            continue;
+
+            void Apply()
             {
                 btn.interactable = false;
                 var val = inp.GetValue();
-                if (val.Length == 0) EditManager.Config.Remove(type.Id);
-                else EditManager.Config[type.Id] = type.Deserialize(inp.GetValue());
+                if (val.Length == 0)
+                    EditManager.Config.Remove(type.Id);
+                else
+                    EditManager.Config[type.Id] = type.Deserialize(inp.GetValue());
 
                 CursorManager.ObjectChanged = true;
-            });
-            
-            y -= 12;
+            }
         }
     }
 

@@ -182,7 +182,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Duplicator =  GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Object ID", "duplicator_id", (o, value) =>
+            new IdConfigType("Object ID", "duplicator_id", (o, value) =>
             {
                 o.GetComponent<ObjectDuplicator>().id = value.GetValue();
             }))
@@ -445,7 +445,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Colourer = [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Object ID", "colourer_target", (o, value) =>
+            new IdConfigType("Object ID", "colourer_target", (o, value) =>
             {
                 o.GetComponent<ObjectColourer>().targetId = value.GetValue();
             })),
@@ -516,7 +516,7 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> ObjectSpinner = GroupUtils.Merge(Generic, [
-        ConfigurationManager.RegisterConfigType(new StringConfigType("Object ID", "spinner_target", 
+        ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "spinner_target", 
                 (o, value) => 
                 {
                     o.GetComponent<ObjectSpinner>().targetId = value.GetValue(); 
@@ -531,13 +531,13 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> ObjectAnchor = GroupUtils.Merge(Generic, [
-            ConfigurationManager.RegisterConfigType(new StringConfigType("Object ID", "anchor_target", 
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "anchor_target", 
                 (o, value) => 
                 {
                     o.GetComponent<ObjectAnchor>().targetId = value.GetValue();
                 }
             )),
-            ConfigurationManager.RegisterConfigType(new StringConfigType("Parent ID (Optional)", "anchor_parent", 
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Parent ID (Optional)", "anchor_parent", 
                 (o, value) => 
                 {
                     o.GetComponent<ObjectAnchor>().parentId = value.GetValue();
@@ -600,7 +600,7 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> ObjectMover = GroupUtils.Merge(Generic, [
-            ConfigurationManager.RegisterConfigType(new StringConfigType("Object ID", "mover_target", 
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "mover_target", 
                 (o, value) => 
                 {
                     o.GetComponent<ObjectMover>().targetId = value.GetValue();
@@ -636,7 +636,7 @@ public static class ConfigGroup
                     o.GetComponent<ObjectMover>().moveMode = value.GetValue();
                 }
             ).WithOptions("Mover", "Self", "Player").WithDefaultValue(0)),
-            ConfigurationManager.RegisterConfigType(new StringConfigType("Position Source ID", "mover_mode_2", 
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Position Source ID", "mover_mode_2", 
                 (o, value) =>
                 {
                     o.GetComponent<ObjectMover>().moveTarget = value.GetValue();

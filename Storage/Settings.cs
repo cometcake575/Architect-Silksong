@@ -20,6 +20,7 @@ public static class Settings
     public static Keybind Paste;
     public static Keybind Preview;
     public static Keybind Overwrite;
+    public static Keybind GrabId;
     
     public static Keybind Blank;
     public static Keybind Cursor;
@@ -138,6 +139,13 @@ public static class Settings
             "Overwrite",
             KeyCode.O,
             "Overwrites a clicked object with the one on your cursor"
+        ).Value);
+        
+        GrabId = new Keybind(config.Bind(
+            "Keybinds",
+            "GrabId",
+            KeyCode.I,
+            "Sets the ID option of the object on the cursor to the selected object's ID"
         ).Value);
         
         Blank = new Keybind(config.Bind(
