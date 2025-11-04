@@ -32,7 +32,7 @@ public static class EnemyFixers
     public static void FixAknid(GameObject obj)
     {
         RemoveConstrainPosition(obj);
-        obj.LocateMyFSM("Control").GetState("Travel To").DisableAction(0);
+        obj.LocateMyFSM("Control").GetState("Get Next Point").actions[0].enabled = true;
     }
 
     public static void KeepActive(GameObject obj)
@@ -171,12 +171,14 @@ public static class EnemyFixers
     public static void FixFluttermite(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("Patrol").AddAction(() =>
+        fsm.FsmVariables.FindFsmGameObject("Start Point").value = new GameObject("Start Point")
         {
-            var hPos = HeroController.instance.transform.position;
-            var oPos = obj.transform.position;
-            if (Mathf.Abs(hPos.x - oPos.x) < 4 && Mathf.Abs(hPos.y - oPos.y) < 1) fsm.SendEvent("ATTACK");
-        }, 0, true);
+            transform = { position = obj.transform.position }
+        };
+        fsm.FsmVariables.FindFsmGameObject("Patrol Point").value = new GameObject("Patrol Point")
+        {
+            transform = { position = obj.transform.position }
+        };
     }
 
     public class DisableHealthScaling : MonoBehaviour;

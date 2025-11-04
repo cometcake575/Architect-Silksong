@@ -70,14 +70,13 @@ public static class CursorManager
             EditManager.CurrentlyFlipped,
             rot,
             EditManager.CurrentScale);
-        
-        _renderer.sprite = obj.Sprite;
 
         var play = _cursorObject.GetComponent<VideoPlayer>();
         if (ObjectChanged)
         {
             if (play) play.url = "";
             _cursorObject.transform.localScale = obj.LossyScale * EditManager.CurrentScale;
+            _renderer.sprite = obj.Sprite;
         } else _cursorObject.transform.localScale = _cursorObject.transform.localScale / _prevScale * EditManager.CurrentScale;
         
         _prevScale = EditManager.CurrentScale;

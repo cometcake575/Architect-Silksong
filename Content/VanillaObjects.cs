@@ -222,6 +222,14 @@ public static class VanillaObjects
             ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)")).DoFlipX())
             .WithConfigGroup(ConfigGroup.SimpleEnemies);
 
+        Categories.Interactable.Add(new PreloadObject("Reusable Lever", "reusable_lever",
+                ("Memory_Red", "Scenery Groups/Deepnest Scenery/Control Lever"),
+                description:"Can be pulled multiple times and does not stay pulled.",
+                preloadAction:o => o.transform.SetRotation2D(180),
+                postSpawnAction: InteractableFixers.FixReusableLever)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable)
+            .WithRotationGroup(RotationGroup.Eight));
+
         Categories.Interactable.Add(new PreloadObject("Clover Plant", "clover_pod_activator",
                 ("Clover_02c", "grove_pod (1)/Clover Bounce Pod Activator"),
                 postSpawnAction: InteractableFixers.FixActivator)

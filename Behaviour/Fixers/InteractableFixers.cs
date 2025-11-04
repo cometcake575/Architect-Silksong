@@ -88,6 +88,14 @@ public static class InteractableFixers
         activator.OnDeactivate.AddListener(() => obj.BroadcastEvent("OnDeactivate"));
     }
 
+    public static void FixReusableLever(GameObject obj)
+    {
+        obj.LocateMyFSM("Control Lever").GetState("Hit Effect").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnActivate");
+        }, 0);
+    }
+
     public static void FixCloverStatue(GameObject obj)
     {
         obj.LocateMyFSM("Control").GetState("Break").AddAction(() => obj.BroadcastEvent("OnActivate"), 0);
