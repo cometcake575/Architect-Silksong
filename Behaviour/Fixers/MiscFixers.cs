@@ -764,4 +764,17 @@ public static class MiscFixers
     {
         obj.AddComponent<Fleamaster>();
     }
+
+    public static void FixChoirClapper(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").DisableAction(0);
+        fsm.GetState("Rest").AddAction(() =>
+        {
+            fsm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            fsm.SetState("Roar End");
+        }, 2);
+
+        fsm.FsmVariables.FindFsmFloat("Ground Y").value = obj.transform.position.y;
+    }
 }

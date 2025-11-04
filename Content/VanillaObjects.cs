@@ -122,8 +122,28 @@ public static class VanillaObjects
         AddEnemy("Choir Pouncer", "pilgrim_01_song",
             ("Song_11", "Black Thread States Thread Only Variant/Normal World/Pilgrim 01 Song"));
         AddEnemy("Choir Hornhead", "pilgrim_02_song", ("Song_11", "Pilgrim 02 Song"));
+        AddEnemy("Choristor", "choristor", ("Hang_04_boss", "Battle Scene/Wave 1/Song Pilgrim 03"));
+        
+        AddEnemy("Choir Bellbearer", "pilgrim_03_song", ("Hang_04_boss", "Battle Scene/Wave 3/Pilgrim 03 Song"),
+            postSpawnAction: EnemyFixers.FixForumEnemy);
+        
+        AddEnemy("Choir Clapper", "heavy_sentry", 
+            ("Hang_04_boss", "Battle Scene/Wave 8 - Heavy Sentry/Song Heavy Sentry"),
+            postSpawnAction: MiscFixers.FixChoirClapper).DoFlipX();
+        
+        AddEnemy("Minister", "song_admin", 
+            ("Hang_04_boss", "Battle Scene/Wave 5 - Song Admins/Song Administrator"), 
+            postSpawnAction:EnemyFixers.FixMinister);
+        
+        AddEnemy("Maestro", "song_maestro", 
+            ("Hang_04_boss", "Battle Scene/Wave 13 - Maestro/Song Pilgrim Maestro"),
+            postSpawnAction:EnemyFixers.FixMaestro).DoFlipX();
+        
         AddEnemy("Choir Elder", "pilgrim_stomper_song", ("Song_11", "Pilgrim Stomper Song"));
 
+        AddEnemy("Reed", "song_reed",
+            ("Hang_04_boss", "Battle Scene/Wave 1/Song Reed"),
+            postSpawnAction: EnemyFixers.FixForumEnemy).DoFlipX();
         AddEnemy("Grand Reed", "song_reed_grand",
             ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)")).DoFlipX();
 

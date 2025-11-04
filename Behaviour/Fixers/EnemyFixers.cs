@@ -236,4 +236,50 @@ public static class EnemyFixers
             fsm.SendEvent("HERO GONE");
         }, 0, true);
     }
+
+    public static void FixForumEnemy(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 4);
+    }
+
+    public static void FixMinister(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Fly In Ready").AddAction(() =>
+        {
+            fsm.SetState("Activate");
+        }, 0);
+
+        var started = false;
+        fsm.GetState("Chase").AddAction(() =>
+        {
+            if (started) return;
+            started = true;
+            fsm.SendEvent("UNALERT");
+        }, 0);
+
+        var patrol = fsm.FsmVariables.FindFsmBool("In Patrol Range");
+        fsm.GetState("Unalert Patrol").AddAction(() =>
+        {
+            patrol.value = true;
+        }, 5);
+    }
+
+    public static void FixMaestro(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").AddAction(() =>
+        {
+            fsm.SendEvent("FINISHED");
+        }, 42);
+        
+        var started = false;
+        fsm.GetState("Fly").AddAction(() =>
+        {
+            if (started) return;
+            started = true;
+            fsm.SendEvent("UNALERT");
+        }, 0);
+    }
 }
