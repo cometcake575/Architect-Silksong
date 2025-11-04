@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Architect.Editor;
 using Architect.Utils;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -56,7 +57,9 @@ public class AnimPlayer : MonoBehaviour
         if (takeCtrl)
         {
             yield return hero.FreeControl();
+            if (_active != this) yield break;
             _tookCtrl = true;
+            EditManager.IgnoreControlRelinquished = true;
             hero.RelinquishControl();
         }
     }
@@ -75,10 +78,13 @@ public class AnimPlayer : MonoBehaviour
         {
             _active = null;
             _animTimeRemaining = 0;
+            
+            gameObject.BroadcastEvent("OnFinish");
 
             if (_tookCtrl)
             {
                 _tookCtrl = false;
+                EditManager.IgnoreControlRelinquished = false;
                 HeroController.instance.RegainControl();
             }
         }
