@@ -17,10 +17,7 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
 
     private IEnumerator DoDisplay()
     {
-        var fsm = HeroController.instance.sprintFSM;
-        if (fsm.ActiveStateName.Contains("Sprint")) fsm.SendEvent("SKID END");
-        
-        yield return new WaitUntil(() => InteractManager.CanInteract && !HeroController.instance.controlReqlinquished);
+        yield return HeroController.instance.FreeControl(_ => InteractManager.CanInteract);
         
         HeroController.instance.RelinquishControl();
 

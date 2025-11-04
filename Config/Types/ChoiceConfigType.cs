@@ -43,6 +43,11 @@ public class ChoiceConfigType(
     {
         return new ChoiceConfigValue(this, Convert.ToInt32(data, CultureInfo.InvariantCulture));
     }
+
+    public string GetOption(int index)
+    {
+        return _options[index >= _options.Length ? 0 : index];
+    }
 }
 
 public class ChoiceConfigValue(ChoiceConfigType type, int value) : ConfigValue<ChoiceConfigType>(type)
@@ -50,6 +55,11 @@ public class ChoiceConfigValue(ChoiceConfigType type, int value) : ConfigValue<C
     public int GetValue()
     {
         return value;
+    }
+
+    public string GetStringValue()
+    {
+        return type.GetOption(value);
     }
 
     public override string SerializeValue()

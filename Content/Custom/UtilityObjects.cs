@@ -31,6 +31,9 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateRelay());
         Categories.Utility.Add(CreateFakePerformance());
         
+        Categories.Utility.Add(CreateWalkTarget());
+        Categories.Utility.Add(CreateAnimatorController());
+        
         Categories.Utility.Add(CreateTextDisplay());
         Categories.Utility.Add(CreateChoiceDisplay());
         
@@ -146,6 +149,48 @@ public static class UtilityObjects
                    "settings determine which objects are removed.")
             .WithConfigGroup(ConfigGroup.RoomClearer)
             .WithReceiverGroup(ReceiverGroup.Generic));
+    }
+
+    private static PlaceableObject CreateWalkTarget()
+    {
+        var target = new GameObject("Walk Target");
+
+        Object.DontDestroyOnLoad(target);
+        target.SetActive(false);
+
+        target.AddComponent<WalkTarget>();
+        
+        return new CustomObject("Walk Target", "walk_target", target,
+                description:"Forces the player to walk to this spot when the 'Start' trigger is called.\n" +
+                            "Animation and speed can be customised.\n\n" +
+                            "Can be cancelled with the 'Cancel' trigger.\n" +
+                            "Calls the 'OnFinish' event when the player arrives at the target.",
+                sprite:ResourceUtils.LoadSpriteResource("walk_target", ppu:33))
+            .WithReceiverGroup(ReceiverGroup.WalkTarget)
+            .WithConfigGroup(ConfigGroup.WalkTarget)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable);
+    }
+
+    private static PlaceableObject CreateAnimatorController()
+    {
+        var animCtrl = new GameObject("Animator Controller");
+        
+        AnimPlayer.Init();
+
+        Object.DontDestroyOnLoad(animCtrl);
+        animCtrl.SetActive(false);
+
+        animCtrl.AddComponent<AnimPlayer>();
+        
+        return new CustomObject("Animation Player", "anim_player", animCtrl,
+                description:"Makes Hornet perform a vanilla animation when the 'Play' trigger is called.\n" +
+                            "Leaving 'Duration Override' unset will end the animation as soon as the clip finishes.\n\n" +
+                            "The 'Stop' trigger can be used to end the animation early.\n" +
+                            "Calls the 'OnFinish' event when the animation ends.",
+                sprite:ResourceUtils.LoadSpriteResource("anim_ctrl", ppu:33))
+            .WithReceiverGroup(ReceiverGroup.AnimPlayer)
+            .WithConfigGroup(ConfigGroup.AnimPlayer)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable);
     }
 
     private static PlaceableObject CreateTransitionPoint()

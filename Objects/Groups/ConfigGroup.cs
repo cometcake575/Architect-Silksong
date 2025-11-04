@@ -47,6 +47,26 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
+    public static readonly List<ConfigType> AnimPlayer = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Clip Name", "anim_clip", (o, value) =>
+            {
+                o.GetComponent<AnimPlayer>().clipName = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Duration Override", "anim_duration", (o, value) =>
+            {
+                var ap = o.GetComponent<AnimPlayer>();
+                ap.overrideAnimTime = true;
+                ap.animTime = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Take Control", "anim_take_ctrl", (o, value) =>
+            {
+                o.GetComponent<AnimPlayer>().takeCtrl = value.GetValue();
+            }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
@@ -513,6 +533,29 @@ public static class ConfigGroup
                 burst.DisableAction(11);
             }
         ).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> WalkTarget = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Speed Override", "walk_speed", 
+                (o, value) =>
+                {
+                    o.GetComponent<WalkTarget>().speed = Mathf.Abs(value.GetValue());
+                }
+            ).WithPriority(1)),
+        ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Mode", "walk_anim", 
+                (o, value) =>
+                {
+                    var wt = o.GetComponent<WalkTarget>();
+                    wt.anim = value.GetStringValue();
+
+                    wt.speed = value.GetValue() switch
+                    {
+                        1 => 8.5f,
+                        2 => 20,
+                        _ => 6
+                    };
+                }
+            ).WithDefaultValue(0).WithOptions("Walk", "Run", "Sprint"))
     ]);
 
     public static readonly List<ConfigType> ObjectSpinner = GroupUtils.Merge(Generic, [

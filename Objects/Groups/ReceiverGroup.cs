@@ -3,7 +3,6 @@ using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Events;
-using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Objects.Groups;
@@ -39,6 +38,17 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> WalkTarget = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("start_walk", "Start", o =>
+        {
+            o.GetComponent<WalkTarget>().StartWalk();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("end_walk", "Cancel", o =>
+        {
+            o.GetComponent<WalkTarget>().StopWalk();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Trap = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("activate_trap", "Activate", o =>
         {
@@ -51,6 +61,17 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("gate_open", "Open", o =>
         {
             o.GetComponent<Gate>().Open();
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> AnimPlayer = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("play_anim", "Play", o =>
+        {
+            o.GetComponent<AnimPlayer>().Play();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("stop_anim", "Stop", o =>
+        {
+            o.GetComponent<AnimPlayer>().Stop();
         }))
     ]);
     

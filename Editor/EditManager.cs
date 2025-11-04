@@ -26,6 +26,7 @@ public static class EditManager
 {
     public static bool IsEditing;
     public static bool ReloadRequired;
+    public static bool IgnoreControlRelinquished;
     
     private static float _lastEditToggle;
 
@@ -110,7 +111,7 @@ public static class EditManager
     }
 
     public static ObjectPlacement HoveredObject;
-    
+
     public static void Init()
     {
         typeof(GameManager).Hook("EnterHero", OnSceneLoad);
@@ -190,7 +191,7 @@ public static class EditManager
         var paused = GameManager.instance.isPaused;
         var actions = InputHandler.Instance.inputActions;
 
-        if (!paused && !HeroController.instance.controlReqlinquished &&
+        if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
             !_loadPos && !HeroController.instance.cState.dead)
         {
             if (Settings.ToggleEditor.WasPressed) ToggleEditor();
@@ -443,6 +444,8 @@ public static class EditManager
     {
         if (!PreloadManager.HasPreloaded) return;
         if (Time.time - _lastEditToggle < 1) return;
+
+        IgnoreControlRelinquished = false;
         
         _noclipPos = HeroController.instance.transform.position;
         
@@ -497,6 +500,7 @@ public static class EditManager
     private static void ReloadScene()
     {
         ReloadRequired = false;
+        IgnoreControlRelinquished = false;
         
         _lockArea = GameCameras.instance.cameraController.CurrentLockArea?.transform.GetPath();
         
