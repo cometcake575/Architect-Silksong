@@ -52,6 +52,8 @@ public class ChoiceConfigType(
 
 public class ChoiceConfigValue(ChoiceConfigType type, int value) : ConfigValue<ChoiceConfigType>(type)
 {
+    private readonly ChoiceConfigType _type = type;
+
     public int GetValue()
     {
         return value;
@@ -59,7 +61,7 @@ public class ChoiceConfigValue(ChoiceConfigType type, int value) : ConfigValue<C
 
     public string GetStringValue()
     {
-        return type.GetOption(value);
+        return _type.GetOption(value);
     }
 
     public override string SerializeValue()

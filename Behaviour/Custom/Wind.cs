@@ -1,8 +1,6 @@
 using System;
-using System.Reflection;
 using Architect.Utils;
 using GlobalEnums;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;
@@ -18,7 +16,7 @@ public class Wind : MonoBehaviour
         mainTexture = ResourceUtils.LoadSpriteResource("wind_particle", FilterMode.Point).texture
     };
     
-    private static bool _actuallyJumping;
+    public static bool actuallyJumping;
     private static bool _windPlayer;
 
     public float speed = 30;
@@ -108,7 +106,7 @@ public class Wind : MonoBehaviour
         {
             hc.ResetHardLandingTimer();
             if (_force.y > 9 && 
-                !hc.cState.jumping && !hc.cState.doubleJumping && !hc.cState.wallJumping) _actuallyJumping = false;
+                !hc.cState.jumping && !hc.cState.doubleJumping && !hc.cState.wallJumping) actuallyJumping = false;
         }
 
         if (hc.cState.onGround && !hc.CheckTouchingGround())
@@ -126,21 +124,21 @@ public class Wind : MonoBehaviour
         {
             if (HeroController.instance.cState.jumping
                 || HeroController.instance.cState.doubleJumping
-                || HeroController.instance.cState.wallJumping) _actuallyJumping = true;
-            else if (HeroController.instance.GetComponent<Rigidbody2D>().linearVelocity.y <= 0) _actuallyJumping = false;
+                || HeroController.instance.cState.wallJumping) actuallyJumping = true;
+            else if (HeroController.instance.GetComponent<Rigidbody2D>().linearVelocity.y <= 0) actuallyJumping = false;
         };
 
         typeof(HeroController).Hook("BackOnGround",
             (Action<HeroController, bool> orig, HeroController self, bool force) =>
             {
-                _actuallyJumping = false;
+                actuallyJumping = false;
                 orig(self, force);
             });
 
         typeof(HeroController).Hook("JumpReleased",
             (Action<HeroController> orig, HeroController self) =>
             {
-                if (!_actuallyJumping)
+                if (!actuallyJumping)
                 {
                     self.jumpQueuing = false;
                     self.doubleJumpQueuing = false;

@@ -19,6 +19,8 @@ public static class UtilityObjects
     
     public static void Init()
     {
+        // TODO Look into game manager freeze movement
+        
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());

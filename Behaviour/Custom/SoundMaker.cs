@@ -8,7 +8,7 @@ public class SoundMaker : MonoBehaviour
     
     public bool muted;
     
-    private void Awake()
+    public virtual void Awake()
     {
         if (muted) return;
         _source = gameObject.AddComponent<AudioSource>();

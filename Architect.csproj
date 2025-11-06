@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>2.11.2</Version>
+    <Version>2.12.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,17 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources/*.png"/>
-    <EmbeddedResource Include="Resources/*.wav"/>
-    <EmbeddedResource Include="Resources/Crystals/*.png"/>
-    <EmbeddedResource Include="Resources/Crystals/*.wav"/>
-    <EmbeddedResource Include="Resources/Bindings/*.png"/>
-    <EmbeddedResource Include="Resources/Bindings/*.wav"/>
-    <EmbeddedResource Include="Resources/Spikes/*.png"/>
-    <EmbeddedResource Include="Resources/Spikes/*.wav"/>
-    <EmbeddedResource Include="Resources/Dream/*.png"/>
-    <EmbeddedResource Include="Resources/Dream/*.wav"/>
-    <EmbeddedResource Include="Resources/Cherry/*.png"/>
+    <EmbeddedResource Include="Resources/**/*.png"/>
+    <EmbeddedResource Include="Resources/**/*.wav"/>
   </ItemGroup>
 
   <Target Name="CopyMod" AfterTargets="PostBuildEvent" Condition="'$(SilksongFolder)' != ''">
