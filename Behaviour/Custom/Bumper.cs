@@ -83,7 +83,7 @@ public class Bumper : SoundMaker, IHitResponder
                     break;
             }
 
-            _frame %= sprites.Length;
+            _frame %= Normal[_stage].Length;
         }
     }
 

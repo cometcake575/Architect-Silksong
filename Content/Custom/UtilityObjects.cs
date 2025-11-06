@@ -19,8 +19,6 @@ public static class UtilityObjects
     
     public static void Init()
     {
-        // TODO Look into game manager freeze movement
-        
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());
@@ -35,6 +33,8 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateWalkTarget());
         Categories.Utility.Add(CreateAnimatorController());
+        Categories.Utility.Add(CreateTimeSlower());
+        Categories.Utility.Add(CreateDarkness());
         
         Categories.Utility.Add(CreateTextDisplay());
         Categories.Utility.Add(CreateChoiceDisplay());
@@ -193,6 +193,47 @@ public static class UtilityObjects
             .WithReceiverGroup(ReceiverGroup.AnimPlayer)
             .WithConfigGroup(ConfigGroup.AnimPlayer)
             .WithBroadcasterGroup(BroadcasterGroup.Finishable);
+    }
+
+    private static PlaceableObject CreateTimeSlower()
+    {
+        TimeSlower.Init();
+        
+        var timeMng = new GameObject("Time Slower");
+        
+        Object.DontDestroyOnLoad(timeMng);
+        timeMng.SetActive(false);
+
+        timeMng.AddComponent<TimeSlower>();
+        
+        return new CustomObject("Time Slower", "time_manager", timeMng,
+                description:"Temporarily slows the game's speed when the 'SlowTime' trigger is run.\n\n" +
+                            "'Time Scale' is how fast the game will run, this should be between 0 and 1.\n" +
+                            "'Change Time' is how long it will take to reach this speed.\n" +
+                            "'Wait Time' is how long (in real time) the effect will last.\n" +
+                            "'Return Time' is how long it will take to return to normal speed.",
+                sprite:ResourceUtils.LoadSpriteResource("time_slower", ppu:33))
+            .WithReceiverGroup(ReceiverGroup.TimeSlower)
+            .WithConfigGroup(ConfigGroup.TimeSlower)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable);
+    }
+
+    private static PlaceableObject CreateDarkness()
+    {
+        Darkness.Init();
+        
+        var dark = new GameObject("Darkness");
+        
+        Object.DontDestroyOnLoad(dark);
+        dark.SetActive(false);
+
+        dark.AddComponent<Darkness>();
+        
+        return new CustomObject("Darkness", "darkness", dark,
+                description:"Makes the room darker, reducing how far the player can see.\n" +
+                            "Placing 2 darkness objects at once will increase the effect.",
+                sprite:ResourceUtils.LoadSpriteResource("darkness"))
+            .WithConfigGroup(ConfigGroup.Generic);
     }
 
     private static PlaceableObject CreateTransitionPoint()

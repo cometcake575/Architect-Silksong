@@ -67,6 +67,34 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> TimeSlower = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Time Scale", "time_scale", (o, value) =>
+            {
+                o.GetComponent<TimeSlower>().targetSpeed = value.GetValue();
+            }).WithDefaultValue(0.25f)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Change Time", "time_change", (o, value) =>
+            {
+                o.GetComponent<TimeSlower>().changeTime = value.GetValue();
+            }).WithDefaultValue(0.1f)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Wait Time", "time_wait", (o, value) =>
+            {
+                o.GetComponent<TimeSlower>().waitTime = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Return Time", "time_return", (o, value) =>
+            {
+                o.GetComponent<TimeSlower>().returnTime = value.GetValue();
+            }).WithDefaultValue(0.75f)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Prevent Pausing Game", "time_prevent_pausing", (o, value) =>
+            {
+                o.GetComponent<TimeSlower>().noPause = value.GetValue();
+            }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
@@ -185,6 +213,14 @@ public static class ConfigGroup
             {
                 o.GetComponentInChildren<SoundMaker>().muted = value.GetValue();
             }).WithDefaultValue(false).WithPriority(-1))
+    ]);
+    
+    public static readonly List<ConfigType> Coral =  GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Grown", "coral_start_up", (o, value) =>
+            {
+                o.GetComponent<ActivatingBase>().startActive = value.GetValue();
+            }).WithDefaultValue(true))
     ]);
     
     public static readonly List<ConfigType> AbilityCrystal =  GroupUtils.Merge(Mutable, [

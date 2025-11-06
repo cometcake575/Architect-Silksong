@@ -777,4 +777,13 @@ public static class MiscFixers
 
         fsm.FsmVariables.FindFsmFloat("Ground Y").value = obj.transform.position.y;
     }
+
+    public static void FixCoral(GameObject obj)
+    {
+        obj.transform.parent = null;
+        obj.SetActive(true);
+        obj.GetComponent<ActivatingBase>().SetActive(true, true);
+        obj.RemoveComponent<RandomlyFlipScale>();
+        obj.RemoveComponent<RandomRotationDelay>();
+    }
 }

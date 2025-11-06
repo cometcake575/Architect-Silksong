@@ -20,14 +20,14 @@ public static class ReceiverGroup
         }, true))
     ];
     
-    public static readonly List<EventReceiverType> CloverPod = GroupUtils.Merge(Generic, [
+    public static readonly List<EventReceiverType> Activatable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("grow_pod", "Grow", o =>
         {
-            o.GetComponent<BouncePod>().SetActive(true);
+            o.GetComponent<ActivatingBase>().SetActive(true);
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("shrink_pod", "Shrink", o =>
         {
-            o.GetComponent<BouncePod>().SetActive(false);
+            o.GetComponent<ActivatingBase>().SetActive(false);
         }))
     ]);
     
@@ -39,6 +39,13 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("bouncer_normal", "SetNormal", o =>
         {
             o.GetComponent<Bumper>().SetEvil(false);
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> TimeSlower = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_timechange", "SlowTime", o =>
+        {
+            o.GetComponent<TimeSlower>().SlowTime();
         }))
     ]);
     

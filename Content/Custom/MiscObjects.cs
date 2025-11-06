@@ -35,7 +35,7 @@ public static class MiscObjects
         Categories.Hazards.Add(CreateFrost());
         
         Categories.Platforming.Add(CreateWind());
-        // Categories.Platforming.Add(CreateDreamBlock());
+        Categories.Platforming.Add(CreateBumper());
 
         Categories.Hazards.Add(CreateCustomHazard("White Thorns", "white_thorns",
         [
@@ -48,7 +48,6 @@ public static class MiscObjects
         ]));
 
         Categories.Hazards.Add(CreateWhiteSpikes());
-        Categories.Platforming.Add(CreateBumper());
     }
 
     private static PlaceableObject CreateWhiteSpikes()
@@ -169,18 +168,19 @@ public static class MiscObjects
     {
         DreamBlock.Init();
 
-        var obj = new GameObject("Dream Block");
+        var obj = new GameObject("Dream Block")
+        {
+            layer = LayerMask.NameToLayer("Terrain")
+        };
         Object.DontDestroyOnLoad(obj);
-
-        obj.layer = LayerMask.NameToLayer("Terrain");
+        obj.SetActive(false);
 
         obj.AddComponent<BoxCollider2D>().size *= 10;
 
         var col = obj.AddComponent<BoxCollider2D>();
         col.isTrigger = true;
         col.size *= 9.8f;
-
-        obj.SetActive(false);
+        
         obj.AddComponent<DreamBlock>();
 
         obj.AddComponent<SpriteRenderer>().sprite =

@@ -20,6 +20,7 @@ public class DreamBlock : MonoBehaviour
     private static int _wallJumpBuffer;
     private static int _turnaroundBuffer;
     private static bool _extendedJump;
+    private static bool _aboutToDash;
     private static AudioSource _source;
 
     private static AudioClip _enter;
@@ -54,7 +55,8 @@ public class DreamBlock : MonoBehaviour
     private void Update()
     {
         Physics2D.IgnoreCollision(HeroController.instance.col2d, _collider, 
-            HeroController.instance.cState.dashing || 
+            HeroController.instance.cState.dashing ||
+            _aboutToDash ||
             HeroController.instance.sprintFSM.ActiveStateName.Contains("Air Sprint"));
 
         if (!_setup)
@@ -194,16 +196,47 @@ public class DreamBlock : MonoBehaviour
             if (TouchingBlocks.Count > 0 && self.cState.wallSliding)
             {
                 var actions = InputHandler.Instance.inputActions;
-                if (self.touchingWallR && !actions.Left.IsPressed) self.FaceRight();
-                else if (self.touchingWallL && !actions.Right.IsPressed) self.FaceLeft();
-                self.cState.touchingWall = false;
-                self.cState.wallSliding = false;
-                blockDir = true;
+
+                _aboutToDash = true;
+                self.StartCoroutine(DashLater(
+                    self.touchingWallR && !actions.Left.IsPressed,
+                    self.touchingWallL && !actions.Right.IsPressed));
+                return;
             }
 
             orig(self, startAlreadyDashing);
+            _aboutToDash = false;
             blockDir = false;
+            return;
+            
+            IEnumerator DashLater(bool willRight, bool willLeft)
+            {
+                yield return null;
+                yield return null;
+                yield return null;
+                yield return null;
+                
+                if (willRight) self.FaceRight();
+                else if (willLeft) self.FaceLeft();
+                
+                self.cState.touchingWall = false;
+                self.cState.wallSliding = false;
+                
+                blockDir = true;
+                
+                orig(self, startAlreadyDashing);
+
+                yield return null;
+                yield return null;
+                yield return null;
+                yield return null;
+                _aboutToDash = false;
+                blockDir = false;
+            }
         });
+        
+        typeof(HeroController).Hook("CanWallScramble", (Func<HeroController, bool> orig,
+            HeroController self) => orig(self) && TouchingBlocks.Count == 0);
         
         typeof(HeroController).Hook("FaceLeft", (Action<HeroController> orig, HeroController self) =>
         {

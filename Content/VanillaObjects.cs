@@ -103,6 +103,31 @@ public static class VanillaObjects
                 postSpawnAction: InteractableFixers.FixActivator)
             .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable)
             .WithRotationGroup(RotationGroup.Eight));
+
+        Categories.Platforming.Add(new PreloadObject("Red Coral Spike", "red_coral_spike",
+                ("Coral_24", "coral_crust_tree (5)/Interactive Activate Parent/Branch 1/Coral Crust Tree Spike Red"),
+                preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral))
+            .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.All);
+        Categories.Platforming.Add(new PreloadObject("Grey Coral Spike", "grey_coral_spike",
+                ("Coral_24", "coral_crust_tree (10)/Interactive Activate Parent/Branch 1/Coral Crust Tree Spike Grey"),
+                preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral)
+            .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.All));
+        Categories.Platforming.Add(new PreloadObject("Growing Coral Platform 1", "small_grey_coral_plat",
+                ("Coral_24",
+                    "coral_crust_tree (5)/Interactive Activate Parent/Branch 1/Coral Crust Tree Plat Small Grey"),
+                preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral)
+            .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.Four));
+        Categories.Platforming.Add(new PreloadObject("Growing Coral Platform 2", "small_red_coral_plat",
+                ("Coral_24",
+                    "coral_crust_tree (7)/Interactive Activate Parent/Branch 1/Coral Crust Tree Plat Small Red"),
+                preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral)
+            .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.Four));
+        Categories.Platforming.Add(new PreloadObject("Growing Coral Platform 3", "mid_red_coral_plat",
+                ("Coral_24", "coral_crust_tree (5)/Interactive Activate Parent/Branch 1/Coral Crust Tree Plat Mid Red"),
+                preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral)
+            .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.Four));
+        
+        AddSolid("Coral Platform 1", "coral_plat_float", ("Coral_24", "Coral_plat_float_green_medium (1)"));
     }
 
     private static void AddRoadObjects()
@@ -237,7 +262,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Clover Pod", "clover_pod",
                 ("Clover_02c", "grove_pod (1)/Interactive Parent/Clover Bounce Pod (3)"))
-            .WithReceiverGroup(ReceiverGroup.CloverPod)
+            .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod));
 
         Categories.Platforming.Add(new PreloadObject("Memory Platform", "memory_ground_plat",
