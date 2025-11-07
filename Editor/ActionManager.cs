@@ -181,7 +181,7 @@ public class EraseObject(List<ObjectPlacement> placements) : IEdit
     {
         public void ExecuteScheduled(LevelData levelData)
         {
-            levelData.Placements.RemoveAll(o => ids.Contains(o.GetId()));
+            levelData.Placements.RemoveAll(o => ids.Remove(o.GetId()));
         }
     }
 }

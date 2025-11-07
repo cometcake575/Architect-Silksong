@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Architect.Multiplayer.Ssmp.Data;
 using Architect.Placements;
 using Architect.Storage;
@@ -90,26 +92,9 @@ public class SsmpManager : CoopManager
         ArchitectPlugin.Logger.LogInfo("Sending Place Packet");
         
         var json = StorageManager.SerializePlacements(placements);
-
         var bytes = Split(ZipUtils.Zip(json), SPLIT_SIZE);
 
-        var guid = Guid.NewGuid().ToString();
-
-        var i = 0;
-        var length = bytes.Length;
-        foreach (var byteGroup in bytes)
-        {
-            SendPacket(PacketId.Place, new PlacePacketData
-            {
-                SceneName = room,
-                SerializedObjects = byteGroup,
-                Index = i,
-                Length = length,
-                Guid = guid,
-                IsFullScene = false
-            });
-            i++;
-        }
+        Task.Run(() => SendSplitPlaceData(bytes, room, false));
     }
 
     public override void ShareScene(string room)
@@ -117,9 +102,13 @@ public class SsmpManager : CoopManager
         ArchitectPlugin.Logger.LogInfo("Sending Scene Packet");
         
         var json = StorageManager.SerializeLevel(PlacementManager.GetLevelData(), Formatting.None);
-
         var bytes = Split(ZipUtils.Zip(json), SPLIT_SIZE);
+        
+        Task.Run(() => SendSplitPlaceData(bytes, room, true));
+    }
 
+    private async Task SendSplitPlaceData(byte[][] bytes, string room, bool isFullScene)
+    {
         var guid = Guid.NewGuid().ToString();
 
         var i = 0;
@@ -133,9 +122,10 @@ public class SsmpManager : CoopManager
                 Index = i,
                 Length = length,
                 Guid = guid,
-                IsFullScene = true
+                IsFullScene = isFullScene
             });
             i++;
+            await Task.Delay(100);
         }
     }
 

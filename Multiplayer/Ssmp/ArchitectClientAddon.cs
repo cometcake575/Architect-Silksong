@@ -106,7 +106,7 @@ public class ArchitectClientAddon : ClientAddon
         if (packet.SceneName == GameManager.instance.sceneName)
         {
             ActionManager.ReceiveAction(new EraseObject(PlacementManager.GetLevelData().Placements
-                .Where(p => packet.Removals.Contains(p.GetId())).ToList()));
+                .Where(p => packet.Removals.Remove(p.GetId())).ToList()));
         }
         else EraseObject.Execute(packet.SceneName, packet.Removals);
     }
