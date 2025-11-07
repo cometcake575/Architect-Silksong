@@ -20,7 +20,22 @@ public static class BroadcasterHooks
         typeof(HealthManager).Hook(nameof(HealthManager.SendDeathEvent),
             (Action<HealthManager> orig, HealthManager self) =>
             {
-                EventManager.BroadcastEvent(self.gameObject, "OnDeath");
+                self.gameObject.BroadcastEvent("OnDeath");
+                self.gameObject.BroadcastEvent("FirstDeath");
+                orig(self);
+            }
+        );
+        
+        typeof(HealthManager).Hook(nameof(HealthManager.Awake),
+            (Action<HealthManager> orig, HealthManager self) =>
+            {
+                var component = self.GetComponent<PersistentBoolItem>();
+                if (!component) return;
+                component.OnSetSaveState += value =>
+                {
+                    if (value) self.gameObject.BroadcastEvent("OnDeath");
+                    if (value) self.gameObject.BroadcastEvent("LoadedDead");
+                };
                 orig(self);
             }
         );
@@ -30,8 +45,8 @@ public static class BroadcasterHooks
             {
                 if (!self.activated)
                 {
-                    EventManager.BroadcastEvent(self.gameObject, "OnPull");
-                    EventManager.BroadcastEvent(self.gameObject, "FirstPull");
+                    self.gameObject.BroadcastEvent("OnPull");
+                    self.gameObject.BroadcastEvent("FirstPull");
                 }
 
                 return orig(self, hit);

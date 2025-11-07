@@ -467,8 +467,8 @@ public static class LevelSharerUI
         var saveBox = MakeUploadBox("Level Save", new Vector2(-110, 30));
         saveBox.characterValidation = InputField.CharacterValidation.Integer;
 
-        MakeUploadLabel("Name", new Vector2(-220, 90));
-        MakeUploadLabel("Description", new Vector2(-220, 70));
+        MakeUploadLabel("Level Name", new Vector2(-220, 90));
+        MakeUploadLabel("Level Description", new Vector2(-220, 70));
         MakeUploadLabel("Icon URL (Optional)", new Vector2(-220, 50));
         MakeUploadLabel("Save File Index (Optional)", new Vector2(-220, 30));
 

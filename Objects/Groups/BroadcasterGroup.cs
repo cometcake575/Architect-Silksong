@@ -6,7 +6,7 @@ public static class BroadcasterGroup
 {
     public static readonly List<string> TriggerZone = ["ZoneEnter", "ZoneExit"];
     
-    public static readonly List<string> Enemies = ["OnDamage", "OnDeath"];
+    public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
     public static readonly List<string> Activatable = ["OnActivate"];
     

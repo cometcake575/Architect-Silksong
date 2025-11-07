@@ -520,7 +520,9 @@ public static class VanillaObjects
 
     private static void AddMemoriumObjects()
     {
-        AddSolid("Memorium Platform 1", "memorium_plat_1", ("Arborium_01", "Arborium Plat Mid (1)"));
+        AddSolid("Memorium Platform 1", "memorium_plat_2", 
+            ("Arborium_03", "hanging_gardens_plat_float_metal_small (3)"));
+        AddSolid("Memorium Platform 2", "memorium_plat_1", ("Arborium_03", "Arborium Plat Mid"));
     }
     
     private static void AddCogworksObjects()

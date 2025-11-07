@@ -83,7 +83,7 @@ public static class UtilityObjects
                         results2
                     );
                     return results1.Concat(results2)
-                        .Where(i => i.name.Contains(filter))
+                        .Where(i => i.name.Contains(filter) && i.gameObject.scene == disabler.scene)
                         .Select(p => p.gameObject.GetOrAddComponent<Disabler>()).ToArray();
                 }, "Removes colliders touching this object.\n" +
                    "Trigger zones such as hazard respawn points do not count.")
