@@ -66,6 +66,13 @@ public static class HazardFixers
         Object.Instantiate(_cogDamager, cog.transform).SetActive(true);
     }
 
+    public static void FixUnderworksCog(GameObject cog)
+    {
+        cog.transform.SetParent(null);
+        cog.transform.SetPositionZ(0.01f);
+        cog.GetComponentInChildren<CogMultiHitter>().heroGrindEffect = _heroGrind;
+    }
+
     public static void FixCog(GameObject cog)
     {
         cog.RemoveComponent<CurveOffsetAnimation>();

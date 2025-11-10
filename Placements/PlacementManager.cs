@@ -23,6 +23,9 @@ public static class PlacementManager
     private static tk2dTileMap _tileMap;
 
     public static readonly Dictionary<string, GameObject> Objects = [];
+    
+    // ReSharper disable once UnassignedField.Global
+    public static Action<string, string, GameObject> OnPlace;
 
     public static LevelData GetLevelData()
     {
@@ -68,7 +71,11 @@ public static class PlacementManager
             foreach (var placement in ext.Placements)
             {
                 var obj = placement.SpawnObject();
-                if (obj) Objects[placement.GetId()] = obj;
+                if (obj)
+                {
+                    Objects[placement.GetId()] = obj;
+                    OnPlace?.Invoke(placement.GetPlacementType().GetId(), placement.GetId(), obj);
+                }
             }
         }
 
@@ -78,7 +85,11 @@ public static class PlacementManager
             else
             {
                 var obj = placement.SpawnObject();
-                if (obj) Objects[placement.GetId()] = obj;
+                if (obj)
+                {
+                    Objects[placement.GetId()] = obj;
+                    OnPlace?.Invoke(placement.GetPlacementType().GetId(), placement.GetId(), obj);
+                }
             }
         }
 

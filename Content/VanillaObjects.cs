@@ -31,6 +31,7 @@ public static class VanillaObjects
         AddSandsObjects();
         AddMemoriumObjects();
         AddCogworksObjects();
+        AddUnderworksObjects();
         AddCitadelObjects();
         AddSlabObjects();
         AddPeakObjects();
@@ -142,6 +143,29 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four));
     }
 
+    private static void AddUnderworksObjects()
+    {
+        Categories.Misc.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
+                ("Under_17", "Architect Scene/Chair/pillar E/pillar D/pillar C/pillar B/pillar A/seat/Architect NPC"),
+                preloadAction: MiscFixers.PreFixArchitect, postSpawnAction: MiscFixers.FixArchitect)
+            .WithConfigGroup(ConfigGroup.Npcs));
+        
+        Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
+            ("Under_13", "lava_crumble_plat (7)")));
+
+        AddEnemy("Cogwork Underfly", "understore_auto", ("Under_13", "Understore Automaton"));
+        AddEnemy("Cogwork Hauler", "understore_auto_ex", ("Under_13", "Understore Automaton EX"));
+
+        Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_3",
+                ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
+                preloadAction: HazardFixers.FixUnderworksCog)
+            .WithConfigGroup(ConfigGroup.Cogs));
+        Categories.Hazards.Add(new PreloadObject("Spiked Gold Cog", "spike_cog_2", 
+                ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 2"), 
+                preloadAction: HazardFixers.FixUnderworksCog)
+            .WithConfigGroup(ConfigGroup.Cogs));
+    }
+    
     private static void AddCitadelObjects()
     {
         AddEnemy("Choir Pouncer", "pilgrim_01_song",
@@ -468,11 +492,6 @@ public static class VanillaObjects
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
             postSpawnAction: MiscFixers.FixSecondSentinel));
 
-        Categories.Misc.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
-                ("Under_17", "Architect Scene/Chair/pillar E/pillar D/pillar C/pillar B/pillar A/seat/Architect NPC"),
-                preloadAction: MiscFixers.PreFixArchitect, postSpawnAction: MiscFixers.FixArchitect)
-            .WithConfigGroup(ConfigGroup.Npcs));
-
         Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Caretaker"),
@@ -694,7 +713,8 @@ public static class VanillaObjects
             ("Bone_East_LavaChallenge", "bone_plat_crumble_tall (4)")));
 
         Categories.Hazards.Add(new PreloadObject("Bone Boulder", "bone_boulder",
-            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder")));
+            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder"))
+            .WithConfigGroup(ConfigGroup.Hazards));
 
         Categories.Interactable.Add(new PreloadObject("Bone Lever", "bone_lever",
                 ("Mosstown_01", "Bone Lever"), postSpawnAction: InteractableFixers.FixLever)
@@ -734,7 +754,7 @@ public static class VanillaObjects
         AddSolid("Docks Platform 1", "dock_plat_01", ("Bone_East_01", "dock_plat_float_01 (1)"));
         AddSolid("Docks Platform 2", "dock_plat_02", ("Bone_East_01", "dock_plat_float_01 (9)"));
 
-        Categories.Platforming.Add(new PreloadObject("Crumbling Rocks", "lava_crumble_plat",
+        Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 1", "lava_crumble_plat",
             ("Dock_02b", "lava_crumble_plat (5)")));
     }
 

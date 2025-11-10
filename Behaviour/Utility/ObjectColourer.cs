@@ -9,6 +9,8 @@ public class ObjectColourer : MonoBehaviour
 {
     public string targetId;
 
+    public bool useAlpha;
+
     public float r;
     public float g;
     public float b;
@@ -40,8 +42,19 @@ public class ObjectColourer : MonoBehaviour
         var lk = _target.GetOrAddComponent<MiscFixers.ColorLock>();
         lk.enabled = false;
 
-        foreach (var sr in _target.GetComponentsInChildren<SpriteRenderer>()) sr.color = _color;
-        foreach (var sr in _target.GetComponentsInChildren<tk2dSprite>()) sr.color = _color;
+        foreach (var sr in _target.GetComponentsInChildren<SpriteRenderer>())
+        {
+            var col = _color;
+            if (!useAlpha) col.a = sr.color.a;
+            sr.color = col;
+        }
+
+        foreach (var sr in _target.GetComponentsInChildren<tk2dSprite>())
+        {
+            var col = _color;
+            if (!useAlpha) col.a = sr.color.a;
+            sr.color = col;
+        }
 
         lk.enabled = true;
     }

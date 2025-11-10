@@ -64,6 +64,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateBinoculars());
         Categories.Utility.Add(CreateCameraBorder());
+        Categories.Utility.Add(CreateCameraRotator());
         Categories.Utility.Add(CreateSceneBorderRemover());
         
         Categories.Utility.Add(CreateObjectRemover("collision_remover", "Disable Collider",
@@ -285,6 +286,25 @@ public static class UtilityObjects
                             "only when not using Binoculars, or only when using Binoculars.",
                 sprite:ResourceUtils.LoadSpriteResource("camera_border"))
             .WithConfigGroup(ConfigGroup.CameraBorder);
+    }
+
+    private static PlaceableObject CreateCameraRotator()
+    {
+        CameraRotator.Init();
+
+        var cameraSpinner = new GameObject("Camera Rotator");
+        cameraSpinner.AddComponent<CameraRotator>();
+
+        cameraSpinner.layer = 10;
+        cameraSpinner.transform.position = new Vector3(0, 0, 0.1f);
+
+        Object.DontDestroyOnLoad(cameraSpinner);
+        cameraSpinner.SetActive(false);
+        return new CustomObject("Camera Rotator", "camera_rotator", cameraSpinner,
+                description:"Rotates the camera to the angle of this object.\n\n" +
+                            "Can be used in combination with the Object Spinner\n" +
+                            "to rotate the camera over time.",
+                sprite:ResourceUtils.LoadSpriteResource("camera_spinner"));
     }
 
     private static PlaceableObject CreateSceneBorderRemover()

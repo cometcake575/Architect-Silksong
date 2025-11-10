@@ -528,8 +528,10 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Colour A", "colourer_alpha", (o, value) =>
             {
-                o.GetComponent<ObjectColourer>().a = value.GetValue();
-            }).WithDefaultValue(1))
+                var oc = o.GetComponent<ObjectColourer>();
+                oc.useAlpha = true;
+                oc.a = value.GetValue();
+            }))
     ];
 
     public static readonly List<ConfigType> TriggerActivator = GroupUtils.Merge(Visible, [

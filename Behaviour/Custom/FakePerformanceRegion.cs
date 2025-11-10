@@ -53,9 +53,8 @@ public class FakePerformanceRegion : HeroPerformanceRegion
                             first = other;
                             break;
                         case AffectedState.ActiveOuter:
-                            break;
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            break;
                     }
                 }
 

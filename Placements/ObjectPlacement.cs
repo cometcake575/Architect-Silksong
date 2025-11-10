@@ -240,7 +240,6 @@ public class ObjectPlacement(
 
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() >= 0)
                      .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj);
-
         return obj;
     }
 
