@@ -26,10 +26,14 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
 
         if (useItem)
         {
-            DialogueYesNoBox.Open(Yes, No, true, text, MiscUtils.GetSavedItem(item), cost, 
-                true, takeItem);
+            var i = MiscUtils.GetSavedItem(item);
+            if (i) {
+                DialogueYesNoBox.Open(Yes, No, true, text, MiscUtils.GetSavedItem(item), cost, 
+                true, takeItem); 
+                yield break;
+            }
         }
-        else DialogueYesNoBox.Open(Yes, No, true, text, currencyType, cost);
+        DialogueYesNoBox.Open(Yes, No, true, text, currencyType, cost);
     }
 
     private void Yes()
