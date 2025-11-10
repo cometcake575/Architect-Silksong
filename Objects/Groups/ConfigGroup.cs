@@ -37,6 +37,20 @@ public static class ConfigGroup
             }))
     ]);
 
+    public static readonly List<ConfigType> Item = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Item ID", "item_id", (o, value) =>
+            {
+                o.GetComponent<CustomPickup>().item = value.GetValue();
+            }).WithDefaultValue("Rosary_Set_Small")),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Ignore Limit", "item_ignore_obtained", (o, value) =>
+            {
+                o.GetComponent<CustomPickup>().ignoreObtained = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "item_stay"))
+    ]);
+
     public static readonly List<ConfigType> LoreTablets = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Text", "tablet_text", (o, value) =>
@@ -855,18 +869,36 @@ public static class ConfigGroup
                 o.GetComponent<ChoiceDisplay>().text = value.GetValue();
             }).WithDefaultValue("Sample Text")),
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType("Currency Type", "choice_currency", (o, value) =>
+            new ChoiceConfigType("Requirement", "choice_currency", (o, value) =>
             {
                 var val = value.GetValue();
                 var choice = o.GetComponent<ChoiceDisplay>();
-                if (val == 0) choice.cost = 0;
+                switch (val)
+                {
+                    case 0:
+                        choice.cost = 0;
+                        break;
+                    case 3:
+                        choice.useItem = true;
+                        break;
+                }
                 choice.currencyType = val == 1 ? CurrencyType.Money : CurrencyType.Shard;
-            }).WithOptions("None", "Rosaries", "Shell Shards").WithDefaultValue(0).WithPriority(1)),
+            }).WithOptions("None", "Rosaries", "Shell Shards", "Item").WithDefaultValue(0).WithPriority(1)),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType("Cost", "choice_cost", (o, value) =>
+            new IntConfigType("Required Amount", "choice_cost", (o, value) =>
             {
                 o.GetComponent<ChoiceDisplay>().cost = value.GetValue();
-            }).WithDefaultValue(0))
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Item ID", "choice_item_id", (o, value) =>
+            {
+                o.GetComponent<ChoiceDisplay>().item = value.GetValue();
+            }).WithDefaultValue("Simple Key")),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Consume Item", "choice_take_item", (o, value) =>
+            {
+                o.GetComponent<ChoiceDisplay>().takeItem = value.GetValue();
+            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> Png = GroupUtils.Merge(Decorations, [
@@ -1212,7 +1244,7 @@ public static class ConfigGroup
     public static readonly List<ConfigType> ObjectEnabler = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Path", "enabler_path",
-                (o, value) => { o.AddComponent<ObjectEnabler>().objectPath = value.GetValue(); })
+                (o, value) => { o.GetComponent<ObjectEnabler>().objectPath = value.GetValue(); })
                 .WithPriority(-1)
         )
     ]);
@@ -1310,11 +1342,11 @@ public static class ConfigGroup
 
             if (val == 0)
             {
-                o.RemoveComponent<PersistentBoolItem>();
+                o.RemoveComponentsInChildren<PersistentBoolItem>();
             }
             else
             {
-                var item = o.GetComponent<PersistentBoolItem>();
+                var item = o.GetComponentInChildren<PersistentBoolItem>();
                 if (!item)
                 {
                     var it = o.AddComponent<PersistentBoolItem>();

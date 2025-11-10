@@ -42,6 +42,15 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Item = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("item_pickup", "PickUp", o =>
+        {
+            var ip = o.GetComponentInChildren<CollectableItemPickup>();
+            ip.canPickupTime = 0;
+            ip.DoPickupInstant();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> TimeSlower = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_timechange", "SlowTime", o =>
         {

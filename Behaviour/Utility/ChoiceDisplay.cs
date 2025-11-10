@@ -7,6 +7,9 @@ namespace Architect.Behaviour.Utility;
 public class ChoiceDisplay : MonoBehaviour, IDisplayable
 {
     public string text;
+    public string item;
+    public bool takeItem;
+    public bool useItem;
     public CurrencyType currencyType = CurrencyType.Money;
     public int cost;
 
@@ -21,7 +24,12 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
         
         HeroController.instance.RelinquishControl();
 
-        DialogueYesNoBox.Open(Yes, No, true, text, currencyType, cost);
+        if (useItem)
+        {
+            DialogueYesNoBox.Open(Yes, No, true, text, MiscUtils.GetSavedItem(item), cost, 
+                true, takeItem);
+        }
+        else DialogueYesNoBox.Open(Yes, No, true, text, currencyType, cost);
     }
 
     private void Yes()

@@ -19,6 +19,8 @@ public static class UtilityObjects
     
     public static void Init()
     {
+        Categories.Utility.Add(CreateItem());
+        
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());
@@ -152,6 +154,27 @@ public static class UtilityObjects
                    "settings determine which objects are removed.")
             .WithConfigGroup(ConfigGroup.RoomClearer)
             .WithReceiverGroup(ReceiverGroup.Generic));
+    }
+
+    private static PlaceableObject CreateItem()
+    {
+        CustomPickup.Init();
+        
+        var pickup = new GameObject("Pickup Spawner");
+        Object.DontDestroyOnLoad(pickup);
+        pickup.SetActive(false);
+
+        pickup.AddComponent<CustomPickup>();
+        
+        return new CustomObject("Item", "item_pickup", pickup, 
+                "A collectible item such as a Rosary String, Shard Bundle, Tool or Key.\n" +
+                "Some items may act strangely.\n\n" +
+                "Disabling 'Ignore Limit' will cause the item to disappear if the player normally cannot get more,\n" +
+                "such as if the item is a tool the player already has.\n\n" +
+                "A list of valid item IDs can be found in the Architect guide.",
+                sprite:ResourceUtils.LoadSpriteResource("item_pickup", ppu:64))
+            .WithConfigGroup(ConfigGroup.Item)
+            .WithReceiverGroup(ReceiverGroup.Item);
     }
 
     private static PlaceableObject CreateWalkTarget()
@@ -452,10 +475,9 @@ public static class UtilityObjects
         return new CustomObject("Choice Display", "choice_display",
                 display,
                 sprite: ResourceUtils.LoadSpriteResource("choice_display", FilterMode.Point, ppu:10),
-                description: "Displays a piece of text.\n\n" +
-                             "Use <br> for a new line.\n" +
-                             "Use <color>, <b>, <i>, <s> and <u> to format text.\n" +
-                             "For example: '<b><color=#FF0000>YOU</color></b>'")
+                description: "Displays a piece of text and prompts the player to choose Yes or No.\n\n" +
+                             "A list of items for the 'Item' requirement can be found on the guide.\n" +
+                             "If 'Consume Item' is enabled with the 'Item' requirement the item will also be taken.")
             .WithReceiverGroup(ReceiverGroup.Displayable)
             .WithBroadcasterGroup(BroadcasterGroup.Choice)
             .WithConfigGroup(ConfigGroup.Choice);

@@ -583,8 +583,7 @@ public static class VanillaObjects
             ("Wisp_02", "Wisp Bounce Pod")));
 
         Categories.Hazards.Add(new PreloadObject("Wispfire Lantern", "wisp_flame_lantern",
-                ("Wisp_02", "Wisp Flame Lantern"),
-                preloadAction: HazardFixers.FixWispLantern)
+                ("Wisp_02", "Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
             .WithConfigGroup(ConfigGroup.Unbreakable));
     }
 
