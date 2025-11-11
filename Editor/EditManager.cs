@@ -244,7 +244,7 @@ public static class EditManager
                 if (EditorUI.CurrentCategory == PrefabsCategory.Instance) EditorUI.RefreshCurrentPage();
             }
 
-            if (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed)
+            if (!paused && (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed))
             {
                 var newObj = PlacementManager.FindObject(Input.mousePosition);
                 if (HoveredObject != newObj)

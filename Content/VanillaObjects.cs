@@ -335,6 +335,14 @@ public static class VanillaObjects
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
             postSpawnAction: EnemyFixers.FixFluttermite);
+        
+        AddEnemy("Craw", "crow", ("Greymoor_15b",
+                "Crow Court Objects (Children activated on start)/crowcourt - not in session/Crow (3)"),
+            preloadAction: o => o.transform.SetPositionZ(0.006f));
+        AddEnemy("Tallcraw", "crowman", ("Greymoor_15b", "Crowman"),
+            preloadAction:EnemyFixers.KeepActive);
+        AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),
+            preloadAction:EnemyFixers.KeepActive);
 
         Categories.Hazards.Add(new PreloadObject("Mill Trap", "mill_trap",
                 ("Greymoor_06", "Greymoor_windmill_cog (1)/GameObject/dustpen_trap_shine0000"),

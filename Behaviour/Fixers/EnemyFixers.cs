@@ -37,9 +37,9 @@ public static class EnemyFixers
 
     public static void KeepActive(GameObject obj)
     {
-        obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
-        obj.RemoveComponent<DeactivateIfPlayerdataFalse>();
-        obj.RemoveComponent<DeactivateIfPlayerdataFalseDelayed>();
+        obj.RemoveComponentsInChildren<DeactivateIfPlayerdataTrue>();
+        obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalse>();
+        obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalseDelayed>();
     }
     
     public static void FixJailer(GameObject obj)

@@ -1,7 +1,5 @@
 using System;
-using System.Reflection;
 using Architect.Utils;
-using MonoMod.RuntimeDetour;
 
 namespace Architect.Events;
 
