@@ -321,7 +321,7 @@ public static class LevelSharerUI
             var desc = UIUtils.MakeLabel($"Level Desc {i}", _levelSharerObj, new Vector2(60, y+20),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 440, 40,
                 HorizontalWrapMode.Wrap).textComponent;
-            desc.fontSize = 8;
+            desc.fontSize = 10;
 
             var (btn, label) = UIUtils.MakeTextButton($"Level Download {i}", "Download Level", 
                 _levelSharerObj, new Vector2(320, y+55), 

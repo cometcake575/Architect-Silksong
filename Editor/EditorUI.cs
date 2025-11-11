@@ -347,13 +347,13 @@ public static class EditorUI
         ConfigIds.Clear();
         _configButton.transform.SetAsLastSibling();
 
-        var y = 20 + 12 * group.Count;
+        var y = 20 + 14 * group.Count;
         foreach (var type in group)
         {
             var txt = UIUtils.MakeLabel("Config Title", _configTab, new Vector3(54, y),
                 Vector2.zero, Vector2.zero).textComponent;
             txt.text = type.Name;
-            txt.fontSize = 6;
+            txt.fontSize = 8;
             txt.alignment = TextAnchor.MiddleLeft;
 
             var (btn, _) =  UIUtils.MakeTextButton("Config Apply", "Apply", _configTab, 
@@ -370,7 +370,7 @@ public static class EditorUI
             
             btn.onClick.AddListener(Apply);
             
-            y -= 12;
+            y -= 14;
             continue;
 
             void Apply()

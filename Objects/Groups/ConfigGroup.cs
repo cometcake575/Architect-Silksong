@@ -947,7 +947,7 @@ public static class ConfigGroup
             new BoolConfigType("Play on Start", "png_start_playing",
                 (o, value) =>
                 {
-                    o.GetOrAddComponent<PngObject>().playing = value.GetValue();
+                    o.GetComponentInChildren<PngObject>().playing = value.GetValue();
                 }).WithDefaultValue(true).WithPriority(-2))
     ]);
 
