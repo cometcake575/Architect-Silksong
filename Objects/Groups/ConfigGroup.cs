@@ -909,7 +909,12 @@ public static class ConfigGroup
                     var prev = o.GetOrAddComponent<PngPreview>();
                     var point = (prev?.point).GetValueOrDefault(true);
                     var ppu = (prev?.ppu).GetValueOrDefault(100);
-                    CustomAssetManager.DoLoadSprite(o, value.GetValue(), point, ppu);
+                    var count = (prev?.count).GetValueOrDefault(1);
+                    CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, count, 
+                        sprites =>
+                        {
+                            if (o) o.GetComponent<SpriteRenderer>().sprite = sprites[0];
+                        });
                 }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Anti Aliasing", "png_antialias",
@@ -921,7 +926,29 @@ public static class ConfigGroup
                     (o, value) => { o.GetComponentInChildren<PngObject>().ppu = value.GetValue(); },
                     (o, value, _) => { o.GetOrAddComponent<PngPreview>().ppu = value.GetValue(); })
                 .WithDefaultValue(100)
-                .WithPriority(-2))
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Frame Count", "png_framecount",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().count = value.GetValue(); },
+                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().count = value.GetValue(); })
+                .WithDefaultValue(1)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Frames per Second", "png_frametime",
+                    (o, value) =>
+                    {
+                        var png = o.GetComponentInChildren<PngObject>();
+                        if (value.GetValue() == 0) png.frameTime = 0;
+                        else png.frameTime = 1 / Mathf.Max(0.01f, value.GetValue());
+                    })
+                .WithDefaultValue(10)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Play on Start", "png_start_playing",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<PngObject>().playing = value.GetValue();
+                }).WithDefaultValue(true).WithPriority(-2))
     ]);
 
     private static readonly ConfigType WavUrl = ConfigurationManager.RegisterConfigType(

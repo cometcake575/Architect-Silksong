@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +12,13 @@ using Architect.Utils;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Video;
+using Object = UnityEngine.Object;
 
 namespace Architect.Storage;
 
 public static class CustomAssetManager
 {
-    public static readonly Dictionary<string, Sprite> Sprites = new();
+    public static readonly Dictionary<string, Sprite[]> Sprites = new();
     public static readonly Dictionary<string, AudioClip> Sounds = new();
 
     public static readonly HashSet<string> LoadingSounds = [];
@@ -37,7 +39,7 @@ public static class CustomAssetManager
 
     public static void WipeAssets()
     {
-        foreach (var sp in Sprites.Values) Object.Destroy(sp);
+        foreach (var sp in Sprites.Values.SelectMany(spr => spr)) Object.Destroy(sp);
         foreach (var sp in Sounds.Values) Object.Destroy(sp);
         Sprites.Clear();
         Sounds.Clear();
@@ -69,30 +71,30 @@ public static class CustomAssetManager
     }
 
 
-    public static void DoLoadSprite([CanBeNull] GameObject obj, string url, bool point, float ppu)
+    public static void DoLoadSprite(string url, bool point, float ppu, int count, Action<Sprite[]> callback)
     {
-        ArchitectPlugin.Instance.StartCoroutine(LoadSprite(url, point, ppu, obj));
+        ArchitectPlugin.Instance.StartCoroutine(LoadSprite(url, point, ppu, Mathf.Max(1, count), callback));
     }
 
-    private static IEnumerator LoadSprite(string url, bool point, float ppu, [CanBeNull] GameObject obj = null)
+    private static IEnumerator LoadSprite(string url, bool point, float ppu, int count, Action<Sprite[]> callback)
     {
-        var id = url + (point ? "_point_" : "_bilinear_") + ppu;
+        var id = $"{url}_{point}_{ppu}_{count}";
         if (!Sprites.ContainsKey(id))
         {
             var path = $"{GetPath(url)}.png";
-            var tmp = ResourceUtils.LoadSprite(path, point, ppu);
-            if (!tmp)
+            var tmp = ResourceUtils.LoadSprites(path, point, ppu, count);
+            if (tmp == null)
             {
                 var task = Task.Run(() => SaveFile(url, path));
                 while (!task.IsCompleted) yield return null;
-                tmp = ResourceUtils.LoadSprite(path, point, ppu);
+                tmp = ResourceUtils.LoadSprites(path, point, ppu, count);
             }
 
+            if (tmp == null) yield break;
             Sprites[id] = tmp;
         }
 
-        if (obj) obj.GetComponent<SpriteRenderer>().sprite = Sprites[id];
-        yield return null;
+        callback(Sprites[id]);
     }
 
     public static void DoLoadSound(GameObject obj, string url)

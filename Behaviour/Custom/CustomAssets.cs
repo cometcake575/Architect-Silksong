@@ -1,28 +1,80 @@
 using Architect.Storage;
+using Architect.Utils;
 using UnityEngine;
 using UnityEngine.Video;
 
 namespace Architect.Behaviour.Custom;
-
-public class PngObject : MonoBehaviour
-{
-    public string url;
-    public bool point;
-    public float ppu = 100;
-
-    private void Awake()
-    {
-        if (string.IsNullOrEmpty(url)) return;
-        CustomAssetManager.DoLoadSprite(gameObject, url, point, ppu);
-    }
-}
 
 public interface IPlayable
 {
     public void Play();
 }
 
-public class Mp4Object : MonoBehaviour, IPlayable
+public interface IPausable
+{
+    public void Pause();
+}
+
+public class PngObject : MonoBehaviour, IPlayable, IPausable
+{
+    private SpriteRenderer _renderer;
+    private Sprite[] _sprites;
+    
+    private float _remainingFrameTime;
+    private int _frame;
+    
+    public string url;
+    public bool point;
+    public float ppu = 100;
+    public int count = 1;
+    public float frameTime = 1;
+    public bool playing;
+
+    private void Awake()
+    {
+        if (string.IsNullOrEmpty(url)) return;
+        
+        _renderer = GetComponent<SpriteRenderer>();
+        CustomAssetManager.DoLoadSprite(url, point, ppu, count, SaveSprites);
+    }
+
+    public void SaveSprites(Sprite[] newSprites)
+    {
+        _sprites = newSprites;
+        _renderer.sprite = _sprites[0];
+
+        if (frameTime == 0) count = 1;
+        else _remainingFrameTime = frameTime;
+    }
+
+    private void Update()
+    {
+        if (count <= 1 || !playing) return;
+        _remainingFrameTime -= Time.deltaTime;
+        while (_remainingFrameTime < 0)
+        {
+            _remainingFrameTime += frameTime;
+            _frame++;
+            if (_frame >= count)
+            {
+                gameObject.BroadcastEvent("OnFinish");
+                _frame %= count;
+            }
+
+            if (playing) _renderer.sprite = _sprites[_frame];
+        }
+    }
+
+    public void Play()
+    {
+        playing = true;
+        _renderer.sprite = _sprites[_frame];
+    }
+
+    public void Pause() => playing = false;
+}
+
+public class Mp4Object : MonoBehaviour, IPlayable, IPausable
 {
     public string url;
     public bool playOnStart = true;
@@ -107,4 +159,6 @@ public class PngPreview : MonoBehaviour
     public float ppu = 100;
     
     public bool point;
+
+    public int count = 1;
 }

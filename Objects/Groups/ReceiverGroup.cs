@@ -152,10 +152,10 @@ public static class ReceiverGroup
         }))
     ]);
     
-    public static readonly List<EventReceiverType> Mp4 = GroupUtils.Merge(Playable, [
+    public static readonly List<EventReceiverType> Pausable = GroupUtils.Merge(Playable, [
         EventManager.RegisterReceiverType(new EventReceiverType("stop_play", "Pause", o =>
         {
-            o.GetComponent<Mp4Object>().Pause();
+            o.GetComponent<IPausable>().Pause();
         }))
     ]);
     

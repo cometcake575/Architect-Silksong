@@ -12,8 +12,9 @@ public class PreloadObject : PlaceableObject, IPreload
 
     public PreloadObject(
         string name, 
-        string id, (string, string) path,
-        string description = null, 
+        string id, 
+        (string, string) path,
+        string description = null,
         Action<GameObject> postSpawnAction = null, 
         Action<GameObject> preloadAction = null,
         bool preview = false,

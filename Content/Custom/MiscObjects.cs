@@ -20,15 +20,19 @@ public static class MiscObjects
         Categories.Misc.AddStart(CreateSquare());
         
         Categories.Misc.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
-            .WithConfigGroup(ConfigGroup.Mp4));
+            .WithConfigGroup(ConfigGroup.Mp4)
+            .WithReceiverGroup(ReceiverGroup.Pausable));
         
         Categories.Misc.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
             .WithConfigGroup(ConfigGroup.Wav)
             .WithReceiverGroup(ReceiverGroup.Playable));
         
-        Categories.Misc.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false)
+        Categories.Misc.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
+                "\n\nSetting 'Frame Count' to a number above 1 will make the PNG animated\n" +
+                "by splitting it into frames vertically. Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.Png)
-            .WithReceiverGroup(ReceiverGroup.Mp4));
+            .WithReceiverGroup(ReceiverGroup.Pausable)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable));
         
         Categories.Misc.Add(CreateSilkSphere());
         
@@ -239,7 +243,7 @@ public static class MiscObjects
     }
 
     private static PlaceableObject CreateAsset<T>(string name, string id, bool addRenderer, 
-        bool addVideo) where T : MonoBehaviour
+        bool addVideo, string extDesc = "") where T : MonoBehaviour
     {
         var asset = new GameObject("Custom Asset");
 
@@ -256,7 +260,7 @@ public static class MiscObjects
                 description:
                 $"Places a custom {name} in the game.\n\n" +
                 "URL should be a direct download anyone can access\n" +
-                "in order to work with the level sharer.")
+                "in order to work with the level sharer." + extDesc)
             .WithRotationGroup(RotationGroup.All);
     }
 

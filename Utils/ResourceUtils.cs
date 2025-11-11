@@ -52,9 +52,9 @@ public static class ResourceUtils
         
         return sprite;
     }
-    
+
     [CanBeNull]
-    internal static Sprite LoadSprite(string spritePath, bool point, float ppu)
+    internal static Sprite[] LoadSprites(string spritePath, bool point, float ppu, int count)
     {
         if (!File.Exists(spritePath)) return null;
 
@@ -63,8 +63,15 @@ public static class ResourceUtils
         tex.wrapMode = TextureWrapMode.Clamp;
         tex.filterMode = point ? FilterMode.Point : FilterMode.Bilinear;
 
-        var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), ppu);
-        return sprite;
+        var sprites = new Sprite[count];
+        var height = tex.height / (float)count;
+        for (var i = 0; i < count; i++)
+        {
+            sprites[count - i - 1] = Sprite.Create(tex, new Rect(0, height * i, tex.width, height),
+                new Vector2(0.5f, 0.5f), ppu);
+        }
+
+        return sprites;
     }
 
     internal static IEnumerator LoadClip(string clipPath, Action<AudioClip> callback)
