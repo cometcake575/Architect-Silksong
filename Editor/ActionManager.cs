@@ -286,8 +286,6 @@ public class ResetRoom : IEdit
 
     public void MultiplayerShare()
     {
-        ArchitectPlugin.Logger.LogInfo("Doing share");
         CoopManager.Instance.ResetRoom(GameManager.instance.sceneName);
-        ArchitectPlugin.Logger.LogInfo("Done share");
     }
 }
