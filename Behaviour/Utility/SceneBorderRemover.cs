@@ -32,7 +32,7 @@ public class SceneBorderRemover : MonoBehaviour
             // Adds a new instruction of -9999f as the new lower bound
             cursor.Emit(OpCodes.Ldc_R4, -9999f);
 
-            // Find the next usage of 0.0f (when the second lower boundary variable is set
+            // Find the next usage of 0.0f (when the second lower boundary variable is set)
             if (!cursor.TryGotoNext(
                     MoveType.Before,
                     instr => instr.MatchLdcR4(0.0f)

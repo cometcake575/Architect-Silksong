@@ -6,6 +6,7 @@ using Architect.Behaviour.Custom;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using GlobalSettings;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
@@ -151,7 +152,7 @@ public static class MiscFixers
                 orig(self, color);
             });
     }
-    
+
     public class ColorLock : MonoBehaviour;
 
     private delegate string ToStringOrig(ref LocalisedString self, bool allowBlankText);
@@ -465,6 +466,11 @@ public static class MiscFixers
         obj.AddComponent<Caretaker>();
     }
 
+    public static void FixFrightenedSherma(GameObject obj)
+    {
+        obj.AddComponent<FrightenedSherma>();
+    }
+
     public static void FixShermaCaretaker(GameObject obj)
     {
         obj.AddComponent<ShermaCaretaker>();
@@ -579,6 +585,41 @@ public static class MiscFixers
         }
     }
     
+    public class FrightenedSherma : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Conversation Control");
+            fsm.fsm.globalTransitions = [];
+
+            var meet = fsm.GetState("Meet 1");
+            meet.DisableAction(0);
+            var dialogue = (RunDialogue)meet.actions[4];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+
+            var turn = fsm.GetState("Turn Back");
+            turn.DisableAction(0);
+            turn.DisableAction(1);
+            turn.DisableAction(2);
+            turn.AddAction(() => fsm.SendEvent("FINISHED"), 4);
+            
+            fsm.GetState("Look Back").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("Meet 2").AddAction(() => fsm.SendEvent("CONVO_END"), 0);
+            
+            var end = fsm.GetState("End Dialogue");
+            ((EndDialogue)end.actions[1]).ReturnControl.value = true;
+            ((ActivateInteractible)end.actions[0]).Activate.value = true;
+            end.AddAction(() => fsm.SendEvent("FINISHED"), 2);
+            end.AddAction(new Wait { time = 0.1f }, 0);
+            
+            fsm.GetState("Start Battle").AddAction(() =>
+            {
+                fsm.SetState("Idle");
+            }, 0);
+        }
+    }
+    
     public class ShermaCaretaker : Npc
     {
         private void Start()
@@ -587,7 +628,7 @@ public static class MiscFixers
             fsm.GetState("Start Asleep?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
             fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
             fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
-            var dialogue = (RunDialogue) fsm.GetState("Repeat").actions[2];
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[2];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
         }

@@ -33,6 +33,7 @@ public static class VanillaObjects
         AddCogworksObjects();
         AddUnderworksObjects();
         AddCitadelObjects();
+        AddWhitewardObjects();
         AddSlabObjects();
         AddPeakObjects();
         AddBileObjects();
@@ -70,6 +71,16 @@ public static class VanillaObjects
             ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba M (2)"));
         AddEnemy("Crustcrawler B", "coral_goomba_l",
             ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba L"));
+        AddEnemy("Crustcrag", "coral_goomba_xl",
+            ("Arborium_06", "Coral Goomba Large (1)"), postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Behaviour");
+                var patrol = fsm.FsmVariables.FindFsmBool("In Patrol Range");
+                fsm.GetState("Walk").AddAction(() =>
+                {
+                    patrol.value = true;
+                }, 5);
+            }).DoFlipX();
 
         AddEnemy("Kai", "coral_swimmer_fat",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 3/Wave 5 - fish1/Coral Swimmer Fat (1)"),
@@ -365,6 +376,23 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.CloseableGates));
     }
 
+    private static void AddWhitewardObjects()
+    {
+        AddEnemy("Surgeon", "surgeon",
+                ("Ward_09", "Sherma Rescue Scene/Activation Folder/Battle Scene/Wave 1/Song Pilgrim 02"),
+                preloadAction:EnemyFixers.FixSurgeon).WithConfigGroup(ConfigGroup.Surgeon);
+        AddEnemy("Mortician", "mortician",
+            ("Ward_03", "Song Creeper (2)"));
+        AddEnemy("Dreg Husk", "slasher",
+            ("Ward_02", "Boss Scene Parent/Respawn Scene/Husks/Slasher 1"), preloadAction:EnemyFixers.FixDregHusk)
+            .DoFlipX();
+        AddEnemy("Dregwheel", "slammer",
+            ("Ward_02", "Boss Scene Parent/Respawn Scene/Husks/Slammer 1"), postSpawnAction:EnemyFixers.FixDregwheel)
+            .DoFlipX();
+        Categories.Misc.Add(new PreloadObject("Coal Bucket", "barrel_03_opencoal",
+            ("Ward_03", "brk_barrel_03_opencoal")));
+    }
+
     private static void AddSlabObjects()
     {
         AddEnemy("Wardenfly Jailer", "slab_jailer",
@@ -593,6 +621,15 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Wispfire Lantern", "wisp_flame_lantern",
                 ("Wisp_02", "Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
             .WithConfigGroup(ConfigGroup.Unbreakable));
+
+        AddEnemy("Burning Bug", "farmer_wisp", 
+            ("Wisp_02", "Wisp Farmers/Farmer Wisp"), o =>
+            {
+                EnemyFixers.KeepActive(o);
+                var anim = o.GetComponent<tk2dSpriteAnimator>();
+                anim.defaultClipId = anim.GetClipIdByName("Idle");
+            })
+            .WithConfigGroup(ConfigGroup.BurningBug).DoFlipX();
     }
 
     private static void AddShellwoodObjects()
@@ -741,7 +778,10 @@ public static class VanillaObjects
             ("Bone_East_01", "Black Thread States Thread Only Variant/Normal World/Dock Flyer"),
             postSpawnAction: EnemyFixers.FixFlintFlyer);
 
-        AddEnemy("Lavalug", "tar_slug", ("Dock_02", "Tar Slug")).DoFlipX();
+        AddEnemy("Lavalug", "tar_slug", ("Dock_02", "Tar Slug"))
+            .WithRotationGroup(RotationGroup.Four).DoFlipX();
+        AddEnemy("Lavalarga", "tar_slug_huge", ("Dock_11", "Tar Slug Huge (1)"))
+            .WithRotationGroup(RotationGroup.Four);
         AddEnemy("Flintflame Flyer", "dock_bomber", ("Dock_02", "Dock Bomber"),
             postSpawnAction: EnemyFixers.FixFlintFlyer);
         AddEnemy("Smokerock Sifter", "shield_dockworker",

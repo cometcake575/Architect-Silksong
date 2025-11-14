@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using Architect.Behaviour.Utility;
 using Architect.Utils;
 using GlobalEnums;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;

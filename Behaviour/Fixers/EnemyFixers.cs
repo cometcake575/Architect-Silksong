@@ -284,4 +284,61 @@ public static class EnemyFixers
             fsm.SendEvent("UNALERT");
         }, 0);
     }
+
+    public static void FixSurgeon(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Idle");
+
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+    }
+
+    public class Teleplane : MonoBehaviour
+    {
+        public float width;
+
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Attack");
+            var teleplane = new GameObject(name + " Teleplane")
+            {
+                transform = { position = transform.position },
+                tag = "Teleplane"
+            };
+            var col = teleplane.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(width, 1);
+            ((FindClosest)fsm.GetState("Get Teleplane").actions[0]).name = teleplane.name;
+        }
+    }
+
+    public static void FixDregwheel(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("SPAWN M"), 0);
+        ((SetFloatValue)fsm.GetState("Spawn Mid").actions[0]).floatValue.value = obj.transform.position.x;
+        fsm.FsmVariables.FindFsmFloat("Ground Y").value = obj.transform.position.y;
+        
+        fsm.GetState("Spawn Roll Clamp").DisableAction(2);
+        
+        fsm.FsmVariables.FindFsmBool("No Respawn").value = true;
+        obj.GetComponent<HealthManager>().hasSpecialDeath = false;
+        
+        var roll = fsm.GetState("Spawn Roll");
+        roll.DisableAction(6);
+        roll.DisableAction(9);
+        roll.DisableAction(10);
+        
+        var spawn = fsm.GetState("Spawn Antic");
+        ((SetPosition)spawn.actions[1]).y = obj.transform.position.y;
+        spawn.DisableAction(4);
+    }
+
+    public static void FixDregHusk(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmBool("Spawner").value = false;
+        obj.GetComponent<HealthManager>().invincible = false;
+    }
 }

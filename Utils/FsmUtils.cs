@@ -14,14 +14,18 @@ public static class FsmUtils
     {
         state.Actions[index].Enabled = false;
     }
-    
+
     public static void AddAction(this FsmState state, Action action, int index = -1, bool everyFrame = false)
     {
         var customAction = new CustomFsmAction(action)
         {
             EveryFrame = everyFrame
         };
-
+        AddAction(state, customAction, index, everyFrame);
+    }
+    
+    public static void AddAction(this FsmState state, FsmStateAction customAction, int index = -1, bool everyFrame = false)
+    {
         var actions = state.Actions;
 
         if (index == -1) index = actions.Length;

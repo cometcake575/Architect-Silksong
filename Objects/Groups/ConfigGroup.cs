@@ -31,9 +31,22 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Visible", "is_visible", (o, value) =>
             {
-                if (!value.GetValue())
-                    foreach (var renderer in o.GetComponentsInChildren<Renderer>())
-                        renderer.enabled = false;
+                if (value.GetValue()) return;
+                
+                foreach (var renderer in o.GetComponentsInChildren<tk2dSprite>())
+                {
+                    var col = renderer.color;
+                    col.a = 0;
+                    renderer.color = col;
+                }
+                foreach (var renderer in o.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    var col = renderer.color;
+                    col.a = 0;
+                    renderer.color = col;
+                }
+
+                o.AddComponent<MiscFixers.ColorLock>();
             }))
     ]);
 
@@ -798,7 +811,37 @@ public static class ConfigGroup
             {
                 if (!value.GetValue()) return;
                 o.LocateMyFSM("Noise Reaction").SendEvent("WAKE");
-            }))
+            }).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> BurningBug = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immolator", "burning_bug_explode", (o, value) =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                if (value.GetValue())
+                {
+                    o.GetComponent<tk2dSpriteAnimator>().Play("Immolater Idle");
+                    var hm = o.GetComponent<HealthManager>();
+                    hm.hasSpecialDeath = true;
+                    hm.enemyDeathEffects.doNotSpawnCorpse = true;
+                    fsm.GetState("State").AddAction(() => fsm.SendEvent("IMMOLATER"), 3);
+                }
+                else fsm.GetState("Patrol Wait").AddAction(() => fsm.SendEvent("WAKE"));
+            }).WithDefaultValue(false))
+    ]);
+
+    public static readonly List<ConfigType> Surgeon = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Dig Range", "surgeon_range", (o, value) =>
+            {
+                o.AddComponent<EnemyFixers.Teleplane>().width = value.GetValue();
+            }).WithDefaultValue(5)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Invisible Body", "surgeon_no_body", (o, value) =>
+            {
+                if (value.GetValue()) o.GetComponent<tk2dSprite>().scale = Vector3.zero;
+            }).WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> Jailer = GroupUtils.Merge(Enemies, [

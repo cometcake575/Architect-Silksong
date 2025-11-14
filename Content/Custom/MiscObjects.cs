@@ -238,7 +238,9 @@ public static class MiscObjects
                 sprite:ResourceUtils.LoadSpriteResource("cold_icon", ppu:50),
                 description: "When enabled, the player will take frost damage over time.\n\n" +
                              "If the player has the Faydown Cloak then frost will not affect them,\n" +
-                             "unless a Frost Binding is active.")
+                             "unless a Frost Binding is active.\n\n" +
+                             "The player begins freezing after (100/frost speed) seconds,\n" +
+                             "and hits are 1.75 seconds apart.")
             .WithConfigGroup(ConfigGroup.Frost);
     }
 
