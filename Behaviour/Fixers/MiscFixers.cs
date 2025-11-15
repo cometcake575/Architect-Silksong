@@ -6,7 +6,6 @@ using Architect.Behaviour.Custom;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using GlobalSettings;
-using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
@@ -826,5 +825,12 @@ public static class MiscFixers
         obj.GetComponent<ActivatingBase>().SetActive(true, true);
         obj.RemoveComponent<RandomlyFlipScale>();
         obj.RemoveComponent<RandomRotationDelay>();
+    }
+
+    public static void FixFlea(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Call Out");
+        fsm.FsmVariables.FindFsmObject("Quest Target").Clear();
+        fsm.GetState("Rescue 1").AddAction(() => obj.BroadcastEvent("OnSave"));
     }
 }

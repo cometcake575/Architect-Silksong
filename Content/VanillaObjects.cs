@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -470,11 +471,13 @@ public static class VanillaObjects
                 o.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(false);
                 o.transform.GetChild(1).GetChild(1).GetChild(2).gameObject.SetActive(false);
                 o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>();
-            }).WithRotationGroup(RotationGroup.All).WithReceiverGroup(ReceiverGroup.Trap));
+            }).WithRotationGroup(RotationGroup.All).WithReceiverGroup(ReceiverGroup.Trap)
+            .WithConfigGroup(ConfigGroup.Hazards));
         
         Categories.Hazards.Add(new PreloadObject("Groal's Spike Ball", "swing_trap_spike",
             ("Shadow_18", "Battle Scene/stake_trap_swing_repeater"), description:"Only has collision when swinging.", 
             preloadAction:HazardFixers.FixSpikeBall)
+            .WithConfigGroup(ConfigGroup.Hazards)
             .WithReceiverGroup(ReceiverGroup.SpikeBall));
     }
 
@@ -611,6 +614,14 @@ public static class VanillaObjects
             ("Cog_04", "Black Thread States Thread Only Variant/Normal World/Song Automaton 01")).DoFlipX();
         AddEnemy("Cogwork Cleanser", "song_auto_2",
             ("Cog_04", "Black Thread States Thread Only Variant/Black Thread World/Group (1)/Song Automaton 02"));
+        AddEnemy("Cogwork Crawler", "song_auto_crawl",
+            ("Cog_04", "Song Automaton Goomba"), preloadAction:EnemyFixers.RemoveConstrainPosition)
+            .WithRotateAction((obj, rot) =>
+            {
+                if (Mathf.RoundToInt(rot / 180) != 1) return;
+                obj.transform.SetScaleY(-obj.transform.GetScaleY());
+                obj.transform.SetRotation2D(obj.transform.GetRotation2D() + rot - 180);
+            }).WithRotationGroup(RotationGroup.Vertical);
     }
 
     private static void AddWispObjects()
@@ -623,11 +634,15 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Unbreakable));
 
         AddEnemy("Burning Bug", "farmer_wisp", 
-            ("Wisp_02", "Wisp Farmers/Farmer Wisp"), o =>
+            ("Wisp_02", "Wisp Farmers/Farmer Wisp"), preloadAction: o =>
             {
                 EnemyFixers.KeepActive(o);
                 var anim = o.GetComponent<tk2dSpriteAnimator>();
                 anim.defaultClipId = anim.GetClipIdByName("Idle");
+
+                var choice = o.LocateMyFSM("Control").GetState("Choice");
+                choice.transitions = choice.transitions
+                    .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
             })
             .WithConfigGroup(ConfigGroup.BurningBug).DoFlipX();
     }
@@ -813,6 +828,15 @@ public static class VanillaObjects
         AddEnemy("Hoker", "spine_floater", ("Bone_East_14", "Spine Floater (9)"),
                 postSpawnAction: MiscFixers.FixHoker)
             .WithConfigGroup(ConfigGroup.Hoker).DoFlipX();
+
+        AddEnemy("Rhinogrund", "rhino", ("Bone_East_10_Church", "Rhino Scene/Rhino"),
+            preloadAction:EnemyFixers.KeepActive);
+
+        Categories.Misc.Add(new PreloadObject("Sleeping Flea", "flea_1",
+            ("Bone_East_10_Church", "Black Thread States Thread Only Variant/Normal World/Flea Rescue Sleeping"),
+            description:"Fluffy.\n\nDoes not add to collected fleas.",
+            postSpawnAction:MiscFixers.FixFlea)
+            .WithBroadcasterGroup(BroadcasterGroup.Fleas));
     }
 
     private static void AddWormwaysObjects()
