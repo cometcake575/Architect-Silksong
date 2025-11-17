@@ -28,12 +28,8 @@ public class TriggerZone : MonoBehaviour
                 if (!tz || (tz.layer != layer && usingLayer)) return;
                 break;
             case 4:
-                var kr = other.gameObject.GetComponent<MiscFixers.Kratt>();
+                var kr = other.gameObject.GetComponent<MiscFixers.TriggerActivator>();
                 if (!kr || (kr.layer != layer && usingLayer)) return;
-                break;
-            case 5:
-                var bb = other.gameObject.GetComponent<MiscFixers.BellBaby>();
-                if (!bb || (bb.layer != layer && usingLayer)) return;
                 break;
         }
 
@@ -57,10 +53,7 @@ public class TriggerZone : MonoBehaviour
                 if (!other.gameObject.GetComponent<TriggerZone>()) return;
                 break;
             case 4:
-                if (!other.gameObject.GetComponent<MiscFixers.Kratt>()) return;
-                break;
-            case 5:
-                if (!other.gameObject.GetComponent<MiscFixers.BellBaby>()) return;
+                if (!other.gameObject.GetComponent<MiscFixers.TriggerActivator>()) return;
                 break;
         }
 

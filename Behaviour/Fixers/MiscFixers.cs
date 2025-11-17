@@ -180,7 +180,7 @@ public static class MiscFixers
         obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
     }
 
-    public class MapperRing : MonoBehaviour
+    public class MapperRing : TriggerActivator
     {
         private Collider2D _col2d;
         private bool _ground;
@@ -259,15 +259,13 @@ public static class MiscFixers
             obj.BroadcastEvent("OnHit");
         };
         
-        obj.AddComponent<Kratt>();
+        obj.AddComponent<TriggerActivator>();
     }
 
     public class TriggerActivator : MonoBehaviour
     {
         public int layer;
     }
-
-    public class Kratt : TriggerActivator;
     
     public static void FixLamp(GameObject obj)
     {
@@ -296,7 +294,7 @@ public static class MiscFixers
 
     public static void FixBellBaby(GameObject obj)
     {
-        obj.AddComponent<BellBaby>();
+        obj.AddComponent<TriggerActivator>();
         
         var fsm = obj.LocateMyFSM("Control");
         
@@ -315,8 +313,6 @@ public static class MiscFixers
         
         fsm.GetState("Tink React").AddAction(() => obj.BroadcastEvent("OnHit"));
     }
-
-    public class BellBaby : TriggerActivator;
 
     public static void FixMetronome(GameObject obj)
     {
@@ -831,6 +827,6 @@ public static class MiscFixers
     {
         var fsm = obj.LocateMyFSM("Call Out");
         fsm.FsmVariables.FindFsmObject("Quest Target").Clear();
-        fsm.GetState("Rescue 1").AddAction(() => obj.BroadcastEvent("OnSave"));
+        fsm.GetState("Rescue 2").AddAction(() => obj.BroadcastEvent("OnSave"));
     }
 }

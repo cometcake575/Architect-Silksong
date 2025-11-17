@@ -619,7 +619,9 @@ public static class UtilityObjects
         return new CustomObject("Trigger Zone", "trigger_zone",
                 point,
                 sprite: ResourceUtils.LoadSpriteResource("trigger_zone", FilterMode.Point, ppu:10),
-                description: "Can broadcast events when entered or exited.")
+                description: "Can broadcast events when entered or exited.\n\n" +
+                             "'Activator' mode detects Shakra Rings, Kratt and Beastlings,\n" +
+                             "a trigger layer can be set to only detect specific objects.")
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZone);
     }

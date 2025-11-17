@@ -587,6 +587,18 @@ public static class ConfigGroup
             ).WithDefaultValue(1))
     ]);
 
+    public static readonly List<ConfigType> Fleas = GroupUtils.Merge(Decorations, [
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Fly Away", "flea_flee",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    var leave = o.LocateMyFSM("Call Out").GetState("Leave Antic");
+                    leave.transitions = [];
+                    ((Tk2dPlayAnimationWithEvents)leave.actions[2]).clipName = "RescueToFly";
+                }
+            ).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> Benches = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(new BoolConfigType("Save Respawn", "bench_spawn",
             (o, value) =>
@@ -777,7 +789,10 @@ public static class ConfigGroup
     public static readonly List<ConfigType> Enemies = GroupUtils.Merge(SimpleEnemies, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Health", "enemy_hp",
-                (o, value) => { o.GetComponent<HealthManager>().hp = value.GetValue(); })),
+                (o, value) =>
+                {
+                    o.GetComponent<HealthManager>().hp = value.GetValue();
+                }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Enable Health Scaling", "enemy_hp_scale",
                 (o, value) =>
@@ -1059,7 +1074,7 @@ public static class ConfigGroup
 
                         o.layer = val == 3 ? ActiveRegion : SoftTerrain;
                     })
-                .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Kratt", "Beastling").WithDefaultValue(0)),
+                .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Activator").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Trigger Layer", "trigger_layer",
                 (o, value) =>

@@ -25,11 +25,11 @@ public class TimeSlower : MonoBehaviour
     public void SlowTime()
     {
         if (!noPause) _timeSlowedCount++;
-        StartCoroutine(GameManager.instance.FreezeMoment(changeTime, waitTime, returnTime, targetSpeed, 
+        GameManager.instance.StartCoroutine(GameManager.instance.FreezeMoment(changeTime, waitTime, returnTime, targetSpeed, 
             () =>
             {
                 if (!noPause) _timeSlowedCount--;
-                if (gameObject) gameObject.BroadcastEvent("OnFinish");
+                if (this) gameObject.BroadcastEvent("OnFinish");
             }));
     }
 }

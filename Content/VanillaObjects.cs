@@ -834,8 +834,9 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Sleeping Flea", "flea_1",
             ("Bone_East_10_Church", "Black Thread States Thread Only Variant/Normal World/Flea Rescue Sleeping"),
-            description:"Fluffy.\n\nDoes not add to collected fleas.",
+            description:"Fluffy.\nDoes not add to collected fleas.",
             postSpawnAction:MiscFixers.FixFlea)
+            .WithConfigGroup(ConfigGroup.Fleas)
             .WithBroadcasterGroup(BroadcasterGroup.Fleas));
     }
 
