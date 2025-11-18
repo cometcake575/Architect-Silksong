@@ -803,9 +803,23 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Dead", "enemy_stay_dead",
             (o, item) =>
             {
-                item.OnSetSaveState += b => { o.GetComponent<HealthManager>().isDead = b; };
+                item.OnSetSaveState += b => {
+                {
+                    o.GetComponent<HealthManager>().isDead = b;
+                    if (b) item.SetValueOverride(true);
+                } };
                 item.OnGetSaveState += (out bool b) => { b = o.GetComponent<HealthManager>().isDead; };
             }))
+    ]);
+
+    public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Show Boss Title", "boss_title",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.AddComponent<EnemyFixers.DisableBossTitle>();
+                }).WithDefaultValue(true))
     ]);
 
     static ConfigGroup()
@@ -1160,6 +1174,14 @@ public static class ConfigGroup
                 o.RemoveComponent<Collider2D>();
             }).WithDefaultValue(true))
     ]);
+
+    public static readonly List<ConfigType> Mirror = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Png, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Alpha Colour", "mirror_alpha", (o, value) =>
+            {
+                o.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, value.GetValue() * 1.75f);
+            }).WithDefaultValue(0.75f))
+    ]));
 
     public static readonly List<ConfigType> PoleRing = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(

@@ -8,6 +8,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
+    public static readonly List<string> Groal = ["TrySummon", "TrySpikeTrap", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
+    
     public static readonly List<string> Activatable = ["OnActivate"];
     
     public static readonly List<string> Finishable = ["OnFinish"];

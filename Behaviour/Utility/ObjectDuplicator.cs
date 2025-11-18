@@ -19,7 +19,7 @@ public class ObjectDuplicator : MonoBehaviour
             if (_placement == null) return;
         }
 
-        var obj = _placement.SpawnObject();
+        var obj = _placement.SpawnObject(transform.position);
         if (!obj) return;
         
         obj.name += " Copy " + Guid.NewGuid();

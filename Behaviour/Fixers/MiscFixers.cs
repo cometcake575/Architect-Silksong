@@ -829,4 +829,12 @@ public static class MiscFixers
         fsm.FsmVariables.FindFsmObject("Quest Target").Clear();
         fsm.GetState("Rescue 2").AddAction(() => obj.BroadcastEvent("OnSave"));
     }
+
+    public static void FixMirror(GameObject obj)
+    {
+        obj.AddComponent<PngObject>();
+        obj.transform.parent = null;
+        obj.transform.SetScale2D(new Vector2(2, 2));
+        obj.transform.SetPositionZ(-0.1f);
+    }
 }

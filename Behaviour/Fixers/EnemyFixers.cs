@@ -20,6 +20,13 @@ public static class EnemyFixers
         typeof(HealthManager).Hook("ApplyDamageScaling",
             (Func<HealthManager, HitInstance, HitInstance> orig, HealthManager self, HitInstance hit) => 
                 self.GetComponent<DisableHealthScaling>() ? hit : orig(self, hit));
+        
+        typeof(DisplayBossTitle).Hook(nameof(DisplayBossTitle.OnEnter),
+            (Action<DisplayBossTitle> orig, DisplayBossTitle self) =>
+            {
+                if (self.fsmComponent.GetComponent<DisableBossTitle>()) self.bossTitle.value = "";
+                orig(self);
+            });
     }
     
     public static void ApplyGravity(GameObject obj)
@@ -180,6 +187,7 @@ public static class EnemyFixers
     }
 
     public class DisableHealthScaling : MonoBehaviour;
+    public class DisableBossTitle : MonoBehaviour;
 
     public static void FixDuctsucker(GameObject obj)
     {
@@ -338,5 +346,67 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.FsmVariables.FindFsmBool("Spawner").value = false;
         obj.GetComponent<HealthManager>().invincible = false;
+    }
+
+    public static void FixMoorwing(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+        var zoom = fsm.GetState("Zoom Down");
+        zoom.DisableAction(2);
+        zoom.DisableAction(3);
+        zoom.AddAction(() => fsm.SendEvent("FINISHED"));
+        ((StartRoarEmitter)fsm.GetState("Quick Roar").actions[3]).stunHero = false;
+    }
+
+    public static void FixGroal(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+
+        var hm = obj.GetComponent<HealthManager>();
+        hm.invincible = false;
+
+        // Spawn instantly
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"), 0);
+        fsm.GetState("Fake Battle End").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Entry Antic").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Entry Dive").AddAction(() => fsm.SendEvent("FINISHED"), 4);
+
+        // Roar does not stun player
+        ((StartRoarEmitter)fsm.GetState("Entry Roar").actions[1]).stunHero = false;
+
+        // Adjust for X position
+        fsm.FsmVariables.FindFsmFloat("X Centre").value = obj.transform.position.x;
+        fsm.FsmVariables.FindFsmFloat("X Min").value = obj.transform.position.x - 13.75f;
+        fsm.FsmVariables.FindFsmFloat("X Max").value = obj.transform.position.x + 13.75f;
+
+        // Adjust for ground position
+        var ground = HeroController.instance.FindGroundPointY(
+            obj.transform.position.x,
+            obj.transform.position.y,
+            true);
+        fsm.FsmVariables.FindFsmFloat("Y Underwater ").value = ground - 4.56f;
+        fsm.FsmVariables.FindFsmFloat("Splash In Y").value = ground - 3.2f;
+        fsm.FsmVariables.FindFsmFloat("Pt WaterSplash Y").value = ground - 3.2f;
+
+        // Disable music
+        fsm.GetState("Fight Start").DisableAction(0);
+
+        // Hooks summon and trap events to Architect events
+        fsm.GetState("Trap").AddAction(() => obj.BroadcastEvent("TrySpikeTrap"), 1);
+        var summon = fsm.GetState("Summon");
+        summon.AddAction(() => obj.BroadcastEvent("TrySpikeTrap"), 3);
+        summon.AddAction(() => obj.BroadcastEvent("TrySummon"), 1);
+
+        // No longer forces range to prevent infinite loop if leaving range
+        fsm.GetState("Dive Up Antic").DisableAction(4);
+
+        fsm.GetState("Death Hit").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnDeath");
+            var item = obj.GetComponent<PersistentBoolItem>();
+            if (!item) return;
+            item.SetValueOverride(true);
+        }, 0);
     }
 }

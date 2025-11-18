@@ -191,15 +191,17 @@ public class ObjectPlacement(
         public Vector3 offset;
     }
 
-    public GameObject SpawnObject()
+    public GameObject SpawnObject(Vector3 pos = default)
     {
         if (!type.Prefab)
         {
             ArchitectPlugin.Logger.LogError($"Error - Prefab of {type.GetName()} is missing, cannot spawn");
             return null;
         }
-        
-        var obj = Object.Instantiate(type.Prefab, _position, type.Prefab.transform.rotation);
+
+        if (pos == default) pos = _position;
+        else pos.z = _position.z;
+        var obj = Object.Instantiate(type.Prefab, pos, type.Prefab.transform.rotation);
         obj.name = $"[Architect] {type.GetName()} ({id})";
 
         FixId<int>(obj);

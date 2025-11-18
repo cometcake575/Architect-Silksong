@@ -356,6 +356,9 @@ public static class VanillaObjects
         AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),
             preloadAction:EnemyFixers.KeepActive);
 
+        AddEnemy("Moorwing", "moorwing", ("Greymoor_05_boss", "Vampire Gnat Boss Scene/Vampire Gnat"),
+            postSpawnAction:EnemyFixers.FixMoorwing).WithConfigGroup(ConfigGroup.Bosses).DoFlipX(); 
+
         Categories.Hazards.Add(new PreloadObject("Mill Trap", "mill_trap",
                 ("Greymoor_06", "Greymoor_windmill_cog (1)/GameObject/dustpen_trap_shine0000"),
                 preloadAction: HazardFixers.FixMillTrap).WithConfigGroup(ConfigGroup.Hazards)
@@ -440,6 +443,11 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixBloatroach);
         AddEnemy("Miremite", "swamp_goomba",
             ("Shadow_02", "Black Thread States Thread Only Variant/Normal World/Swamp Goomba")).DoFlipX();
+
+        AddEnemy("Groal the Great", "groal", ("Shadow_18", "Battle Scene/Wave 6 - Boss/Swamp Shaman"),
+            preloadAction:EnemyFixers.RemoveConstrainPosition,
+            postSpawnAction:EnemyFixers.FixGroal)
+            .WithConfigGroup(ConfigGroup.Bosses).WithBroadcasterGroup(BroadcasterGroup.Groal);
         
         AddSolid("Bilewater Platform 1", "swamp_plat_1",
             ("Shadow_02", "plank_plat (4)"), preloadAction:MiscFixers.FixBilePlat);
@@ -511,10 +519,17 @@ public static class VanillaObjects
 
     private static void AddMiscObjects()
     {
-        Categories.Misc.Add(new PreloadObject("Bell Bench", "bell_bench",
+        Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
             ("Bone_East_15", "bell_bench/RestBench"),
             preloadAction: MiscFixers.FixBench, preview: true)
             .WithConfigGroup(ConfigGroup.Benches));
+        
+        Categories.Misc.AddStart(new PreloadObject("Reflection Effect", "mirror_effect",
+            ("Hang_06b", "new_scene/Reflection_surface"),
+            description:"Reflects objects above itself, can be configured\n" +
+                        "in the same way as the Custom PNG for custom mirror shapes.",
+            preloadAction: MiscFixers.FixMirror, sprite:ResourceUtils.LoadSpriteResource("reflection", ppu:155))
+            .WithConfigGroup(ConfigGroup.Mirror));
 
         Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
                 ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
@@ -866,7 +881,7 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.FleaCounter)
             .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
         
-        Categories.Misc.AddStart(new PreloadObject("Fleamaster NPC", "fleamaster_npc",
+        Categories.Misc.Add(new PreloadObject("Fleamaster NPC", "fleamaster_npc",
             ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Flea Games Host NPC"),
             preloadAction: MiscFixers.FixFleamaster)
             .WithConfigGroup(ConfigGroup.Npcs));

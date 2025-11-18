@@ -1,3 +1,4 @@
+using System;
 using Architect.Events;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -29,16 +30,25 @@ public class Relay : MonoBehaviour
         _item = gameObject.AddComponent<PersistentRelayItem>();
         _item.defaultValue = startActivated;
 
-        _item.OnSetSaveState += value =>
-        {
-            _shouldRelay = value;
-            if (value && broadcastImmediately) DoRelay();
-        };
+        _item.OnSetSaveState += SetSaveState;
+        _item.OnGetSaveState += GetSaveState;
+    }
 
-        _item.OnGetSaveState += (out bool value) =>
-        {
-            value = _shouldRelay;
-        };
+    private void OnDestroy()
+    {
+        _item.OnSetSaveState -= SetSaveState;
+        _item.OnGetSaveState -= GetSaveState;
+    }
+
+    private void SetSaveState(bool value)
+    {
+        _shouldRelay = value;
+        if (value && broadcastImmediately) DoRelay();
+    }
+
+    private void GetSaveState(out bool value)
+    {
+        value = _shouldRelay;
     }
 
     private void Start()
