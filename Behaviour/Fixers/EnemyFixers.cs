@@ -430,7 +430,7 @@ public static class EnemyFixers
         fsm.GetState("Init").AddAction(() => fsm.SetState("Set Evade Hops"), 6);
         fsm.GetState("Hidden G").AddAction(() =>
         {
-            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 6.5f) 
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 12) 
                 fsm.SendEvent("AMBUSH");
         }, 0, true);
         fsm.GetState("Positioning Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
@@ -448,7 +448,7 @@ public static class EnemyFixers
         }, 2);
         fsm.GetState("Hidden G").AddAction(() =>
         {
-            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 6.5f) 
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 12) 
                 fsm.SendEvent("AMBUSH");
         }, 0, true);
         fsm.GetState("Node Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
@@ -489,7 +489,7 @@ public static class EnemyFixers
         guard.DisableAction(0);
         guard.AddAction(() =>
         {
-            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 6.5f) 
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 12) 
                 fsm.SetState("Roar");
         }, everyFrame:true);
         guard.AddAction(new IdleBuzz
