@@ -434,27 +434,28 @@ public static class ConfigGroup
                     switch (value.GetValue())
                     {
                         case 0:
-                            o.RemoveComponent<Collider2D>();
+                            o.RemoveComponentsInChildren<Collider2D>();
                             break;
                         case 1:
                             o.layer = Default;
-                            o.AddComponent<CustomDamager>().damageAmount = 1;
-                            o.GetComponent<Collider2D>().isTrigger = true;
+                            var collider = o.GetComponentInChildren<Collider2D>();
+                            collider.isTrigger = true;
+                            collider.gameObject.AddComponent<CustomDamager>().damageAmount = 1;
                             break;
                         case 2:
-                            o.GetComponent<Collider2D>().isTrigger = false;
+                            o.GetComponentInChildren<Collider2D>().isTrigger = false;
                             o.layer = Terrain;
                             break;
                         case 3:
                             o.layer = Terrain;
-                            o.AddComponent<PlatformEffector2D>().surfaceArc = 120;
-                            var col = o.GetComponent<Collider2D>();
+                            var col = o.GetComponentInChildren<Collider2D>();
+                            col.gameObject.AddComponent<PlatformEffector2D>().surfaceArc = 120;
                             col.isTrigger = false;
                             col.usedByEffector = true;
                             break;
                         case 4:
                             o.layer = Default;
-                            o.GetComponent<Collider2D>().isTrigger = false;
+                            o.GetComponentInChildren<Collider2D>().isTrigger = false;
                             break;
                     }
                 }
