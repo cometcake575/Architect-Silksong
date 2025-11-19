@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -365,6 +366,15 @@ public static class EnemyFixers
 
         var hm = obj.GetComponent<HealthManager>();
         hm.invincible = false;
+
+
+        // Prevent break on death
+        var fly = fsm.GetState("Fly Idle");
+        fly.transitions = fly.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        var choice = fsm.GetState("Attack Choice");
+        choice.transitions = choice.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
 
         // Spawn instantly
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"), 0);
