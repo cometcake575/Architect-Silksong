@@ -20,6 +20,10 @@ public static class BroadcasterHooks
             {
                 self.gameObject.BroadcastEvent("OnDeath");
                 self.gameObject.BroadcastEvent("FirstDeath");
+                
+                var pbi = self.GetComponent<PersistentBoolItem>();
+                if (pbi) pbi.SetValueOverride(true);
+                
                 orig(self);
             }
         );
