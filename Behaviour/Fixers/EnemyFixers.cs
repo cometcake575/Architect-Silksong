@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Architect.Utils;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 
@@ -418,5 +419,90 @@ public static class EnemyFixers
             if (!item) return;
             item.SetValueOverride(true);
         }, 0);
+    }
+
+    
+    public static void FixStilkin(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Init").AddAction(() => fsm.SetState("Set Evade Hops"), 6);
+        fsm.GetState("Hidden G").AddAction(() =>
+        {
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 6.5f) 
+                fsm.SendEvent("AMBUSH");
+        }, 0, true);
+        fsm.GetState("Positioning Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
+    public static void FixStilkinTrapper(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Init").AddAction(() =>
+        {
+            obj.GetComponent<tk2dSpriteAnimator>().Play("Hop");
+            fsm.SetState("Flutter Start");
+        }, 2);
+        fsm.GetState("Hidden G").AddAction(() =>
+        {
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 6.5f) 
+                fsm.SendEvent("AMBUSH");
+        }, 0, true);
+        fsm.GetState("Node Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        
+        var digOut1 = fsm.GetState("Dig Out G 1");
+        ((Tk2dPlayAnimationWithEvents)digOut1.actions[2]).clipName = "Hop";
+        digOut1.AddAction(new Wait
+        {
+            time = 0.4f,
+            finishEvent = FsmEvent.Finished
+        });
+        
+        var digOut2 = fsm.GetState("Dig Out G 2");
+        digOut2.DisableAction(0);
+        digOut2.AddAction(() =>
+        {
+            fsm.SetState("Water Exit Q");
+        });
+        
+        fsm.GetState("Water Exit Q").DisableAction(6);
+    }
+
+    public static void FixLastClawPreload(GameObject obj)
+    {
+        obj.transform.SetPositionZ(0.006f);
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Fly");
+    }
+
+    public static void FixLastClaw(GameObject obj)
+    {
+        // Act like a regular enemy, flies idly and is alert when Hornet is nearby
+        obj.layer = 11;
+        
+        var fsm = obj.LocateMyFSM("Control");
+        
+        var guard = fsm.GetState("Guard");
+        guard.DisableAction(0);
+        guard.AddAction(() =>
+        {
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 6.5f) 
+                fsm.SetState("Roar");
+        }, everyFrame:true);
+        guard.AddAction(new IdleBuzz
+        {
+            gameObject = new FsmOwnerDefault { gameObject = obj },
+            roamingRange = 2,
+            waitMax = 1,
+            waitMin = 0.5f,
+            accelerationMax = 20,
+            speedMax = 5
+        });
+
+        // Stops charging upon hitting a transition gate too
+        ((RayCast2dV2)fsm.GetState("Charge").actions[4]).layerMask = [8, LayerMask.NameToLayer("Enemy Detector")];
     }
 }

@@ -60,8 +60,15 @@ public class CrestBinding : Binding
     private static IEnumerator RefreshCrestWhenReady()
     {
         var hc = HeroController.instance;
-        yield return new WaitUntil(() => !hc.controlReqlinquished && !hc.cState.dashing && !hc.cState.airDashing);
+        yield return new WaitUntil(() => !hc.controlReqlinquished &&
+                                         !hc.cState.dashing &&
+                                         !hc.cState.downAttacking &&
+                                         !hc.cState.downSpikeAntic &&
+                                         !hc.cState.airDashing);
         RefreshCrest();
+        yield return null;
+        hc.RegainControl();
+        hc.StartAnimationControl();
     }
 
     private static void RefreshCrest()

@@ -21,10 +21,10 @@ public static class FsmUtils
         {
             EveryFrame = everyFrame
         };
-        AddAction(state, customAction, index, everyFrame);
+        AddAction(state, customAction, index);
     }
     
-    public static void AddAction(this FsmState state, FsmStateAction customAction, int index = -1, bool everyFrame = false)
+    public static void AddAction(this FsmState state, FsmStateAction customAction, int index = -1)
     {
         var actions = state.Actions;
 

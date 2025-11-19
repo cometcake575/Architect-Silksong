@@ -443,6 +443,15 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixBloatroach);
         AddEnemy("Miremite", "swamp_goomba",
             ("Shadow_02", "Black Thread States Thread Only Variant/Normal World/Swamp Goomba")).DoFlipX();
+        AddEnemy("Swamp Squit", "swamp_mosquito",
+            ("Shadow_04", "Swamp Mosquito (3)"));
+
+        AddEnemy("Stilkin", "stilkin", 
+            ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
+            postSpawnAction:EnemyFixers.FixStilkin);
+        AddEnemy("Stilkin Trapper", "stilkin_trapper",
+            ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
+            postSpawnAction:EnemyFixers.FixStilkinTrapper).DoFlipX();
 
         AddEnemy("Groal the Great", "groal", ("Shadow_18", "Battle Scene/Wave 6 - Boss/Swamp Shaman"),
             preloadAction:EnemyFixers.RemoveConstrainPosition,
@@ -723,6 +732,11 @@ public static class VanillaObjects
         AddEnemy("Skarrgard", "bone_hunter_throw",
             ("Ant_21", "Enemy Control/Normal/Bone Hunter Throw"),
             preloadAction: EnemyFixers.RemoveConstrainPosition);
+
+        AddEnemy("Last Claw", "last_claw",
+            ("Memory_Ant_Queen", "Boss Scene/Battle Scene/Wave 4/Bone Hunter Fly Chief"),
+            preloadAction: EnemyFixers.FixLastClawPreload,
+            postSpawnAction: EnemyFixers.FixLastClaw);
 
         Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
             ("Ant_04", "Silkcatcher Plant")));
