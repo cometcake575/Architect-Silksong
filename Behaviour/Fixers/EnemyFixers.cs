@@ -495,14 +495,29 @@ public static class EnemyFixers
         guard.AddAction(new IdleBuzz
         {
             gameObject = new FsmOwnerDefault { gameObject = obj },
-            roamingRange = 2,
+            roamingRange = 1,
             waitMax = 1,
             waitMin = 0.5f,
             accelerationMax = 20,
             speedMax = 5
         });
 
-        // Stops charging upon hitting a transition gate too
+        // Stops attacks upon hitting a transition gate too
         ((RayCast2dV2)fsm.GetState("Charge").actions[4]).layerMask = [8, LayerMask.NameToLayer("Enemy Detector")];
+        ((RayCast2dV2)fsm.GetState("Dthrust").actions[8]).layerMask = [8, LayerMask.NameToLayer("Enemy Detector")];
+
+        fsm.FsmVariables.FindFsmFloat("Max Height").value = obj.transform.GetPositionY() + 15;
+    }
+
+    public static void ScaleLastClaw(GameObject obj, float scale)
+    {
+        if (scale < 1) return;
+        
+        var fsm = obj.LocateMyFSM("Control");
+        
+        ((RayCast2dV2)fsm.GetState("Charge").actions[4]).distance.value *= scale;
+        ((RayCast2dV2)fsm.GetState("Dthrust").actions[8]).distance.value *= scale;
+        
+        obj.transform.localScale *= scale;
     }
 }

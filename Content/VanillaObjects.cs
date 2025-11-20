@@ -736,7 +736,8 @@ public static class VanillaObjects
         AddEnemy("Last Claw", "last_claw",
             ("Memory_Ant_Queen", "Boss Scene/Battle Scene/Wave 4/Bone Hunter Fly Chief"),
             preloadAction: EnemyFixers.FixLastClawPreload,
-            postSpawnAction: EnemyFixers.FixLastClaw);
+            postSpawnAction: EnemyFixers.FixLastClaw)
+            .WithScaleAction(EnemyFixers.ScaleLastClaw);
 
         Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
             ("Ant_04", "Silkcatcher Plant")));
