@@ -772,6 +772,11 @@ public static class VanillaObjects
         AddEnemy("Skull Brute", "bone_goomba_l",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba Large"));
 
+        AddEnemy("Skull Tyrant", "skull_tyrant", ("Bonetown_boss", "Boss Scene/Skull King"),
+            postSpawnAction: EnemyFixers.FixSkullTyrant)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.SkullTyrant);
+
         Categories.Misc.Add(new PreloadObject("Large Skull", "bone_goomba_skull_large",
             ("Bone_East_03", "bone_goomba_skull_break_large)")));
 
@@ -803,7 +808,8 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Bone Boulder", "bone_boulder",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder"))
-            .WithConfigGroup(ConfigGroup.Hazards));
+            .WithConfigGroup(ConfigGroup.Hazards)
+            .WithReceiverGroup(ReceiverGroup.BoneBoulder));
 
         Categories.Interactable.Add(new PreloadObject("Bone Lever", "bone_lever",
                 ("Mosstown_01", "Bone Lever"), postSpawnAction: InteractableFixers.FixLever)
@@ -918,6 +924,12 @@ public static class VanillaObjects
 
         AddEnemy("Mossmir", "mossbone_fly",
             ("Arborium_04", "MossBone Fly (1)"));
+
+        AddEnemy("Moss Mother", "moss_mother",
+            ("Tut_03", "Black Thread States/Normal World/Battle Scene/Wave 1/Mossbone Mother"), 
+            postSpawnAction: EnemyFixers.FixMossMother)
+            .WithConfigGroup(ConfigGroup.MossMother)
+            .WithBroadcasterGroup(BroadcasterGroup.MossMother).DoFlipX();
 
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),

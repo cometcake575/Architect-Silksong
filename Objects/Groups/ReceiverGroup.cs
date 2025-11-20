@@ -31,6 +31,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> BoneBoulder = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("boulder_drop", "Drop", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("DROP");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Bumpers = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("bouncer_evil", "SetFire", o =>
         {

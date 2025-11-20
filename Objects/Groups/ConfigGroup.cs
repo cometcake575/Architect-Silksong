@@ -823,6 +823,16 @@ public static class ConfigGroup
                 }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> MossMother = GroupUtils.Merge(Bosses, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Follow Player", "moss_mother_align",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.LocateMyFSM("Control").GetState("Idle").DisableAction(0);
+                }).WithDefaultValue(true))
+    ]);
+
     static ConfigGroup()
     {
         typeof(HealthManager).Hook(nameof(HealthManager.IsBlockingByDirection),

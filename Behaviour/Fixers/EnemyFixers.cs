@@ -1,14 +1,18 @@
 using System;
 using System.Linq;
+using Architect.Content.Preloads;
 using Architect.Utils;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Behaviour.Fixers;
 
 public static class EnemyFixers
 {
+    private static GameObject _bouldersPrefab;
+    
     public static void Init()
     {
         HookUtils.OnFsmAwake += fsm =>
@@ -29,6 +33,9 @@ public static class EnemyFixers
                 if (self.fsmComponent.GetComponent<DisableBossTitle>()) self.bossTitle.value = "";
                 orig(self);
             });
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Bonetown_boss", "Boss Scene/Boulders Battle", 
+            o => _bouldersPrefab = o));
     }
     
     public static void ApplyGravity(GameObject obj)
@@ -419,6 +426,8 @@ public static class EnemyFixers
             if (!item) return;
             item.SetValueOverride(true);
         }, 0);
+        
+        fsm.GetState("End Battle").AddAction(() => Object.Destroy(obj));
     }
 
     
@@ -511,13 +520,125 @@ public static class EnemyFixers
 
     public static void ScaleLastClaw(GameObject obj, float scale)
     {
+        obj.transform.localScale *= scale;
+        
         if (scale < 1) return;
         
         var fsm = obj.LocateMyFSM("Control");
         
         ((RayCast2dV2)fsm.GetState("Charge").actions[4]).distance.value *= scale;
         ((RayCast2dV2)fsm.GetState("Dthrust").actions[8]).distance.value *= scale;
+    }
+
+    public static void FixMossMother(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
         
-        obj.transform.localScale *= scale;
+        // Variables to align
+        var vars = fsm.FsmVariables;
+        var centreX = vars.FindFsmFloat("Centre X");
+        var leftX = vars.FindFsmFloat("Left X");
+        var rightX = vars.FindFsmFloat("Right X");
+        var swoopY = vars.FindFsmFloat("Swoop Height");
+        var maxY = vars.FindFsmFloat("Max Height");
+        
+        // Align based on self
+        fsm.GetState("Init").AddAction(() => Realign(obj.transform.position), 0);
+        
+        // Wake
+        obj.GetComponent<MeshRenderer>().enabled = true;
+        obj.transform.GetChild(0).gameObject.SetActive(false);
+        fsm.GetState("Dormant").AddAction(() =>
+        {
+            if (obj.GetComponent<HealthManager>().isDead) return;
+            fsm.SetState("Roar");
+        }, 0);
+        
+        // Disable stun
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[9]).stunHero = false;
+        
+        // Align based on player
+        fsm.GetState("Idle").AddAction(() => Realign(HeroController.instance.transform.position), 0);
+        
+        // Broadcast slam event
+        fsm.GetState("Slam").AddAction(() => obj.BroadcastEvent("Slam"), 0);
+        
+        // Fix stuck
+        fsm.GetState("Slam RePos").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+        // Swoop follow alignment
+        var swoop = fsm.GetState("Swoop");
+        swoop.DisableAction(1);
+        swoop.DisableAction(2);
+        swoop.DisableAction(3);
+        
+        // Disable music
+        var roarEnd = fsm.GetState("Roar End");
+        roarEnd.DisableAction(3);
+        roarEnd.DisableAction(4);
+        
+        return;
+
+        void Realign(Vector2 source)
+        {
+            centreX.value = source.x;
+            leftX.value = source.x - 10.5f;
+            rightX.value = source.x + 10.5f;
+            swoopY.value = source.y;
+            maxY.value = source.y + 6;
+        }
+    }
+
+    public static void FixSkullTyrant(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Behaviour");
+        
+        // Wake
+        fsm.GetState("State Check").AddAction(() => fsm.SendEvent("INVADING"), 0);
+        fsm.GetState("Check Respawn Pos").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Standard Respawn").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+        var pause = fsm.GetState("Invading Pause");
+        pause.DisableAction(6);
+        pause.DisableAction(7);
+        pause.AddAction(new Wait
+        {
+            time = 0.1f,
+            finishEvent = FsmEvent.Finished
+        });
+
+        var idle = fsm.GetState("Invading Idle");
+        idle.DisableAction(0);
+        idle.DisableAction(1);
+        idle.AddAction(() =>
+        {
+            if (obj.GetComponent<HealthManager>().isDead) return;
+            fsm.SendEvent("WAKE");
+        }, 10);
+        
+        fsm.GetState("Invading").AddAction(() => fsm.SendEvent("ROAR"), 0);
+        fsm.GetState("Invading Idle 2").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        
+        fsm.GetState("ReWake Roar").AddAction(fsm.GetState("Wake Roar").actions[2], 3);
+
+        // Disable music
+        var end = fsm.GetState("Roar End");
+        end.DisableAction(1);
+        end.DisableAction(2);
+        
+        // Don't kill Pilby
+        fsm.GetState("Kill Pilby? 2").DisableAction(1);
+        
+        // Boulders
+        var boulders = Object.Instantiate(_bouldersPrefab);
+        boulders.SetActive(true);
+        fsm.FsmVariables.FindFsmGameObject("Boulders Battle").value = boulders;
+        
+        var choice = fsm.GetState("Boulder Choice");
+        choice.AddAction(() =>
+        {
+            obj.BroadcastEvent("Stomp");
+            boulders.transform.SetPositionX(obj.transform.position.x);
+        }, 0);
     }
 }
