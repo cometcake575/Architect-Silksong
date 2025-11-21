@@ -789,6 +789,15 @@ public static class VanillaObjects
         AddEnemy("Kilik", "bone_crawler", ("Ant_19", "Bone Crawler (2)"),
             preloadAction: EnemyFixers.RemoveConstrainPosition);
 
+        AddEnemy("Beastfly", "beastfly", ("Ant_19", "Enemy Break Cage (9)/Enemy/Bone Flyer"),
+                preloadAction: EnemyFixers.RemoveConstrainPosition).DoFlipX();
+
+        AddEnemy("Savage Beastfly", "savage_beastfly", ("Ant_19", "Boss Control/Boss Scene/Bone Flyer Giant"),
+            preloadAction: EnemyFixers.RemoveConstrainPosition,
+            postSpawnAction: EnemyFixers.FixSavageBeastfly)
+            .WithConfigGroup(ConfigGroup.SavageBeastfly)
+            .WithBroadcasterGroup(BroadcasterGroup.SavageBeastfly).DoFlipX();
+
         AddEnemy("Mawling", "bone_roller", ("Arborium_03", "Bone Roller"));
 
         AddEnemy("Marrowmaw", "bone_thumper", ("Arborium_04", "Enemy Respawner/Source Folder/Bone Thumper"),
@@ -840,7 +849,8 @@ public static class VanillaObjects
         AddEnemy("Deep Diver", "dock_charger", ("Dock_02b", "Dock Charger")).DoFlipX();
 
         Categories.Interactable.Add(new PreloadObject("Deep Docks Gate", "song_gate_small",
-                ("Bone_East_15", "Song_Gate_small (3)"))
+                ("Bone_East_15", "Song_Gate_small (3)"), 
+                preloadAction: o => o.RemoveComponent<PersistentBoolItem>())
             .WithReceiverGroup(ReceiverGroup.Gates)
             .WithRotationGroup(RotationGroup.Eight));
         Categories.Interactable.Add(new PreloadObject("Deep Docks Lever", "song_lever_side",

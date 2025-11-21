@@ -12,6 +12,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> SkullTyrant = ["Stomp", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
+    public static readonly List<string> SavageBeastfly = ["TrySummon", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
+    
     public static readonly List<string> Groal = ["TrySummon", "TrySpikeTrap", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
     public static readonly List<string> Activatable = ["OnActivate"];

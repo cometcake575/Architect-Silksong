@@ -641,4 +641,51 @@ public static class EnemyFixers
             boulders.transform.SetPositionX(obj.transform.position.x);
         }, 0);
     }
+
+    public static void FixSavageBeastfly(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        // Not invulnerable
+        var hm = obj.GetComponent<HealthManager>();
+        hm.IsInvincible = false;
+        hm.hasSpecialDeath = false;
+        
+        // Fix visual bug on start
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.Play(anim.DefaultClip);
+        
+        // Disable stun
+        ((StartRoarEmitter)fsm.GetState("Intro Roar").actions[1]).stunHero = false;
+        
+        // Fix player not entered
+        var entered = fsm.FsmVariables.FindFsmBool("Hero Entered");
+        var slam = fsm.FsmVariables.FindFsmBool("Final Slam");
+        fsm.GetState("Choice").AddAction(() =>
+        {
+            if (entered.value) return;
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 12) 
+                fsm.SendEvent("INTRO");
+        }, 0);
+        fsm.GetState("Intro Antic").AddAction(() =>
+        {
+            entered.value = true;
+            slam.value = true;
+        }, 0);
+        
+        // Summon event
+        fsm.GetState("Roar Pos").DisableAction(4);
+        fsm.GetState("Summon Type").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
+
+        // Stomp fix
+        var stompY = new GameObject(obj.name + " Stomp Y");
+        fsm.FsmVariables.FindFsmGameObject("Stomp Y").value = stompY;
+        stompY.transform.position = obj.transform.position;
+        fsm.FsmVariables.FindFsmFloat("High Y Pos").value = obj.transform.GetPositionY();
+        
+        // Disable music
+        var recover = fsm.GetState("Intro Recover");
+        recover.DisableAction(4);
+        recover.DisableAction(5);
+    }
 }

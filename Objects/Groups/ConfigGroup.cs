@@ -819,8 +819,22 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     if (value.GetValue()) return;
-                    o.AddComponent<EnemyFixers.DisableBossTitle>();
+                    o.GetOrAddComponent<EnemyFixers.DisableBossTitle>();
                 }).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> SavageBeastfly = GroupUtils.Merge(Bosses, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Start Phase", "beastfly_phase",
+                (o, value) =>
+                {
+                    var val = value.GetValue();
+                    if (val == 0) return;
+                    
+                    var setHp = o.LocateMyFSM("Control").GetState("Set HP");
+                    setHp.DisableAction(1);
+                    if (val == 2) setHp.DisableAction(3);
+                }).WithOptions("Phase 1", "Phase 2", "Phase 3").WithDefaultValue(0).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> MossMother = GroupUtils.Merge(Bosses, [
