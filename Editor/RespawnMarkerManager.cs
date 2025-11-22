@@ -13,8 +13,6 @@ public static class RespawnMarkerManager
     
     public static void Init()
     {
-        if (!Settings.ShowRespawnPoint) return;
-        
         _marker = new GameObject("[Architect] Respawn Marker")
         {
             transform = { position = new Vector3(0, 0, 0.005f) }
@@ -48,6 +46,8 @@ public static class RespawnMarkerManager
         private PlayerData _pd;
         private Vector3 _lastPos;
         private bool _lastLeft;
+
+        private bool _showPoint;
         
         private void Start()
         {
@@ -57,6 +57,15 @@ public static class RespawnMarkerManager
 
         private void Update()
         {
+            var show = Settings.ShowRespawnPoint.Value;
+            if (show != _showPoint)
+            {
+                _marker.SetActive(show);
+                _showPoint = show;
+            }
+
+            if (!_showPoint) return;
+            
             var facingLeft = _pd.hazardRespawnFacing switch
             {
                 HazardRespawnMarker.FacingDirection.None => 

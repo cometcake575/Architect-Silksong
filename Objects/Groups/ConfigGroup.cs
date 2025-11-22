@@ -562,21 +562,24 @@ public static class ConfigGroup
             }))
     ];
 
-    public static readonly List<ConfigType> TriggerActivator = GroupUtils.Merge(Visible, [
-            ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
-                (o, value) =>
-                {
-                    var body = o.GetOrAddComponent<Rigidbody2D>();
-                    body.gravityScale = value.GetValue();
-                    body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-                }
-            )),
-            ConfigurationManager.RegisterConfigType(new IntConfigType("Trigger Layer", "activator_layer",
-                (o, value) =>
-                {
-                    o.GetComponent<MiscFixers.TriggerActivator>().layer = value.GetValue();
-                }
-            ))
+    public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
+            (o, value) =>
+            {
+                var body = o.GetOrAddComponent<Rigidbody2D>();
+                body.gravityScale = value.GetValue();
+                body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            }
+        ))
+    ]);
+
+    public static readonly List<ConfigType> TriggerActivator = GroupUtils.Merge(Gravity, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Trigger Layer", "activator_layer",
+            (o, value) =>
+            {
+                o.GetComponent<MiscFixers.TriggerActivator>().layer = value.GetValue();
+            }
+        ))
     ]);
 
     public static readonly List<ConfigType> FakePerformance = GroupUtils.Merge(Generic, [
@@ -586,6 +589,21 @@ public static class ConfigGroup
                     o.GetComponent<FakePerformanceRegion>().rangeMult = value.GetValue();
                 }
             ).WithDefaultValue(1))
+    ]);
+
+    public static readonly List<ConfigType> PlayerDataSetter = GroupUtils.Merge(Generic, [
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Data ID", "pd_id",
+                (o, value) =>
+                {
+                    o.GetComponent<PlayerDataSetter>().dataName = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Set Value", "pd_value",
+                (o, value) =>
+                {
+                    o.GetComponent<PlayerDataSetter>().value = value.GetValue();
+                }
+            ))
     ]);
 
     public static readonly List<ConfigType> Fleas = GroupUtils.Merge(Decorations, [
@@ -1111,7 +1129,12 @@ public static class ConfigGroup
                         var val = value.GetValue();
                         o.GetComponent<TriggerZone>().mode = val;
 
-                        o.layer = val == 3 ? ActiveRegion : SoftTerrain;
+                        if (val == 3)
+                        {
+                            o.layer = ActiveRegion;
+                            o.AddComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                        }
+                        else o.layer = SoftTerrain;
                     })
                 .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Activator").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
@@ -1190,6 +1213,19 @@ public static class ConfigGroup
                         o.GetComponent<CustomInteraction>().yOffset = value.GetValue();
                     }).WithDefaultValue(2.5f))
     ]);
+
+    public static readonly List<ConfigType> RosaryBead = GroupUtils.Merge(Gravity, GroupUtils.Merge(Png, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Rosary Worth", "bead_worth",
+            (o, value) =>
+            {
+                var costRef = ScriptableObject.CreateInstance<CostReference>();
+                costRef.value = value.GetValue();
+                o.GetComponent<GeoControl>().valueReference = costRef;
+            }
+        )),
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "rosary_stay")
+            .WithDefaultValue(0))
+    ]));
 
     public static readonly List<ConfigType> HazardRespawn = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
@@ -1465,10 +1501,10 @@ public static class ConfigGroup
                     }).WithDefaultValue(false))
     ]);
 
-    private static ConfigType MakePersistenceConfigType(string name, string id,
+    private static ChoiceConfigType MakePersistenceConfigType(string name, string id,
         Action<GameObject, PersistentBoolItem> action = null)
     {
-        return new ChoiceConfigType(name, id, (o, value) =>
+        var cc = new ChoiceConfigType(name, id, (o, value) =>
         {
             var val = value.GetValue();
 
@@ -1487,6 +1523,8 @@ public static class ConfigGroup
 
                 if (val == 1) o.AddComponent<SemiPersistentBool>();
             }
-        }).WithOptions("False", "Bench", "True").WithPriority(-1);
+        }).WithOptions("False", "Bench", "True");
+        cc.WithPriority(-1);
+        return cc;
     }
 }

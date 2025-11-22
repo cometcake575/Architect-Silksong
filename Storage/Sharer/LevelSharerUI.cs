@@ -52,6 +52,8 @@ public static class LevelSharerUI
     private static InputField _descriptionInput;
     private static InputField _creatorInput;
 
+    private static Text _status;
+
     private static readonly List<Selectable> InteractableWhenLoggedIn = [];
     private static readonly List<Selectable> InteractableWhenLoggedOut = [];
     private static readonly List<Selectable> UninteractableWhenDownloading = [];
@@ -135,6 +137,10 @@ public static class LevelSharerUI
                 img.sprite = closeEditor;
                 _uiManager.StartCoroutine(FadeGameTitle());
                 _uiManager.StartCoroutine(_uiManager.FadeOutCanvasGroup(_uiManager.mainMenuScreen));
+                
+                _status.text = "Warning!\n\n" +
+                               "Downloading a level will overwrite any changes you have made yourself\n" +
+                               "Downloading a save will overwrite save slot " + Settings.SaveSlot.Value;
 
                 _ = PerformSearch();
             }
@@ -295,12 +301,9 @@ public static class LevelSharerUI
 
     private static void SetupLevelsArea()
     {
-        var status = UIUtils.MakeLabel("Download Status", _levelSharerObj, new Vector2(0, 40),
+        _status = UIUtils.MakeLabel("Download Status", _levelSharerObj, new Vector2(0, 40),
             new Vector2(0.5f, 0), new Vector2(0.5f, 0)).textComponent;
-        status.alignment = TextAnchor.UpperCenter;
-        status.text = "Warning!\n\n" +
-                      "Downloading a level will overwrite any changes you have made yourself\n" +
-                      "Downloading a save will overwrite save slot 4";
+        _status.alignment = TextAnchor.UpperCenter;
 
         var y = 135;
         for (var i = 0; i < LEVELS_PER_PAGE; i++)
@@ -345,10 +348,10 @@ public static class LevelSharerUI
             var k = i;
             
             btn.onClick.AddListener(() => _ = SharerRequests
-                .DownloadLevel(_orderedCurrentLevels[_index * LEVELS_PER_PAGE + k]["level_id"], status));
+                .DownloadLevel(_orderedCurrentLevels[_index * LEVELS_PER_PAGE + k]["level_id"], _status));
             
             saveBtn.onClick.AddListener(() => _ = SharerRequests
-                .DownloadSave(_orderedCurrentLevels[_index * LEVELS_PER_PAGE + k]["level_id"], status));
+                .DownloadSave(_orderedCurrentLevels[_index * LEVELS_PER_PAGE + k]["level_id"], _status));
             
             y -= 70;
         }

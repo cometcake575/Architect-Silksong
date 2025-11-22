@@ -136,7 +136,7 @@ public static class EditManager
 
         typeof(PersistentBoolItem).Hook("Awake", (Action<PersistentBoolItem> orig, PersistentBoolItem self) =>
         {
-            if (self.gameObject.name.StartsWith("[Architect] ") && Settings.TestMode)
+            if (self.gameObject.name.StartsWith("[Architect] ") && Settings.TestMode.Value)
             {
                 self.OnGetSaveState += (out bool value) => value = false;
             }

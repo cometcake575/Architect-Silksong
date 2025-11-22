@@ -36,6 +36,9 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
         
         _renderer = GetComponent<SpriteRenderer>();
         CustomAssetManager.DoLoadSprite(url, point, ppu, count, SaveSprites);
+
+        var anim = GetComponent<Animator>();
+        if (anim) anim.enabled = false;
     }
 
     public void SaveSprites(Sprite[] newSprites)

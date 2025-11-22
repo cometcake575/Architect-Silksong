@@ -195,8 +195,6 @@ public static class SharerRequests
         
         status.text = "Downloading Save...";
 
-        const int saveSlot = 4;
-
         var jsonBody = JsonUtility.ToJson(new DownloadRequestData
         {
             level_id = levelId
@@ -225,7 +223,7 @@ public static class SharerRequests
         var data = request.downloadHandler.data;
         var done = new TaskCompletionSource<bool>();
 
-        Platform.Current.WriteSaveSlot(saveSlot, data, _ => done.SetResult(true));
+        Platform.Current.WriteSaveSlot(Settings.SaveSlot.Value, data, _ => done.SetResult(true));
         UIManager.instance.slotFour.Prepare(GameManager.instance, true, false);
         
         await Task.WhenAll(done.Task, Task.Delay(1000));

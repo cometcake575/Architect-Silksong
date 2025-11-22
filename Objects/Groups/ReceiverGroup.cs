@@ -38,6 +38,21 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Pilby = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("pilby_die", "Die", o =>
+        {
+            var detector = o.transform.Find("Skull King Detector");
+            detector.GetComponent<TriggerEvent>().OnTriggerEnter2D(detector.GetComponent<BoxCollider2D>());
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> PlayerDataSetter = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("pd_set", "SetValue", o =>
+        {
+            o.GetComponent<PlayerDataSetter>().SetValue();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Bumpers = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("bouncer_evil", "SetFire", o =>
         {
@@ -219,6 +234,10 @@ public static class ReceiverGroup
     ]);
     
     public static readonly List<EventReceiverType> ObjectAnchor = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("anchor_reset", "Reset", o =>
+        {
+            o.GetComponent<ObjectAnchor>().Reset();
+        })),
         EventManager.RegisterReceiverType(new EventReceiverType("anchor_stop", "StopMoving", o =>
         {
             o.GetComponent<ObjectAnchor>().moving = false;

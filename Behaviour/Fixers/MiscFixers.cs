@@ -523,7 +523,21 @@ public static class MiscFixers
             var fsm = gameObject.LocateMyFSM("Conversation Control");
             fsm.GetState("Asleep").AddAction(() => fsm.SendEvent("WAKE"), 0);
             fsm.GetState("Choice").AddAction(() => fsm.SendEvent("REPEAT"), 0);
-            var dialogue = (RunDialogue) fsm.GetState("Repeat").actions[0];
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
+    public class Pilby : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Behaviour");
+            fsm.GetState("Location Check").AddAction(() => fsm.SendEvent("PILGRIMS REST"), 0);
+            fsm.GetState("Pilgrims Rest Choice").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+            var dialogue = (RunDialogue)fsm.GetState("Repeat PR").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
         }
@@ -836,5 +850,10 @@ public static class MiscFixers
         obj.transform.parent = null;
         obj.transform.SetScale2D(new Vector2(2, 2));
         obj.transform.SetPositionZ(-0.1f);
+    }
+
+    public static void FixPilby(GameObject obj)
+    {
+        obj.AddComponent<Pilby>();
     }
 }

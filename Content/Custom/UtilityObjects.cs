@@ -42,6 +42,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateChoiceDisplay());
         
         Categories.Utility.Add(CreatePlayerHook());
+        Categories.Utility.Add(CreatePlayerDataSetter());
         Categories.Utility.Add(CreateEnemyBarrier());
         Categories.Utility.Add(CreateObjectRemover("enemy_remover", "Disable Enemy", 
                 FindObjectsToDisable<HealthManager>, "Removes the nearest enemy.\n\n" +
@@ -385,6 +386,22 @@ public static class UtilityObjects
             .WithBroadcasterGroup(BroadcasterGroup.PlayerHooks)
             .WithReceiverGroup(ReceiverGroup.PlayerHooks)
             .WithConfigGroup(ConfigGroup.Generic);
+    }
+
+    private static PlaceableObject CreatePlayerDataSetter()
+    {
+        var dataSetter = new GameObject("PlayerData Setter");
+        dataSetter.SetActive(false);
+        Object.DontDestroyOnLoad(dataSetter);
+        
+        dataSetter.AddComponent<PlayerDataSetter>();
+
+        return new CustomObject("PlayerData Setter", "player_data_setter", dataSetter,
+                description:"Sets a PlayerData boolean value, intended for giving/taking upgrades.\n" +
+                            "May act strangely when changing certain values.",
+                sprite:ResourceUtils.LoadSpriteResource("player_data_changer", FilterMode.Point, ppu:64))
+            .WithReceiverGroup(ReceiverGroup.PlayerDataSetter)
+            .WithConfigGroup(ConfigGroup.PlayerDataSetter);
     }
 
     private static PlaceableObject CreateKeyListener()

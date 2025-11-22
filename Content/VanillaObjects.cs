@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
@@ -168,11 +169,11 @@ public static class VanillaObjects
         AddEnemy("Cogwork Underfly", "understore_auto", ("Under_13", "Understore Automaton"));
         AddEnemy("Cogwork Hauler", "understore_auto_ex", ("Under_13", "Understore Automaton EX"));
 
-        Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_3",
+        Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_4",
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
                 preloadAction: HazardFixers.FixUnderworksCog)
             .WithConfigGroup(ConfigGroup.Cogs));
-        Categories.Hazards.Add(new PreloadObject("Spiked Gold Cog", "spike_cog_2", 
+        Categories.Hazards.Add(new PreloadObject("Spiked Gold Cog", "spike_cog_5", 
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 2"), 
                 preloadAction: HazardFixers.FixUnderworksCog)
             .WithConfigGroup(ConfigGroup.Cogs));
@@ -357,7 +358,9 @@ public static class VanillaObjects
             preloadAction:EnemyFixers.KeepActive);
 
         AddEnemy("Moorwing", "moorwing", ("Greymoor_05_boss", "Vampire Gnat Boss Scene/Vampire Gnat"),
-            postSpawnAction:EnemyFixers.FixMoorwing).WithConfigGroup(ConfigGroup.Bosses).DoFlipX(); 
+            postSpawnAction:EnemyFixers.FixMoorwing)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
 
         Categories.Hazards.Add(new PreloadObject("Mill Trap", "mill_trap",
                 ("Greymoor_06", "Greymoor_windmill_cog (1)/GameObject/dustpen_trap_shine0000"),
@@ -796,7 +799,7 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.RemoveConstrainPosition,
             postSpawnAction: EnemyFixers.FixSavageBeastfly)
             .WithConfigGroup(ConfigGroup.SavageBeastfly)
-            .WithBroadcasterGroup(BroadcasterGroup.SavageBeastfly).DoFlipX();
+            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses).DoFlipX();
 
         AddEnemy("Mawling", "bone_roller", ("Arborium_03", "Bone Roller"));
 
@@ -891,6 +894,11 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
             .WithConfigGroup(ConfigGroup.Breakable));
+
+        AddEnemy("Plasmified Zango", "zango_boss", ("Crawl_10", "Area_States/Infected/Blue Assistant"),
+                postSpawnAction: EnemyFixers.FixZango)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.Bosses);
     }
 
     private static void AddFleaObjects()
@@ -957,6 +965,25 @@ public static class VanillaObjects
         AddEnemy("Winged Pilgrim", "pilgrim_fly",
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Fly")).DoFlipX();
 
+        AddEnemy("Elder Pilgrim", "elder_pilgrim",
+            ("Bonegrave", "Pilgrim Groups/Group 1/Act3 Pilgrim 05"), 
+            preloadAction: EnemyFixers.FixElderPilgrim,
+            postSpawnAction: EnemyFixers.FixBonegravePilgrim);
+        AddEnemy("Pilgrim Guide", "pilgrim_guide",
+            ("Bonegrave", "Pilgrim Groups/Group 2/Pilgrim StaffWielder"), 
+            preloadAction: EnemyFixers.KeepActive,
+            postSpawnAction: EnemyFixers.FixBonegravePilgrim);
+        
+        AddEnemy("Covetous Pilgrim", "covetous_pilgrim",
+            ("Bonegrave", "Pilgrim Groups/Rosary Pilgrim Scene/Rosary Pilgrim"));
+        
+        Categories.Misc.Add(new PreloadObject("Rosary Bead", "rosary",
+            ("Bonegrave", "Pilgrim Groups/Rosary Pilgrim Scene/Geo Small Persistent (4)"),
+            preloadAction: o => o.AddComponent<PngObject>(),
+            description:"Can be configured to be worth any number of rosaries\n" +
+                        "and to use a Custom PNG texture.")
+            .WithConfigGroup(ConfigGroup.RosaryBead));
+
         AddEnemy("Pilgrim Hiker", "pilgrim_hiker",
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Hiker"));
 
@@ -975,6 +1002,13 @@ public static class VanillaObjects
                 description: "This spike starts hidden, the 'Activate' trigger will\n" +
                              "cause the spike to come out of the ground.")
             .WithReceiverGroup(ReceiverGroup.Trap));
+
+        Categories.Misc.Add(new PreloadObject("Pilby", "pilby_death",
+            ("Bonetown", "Black Thread States/Normal World/Bonetown Resident"),
+            preloadAction: EnemyFixers.KeepActive,
+            postSpawnAction: MiscFixers.FixPilby))
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithReceiverGroup(ReceiverGroup.Pilby);
     }
 
     private static PlaceableObject AddEnemy(string name, string id, (string, string) path,

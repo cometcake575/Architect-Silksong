@@ -36,6 +36,8 @@ public class Relay : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (string.IsNullOrEmpty(id)) return;
+        
         _item.OnSetSaveState -= SetSaveState;
         _item.OnGetSaveState -= GetSaveState;
     }

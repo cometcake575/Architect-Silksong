@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>2.20.0</Version>
+    <Version>2.21.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

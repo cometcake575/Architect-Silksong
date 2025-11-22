@@ -688,4 +688,52 @@ public static class EnemyFixers
         recover.DisableAction(4);
         recover.DisableAction(5);
     }
+
+    public static void FixElderPilgrim(GameObject obj)
+    {
+        KeepActive(obj);
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Idle");
+    }
+
+    public static void FixBonegravePilgrim(GameObject obj)
+    {
+        var fsm = obj.GetComponent<PlayMakerFSM>();
+        fsm.fsmTemplate = null;
+        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
+    public static void FixWatcher(GameObject obj)
+    {
+        var watcher = obj.AddComponent<Watcher>();
+        
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Start State").AddAction(() => { fsm.SendEvent(watcher.startAwake ? "WAKE" : "SLEEP"); }, 0);
+        fsm.GetState("Away").DisableAction(2);
+        fsm.GetState("Refight Ready").DisableAction(3);
+        
+        fsm.GetState("Die").DisableAction(0);
+    }
+
+    public class Watcher : MonoBehaviour
+    {
+        public bool startAwake;
+    }
+
+    public static void FixZango(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").DisableAction(3);
+
+        var rest = fsm.GetState("Rest");
+        rest.DisableAction(1);
+        rest.AddAction(() =>
+        {
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude < 12)
+                fsm.SendEvent("WAKE");
+        }, everyFrame: true);
+
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[2]).stunHero = false;
+    }
 }

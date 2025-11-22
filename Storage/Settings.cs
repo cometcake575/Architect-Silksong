@@ -31,8 +31,10 @@ public static class Settings
     public static Keybind Lock;
     public static Keybind TileChanger;
 
-    public static bool TestMode;
-    public static bool ShowRespawnPoint;
+    public static ConfigEntry<bool> TestMode;
+    public static ConfigEntry<bool> ShowRespawnPoint;
+
+    public static ConfigEntry<int> SaveSlot; 
 
     public static void Init(ConfigFile config)
     {
@@ -41,187 +43,194 @@ public static class Settings
             "EditToggle",
             KeyCode.E,
             "Toggles Edit Mode"
-        ).Value);
+        ));
         
         Rotate = new Keybind(config.Bind(
             "Keybinds",
             "Rotate",
             KeyCode.R,
             "Rotates the object on the cursor"
-        ).Value);
+        ));
         
         UnsafeRotation = new Keybind(config.Bind(
             "Keybinds",
             "UnsafeRotation",
             KeyCode.LeftAlt,
             "Allows rotating objects at any angle"
-        ).Value);
+        ));
         
         Flip = new Keybind(config.Bind(
             "Keybinds",
             "Flip",
             KeyCode.F,
             "Flips the object on the cursor"
-        ).Value);
+        ));
         
         ScaleUp = new Keybind(config.Bind(
             "Keybinds",
             "ScaleUp",
             KeyCode.Equals,
             "Increases the scale of the object on the cursor"
-        ).Value);
+        ));
         
         ScaleDown = new Keybind(config.Bind(
             "Keybinds",
             "ScaleDown",
             KeyCode.Minus,
             "Decreases the scale of the object on the cursor"
-        ).Value);
+        ));
         
         SavePrefab = new Keybind(config.Bind(
             "Keybinds",
             "SavePrefab",
             KeyCode.Return,
             "Saves the object on the cursor as a prefab"
-        ).Value);
+        ));
         
         LockAxis = new Keybind(config.Bind(
             "Keybinds",
             "LockAxis",
             KeyCode.RightShift,
             "Locks the current X or Y axis to the axis of the last placed object"
-        ).Value);
+        ));
         
         Undo = new Keybind(config.Bind(
             "Keybinds",
             "Undo",
             KeyCode.Z,
             "Undoes the last action"
-        ).Value);
+        ));
         
         Redo = new Keybind(config.Bind(
             "Keybinds",
             "Redo",
             KeyCode.Y,
             "Redoes the last action"
-        ).Value);
+        ));
         
         MultiSelect = new Keybind(config.Bind(
             "Keybinds",
             "MultiSelect",
             KeyCode.LeftControl,
             "Allows selecting multiple objects with the Drag tool"
-        ).Value);
+        ));
         
         Copy = new Keybind(config.Bind(
             "Keybinds",
             "Copy",
             KeyCode.C,
             "Copies the current selection of objects"
-        ).Value);
+        ));
         
         Paste = new Keybind(config.Bind(
             "Keybinds",
             "Paste",
             KeyCode.V,
             "Pastes the objects on the clipboard"
-        ).Value);
+        ));
         
         Preview = new Keybind(config.Bind(
             "Keybinds",
             "Preview",
             KeyCode.P,
             "Preview objects affected by the Object Anchor"
-        ).Value);
+        ));
         
         Overwrite = new Keybind(config.Bind(
             "Keybinds",
             "Overwrite",
             KeyCode.O,
             "Overwrites a clicked object with the one on your cursor"
-        ).Value);
+        ));
         
         GrabId = new Keybind(config.Bind(
             "Keybinds",
             "GrabId",
             KeyCode.I,
             "Sets the ID option of the object on the cursor to the selected object's ID"
-        ).Value);
+        ));
         
         Blank = new Keybind(config.Bind(
             "ToolHotkeys",
             "Blank",
             KeyCode.None,
             "Clears your current selected item"
-        ).Value);
+        ));
         
         Cursor = new Keybind(config.Bind(
             "ToolHotkeys",
             "Cursor",
             KeyCode.None,
             "Sets your current selected item to the Cursor tool"
-        ).Value);
+        ));
         
         Drag = new Keybind(config.Bind(
             "ToolHotkeys",
             "Drag",
             KeyCode.None,
             "Sets your current selected item to the Drag tool"
-        ).Value);
+        ));
         
         Eraser = new Keybind(config.Bind(
             "ToolHotkeys",
             "Eraser",
             KeyCode.None,
             "Sets your current selected item to the Eraser tool"
-        ).Value);
+        ));
         
         Pick = new Keybind(config.Bind(
             "ToolHotkeys",
             "Pick",
             KeyCode.None,
             "Sets your current selected item to the Pick tool"
-        ).Value);
+        ));
         
         Reset = new Keybind(config.Bind(
             "ToolHotkeys",
             "Reset",
             KeyCode.None,
             "Sets your current selected item to the Reset tool"
-        ).Value);
+        ));
         
         TileChanger = new Keybind(config.Bind(
             "ToolHotkeys",
             "TilemapChanger",
             KeyCode.None,
             "Sets your current selected item to the Tilemap Changer tool"
-        ).Value);
+        ));
         
         Lock = new Keybind(config.Bind(
             "ToolHotkeys",
             "Lock",
             KeyCode.None,
             "Locks an object in place so it cannot be edited until unlocked"
-        ).Value);
+        ));
         
         TestMode = config.Bind(
             "Options",
             "TestMode",
             false,
             "Stops the game from storing persistent data in such as enemies being killed"
-        ).Value;
+        );
         
         ShowRespawnPoint = config.Bind(
             "Options",
             "ShowRespawnPoint",
             false,
             "Adds an indicator showing your current hazard respawn point"
-        ).Value;
+        );
+        
+        SaveSlot = config.Bind(
+            "Options",
+            "DownloadSlot",
+            4,
+            "The save slot to download save files from the level sharer into"
+        );
     }
 
-    public class Keybind(KeyCode code)
+    public class Keybind(ConfigEntry<KeyCode> code)
     {
-        public bool IsPressed => Input.GetKey(code);
-        public bool WasPressed => Input.GetKeyDown(code);
+        public bool IsPressed => Input.GetKey(code.Value);
+        public bool WasPressed => Input.GetKeyDown(code.Value);
     }
 }

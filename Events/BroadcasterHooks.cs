@@ -1,5 +1,6 @@
 using System;
 using Architect.Utils;
+using HutongGames.PlayMaker.Actions;
 
 namespace Architect.Events;
 
@@ -54,5 +55,19 @@ public static class BroadcasterHooks
                 return orig(self, hit);
             }
         );
+        
+        typeof(StartRoarEmitter).Hook(nameof(StartRoarEmitter.StartRoar),
+            (Action<StartRoarEmitter> orig, StartRoarEmitter self) =>
+            {
+                self.fsmComponent.gameObject.BroadcastEvent("OnRoar");
+                orig(self);
+            });
+        
+        typeof(StartRoarEmitterV2).Hook(nameof(StartRoarEmitterV2.StartRoar),
+            (Action<StartRoarEmitterV2> orig, StartRoarEmitterV2 self) =>
+            {
+                self.fsmComponent.gameObject.BroadcastEvent("OnRoar");
+                orig(self);
+            });
     }
 }

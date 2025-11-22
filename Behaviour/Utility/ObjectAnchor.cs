@@ -73,10 +73,8 @@ public class ObjectAnchor : PreviewableBehaviour
         {
             transform.parent.SetParent(parent.transform, true);
         }
-        
-        _offset = startOffset;
-        rotation = startRotation + transform.rotation.eulerAngles.z;
-        _currentSpeed = speed;
+
+        Reset();
 
         if (speed < 0)
         {
@@ -150,6 +148,20 @@ public class ObjectAnchor : PreviewableBehaviour
                 _rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
+    }
+
+    public void Reset()
+    {
+        if (_flipped != _startFlipped)
+        {
+            _flipped = !_flipped;
+            speed = -speed;
+            rotationSpeed = -rotationSpeed;
+        }
+        
+        _offset = startOffset;
+        rotation = startRotation + transform.rotation.eulerAngles.z;
+        _currentSpeed = speed;
     }
 
     private void OnDisable()
