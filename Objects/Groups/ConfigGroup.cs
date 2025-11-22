@@ -401,6 +401,35 @@ public static class ConfigGroup
                 }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> CradlePlat = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Moved", "cradle_plat_stay")
+            .WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Move Distance (Y)", "cradle_plat_dist_y",
+                (o, value) =>
+                {
+                    o.GetComponent<CrankPlat>().endPoint.transform.SetLocalPositionY(value.GetValue());
+                }).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Move Distance (X)", "cradle_plat_dist_x",
+                (o, value) =>
+                {
+                    o.GetComponent<CrankPlat>().endPoint.transform.SetLocalPositionX(value.GetValue());
+                }).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Hit Force", "cradle_plat_force",
+                (o, value) =>
+                {
+                    o.GetComponent<CrankPlat>().hitForce = value.GetValue();
+                }).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Max Return Speed", "cradle_max_return",
+                (o, value) =>
+                {
+                    o.GetComponent<CrankPlat>().maxReturnSpeed = value.GetValue();
+                }).WithPriority(-1))
+    ]);
+
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Render Layer", "obj_layer",

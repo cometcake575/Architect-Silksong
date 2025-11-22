@@ -11,6 +11,7 @@ using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Content;
 
@@ -44,6 +45,7 @@ public static class VanillaObjects
         AddAbyssObjects();
         AddMemoryObjects();
         AddFleaObjects();
+        AddCradleObjects();
         AddSurfaceObjects();
         AddMiscObjects();
     }
@@ -177,6 +179,12 @@ public static class VanillaObjects
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 2"), 
                 preloadAction: HazardFixers.FixUnderworksCog)
             .WithConfigGroup(ConfigGroup.Cogs));
+
+        Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
+            ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
+            preloadAction: MiscFixers.PreFixLoam,
+            postSpawnAction: MiscFixers.FixLoam)
+            .WithConfigGroup(ConfigGroup.Npcs));
     }
     
     private static void AddCitadelObjects()
@@ -223,6 +231,30 @@ public static class VanillaObjects
                 ("Song_11", "metronome_plat (11)"),
                 preloadAction: MiscFixers.FixMetronome)
             .WithConfigGroup(ConfigGroup.Metronome));
+    }
+
+    private static void AddCradleObjects()
+    {
+        Categories.Platforming.Add(new PreloadObject("Moving Cradle Platform", "cradle_plat",
+                ("Cradle_03", "cradle_plat (7)"))
+            .WithConfigGroup(ConfigGroup.CradlePlat)
+            .WithRotationGroup(RotationGroup.Four));
+        
+        Categories.Platforming.Add(new PreloadObject("Spiked Moving Cradle Platform", "cradle_spiked_plat",
+            ("Cradle_03", "cradle_spike_plat (10)"))
+            .WithConfigGroup(ConfigGroup.CradlePlat));
+        
+        Categories.Hazards.Add(new PreloadObject("Cradle Spikes", "cradle_spikes",
+            ("Cradle_03", "cradle_spike_plat (10)/art/Cradle__0004_moving_plat (9)"),
+            preloadAction: o =>
+            {
+                Object.Instantiate(
+                    o.transform.GetRoot().GetChild(8).gameObject, 
+                    o.transform.position, 
+                    default,
+                    o.transform
+                ).GetComponent<TinkEffect>().overrideCamShake = true;
+            }));
     }
 
     private static void AddSurfaceObjects()
@@ -1003,7 +1035,7 @@ public static class VanillaObjects
                              "cause the spike to come out of the ground.")
             .WithReceiverGroup(ReceiverGroup.Trap));
 
-        Categories.Misc.Add(new PreloadObject("Pilby", "pilby_death",
+        Categories.Misc.Add(new PreloadObject("Pilby NPC", "pilby_death",
             ("Bonetown", "Black Thread States/Normal World/Bonetown Resident"),
             preloadAction: EnemyFixers.KeepActive,
             postSpawnAction: MiscFixers.FixPilby))

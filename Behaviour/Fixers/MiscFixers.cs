@@ -442,6 +442,17 @@ public static class MiscFixers
         obj.AddComponent<Sherma>();
     }
 
+    public static void PreFixLoam(GameObject obj)
+    {
+        obj.transform.parent.DetachChildren();
+        obj.transform.SetPositionZ(0.006f);
+    }
+
+    public static void FixLoam(GameObject obj)
+    {
+        obj.AddComponent<Loam>();
+    }
+
     public static void PreFixArchitect(GameObject obj)
     {
         obj.transform.parent.DetachChildren();
@@ -483,6 +494,18 @@ public static class MiscFixers
             var fsm = gameObject.transform.Find("Victory NPC").gameObject.LocateMyFSM("Dialogue");
             fsm.GetState("Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[1];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
+    public class Loam : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Behaviour");
+            fsm.GetState("State?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
         }
