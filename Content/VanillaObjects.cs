@@ -176,9 +176,6 @@ public static class VanillaObjects
         AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"));
         AddEnemy("Undercrank", "undercrank", ("Under_19b", "Understore Thrower")).DoFlipX();
 
-        Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
-                ("Under_19", "Lava_Waterfall Set (6)")));
-
         Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_4",
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
                 preloadAction: HazardFixers.FixUnderworksCog)
