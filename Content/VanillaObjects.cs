@@ -577,7 +577,7 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixBench, preview: true)
             .WithConfigGroup(ConfigGroup.Benches));
         
-        Categories.Interactable.AddStart(new PreloadObject("Toll Machine", "rosary_toll",
+        Categories.Interactable.Add(new PreloadObject("Toll Machine", "rosary_toll",
             ("Hang_06_bank", "rosary_cannon/Art/Rosary Cannon Scene/rosary_string_machine"),
             postSpawnAction: MiscFixers.FixToll)
             .WithBroadcasterGroup(BroadcasterGroup.Toll)
