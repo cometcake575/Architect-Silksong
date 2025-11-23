@@ -563,10 +563,20 @@ public static class VanillaObjects
 
     private static void AddMiscObjects()
     {
+        Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
+            ("Bonetown", "rosary_shrine_small"),
+            preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling()));
+        
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
             ("Bone_East_15", "bell_bench/RestBench"),
             preloadAction: MiscFixers.FixBench, preview: true)
             .WithConfigGroup(ConfigGroup.Benches));
+        
+        Categories.Misc.AddStart(new PreloadObject("Toll Machine", "rosary_toll",
+            ("Hang_06_bank", "rosary_cannon/Art/Rosary Cannon Scene/rosary_string_machine"),
+            postSpawnAction: MiscFixers.FixToll)
+            .WithBroadcasterGroup(BroadcasterGroup.Toll)
+            .WithConfigGroup(ConfigGroup.Toll));
         
         Categories.Misc.AddStart(new PreloadObject("Reflection Effect", "mirror_effect",
             ("Hang_06b", "new_scene/Reflection_surface"),
@@ -773,6 +783,13 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixLastClawPreload,
             postSpawnAction: EnemyFixers.FixLastClaw)
             .WithScaleAction(EnemyFixers.ScaleLastClaw);
+
+        /*
+        AddEnemy("Skarrsinger Karmelita", "karmelita",
+            ("Memory_Ant_Queen", "Boss Scene/Hunter Queen Boss"),
+            preloadAction: EnemyFixers.FixKarmelitaPreload,
+            postSpawnAction: EnemyFixers.FixKarmelita);
+            */
 
         Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
             ("Ant_04", "Silkcatcher Plant")));

@@ -736,4 +736,21 @@ public static class EnemyFixers
 
         ((StartRoarEmitter)fsm.GetState("Roar").actions[2]).stunHero = false;
     }
+
+    public static void FixKarmelitaPreload(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        
+        obj.LocateMyFSM("Control").enabled = false;
+        
+        obj.transform.parent.DetachChildren();
+        obj.transform.SetPositionZ(0.006f);
+    }
+
+    public static void FixKarmelita(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.enabled = true;
+        fsm.GetState("BG Dance").AddAction(() => fsm.SendEvent("CHALLENGE"), 0);
+    }
 }

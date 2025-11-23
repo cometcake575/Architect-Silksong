@@ -879,4 +879,30 @@ public static class MiscFixers
     {
         obj.AddComponent<Pilby>();
     }
+
+    public static void FixToll(GameObject obj)
+    {
+        obj.RemoveComponent<CurrencyCounterAppearRegion>();
+        obj.AddComponent<Toll>();
+    }
+
+    public class Toll : MonoBehaviour
+    {
+        public string text = "Sample Text";
+
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Behaviour (special)");
+
+            var confirm = fsm.GetState("Confirm");
+            confirm.DisableAction(0);
+            var dialogue = (DialogueYesNoV2)confirm.actions[1];
+            dialogue.TranslationSheet = "ArchitectMod";
+            dialogue.TranslationKey = text;
+            
+            var give = fsm.GetState("Give Object");
+            give.DisableAction(0);
+            give.AddAction(() => gameObject.BroadcastEvent("OnPay"), 0);
+        }
+    }
 }

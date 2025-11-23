@@ -122,6 +122,19 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> Toll = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Cost", "toll_cost", (o, value) =>
+            {
+                o.LocateMyFSM("Behaviour (special)").FsmVariables.FindFsmInt("Cost").value = value.GetValue();
+            }).WithDefaultValue(100)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Text", "toll_text", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Toll>().text = value.GetValue();
+            }).WithDefaultValue("Sample Text"))
+    ]);
+
     public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>

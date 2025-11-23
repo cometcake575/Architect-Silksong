@@ -22,6 +22,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Finishable = ["OnFinish"];
     
+    public static readonly List<string> Toll = ["OnPay"];
+    
     public static readonly List<string> ActiveDeactivatable = ["OnActivate", "OnDeactivate"];
     
     public static readonly List<string> Levers = ["OnPull", "FirstPull", "LoadedPulled"];
