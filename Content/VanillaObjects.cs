@@ -166,10 +166,18 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs));
         
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
-            ("Under_13", "lava_crumble_plat (7)")));
+            ("Under_19", "lava_crumble_plat")));
 
-        AddEnemy("Cogwork Underfly", "understore_auto", ("Under_13", "Understore Automaton"));
-        AddEnemy("Cogwork Hauler", "understore_auto_ex", ("Under_13", "Understore Automaton EX"));
+        AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"));
+        AddEnemy("Cogwork Hauler", "understore_auto_ex", 
+            ("Under_19", "Understore Automaton EX (9)")).DoFlipX();
+        
+        AddEnemy("Undersweep", "undersweep", ("Under_19", "Pilgrim Staff Understore")).DoFlipX();
+        AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"));
+        AddEnemy("Undercrank", "undercrank", ("Under_19b", "Understore Thrower")).DoFlipX();
+
+        Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
+                ("Under_19", "Lava_Waterfall Set (6)")));
 
         Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_4",
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
