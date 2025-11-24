@@ -114,27 +114,6 @@ public static class MiscFixers
                 orig(self);
             });
 
-        HookUtils.OnFsmAwake += fsm =>
-        {
-            if (fsm.FsmName == "Area Title Control")
-            {
-                var header = fsm.FsmVariables.FindFsmString("Title Sup");
-                var footer = fsm.FsmVariables.FindFsmString("Title Sub");
-                var body = fsm.FsmVariables.FindFsmString("Title Main");
-
-                fsm.GetState("Init all").AddAction(() =>
-                {
-                    if (!_overrideAreaText) return;
-
-                    header.value = _areaHeader;
-                    footer.value = _areaFooter;
-                    body.value = _areaBody;
-
-                    _overrideAreaText = false;
-                });
-            } else if (fsm.name == "door_act3_wakeUp") fsm.GetState("Init").DisableAction(1);
-        };
-
         _ = new Hook(typeof(tk2dSprite).GetProperty("color")!.GetSetMethod(),
             (Action<tk2dSprite, Color> orig, tk2dSprite self, Color color) =>
             {
@@ -150,6 +129,11 @@ public static class MiscFixers
                 if (cl && cl.enabled) return;
                 orig(self, color);
             });
+
+        HookUtils.OnFsmAwake += fsm =>
+        {
+            if (fsm.name == "door_act3_wakeUp") fsm.GetState("Init").DisableAction(1);
+        };
     }
 
     public class ColorLock : MonoBehaviour;
@@ -674,11 +658,6 @@ public static class MiscFixers
 
     private static readonly List<CustomFleaCounter> FleaCounters = [];
     
-    private static bool _overrideAreaText;
-    private static string _areaHeader;
-    private static string _areaBody;
-    private static string _areaFooter;
-    
     public class CustomFleaCounter : MonoBehaviour
     {
         private static readonly Color Gold = UI.MaxItemsTextColor;
@@ -729,15 +708,7 @@ public static class MiscFixers
             RefreshGold(true);
         }
 
-        public void Announce()
-        {
-            _overrideAreaText = true;
-            _areaHeader = header;
-            _areaBody = currentCount.ToString();
-            _areaFooter = footer;
-            
-            AreaTitle.Instance.gameObject.SetActive(true);
-        }
+        public void Announce() => TitleUtils.DisplayTitle(header, currentCount.ToString(), footer, 0);
 
         private void RefreshGold(bool effect)
         {

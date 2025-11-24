@@ -1019,6 +1019,29 @@ public static class ConfigGroup
             }).WithDefaultValue(0).WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> TitleDisplay = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Header", "title_header", (o, value) =>
+            {
+                o.GetComponent<TitleDisplay>().header = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Body", "title_body", (o, value) =>
+            {
+                o.GetComponent<TitleDisplay>().body = value.GetValue();
+            }).WithDefaultValue("Sample Text")),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Footer", "title_footer", (o, value) =>
+            {
+                o.GetComponent<TitleDisplay>().footer = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "title_type", (o, value) =>
+            {
+                o.GetComponent<TitleDisplay>().type = value.GetValue();
+            }).WithOptions("Large", "Left", "Right").WithDefaultValue(0))
+    ]);
+
     public static readonly List<ConfigType> Choice = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Text", "choice_text", (o, value) =>

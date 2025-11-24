@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "2.21.3")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "2.22.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin
@@ -35,6 +35,7 @@ public class ArchitectPlugin : BaseUnityPlugin
         Logger.LogInfo("Architect has loaded!");
         
         HookUtils.Init();
+        TitleUtils.Init();
         
         StorageManager.Init();
         Settings.Init(Config);

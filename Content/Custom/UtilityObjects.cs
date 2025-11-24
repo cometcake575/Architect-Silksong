@@ -38,6 +38,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateTimeSlower());
         Categories.Utility.Add(CreateDarkness());
         
+        Categories.Utility.Add(CreateTitleDisplay());
         Categories.Utility.Add(CreateTextDisplay());
         Categories.Utility.Add(CreateChoiceDisplay());
         
@@ -458,6 +459,22 @@ public static class UtilityObjects
                 sprite: ResourceUtils.LoadSpriteResource("fake_performance", FilterMode.Point, ppu:64),
                 description: "Acts like the Needolin is playing at this object's position when it is active.")
             .WithConfigGroup(ConfigGroup.FakePerformance);
+    }
+
+    private static PlaceableObject CreateTitleDisplay()
+    {
+        var display = new GameObject("Title Display");
+        display.SetActive(false);
+        Object.DontDestroyOnLoad(display);
+        
+        display.AddComponent<TitleDisplay>();
+
+        return new CustomObject("Title Display", "title_display",
+                display,
+                sprite: ResourceUtils.LoadSpriteResource("title_display", FilterMode.Point, ppu:64),
+                description: "Used to display a title to the player, such as area or boss titles.")
+            .WithReceiverGroup(ReceiverGroup.Displayable)
+            .WithConfigGroup(ConfigGroup.TitleDisplay);
     }
 
     private static PlaceableObject CreateTextDisplay()

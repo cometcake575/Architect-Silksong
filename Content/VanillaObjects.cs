@@ -243,11 +243,13 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Moving Cradle Platform", "cradle_plat",
                 ("Cradle_03", "cradle_plat (7)"))
             .WithConfigGroup(ConfigGroup.CradlePlat)
+            .WithReceiverGroup(ReceiverGroup.CrankPlatform)
             .WithRotationGroup(RotationGroup.Four));
         
         Categories.Platforming.Add(new PreloadObject("Spiked Moving Cradle Platform", "cradle_spiked_plat",
             ("Cradle_03", "cradle_spike_plat (10)"))
-            .WithConfigGroup(ConfigGroup.CradlePlat));
+            .WithConfigGroup(ConfigGroup.CradlePlat)
+            .WithReceiverGroup(ReceiverGroup.CrankPlatform));
         
         Categories.Hazards.Add(new PreloadObject("Cradle Spikes", "cradle_spikes",
             ("Cradle_03", "cradle_spike_plat (10)/art/Cradle__0004_moving_plat (9)"),

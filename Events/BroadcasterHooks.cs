@@ -1,6 +1,7 @@
 using System;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
+using UnityEngine;
 
 namespace Architect.Events;
 
@@ -59,15 +60,27 @@ public static class BroadcasterHooks
         typeof(StartRoarEmitter).Hook(nameof(StartRoarEmitter.StartRoar),
             (Action<StartRoarEmitter> orig, StartRoarEmitter self) =>
             {
-                self.fsmComponent.gameObject.BroadcastEvent("OnRoar");
+                var o = self.fsmComponent.gameObject;
+                if (!o.GetComponent<DoneRoar>())
+                {
+                    o.AddComponent<DoneRoar>();
+                    o.BroadcastEvent("OnRoar");
+                }
                 orig(self);
             });
         
         typeof(StartRoarEmitterV2).Hook(nameof(StartRoarEmitterV2.StartRoar),
             (Action<StartRoarEmitterV2> orig, StartRoarEmitterV2 self) =>
             {
-                self.fsmComponent.gameObject.BroadcastEvent("OnRoar");
+                var o = self.fsmComponent.gameObject;
+                if (!o.GetComponent<DoneRoar>())
+                {
+                    o.AddComponent<DoneRoar>();
+                    o.BroadcastEvent("OnRoar");
+                }
                 orig(self);
             });
     }
+
+    private class DoneRoar : MonoBehaviour;
 }

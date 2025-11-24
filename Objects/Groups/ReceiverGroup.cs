@@ -46,6 +46,25 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> CrankPlatform = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("crank_plat_reset", "Reset", o =>
+        {
+            var plat = o.GetComponent<CrankPlat>();
+            plat.isComplete = false;
+            plat.posT = 0;
+            plat.SetCrankEnabled(true);
+            plat.UpdatePos();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("crank_plat_hit", "Move", o =>
+        {
+            var plat = o.GetComponent<CrankPlat>();
+            var force = plat.hitForce;
+            plat.hitForce = 999999;
+            plat.DoHit();
+            plat.hitForce = force;
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> PlayerDataSetter = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("pd_set", "SetValue", o =>
         {
