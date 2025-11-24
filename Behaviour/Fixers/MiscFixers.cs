@@ -876,4 +876,12 @@ public static class MiscFixers
             give.AddAction(() => gameObject.BroadcastEvent("OnPay"), 0);
         }
     }
+
+    public static void FixShamanShell(GameObject obj)
+    {
+        obj.GetComponentInChildren<BoxCollider2D>().enabled = true;
+        obj.transform.parent = null;
+        obj.transform.SetRotation2D(0);
+        obj.transform.SetPositionZ(0.006f);
+    }
 }

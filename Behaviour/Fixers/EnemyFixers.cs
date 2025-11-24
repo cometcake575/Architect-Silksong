@@ -753,4 +753,11 @@ public static class EnemyFixers
         fsm.enabled = true;
         fsm.GetState("BG Dance").AddAction(() => fsm.SendEvent("CHALLENGE"), 0);
     }
+
+    public static void FixCraggler(GameObject obj)
+    {
+        KeepActive(obj);
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("WAKE"));
+    }
 }

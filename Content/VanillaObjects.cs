@@ -351,6 +351,16 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Honey Pod", "hive_pod",
             ("Memory_Red", "Scenery Groups/Hive Scenery/Hive_Break_01")));
 
+        Categories.Misc.Add(new PreloadObject("Shaman Shell S", "shell_small",
+            ("Tut_04", "States/Outro Scene/Snail_Shell_Small"), 
+            preloadAction: MiscFixers.FixShamanShell));
+        Categories.Misc.Add(new PreloadObject("Shaman Shell M", "shell_mid",
+            ("Tut_04", "States/Outro Scene/Snail_Shell_Mid"),
+            preloadAction: MiscFixers.FixShamanShell));
+        Categories.Misc.Add(new PreloadObject("Shaman Shell L", "shell_large",
+            ("Tut_04", "States/Outro Scene/Snail_Shell_Large"),
+            preloadAction: MiscFixers.FixShamanShell));
+
 
         AddSolid("Deepnest Platform 1", "deepnest_platform_01",
             ("Memory_Red", "Scenery Groups/Deepnest Scenery/plat_float_07"));
@@ -950,6 +960,10 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
             .WithConfigGroup(ConfigGroup.Breakable));
+
+        AddEnemy("Cragglite", "cragglite", ("Crawl_04", "Little Crabs/Crabs/Small Crab")).DoFlipX();
+        AddEnemy("Craggler", "craggler", ("Crawl_04", "Roof Crab"),
+            postSpawnAction: EnemyFixers.FixCraggler);
 
         AddEnemy("Plasmified Zango", "zango_boss", ("Crawl_10", "Area_States/Infected/Blue Assistant"),
                 postSpawnAction: EnemyFixers.FixZango)
