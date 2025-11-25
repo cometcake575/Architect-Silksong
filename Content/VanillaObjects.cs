@@ -72,9 +72,11 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixDriller);
 
         AddEnemy("Crustcrawler A", "coral_goomba_m",
-            ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba M (2)"));
+            ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba M (2)"),
+            preloadAction: EnemyFixers.RemoveConstrainPosition);
         AddEnemy("Crustcrawler B", "coral_goomba_l",
-            ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba L"));
+            ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba L"),
+            preloadAction: EnemyFixers.RemoveConstrainPosition);
         AddEnemy("Crustcrag", "coral_goomba_xl",
             ("Arborium_06", "Coral Goomba Large (1)"), postSpawnAction: o =>
             {
