@@ -1,3 +1,4 @@
+using Architect.Api;
 using UnityEngine;
 
 namespace Architect.Events;
@@ -13,6 +14,7 @@ public class EventBroadcasterInstance : MonoBehaviour
     public void Broadcast(string trigger, bool multiplayer)
     {
         if (trigger != triggerName) return;
+        EventHooks.OnEvent?.Invoke(gameObject, eventName);
         EventManager.Broadcast(eventName, multiplayer);
     }
 }
