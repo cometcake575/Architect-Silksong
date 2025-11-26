@@ -323,7 +323,8 @@ public static class VanillaObjects
     {
         Categories.Enemies.Add(new PreloadObject("Wingmould", "white_palace_fly",
             ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)")).DoFlipX())
-            .WithConfigGroup(ConfigGroup.SimpleEnemies);
+            .WithConfigGroup(ConfigGroup.SimpleEnemies)
+            .WithBroadcasterGroup(BroadcasterGroup.Wingmould);
 
         Categories.Interactable.Add(new PreloadObject("Reusable Lever", "reusable_lever",
                 ("Memory_Red", "Scenery Groups/Deepnest Scenery/Control Lever"),

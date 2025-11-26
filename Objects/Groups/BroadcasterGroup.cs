@@ -6,6 +6,8 @@ public static class BroadcasterGroup
 {
     public static readonly List<string> TriggerZone = ["ZoneEnter", "ZoneExit"];
     
+    public static readonly List<string> Wingmould = ["OnDamage"];
+    
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
     public static readonly List<string> Bosses = ["OnRoar", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];

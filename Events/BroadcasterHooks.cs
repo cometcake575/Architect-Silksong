@@ -17,8 +17,17 @@ public static class BroadcasterHooks
             }
         );
         
-        typeof(HealthManager).Hook(nameof(HealthManager.SendDeathEvent),
-            (Action<HealthManager> orig, HealthManager self) =>
+        typeof(HealthManager).Hook(nameof(HealthManager.Die),
+            (Action<HealthManager, float?, AttackTypes, NailElements, GameObject, bool, float, bool, bool> orig, 
+                HealthManager self,
+                float? attackDirection,
+                AttackTypes attackType,
+                NailElements nailElement,
+                GameObject damageSource,
+                bool ignoreEvasion,
+                float corpseFlingMultiplier,
+                bool overrideSpecialDeath,
+                bool disallowDropFling) =>
             {
                 self.gameObject.BroadcastEvent("OnDeath");
                 self.gameObject.BroadcastEvent("FirstDeath");
@@ -26,8 +35,16 @@ public static class BroadcasterHooks
                 var pbi = self.GetComponent<PersistentBoolItem>();
                 if (pbi) pbi.SetValueOverride(true);
                 
-                orig(self);
-            }
+                orig(self, attackDirection, attackType, nailElement, damageSource, ignoreEvasion, corpseFlingMultiplier, overrideSpecialDeath, disallowDropFling);
+            }, 
+            typeof(float?), 
+            typeof(AttackTypes), 
+            typeof(NailElements), 
+            typeof(GameObject),
+            typeof(bool),
+            typeof(float),
+            typeof(bool),
+            typeof(bool)
         );
         
         typeof(HealthManager).Hook(nameof(HealthManager.Awake),

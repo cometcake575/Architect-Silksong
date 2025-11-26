@@ -418,14 +418,6 @@ public static class EnemyFixers
 
         // No longer forces range to prevent infinite loop if leaving range
         fsm.GetState("Dive Up Antic").DisableAction(4);
-
-        fsm.GetState("Death Hit").AddAction(() =>
-        {
-            obj.BroadcastEvent("OnDeath");
-            var item = obj.GetComponent<PersistentBoolItem>();
-            if (!item) return;
-            item.SetValueOverride(true);
-        }, 0);
         
         fsm.GetState("End Battle").AddAction(() => Object.Destroy(obj));
     }
