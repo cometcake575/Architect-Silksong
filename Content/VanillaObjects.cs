@@ -35,6 +35,7 @@ public static class VanillaObjects
         AddMemoriumObjects();
         AddCogworksObjects();
         AddUnderworksObjects();
+        AddVaultsObjects();
         AddCitadelObjects();
         AddWhitewardObjects();
         AddSlabObjects();
@@ -176,7 +177,7 @@ public static class VanillaObjects
         
         AddEnemy("Undersweep", "undersweep", ("Under_19", "Pilgrim Staff Understore")).DoFlipX();
         AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"));
-        AddEnemy("Undercrank", "undercrank", ("Under_19b", "Understore Thrower")).DoFlipX();
+        AddEnemy("Underloft", "undercrank", ("Under_19b", "Understore Thrower")).DoFlipX();
 
         Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_4",
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
@@ -224,6 +225,9 @@ public static class VanillaObjects
         AddEnemy("Grand Reed", "song_reed_grand",
             ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)")).DoFlipX();
 
+        AddEnemy("Clawmaiden", "clawmaiden", ("Hang_04_boss", "Battle Scene/Wave 4/Song Handmaiden"),
+            preloadAction: EnemyFixers.FixClawmaiden);
+
         Categories.Interactable.Add(new PreloadObject("Citadel Button", "citadel_button",
                 ("Song_09", "Hornet_pressure_plate_small_persistent"),
                 preloadAction: InteractableFixers.FixButtonPreload,
@@ -238,6 +242,14 @@ public static class VanillaObjects
                 ("Song_11", "metronome_plat (11)"),
                 preloadAction: MiscFixers.FixMetronome)
             .WithConfigGroup(ConfigGroup.Metronome));
+    }
+
+    private static void AddVaultsObjects()
+    {
+        AddEnemy("Vaultborn", "vaultborn", ("Library_04", "Acolyte Control/Song Scholar Acolyte"),
+            preloadAction: EnemyFixers.FixVaultborn);
+        AddEnemy("Scrollreader", "scrollreader", ("Library_04", "Black Thread States/Normal World/Scrollkeeper"));
+        AddEnemy("Vaultkeeper", "vaultkeeper", ("Library_04", "Scholar"));
     }
 
     private static void AddCradleObjects()
@@ -392,11 +404,30 @@ public static class VanillaObjects
             ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
             postSpawnAction: MiscFixers.FixGreenPrince)
             .WithConfigGroup(ConfigGroup.Npcs));
+
+        Categories.Misc.Add(new PreloadObject("Lily Pad / Nuphar", "lilypad",
+            ("Clover_04b", "Lilypad Trap Setter/Lilypad Plat (1)"))
+            .WithConfigGroup(ConfigGroup.Lilypad));
+
+        AddEnemy("Leaf Roller", "leaf_roller", ("Clover_02c", "Grass Goomba"));
+        AddEnemy("Leaf Glider", "leaf_glider", ("Clover_02c", "Lilypad Plat/Lilypad Fly")).DoFlipX();
+
+        AddEnemy("Cloverstag", "cloverstag", ("Clover_06", "Cloverstag (2)"));
+
+        AddEnemy("Kindanir", "kindanir", ("Clover_04b", "Battle Scene/Wave 3/Grasshopper Child (1)"),
+            preloadAction: EnemyFixers.FixFlyin);
+        AddEnemy("Verdanir", "verdanir", ("Clover_04b", "Battle Scene/Return Scene/Grasshopper Slasher"));
+        AddEnemy("Escalion", "escalion", ("Clover_04b", "Grasshopper Fly")).DoFlipX();
     }
 
     private static void AddMoorObjects()
     {
         AddEnemy("Silk Snipper", "silk_snipper", ("Greymoor_06", "Farmer Scissors"));
+        AddEnemy("Dreg Catcher", "dreg_catcher",
+            ("Greymoor_05", "Scene Control/Farmer Enemies/Roosting Enemies/Farmer Catcher (2)"));
+        AddEnemy("Thread Raker", "thread_raker",
+            ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"));
+        
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
             postSpawnAction: EnemyFixers.FixFluttermite);
@@ -454,6 +485,13 @@ public static class VanillaObjects
 
     private static void AddSlabObjects()
     {
+        AddEnemy("Penitent", "penitent", ("Slab_15", "Slab Prisoner Leaper New"));
+        AddEnemy("Puny Penitent", "puny_penitent", ("Slab_15", "Slab Prisoner Fly New"));
+        AddEnemy("Scabfly", "scabfly", ("Slab_05", "Slab Fly Small"));
+        
+        AddEnemy("Guardfly", "guardfly", ("Slab_04", "Slab Fly Mid (2)"));
+        AddEnemy("Wardenfly", "wardenfly", ("Slab_22", "Slab Fly Large"));
+        
         AddEnemy("Wardenfly Jailer", "slab_jailer",
                 ("Bone_East_04c", "Scene Control/Slab Jailer Scene/Slab Fly Large Cage"),
                 preloadAction: EnemyFixers.KeepActive, postSpawnAction: EnemyFixers.FixJailer)
@@ -462,6 +500,11 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Slab Pressure Plate", "slab_pressure_plate",
                 ("Slab_05", "spike_trap_slab_jail/pressure_plate"), postSpawnAction: InteractableFixers.FixSlabPlate)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+
+        Categories.Interactable.Add(new PreloadObject("Slab Lever", "jail_lever",
+                ("Slab_22", "slab_jail_lever"), postSpawnAction: InteractableFixers.FixLever)
+            .WithBroadcasterGroup(BroadcasterGroup.Levers)
+            .WithConfigGroup(ConfigGroup.Levers));
 
         Categories.Interactable.Add(new PreloadObject("Slab Gate", "jail_gate_door",
                 ("Slab_05", "Jail Gate Door (2)"))
@@ -586,23 +629,23 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),
             preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling()));
-        
+
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
-            ("Bone_East_15", "bell_bench/RestBench"),
-            preloadAction: MiscFixers.FixBench, preview: true)
+                ("Bone_East_15", "bell_bench/RestBench"),
+                preloadAction: MiscFixers.FixBench, preview: true)
             .WithConfigGroup(ConfigGroup.Benches));
-        
+
         Categories.Interactable.Add(new PreloadObject("Toll Machine", "rosary_toll",
-            ("Hang_06_bank", "rosary_cannon/Art/Rosary Cannon Scene/rosary_string_machine"),
-            postSpawnAction: MiscFixers.FixToll)
+                ("Hang_06_bank", "rosary_cannon/Art/Rosary Cannon Scene/rosary_string_machine"),
+                postSpawnAction: MiscFixers.FixToll)
             .WithBroadcasterGroup(BroadcasterGroup.Toll)
             .WithConfigGroup(ConfigGroup.Toll));
-        
+
         Categories.Misc.AddStart(new PreloadObject("Reflection Effect", "mirror_effect",
-            ("Hang_06b", "new_scene/Reflection_surface"),
-            description:"Reflects objects above itself, can be configured\n" +
-                        "in the same way as the Custom PNG for custom mirror shapes.",
-            preloadAction: MiscFixers.FixMirror, sprite:ResourceUtils.LoadSpriteResource("reflection", ppu:155))
+                ("Hang_06b", "new_scene/Reflection_surface"),
+                description: "Reflects objects above itself, can be configured\n" +
+                             "in the same way as the Custom PNG for custom mirror shapes.",
+                preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
         Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
@@ -615,8 +658,8 @@ public static class VanillaObjects
                     "Black Thread States/Black Thread World/Shakra Guard Scene/Scene Folder/Mapper StandGuard NPC"),
                 postSpawnAction: MiscFixers.FixShakra)
             .WithConfigGroup(ConfigGroup.Shakra));
-        
-        Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally", 
+
+        Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
             postSpawnAction: MiscFixers.FixSecondSentinel));
 
@@ -663,6 +706,10 @@ public static class VanillaObjects
                 uiSprite: ResourceUtils.LoadSpriteResource("updraft_ui"))
             .WithConfigGroup(ConfigGroup.Updraft)
             .WithRotateAction(MiscFixers.DelayRotation));
+
+        AddEnemy("Snitchfly", "snitchfly",
+                ("Bonetown", "Black Thread States/Black Thread World/Thief Scene/Rosary Thief Group/Rosary Thief"))
+            .DoFlipX();
     }
 
     private static void AddMemoriumObjects()
@@ -670,6 +717,9 @@ public static class VanillaObjects
         AddSolid("Memorium Platform 1", "memorium_plat_2", 
             ("Arborium_03", "hanging_gardens_plat_float_metal_small (3)"));
         AddSolid("Memorium Platform 2", "memorium_plat_1", ("Arborium_03", "Arborium Plat Mid"));
+        
+        AddEnemy("Memoria", "memoria", ("Arborium_03", "Arborium Keeper"),
+            preloadAction: EnemyFixers.FixFlyin);
     }
     
     private static void AddCogworksObjects()
@@ -1056,6 +1106,11 @@ public static class VanillaObjects
             description:"Can be configured to be worth any number of rosaries\n" +
                         "and to use a Custom PNG texture.")
             .WithConfigGroup(ConfigGroup.RosaryBead));
+
+        Categories.Misc.Add(new PreloadObject("Silk Vine", "silk_vine",
+            ("Mosstown_02",
+                "Black Thread States Thread Only Variant/Normal World/Thick Silk Vines"),
+            preloadAction: EnemyFixers.KeepActive));
 
         AddEnemy("Pilgrim Hiker", "pilgrim_hiker",
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Hiker"));

@@ -18,7 +18,7 @@ public static class BroadcasterHooks
         );
         
         typeof(HealthManager).Hook(nameof(HealthManager.Die),
-            (Action<HealthManager, float?, AttackTypes, NailElements, GameObject, bool, float, bool, bool> orig, 
+            (Action<HealthManager, float?, AttackTypes, NailElements, GameObject, bool, float, bool, bool> orig,
                 HealthManager self,
                 float? attackDirection,
                 AttackTypes attackType,
@@ -29,13 +29,18 @@ public static class BroadcasterHooks
                 bool overrideSpecialDeath,
                 bool disallowDropFling) =>
             {
+                var dead = self.isDead;
+                
+                orig(self, attackDirection, attackType, nailElement, damageSource, ignoreEvasion, corpseFlingMultiplier,
+                    overrideSpecialDeath, disallowDropFling);
+
+                if (dead) return;
+                
                 self.gameObject.BroadcastEvent("OnDeath");
                 self.gameObject.BroadcastEvent("FirstDeath");
-                
+
                 var pbi = self.GetComponent<PersistentBoolItem>();
                 if (pbi) pbi.SetValueOverride(true);
-                
-                orig(self, attackDirection, attackType, nailElement, damageSource, ignoreEvasion, corpseFlingMultiplier, overrideSpecialDeath, disallowDropFling);
             }, 
             typeof(float?), 
             typeof(AttackTypes), 
@@ -63,6 +68,19 @@ public static class BroadcasterHooks
 
         typeof(Lever_tk2d).Hook(nameof(Lever_tk2d.Hit),
             (Func<Lever_tk2d, HitInstance, IHitResponder.HitResponse> orig, Lever_tk2d self, HitInstance hit) =>
+            {
+                if (!self.activated)
+                {
+                    self.gameObject.BroadcastEvent("OnPull");
+                    self.gameObject.BroadcastEvent("FirstPull");
+                }
+
+                return orig(self, hit);
+            }
+        );
+
+        typeof(Lever).Hook(nameof(Lever.Hit),
+            (Func<Lever, HitInstance, IHitResponder.HitResponse> orig, Lever self, HitInstance hit) =>
             {
                 if (!self.activated)
                 {

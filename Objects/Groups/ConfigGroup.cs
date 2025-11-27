@@ -149,6 +149,14 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> Lilypad = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Is Trap", "nuphar_mode", (o, value) =>
+            {
+                o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
+
     public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>

@@ -752,4 +752,32 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("WAKE"));
     }
+
+    public static void FixFlyin(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Fly");
+        
+        obj.GetComponent<tk2dSprite>().color = Color.white;
+
+        obj.GetComponent<MeshRenderer>().enabled = true;
+        
+        obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Battler").value = false;
+    }
+
+    public static void FixClawmaiden(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Rest");
+
+        obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Off Plane").value = false;
+
+        obj.transform.SetPositionZ(0.006f);
+    }
+
+    public static void FixVaultborn(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Idle");
+    }
 }

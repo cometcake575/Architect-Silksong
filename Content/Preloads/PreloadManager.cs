@@ -109,7 +109,7 @@ public static class PreloadManager
         var stopDeath = new Hook(typeof(HealthManager).GetMethod("TakeDamage", 
             BindingFlags.NonPublic | BindingFlags.Instance),
             (Action<HealthManager, HitInstance> _, HealthManager _, HitInstance _) => {});
-        HookUtils.OnFsmAwake += BlockMist;
+        HookUtils.OnFsmAwake += BlockControllers;
         
         foreach (var pair in ToPreload)
         {
@@ -127,7 +127,7 @@ public static class PreloadManager
         
         keepObjects.Dispose();
         stopDeath.Dispose();
-        HookUtils.OnFsmAwake -= BlockMist;
+        HookUtils.OnFsmAwake -= BlockControllers;
         
         Resources.UnloadUnusedAssets();
         
@@ -174,9 +174,9 @@ public static class PreloadManager
         _secondsSinceLastSet = 0;
     }
 
-    private static void BlockMist(PlayMakerFSM fsm)
+    private static void BlockControllers(PlayMakerFSM fsm)
     {
-        if (fsm.FsmName == "mist_maze_controller") fsm.enabled = false;
+        if (fsm.FsmName == "mist_maze_controller" || fsm.name == "Acolyte Control") fsm.enabled = false;
     }
 
     public static void RegisterPreload(IPreload obj)
