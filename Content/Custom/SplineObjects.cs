@@ -163,6 +163,7 @@ public static class SplineObjects
 
             hasSetup = true;
             actualSpline = gameObject.AddComponent<HermiteSpline>();
+            actualSpline.preventCulling = true;
             actualSpline.controlPoints = points;
             actualSpline.InternalPoints = [];
             actualSpline.subdivisions = 25;
