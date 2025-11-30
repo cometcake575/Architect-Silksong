@@ -613,7 +613,7 @@ public static class UtilityObjects
                 description: "Teleports an object to another position relative to itself, the mover, the player\n" +
                              "or another object. Position Source ID (an Object ID) overrides Position Source.\n\n" +
                              "This should be used for individual teleports.\n" +
-                             "To move an object as if on a track, use the Moving Object Anchor.\n" +
+                             "To move an object as if on a track, use the Object Anchor.\n" +
                              "To rotate an object over time, use the Object Spinner.")
             .WithConfigGroup(ConfigGroup.ObjectMover)
             .WithReceiverGroup(ReceiverGroup.ObjectMover);

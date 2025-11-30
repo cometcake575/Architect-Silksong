@@ -30,7 +30,10 @@ public static class SplineObjects
                 node,
                 preview: true,
                 sprite: ResourceUtils.LoadSpriteResource("track_start", FilterMode.Point, ppu:15),
-                description: "Start Node")
+                description: "The start of a track.\n" +
+                             "Place Track Points with the same Track ID to link together and form a track.\n\n" +
+                             "Setting a track point as the parent of an Object Anchor will cause it to\n" +
+                             "follow the track, starting at that point.")
             .WithConfigGroup(ConfigGroup.TrackStartPoint);
     }
 
@@ -46,7 +49,7 @@ public static class SplineObjects
                 node,
                 preview: true,
                 sprite: ResourceUtils.LoadSpriteResource("track_node", FilterMode.Point, ppu:15),
-                description: "A position on a track.\n\n" +
+                description: "A point on a track.\n" +
                              "Use the Track Start Point to start a track.")
             .WithConfigGroup(ConfigGroup.TrackPoint)
             .WithReceiverGroup([]);
