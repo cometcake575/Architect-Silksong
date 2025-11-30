@@ -651,6 +651,16 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
+        AddEnemy("Garmond and Zaza (Boss)", "garmond_zaza_boss",
+            ("Library_09", "Black Thread States/Normal World/Scene Control/Garmond Scene/Garmond Fighter"),
+            preloadAction: o =>
+            {
+                var anim = o.GetComponent<tk2dSpriteAnimator>();
+                anim.defaultClipId = anim.GetClipIdByName("Roar");
+            },
+            postSpawnAction: MiscFixers.FixGarmondBoss)
+            .WithConfigGroup(ConfigGroup.GarmondBoss);
+
         Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
                 ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
                 postSpawnAction: MiscFixers.FixGarmond)

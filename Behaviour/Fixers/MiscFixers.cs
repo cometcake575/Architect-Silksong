@@ -379,6 +379,35 @@ public static class MiscFixers
         obj.AddComponent<Garmond>();
     }
 
+    public static void FixGarmondBoss(GameObject obj)
+    {
+        FixGarmond(obj);
+
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("CITADEL REMEET"), 0);
+        fsm.GetState("Cit NPC").AddAction(() => fsm.SendEvent("BATTLE START"), 0);
+        
+        fsm.GetState("Auto Target?").AddAction(() =>
+        {
+            fsm.FsmVariables.FindFsmGameObject("Target").value = HeroController.instance.gameObject;
+            fsm.SendEvent("FINISHED");
+        }, 0);
+        
+        fsm.GetState("Keep Bouncing?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        
+        fsm.GetState("Music").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+        fsm.GetState("Death Land").transitions = [];
+        
+        var roar = fsm.GetState("Enemy Roar");
+        roar.DisableAction(2);
+        roar.DisableAction(5);
+        roar.DisableAction(6);
+        roar.DisableAction(7);
+        
+        obj.transform.Find("Citadel Library NPC").gameObject.SetActive(false);
+    }
+
     public static void FixGreenPrince(GameObject obj)
     {
         obj.AddComponent<GreenPrince>();

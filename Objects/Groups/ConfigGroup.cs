@@ -10,6 +10,7 @@ using Architect.Content.Custom;
 using Architect.Editor;
 using Architect.Storage;
 using Architect.Utils;
+using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
 using TeamCherry.Localization;
 using UnityEngine;
@@ -989,6 +990,25 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     o.GetOrAddComponent<EnemyFixers.DisableBossTitle>();
                 }).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> GarmondBoss = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Lethal Damage", "garmond_lethal",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    foreach (var comp in o.GetComponentsInChildren<DamageHero>(true))
+                        comp.damagePropertyFlags &= ~DamagePropertyFlags.NonLethal;
+                }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Damages Enemies", "damages_enemies",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.RemoveComponentsInChildren<DamageEnemies>();
+                }).WithDefaultValue(false)
+        )
     ]);
 
     public static readonly List<ConfigType> SavageBeastfly = GroupUtils.Merge(Bosses, [
