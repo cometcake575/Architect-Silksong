@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Architect.Editor;
+using Architect.Storage;
 using Architect.Utils;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -94,6 +95,7 @@ public static class PreloadManager
 
     private static IEnumerator Preload(GameManager manager)
     {
+        var preloadCount = Settings.PreloadCount.Value;
         _canvasObj.SetActive(true);
         
         // Prevents errors where objects would try to find Hornet and she isn't present
@@ -113,7 +115,7 @@ public static class PreloadManager
         
         foreach (var pair in ToPreload)
         {
-            while (_activePreloads >= 4) yield return null;
+            while (_activePreloads >= preloadCount) yield return null;
             
             var process = Addressables.LoadSceneAsync("Scenes/" + pair.Key, 
                 LoadSceneMode.Additive);

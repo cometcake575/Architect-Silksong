@@ -35,6 +35,7 @@ public static class Settings
     public static ConfigEntry<bool> ShowRespawnPoint;
 
     public static ConfigEntry<int> SaveSlot; 
+    public static ConfigEntry<int> PreloadCount; 
 
     public static void Init(ConfigFile config)
     {
@@ -225,6 +226,13 @@ public static class Settings
             "DownloadSlot",
             4,
             "The save slot to download save files from the level sharer into"
+        );
+        
+        PreloadCount = config.Bind(
+            "Options",
+            "PreloadCount",
+            4,
+            "The maximum number of scenes that can be loaded at once during preloading"
         );
     }
 
