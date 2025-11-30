@@ -516,7 +516,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Speed", "track_speed", (o, value) =>
             {
-                o.GetComponent<SplineObjects.Spline>().speed = Mathf.Abs(value.GetValue());
+                o.GetComponent<SplineObjects.Spline>().speed = value.GetValue();
             }).WithDefaultValue(10)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("R", "track_r", (o, value) =>

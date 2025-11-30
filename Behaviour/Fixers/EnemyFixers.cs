@@ -780,4 +780,39 @@ public static class EnemyFixers
         var anim = obj.GetComponent<tk2dSpriteAnimator>();
         anim.defaultClipId = anim.GetClipIdByName("Idle");
     }
+
+    public static void FixFlappingFertid(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmGameObject("Patrol Start Point").value =
+            new GameObject("Start Point (Flapping Fertid)")
+            {
+                transform =
+                {
+                    parent = obj.transform,
+                    localPosition = Vector3.zero
+                }
+            };
+        fsm.FsmVariables.FindFsmGameObject("Patrol Point").value =
+            new GameObject("Patrol Point (Flapping Fertid)")
+            {
+                transform =
+                {
+                    parent = obj.transform,
+                    localPosition = new Vector3(6, 0, 0)
+                }
+            };
+    }
+
+    public static void FixBrushflit(GameObject obj)
+    {
+        obj.GetComponent<FlockFlyer>().activeProbability = 1;
+    }
+
+    public static void ScaleBrushflit(GameObject obj, float scale)
+    {
+        var flyer = obj.GetComponent<FlockFlyer>();
+        flyer.minScale *= scale;
+        flyer.maxScale *= scale;
+    }
 }

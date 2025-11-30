@@ -331,7 +331,11 @@ public class ObjectAnchor : PreviewableBehaviour
         };
 
         var spa = splineAnchor.AddComponent<SplineAnchor>();
-        spa.time = sp.spline.splines.IndexOf(sp) * 26 + 25;
+        if (sp.spline.splines.Contains(sp))
+        {
+            spa.time = (sp.spline.splines.IndexOf(sp)+1) * 25;
+        }
+
         spa.spline = sp.spline;
 
         var pc = transform.parent.gameObject.AddComponent<PositionConstraint>();

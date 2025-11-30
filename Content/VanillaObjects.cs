@@ -996,6 +996,13 @@ public static class VanillaObjects
         AddSolid("Far Fields Platform 1", "fung_plat_float_01", ("Bone_East_15", "fung_plat_float_06"));
         AddSolid("Far Fields Platform 2", "fung_plat_float_02", ("Bone_East_14", "bone_plat_03"));
 
+        AddEnemy("Brushflit", "brushflit", ("Bone_East_15", "Fields Flock Flyer"),
+            preloadAction: EnemyFixers.FixBrushflit)
+            .WithScaleAction(EnemyFixers.ScaleBrushflit);
+        AddEnemy("Fertid", "fertid", ("Bone_East_15", "Fields Goomba")).DoFlipX();
+        AddEnemy("Flapping Fertid", "flapping_fertid", ("Bone_East_15", "Fields Flyer"),
+            preloadAction: EnemyFixers.FixFlappingFertid).DoFlipX();
+        
         AddEnemy("Hoker", "spine_floater", ("Bone_East_14", "Spine Floater (9)"),
                 postSpawnAction: MiscFixers.FixHoker)
             .WithConfigGroup(ConfigGroup.Hoker).DoFlipX();
