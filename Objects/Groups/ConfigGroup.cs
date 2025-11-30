@@ -6,6 +6,7 @@ using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Config;
 using Architect.Config.Types;
+using Architect.Content.Custom;
 using Architect.Editor;
 using Architect.Storage;
 using Architect.Utils;
@@ -44,6 +45,10 @@ public static class ConfigGroup
                     var col = renderer.color;
                     col.a = 0;
                     renderer.color = col;
+                }
+                foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>())
+                {
+                    renderer.enabled = false;
                 }
 
                 o.AddComponent<MiscFixers.ColorLock>();
@@ -249,6 +254,11 @@ public static class ConfigGroup
                 o.GetComponent<Timer>().repeatDelay = value.GetValue();
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Random Delay", "timer_rand_delay", (o, value) =>
+            {
+                o.GetComponent<Timer>().randDelay = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
             new IntConfigType("Max Calls", "timer_limit", (o, value) =>
             {
                 o.GetComponent<Timer>().maxCalls = value.GetValue();
@@ -444,12 +454,42 @@ public static class ConfigGroup
                     o.GetComponent<CrankPlat>().hitForce = value.GetValue();
                 }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Max Hit Speed", "cradle_max_speed",
+                (o, value) =>
+                {
+                    o.GetComponent<CrankPlat>().maxHitSpeed = value.GetValue();
+                }).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Max Return Speed", "cradle_max_return",
                 (o, value) =>
                 {
                     o.GetComponent<CrankPlat>().maxReturnSpeed = value.GetValue();
                 }).WithPriority(-1))
     ]);
+
+    public static readonly List<ConfigType> SilkSpool = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Stay Used", "spool_used",
+                    (o, value) =>
+                    {
+                        if (value.GetValue()) return;
+                        o.RemoveComponent<PersistentIntItem>();
+                    })
+                .WithDefaultValue(false))
+    ]);
+
+    private static readonly ConfigType ZOffset =
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Z Offset", "obj_z",
+                (o, value) => { o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue()); },
+                (o, value, arg3) =>
+                {
+                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
+                    {
+                        CursorManager.Offset.z += value.GetValue();
+                    }
+                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                }).WithDefaultValue(0));
 
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
@@ -461,18 +501,45 @@ public static class ConfigGroup
                 },
                 (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
                 .WithDefaultValue(0)),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Z Offset", "obj_z",
-                (o, value) => { o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue()); },
-                (o, value, arg3) =>
-                {
-                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
-                    {
-                        CursorManager.Offset.z += value.GetValue();
-                    }
-                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
-                }).WithDefaultValue(0))
+        ZOffset
     ]);
+
+    public static readonly List<ConfigType> TrackPoint = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Track ID", "track_id", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.SplinePoint>().id = value.GetValue();
+            }).WithDefaultValue("1").WithPriority(-1))
+    ];
+
+    public static readonly List<ConfigType> TrackStartPoint = GroupUtils.Merge(Visible, GroupUtils.Merge(TrackPoint, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Speed", "track_speed", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.Spline>().speed = Mathf.Abs(value.GetValue());
+            }).WithDefaultValue(10)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("R", "track_r", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.Spline>().r = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("G", "track_g", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.Spline>().g = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("B", "track_b", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.Spline>().b = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("A", "track_a", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.Spline>().a = value.GetValue();
+            }).WithDefaultValue(0.1f)),
+        ZOffset
+    ]));
 
     private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
     private static readonly int Default = LayerMask.NameToLayer("Default");
@@ -576,6 +643,39 @@ public static class ConfigGroup
             }).WithDefaultValue(1)),
         AlphaColour
     ]));
+    
+    public static readonly List<ConfigType> Line = GroupUtils.Merge(Colliders, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Point Set ID", "point_id", (o, value) =>
+            {
+                o.GetComponent<LineObject>().id = value.GetValue();
+            }).WithDefaultValue("1").WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Visual Width", "line_width", (o, value) =>
+            {
+                o.GetComponent<LineObject>().width = value.GetValue();
+            }).WithDefaultValue(0.2f)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour R", "line_red", (o, value) =>
+            {
+                o.GetComponent<LineObject>().r = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour G", "line_green", (o, value) =>
+            {
+                o.GetComponent<LineObject>().g = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour B", "line_blue", (o, value) =>
+            {
+                o.GetComponent<LineObject>().b = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour A", "line_alpha", (o, value) =>
+            {
+                o.GetComponent<LineObject>().a = value.GetValue();
+            }).WithDefaultValue(1))
+    ]);
     
     public static readonly List<ConfigType> Colourer = [
         ConfigurationManager.RegisterConfigType(
@@ -732,7 +832,7 @@ public static class ConfigGroup
                     o.GetComponent<ObjectAnchor>().parentId = value.GetValue();
                 }
             )),
-            ConfigurationManager.RegisterConfigType(new FloatConfigType("Track Length", "anchor_dist", 
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Path Distance", "anchor_dist", 
                 (o, value) => 
                 {
                     o.GetComponent<ObjectAnchor>().trackDistance = value.GetValue();
@@ -749,14 +849,14 @@ public static class ConfigGroup
                 {
                     o.GetComponent<ObjectAnchor>().speed = value.GetValue();
                 }
-            ).WithDefaultValue(5)),
-            ConfigurationManager.RegisterConfigType(new FloatConfigType("Track Rotation", "anchor_rot", 
+            ).WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Path Rotation", "anchor_rot", 
                 (o, value) =>
                 {
                     o.GetComponent<ObjectAnchor>().startRotation = value.GetValue();
                 }
             ).WithDefaultValue(0)),
-            ConfigurationManager.RegisterConfigType(new FloatConfigType("Track Rotation over Time", "anchor_rot_speed", 
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Path Rotation over Time", "anchor_rot_speed", 
                 (o, value) =>
                 {
                     o.GetComponent<ObjectAnchor>().rotationSpeed = value.GetValue();
@@ -1156,7 +1256,11 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Sound Type", "wav_mode",
                 (o, value) => { o.GetComponent<WavObject>().globalSound = value.GetValue() == 1; })
-                .WithOptions("Local", "Global").WithDefaultValue(1))
+                .WithOptions("Local", "Global").WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Loop Sound", "wav_loop",
+                (o, value) => { o.GetComponent<WavObject>().loop = value.GetValue(); })
+                .WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> Mp4 = GroupUtils.Merge(Decorations, [

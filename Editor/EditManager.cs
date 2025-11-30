@@ -17,6 +17,7 @@ using Architect.Objects.Tools;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
+using MonoMod.RuntimeDetour;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -211,6 +212,8 @@ public static class EditManager
         if (IsEditing || _loadPos) DoNoclip(actions, paused);
         
         if (!IsEditing) return;
+
+        PlayerData.instance.isInvincible = true;
         
         HeroController.instance.ResetHardLandingTimer();
 
@@ -236,7 +239,7 @@ public static class EditManager
         var clearHover = HoveredObject != null;
         if (CurrentObject is PlaceableObject placeable)
         {
-            ApplyEditChanges(placeable);
+            if (!paused) ApplyEditChanges(placeable);
             
             if (Settings.SavePrefab.WasPressed)
             {
@@ -454,6 +457,7 @@ public static class EditManager
 
         _lastEditToggle = Time.time;
         IsEditing = !IsEditing;
+        if (!IsEditing) PlayerData.instance.isInvincible = false;
         ReloadScene();
         
         StorageManager.SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());

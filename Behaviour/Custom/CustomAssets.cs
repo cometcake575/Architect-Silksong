@@ -143,6 +143,7 @@ public class WavObject : SoundMaker, IPlayable
     public float volume = 1;
     public float pitch = 1;
     public bool globalSound = true;
+    public bool loop;
     
     protected void Start()
     {
@@ -153,7 +154,7 @@ public class WavObject : SoundMaker, IPlayable
     public void Play()
     {
         if (!sound) return;
-        PlaySound(sound, volume, pitch, globalSound);
+        PlaySound(sound, volume, pitch, globalSound, loop);
     }
 }
 

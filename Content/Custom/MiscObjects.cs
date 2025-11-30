@@ -15,6 +15,7 @@ public static class MiscObjects
 {
     public static void Init()
     {
+        Categories.Misc.AddStart(CreateLine());
         Categories.Misc.AddStart(CreateTriangle());
         Categories.Misc.AddStart(CreateCircle());
         Categories.Misc.AddStart(CreateSquare());
@@ -304,6 +305,33 @@ public static class MiscObjects
                 "A circle that can be coloured or given a hitbox for custom collision." +
                 "\n\nRGBA colour values should be between 0 and 1.")
             .WithConfigGroup(ConfigGroup.Colours)
+            .WithRotationGroup(RotationGroup.All);
+    }
+    
+    public static readonly Material LineMaterial = new(Shader.Find("Sprites/Default"));
+
+    private static PlaceableObject CreateLine()
+    {
+        var line = new GameObject("Shape (Line)");
+
+        line.SetActive(false);
+        Object.DontDestroyOnLoad(line);
+
+        line.AddComponent<LineObject>();
+
+        var lr = line.AddComponent<LineRenderer>();
+        lr.material = LineMaterial;
+
+        var collider = line.AddComponent<EdgeCollider2D>();
+        collider.isTrigger = true;
+
+        return new CustomObject("Coloured Line Point", "coloured_line", line, 
+                "A point that can be combined with others to form lines that\n" +
+                "can be coloured or given a hitbox for custom collision.\n\n" +
+                "Follows the config options of the first point of its ID that is placed." +
+                "\n\nRGBA colour values should be between 0 and 1.",
+                sprite: ResourceUtils.LoadSpriteResource("line_point", ppu:200))
+            .WithConfigGroup(ConfigGroup.Line)
             .WithRotationGroup(RotationGroup.All);
     }
 

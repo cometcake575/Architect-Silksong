@@ -63,7 +63,6 @@ public static class SharerRequests
         form.AddBinaryData("level", jsonBytes, "level.json", "application/json");
 
         var done = new TaskCompletionSource<bool>();
-        ArchitectPlugin.Logger.LogInfo(saveNumber);
         if (Platform.IsSaveSlotIndexValid(saveNumber))
         {
             Platform.Current.ReadSaveSlot(saveNumber, bytes =>

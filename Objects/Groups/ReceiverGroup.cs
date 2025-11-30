@@ -183,6 +183,10 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("show_score", "ShowTitle", o =>
         {
             o.GetComponent<MiscFixers.CustomFleaCounter>().Announce();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("reset_score", "Reset", o =>
+        {
+            o.GetComponent<MiscFixers.CustomFleaCounter>().Reset();
         }))
     ]);
     

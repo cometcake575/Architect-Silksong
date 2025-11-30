@@ -237,6 +237,9 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Citadel Gate", "citadel_gate",
                 ("Song_09", "Citadel Switch Gate"))
             .WithReceiverGroup(ReceiverGroup.Gates));
+        
+        Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
+                ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
 
         Categories.Platforming.Add(new PreloadObject("Metronome Platform", "metronome_plat",
                 ("Song_11", "metronome_plat (11)"),
@@ -507,7 +510,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Levers));
 
         Categories.Interactable.Add(new PreloadObject("Slab Gate", "jail_gate_door",
-                ("Slab_05", "Jail Gate Door (2)"))
+                ("Slab_05", "Jail Gate Door (2)"), preloadAction: EnemyFixers.KeepActive)
             .WithReceiverGroup(ReceiverGroup.Gates));
 
         Categories.Hazards.Add(new PreloadObject("Slab Spike Ball", "slab_spike_ball",
@@ -1106,11 +1109,6 @@ public static class VanillaObjects
             description:"Can be configured to be worth any number of rosaries\n" +
                         "and to use a Custom PNG texture.")
             .WithConfigGroup(ConfigGroup.RosaryBead));
-
-        Categories.Misc.Add(new PreloadObject("Silk Vine", "silk_vine",
-            ("Mosstown_02",
-                "Black Thread States Thread Only Variant/Normal World/Thick Silk Vines"),
-            preloadAction: EnemyFixers.KeepActive));
 
         AddEnemy("Pilgrim Hiker", "pilgrim_hiker",
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Hiker"));

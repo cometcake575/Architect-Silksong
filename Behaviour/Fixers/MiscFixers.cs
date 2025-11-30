@@ -700,6 +700,14 @@ public static class MiscFixers
             RefreshGold(true);
         }
 
+        public void Reset()
+        {
+            currentCount = 0;
+            _counter.counterText.text = currentCount.ToString();
+            
+            RefreshGold(true);
+        }
+
         public void Decrement()
         {
             currentCount--;

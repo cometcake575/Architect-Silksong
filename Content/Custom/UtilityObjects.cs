@@ -566,8 +566,9 @@ public static class UtilityObjects
                 timer,
                 sprite: ResourceUtils.LoadSpriteResource("timer", FilterMode.Point, ppu:10),
                 description: "Broadcasts an event periodically.\n\n" +
-                             "Start Delay is the time until the first call, " +
-                             "Repeat Delay is the time between calls.\n\n" +
+                             "Start Delay is the time until the first call.\n" +
+                             "Repeat Delay is the time between calls,\n" +
+                             "A value between 0 and the Random Delay is added to the Repeat Delay each time.\n\n" +
                              "Set 'Max Calls' for the timer to disable itself after a certain number of calls.")
             .WithConfigGroup(ConfigGroup.Timer)
             .WithBroadcasterGroup(BroadcasterGroup.Callable)
@@ -583,13 +584,15 @@ public static class UtilityObjects
         ObjectAnchor.Init();
         anchor.AddComponent<ObjectAnchor>();
 
-        return new CustomObject("Moving Object Anchor", "object_anchor",
+        return new CustomObject("Object Anchor", "object_anchor",
                 anchor,
                 sprite: ResourceUtils.LoadSpriteResource("object_anchor", FilterMode.Point),
-                description: "Used to move objects around, as if on a track.\n" +
-                             "If the Parent ID is set the track will follow it around.\n\n" +
-                             "Find the ID of the object to move (and the parent) by clicking them with the Cursor tool.\n\n" +
-                             "Hold the 'P' keybind to preview the movement of placed objects.",
+                description: "Used to move objects.\n\n" +
+                             "Set Move Speed above 0 for the anchor to move linearly.\n\n" +
+                             "Set the Parent ID to make the anchor follow the parent,\n" +
+                             "or set it to a Track Point to make the anchor move along the track.\n\n" +
+                             "Find the ID of the object and parent by clicking them with the Cursor tool\n" +
+                             "or holding the 'I' key and clicking the object.",
                 preview: true)
             .WithConfigGroup(ConfigGroup.ObjectAnchor)
             .WithReceiverGroup(ReceiverGroup.ObjectAnchor)

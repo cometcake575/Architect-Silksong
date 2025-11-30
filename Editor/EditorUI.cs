@@ -93,6 +93,7 @@ public static class EditorUI
 
         _currentlySelected.textComponent.alignment = TextAnchor.UpperCenter;
         _currentlySelectedDesc.textComponent.alignment = TextAnchor.UpperCenter;
+        _currentlySelectedDesc.textComponent.verticalOverflow = VerticalWrapMode.Overflow;
 
         _currentlySelectedDesc.textComponent.fontSize = 10;
         DisableWhenPlaying.Add(_currentlySelectedDesc.gameObject);

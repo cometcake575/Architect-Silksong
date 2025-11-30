@@ -1,4 +1,5 @@
 using System;
+using Architect.Content.Custom;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
@@ -71,7 +72,9 @@ public class ObjectAnchor : PreviewableBehaviour
 
         if (!isAPreview && PlacementManager.Objects.TryGetValue(parentId, out var parent))
         {
-            transform.parent.SetParent(parent.transform, true);
+            var sp = parent.GetComponent<SplineObjects.SplinePoint>();
+            if (sp && sp.spline) SetupSpline(sp);
+            else transform.parent.SetParent(parent.transform, true);
         }
 
         Reset();
@@ -235,10 +238,7 @@ public class ObjectAnchor : PreviewableBehaviour
                 _offset += _currentSpeed * -_pauseRemaining;
                 _pauseRemaining = 0;
             }
-            else
-            {
-                return;
-            }
+            else return;
         }
 
         if (_offset >= trackDistance && !_flipped)
@@ -320,6 +320,58 @@ public class ObjectAnchor : PreviewableBehaviour
         var component2 = obj.GetComponent<Rigidbody2D>();
         if (!component2) return;
         component2.interpolation = RigidbodyInterpolation2D.Interpolate;
+    }
+
+    private void SetupSpline(SplineObjects.SplinePoint sp)
+    {
+
+        var splineAnchor = new GameObject(name + " Spline Anchor")
+        {
+            transform = { position = sp.transform.position.Where(z: transform.GetPositionZ()) }
+        };
+
+        var spa = splineAnchor.AddComponent<SplineAnchor>();
+        spa.time = sp.spline.splines.IndexOf(sp) * 26 + 25;
+        spa.spline = sp.spline;
+
+        var pc = transform.parent.gameObject.AddComponent<PositionConstraint>();
+        
+        pc.AddSource(new ConstraintSource
+        {
+            sourceTransform = splineAnchor.transform,
+            weight = 1
+        });
+
+        pc.translationOffset = transform.position - sp.transform.position;
+        
+        pc.constraintActive = true;
+    }
+
+    public class SplineAnchor : MonoBehaviour
+    {
+        public SplineObjects.Spline spline;
+
+        public float time;
+
+        private bool _started;
+
+        private void LateUpdate()
+        {
+            if (!_started)
+            {
+                _started = true;
+                return;
+            }
+            
+            var index = Mathf.FloorToInt(time) % (spline.actualSpline.GetPointCount()-1);
+            
+            var p1 = spline.actualSpline.GetPoint(index).Position;
+            var p2 = spline.actualSpline.GetPoint(index + 1).Position;
+
+            transform.SetPosition2D(Vector3.Lerp(p1, p2, time % 1) + spline.transform.position);
+
+            time += Time.deltaTime * spline.speed / Vector3.Distance(p1, p2);
+        }
     }
 
     public class StickPlayer : MonoBehaviour
