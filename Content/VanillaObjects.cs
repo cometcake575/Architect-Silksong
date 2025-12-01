@@ -494,6 +494,18 @@ public static class VanillaObjects
         
         AddEnemy("Guardfly", "guardfly", ("Slab_04", "Slab Fly Mid (2)"));
         AddEnemy("Wardenfly", "wardenfly", ("Slab_22", "Slab Fly Large"));
+
+        AddEnemy("Freshfly", "freshfly",
+            ("Slab_16b",
+                "Broodmother Scene Control/Broodmother Scene/Battle Scene Broodmother/Spawner Flies/Slab Fly Small Fresh"),
+            postSpawnAction: EnemyFixers.FixFreshfly);
+        
+        AddEnemy("Broodmother", "broodmother",
+            ("Slab_16b",
+                "Broodmother Scene Control/Broodmother Scene/Battle Scene Broodmother/Wave 4/Slab Fly Broodmother"),
+            postSpawnAction: EnemyFixers.FixBroodmother)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
         
         AddEnemy("Wardenfly Jailer", "slab_jailer",
                 ("Bone_East_04c", "Scene Control/Slab Jailer Scene/Slab Fly Large Cage"),
@@ -659,7 +671,8 @@ public static class VanillaObjects
                 anim.defaultClipId = anim.GetClipIdByName("Roar");
             },
             postSpawnAction: MiscFixers.FixGarmondBoss)
-            .WithConfigGroup(ConfigGroup.GarmondBoss);
+            .WithConfigGroup(ConfigGroup.GarmondBoss)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
 
         Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
                 ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
@@ -723,6 +736,12 @@ public static class VanillaObjects
         AddEnemy("Snitchfly", "snitchfly",
                 ("Bonetown", "Black Thread States/Black Thread World/Thief Scene/Rosary Thief Group/Rosary Thief"))
             .DoFlipX();
+
+        AddEnemy("Summoned Saviour", "summoned_saviour",
+            ("Bone_Steel_Servant", "Steel Servant Scene/Battle Scene/Wave 1/Abyss Mass"),
+            postSpawnAction: EnemyFixers.FixSummonedSaviour)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
     }
 
     private static void AddMemoriumObjects()

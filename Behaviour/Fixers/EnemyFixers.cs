@@ -12,6 +12,7 @@ namespace Architect.Behaviour.Fixers;
 public static class EnemyFixers
 {
     private static GameObject _bouldersPrefab;
+    private static GameObject _freshflyCagePrefab;
     
     public static void Init()
     {
@@ -36,6 +37,9 @@ public static class EnemyFixers
         
         PreloadManager.RegisterPreload(new BasicPreload("Bonetown_boss", "Boss Scene/Boulders Battle", 
             o => _bouldersPrefab = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Slab_16b", 
+            "Broodmother Scene Control/Broodmother Scene/Battle Scene Broodmother/Spawner Flies", 
+            o => _freshflyCagePrefab = o));
     }
     
     public static void ApplyGravity(GameObject obj)
@@ -814,5 +818,60 @@ public static class EnemyFixers
         var flyer = obj.GetComponent<FlockFlyer>();
         flyer.minScale *= scale;
         flyer.maxScale *= scale;
+    }
+
+    public static void FixSummonedSaviour(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+
+        fsm.GetState("Dormant").AddAction(() =>
+        {
+            obj.GetComponent<BoxCollider2D>().isTrigger = false;
+            fsm.SendEvent("WAKE");
+        });
+
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[2]).stunHero = false;
+
+        var dash = fsm.GetState("Dash Dir");
+        dash.DisableAction(1);
+        dash.DisableAction(2);
+    }
+
+    public static void FixBroodmother(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        
+        var fsm = obj.LocateMyFSM("Control");
+        var flies = Object.Instantiate(_freshflyCagePrefab);
+        flies.SetActive(true);
+        fsm.FsmVariables.FindFsmGameObject("Spawner Flies").value = flies;
+        
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[7]).stunHero = false;
+
+        fsm.GetState("Dormant").AddAction(new Wait
+        {
+            time = 0.1f,
+            finishEvent = FsmEvent.GetFsmEvent("BATTLE START")
+        });
+        fsm.GetState("Entry Antic").AddAction(() =>
+        {
+            var hm = obj.GetComponent<HealthManager>();
+            if (hm.isDead)
+            {
+                fsm.enabled = false;
+                return;
+            }
+            hm.enemyDeathEffects.GetInstantiatedCorpse(AttackTypes.Generic).RemoveComponent<ConstrainPosition>();
+            fsm.SendEvent("FINISHED");
+        }, 0);
+        fsm.GetState("Burst In").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
+    public static void FixFreshfly(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Bouncer Control");
+        fsm.fsmTemplate = null;
+        fsm.GetState("Start Pause").AddAction(() => fsm.SetState("Left or Right?"), 11);
+        obj.GetComponent<HealthManager>().hasSpecialDeath = false;
     }
 }

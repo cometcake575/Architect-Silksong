@@ -68,6 +68,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateBinoculars());
         Categories.Utility.Add(CreateCameraBorder());
+        Categories.Utility.Add(CreateCameraShaker());
         Categories.Utility.Add(CreateCameraRotator());
         Categories.Utility.Add(CreateSceneBorderRemover());
         
@@ -298,7 +299,6 @@ public static class UtilityObjects
         var cameraBorder = new GameObject("Camera Border");
         cameraBorder.AddComponent<CameraBorder>();
 
-        cameraBorder.layer = 10;
         cameraBorder.transform.position = new Vector3(0, 0, 0.1f);
 
         Object.DontDestroyOnLoad(cameraBorder);
@@ -320,7 +320,6 @@ public static class UtilityObjects
         var cameraSpinner = new GameObject("Camera Rotator");
         cameraSpinner.AddComponent<CameraRotator>();
 
-        cameraSpinner.layer = 10;
         cameraSpinner.transform.position = new Vector3(0, 0, 0.1f);
 
         Object.DontDestroyOnLoad(cameraSpinner);
@@ -330,6 +329,22 @@ public static class UtilityObjects
                             "Can be used in combination with the Object Spinner\n" +
                             "to rotate the camera over time.",
                 sprite:ResourceUtils.LoadSpriteResource("camera_spinner"));
+    }
+
+    private static PlaceableObject CreateCameraShaker()
+    {
+        var cameraSpinner = new GameObject("Camera Shaker");
+        cameraSpinner.AddComponent<CameraShaker>();
+        
+        cameraSpinner.transform.position = new Vector3(0, 0, 0.1f);
+
+        Object.DontDestroyOnLoad(cameraSpinner);
+        cameraSpinner.SetActive(false);
+        return new CustomObject("Camera Shaker", "camera_shaker", cameraSpinner,
+                description:"Shakes the camera when the 'Shake' trigger is run.",
+                sprite:ResourceUtils.LoadSpriteResource("camera_shaker"))
+            .WithReceiverGroup(ReceiverGroup.CameraShaker)
+            .WithConfigGroup(ConfigGroup.CameraShaker);
     }
 
     private static PlaceableObject CreateSceneBorderRemover()
@@ -342,7 +357,6 @@ public static class UtilityObjects
         SceneBorderRemover.Init();
         sceneBorderRemover.AddComponent<SceneBorderRemover>();
 
-        sceneBorderRemover.layer = 10;
         sceneBorderRemover.transform.position = new Vector3(0, 0, 0.1f);
 
         return new CustomObject("Scene Border Remover", "scene_border_remover", sceneBorderRemover,
@@ -698,7 +712,6 @@ public static class UtilityObjects
         obj.AddComponent<ObjectRemover>().triggerName = id;
 
         var sprite = ResourceUtils.LoadSpriteResource(id, FilterMode.Point);
-        obj.layer = 10;
         obj.transform.position = new Vector3(0, 0, -2);
 
         return new CustomObject(name, id, obj, desc, sprite:sprite, preview:true)
@@ -714,7 +727,6 @@ public static class UtilityObjects
         obj.AddComponent<ObjectEnabler>();
 
         var sprite = ResourceUtils.LoadSpriteResource("object_enabler", FilterMode.Point);
-        obj.layer = 10;
         obj.transform.position = new Vector3(0, 0, -2);
 
         return new CustomObject("Enable Object", "object_enabler", obj, 

@@ -92,6 +92,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> CameraShaker = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("camera_shake", "Shake", o =>
+        {
+            o.GetComponent<CameraShaker>().Shake();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> TimeSlower = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_timechange", "SlowTime", o =>
         {

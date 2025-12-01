@@ -1011,6 +1011,16 @@ public static class ConfigGroup
         )
     ]);
 
+    public static readonly List<ConfigType> CameraShaker = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Shake Type", "camera_shake_type",
+                (o, value) =>
+                {
+                    o.GetComponent<CameraShaker>().shakeType = value.GetValue();
+                }).WithOptions("Tiny", "Small", "Medium", "Large").WithDefaultValue(2)
+        )
+    ]);
+
     public static readonly List<ConfigType> SavageBeastfly = GroupUtils.Merge(Bosses, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Start Phase", "beastfly_phase",
