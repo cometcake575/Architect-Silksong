@@ -258,7 +258,7 @@ public static class ConfigGroup
             new FloatConfigType("Random Delay", "timer_rand_delay", (o, value) =>
             {
                 o.GetComponent<Timer>().randDelay = value.GetValue();
-            }).WithDefaultValue(1)),
+            }).WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Max Calls", "timer_limit", (o, value) =>
             {
