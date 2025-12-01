@@ -173,9 +173,15 @@ public static class EnemyFixers
 
     private class LastJudgeFixer : MonoBehaviour;
 
-    public static void FixBloatroach(GameObject obj)
+    public static void FixBloatroachPreload(GameObject obj)
     {
         RemoveConstrainPosition(obj);
+        var psr = obj.transform.Find("Pt Spit Void").GetChild(0).GetComponent<ParticleSystemRenderer>();
+        psr.material = psr.material;
+    }
+
+    public static void FixBloatroach(GameObject obj)
+    {
         var fsm = obj.LocateMyFSM("Control");
         var val = fsm.FsmVariables.FindFsmBool("In Attack Range");
         fsm.GetState("Idle").AddAction(() =>
@@ -302,6 +308,36 @@ public static class EnemyFixers
             started = true;
             fsm.SendEvent("UNALERT");
         }, 0);
+        
+        FsmGameObject[] flies = [
+            fsm.FsmVariables.FindFsmGameObject("Fly 1"),
+            fsm.FsmVariables.FindFsmGameObject("Fly 2"), 
+            fsm.FsmVariables.FindFsmGameObject("Fly 3")
+        ];
+        
+        fsm.GetState("Fly").AddAction(FixCogflies, 0);
+        fsm.GetState("Summon").AddAction(FixCogflies, 3);
+
+        return;
+
+        void FixCogflies()
+        {
+            foreach (var fly in flies)
+            {
+                var v = fly.value;
+                if (!v) return;
+                
+                var oBts = obj.GetComponent<BlackThreadState>();
+                var hasBlackThreadState = oBts && oBts.CheckIsBlackThreaded();
+                
+                var bts = v.GetComponent<BlackThreadState>();
+                if (bts.CheckIsBlackThreaded() == hasBlackThreadState) return;
+                
+                bts.SetBlackThreadAmount(0);
+                bts.isBlackThreadWorld = hasBlackThreadState;
+                bts.ResetThreaded();
+            }
+        }
     }
 
     public static void FixSurgeon(GameObject obj)

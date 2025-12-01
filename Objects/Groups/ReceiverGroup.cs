@@ -31,6 +31,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> BlackThreader = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_black_thread", "Activate", o =>
+        {
+            o.GetComponent<BlackThreader>().BlackThread();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> BoneBoulder = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("boulder_drop", "Drop", o =>
         {

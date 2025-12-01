@@ -553,6 +553,7 @@ public static class VanillaObjects
     private static void AddBileObjects()
     {
         AddEnemy("Bloatroach", "bloat_roach", ("Shadow_02", "Bloat Roach"),
+            preloadAction: EnemyFixers.FixBloatroachPreload,
             postSpawnAction: EnemyFixers.FixBloatroach);
         AddEnemy("Miremite", "swamp_goomba",
             ("Shadow_02", "Black Thread States Thread Only Variant/Normal World/Swamp Goomba")).DoFlipX();

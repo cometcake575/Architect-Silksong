@@ -80,6 +80,44 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
+    public static readonly List<ConfigType> BlackThreader = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Object ID", "voider_id", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().id = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Void Circle Chance", "voider_ball", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().chances[0] = Mathf.Abs(value.GetValue());
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Void Shot Chance", "voider_shot", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().chances[1] = Mathf.Abs(value.GetValue());
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Void Spew Chance", "voider_vomit", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().chances[2] = Mathf.Abs(value.GetValue());
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Void Lash Chance", "voider_whip", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().chances[3] = Mathf.Abs(value.GetValue());
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Trigger Mode", "voider_mode", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().mode = value.GetValue();
+            }).WithOptions("From Start", "Event Only").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Require Act 3", "voider_do_check", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().requireAct3 = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
+
     public static readonly List<ConfigType> AnimPlayer = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Clip Name", "anim_clip", (o, value) =>

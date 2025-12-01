@@ -856,6 +856,14 @@ public static class MiscFixers
             fsm.SetState("Roar End");
         }, 2);
 
+        var bt = fsm.FsmVariables.FindFsmBool("Black Threaded");
+        fsm.GetState("Walk").AddAction(() =>
+        {
+            if (bt.value) return;
+            var bts = obj.GetComponent<BlackThreadState>();
+            if (bts && bts.CheckIsBlackThreaded()) bt.value = true;
+        }, 0);
+
         fsm.FsmVariables.FindFsmFloat("Ground Y").value = obj.transform.position.y;
     }
 

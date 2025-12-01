@@ -5,6 +5,24 @@ namespace Architect.Utils;
 
 public static class FsmUtils
 {
+    public static void AddState(this PlayMakerFSM fsm, string state)
+    {
+        var oldStates = fsm.fsm.States;
+        
+        var newStates = new FsmState[oldStates.Length + 1];
+        for (var i = 0; i < oldStates.Length; i++)
+        {
+            newStates[i] = oldStates[i];
+        }
+        var newState = new FsmState(fsm.fsm)
+        {
+            Name = state
+        };
+        
+        newStates[oldStates.Length] = newState;
+        fsm.fsm.States = newStates;
+    }
+    
     public static FsmState GetState(this PlayMakerFSM fsm, string state)
     {
         return fsm.Fsm.GetState(state);

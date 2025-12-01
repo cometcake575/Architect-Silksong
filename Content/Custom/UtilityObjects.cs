@@ -20,6 +20,7 @@ public static class UtilityObjects
     public static void Init()
     {
         Categories.Utility.Add(CreateItem());
+        Categories.Utility.Add(CreateVoider());
         
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
@@ -178,6 +179,24 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource("item_pickup", ppu:64))
             .WithConfigGroup(ConfigGroup.Item)
             .WithReceiverGroup(ReceiverGroup.Item);
+    }
+
+    private static PlaceableObject CreateVoider()
+    {
+        var pickup = new GameObject("Voider");
+        Object.DontDestroyOnLoad(pickup);
+        pickup.SetActive(false);
+
+        pickup.AddComponent<BlackThreader>();
+        
+        return new CustomObject("Black Threader", "black_threader", pickup, 
+                "Makes an enemy become black threaded,\n" +
+                "can either make the enemy start threaded or require the 'Activate' trigger to be run.\n\n" +
+                "Enemies will pick one void attack to use,\n" +
+                "the chance of each attack is configurable.",
+                sprite:ResourceUtils.LoadSpriteResource("black_threader", ppu:64))
+            .WithConfigGroup(ConfigGroup.BlackThreader)
+            .WithReceiverGroup(ReceiverGroup.BlackThreader);
     }
 
     private static PlaceableObject CreateWalkTarget()
