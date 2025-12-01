@@ -38,6 +38,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Plasmifier = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_plasmify", "Activate", o =>
+        {
+            o.GetComponent<Plasmifier>().Plasmify();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> BoneBoulder = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("boulder_drop", "Drop", o =>
         {

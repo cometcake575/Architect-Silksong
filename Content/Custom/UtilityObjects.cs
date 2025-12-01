@@ -21,6 +21,7 @@ public static class UtilityObjects
     {
         Categories.Utility.Add(CreateItem());
         Categories.Utility.Add(CreateVoider());
+        Categories.Utility.Add(CreatePlasmifier());
         
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
@@ -183,20 +184,37 @@ public static class UtilityObjects
 
     private static PlaceableObject CreateVoider()
     {
-        var pickup = new GameObject("Voider");
-        Object.DontDestroyOnLoad(pickup);
-        pickup.SetActive(false);
+        var threader = new GameObject("Voider");
+        Object.DontDestroyOnLoad(threader);
+        threader.SetActive(false);
 
-        pickup.AddComponent<BlackThreader>();
+        threader.AddComponent<BlackThreader>();
         
-        return new CustomObject("Black Threader", "black_threader", pickup, 
-                "Makes an enemy become black threaded,\n" +
-                "can either make the enemy start threaded or require the 'Activate' trigger to be run.\n\n" +
+        return new CustomObject("Black Threader", "black_threader", threader, 
+                "Makes an enemy become black threaded, can either make the enemy start threaded\n" +
+                "or require the 'Activate' trigger to be run.\n\n" +
                 "Enemies will pick one void attack to use,\n" +
                 "the chance of each attack is configurable.",
                 sprite:ResourceUtils.LoadSpriteResource("black_threader", ppu:64))
             .WithConfigGroup(ConfigGroup.BlackThreader)
             .WithReceiverGroup(ReceiverGroup.BlackThreader);
+    }
+
+    private static PlaceableObject CreatePlasmifier()
+    {
+        var plasmifier = new GameObject("Plasmifier");
+        Object.DontDestroyOnLoad(plasmifier);
+        plasmifier.SetActive(false);
+
+        plasmifier.AddComponent<Plasmifier>();
+        
+        return new CustomObject("Plasmifier", "plasmifier", plasmifier, 
+                "Makes an enemy become plasmified, can either make the enemy start plasmified\n" +
+                "or require the 'Activate' trigger to be run.\n\n" +
+                "Plasmified enemies will heal every 0.75 seconds they are not damaged.",
+                sprite:ResourceUtils.LoadSpriteResource("plasmifier", ppu:64))
+            .WithConfigGroup(ConfigGroup.Plasmifier)
+            .WithReceiverGroup(ReceiverGroup.Plasmifier);
     }
 
     private static PlaceableObject CreateWalkTarget()

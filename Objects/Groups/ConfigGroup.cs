@@ -118,6 +118,24 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
 
+    public static readonly List<ConfigType> Plasmifier = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Object ID", "plasmifier_id", (o, value) =>
+            {
+                o.GetComponent<Plasmifier>().id = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Trigger Mode", "plasmifier_mode", (o, value) =>
+            {
+                o.GetComponent<Plasmifier>().mode = value.GetValue();
+            }).WithOptions("From Start", "Event Only").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Heal Amount", "plasmifier_heal", (o, value) =>
+            {
+                o.GetComponent<Plasmifier>().heal = value.GetValue();
+            }).WithDefaultValue(5))
+    ]);
+
     public static readonly List<ConfigType> AnimPlayer = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Clip Name", "anim_clip", (o, value) =>
