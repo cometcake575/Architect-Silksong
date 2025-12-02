@@ -427,9 +427,11 @@ public static class VanillaObjects
     {
         AddEnemy("Silk Snipper", "silk_snipper", ("Greymoor_06", "Farmer Scissors"));
         AddEnemy("Dreg Catcher", "dreg_catcher",
-            ("Greymoor_05", "Scene Control/Farmer Enemies/Roosting Enemies/Farmer Catcher (2)"));
+            ("Greymoor_05", "Scene Control/Farmer Enemies/Roosting Enemies/Farmer Catcher (2)"),
+            preloadAction: EnemyFixers.KeepActive);
         AddEnemy("Thread Raker", "thread_raker",
-            ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"));
+            ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"),
+            preloadAction: EnemyFixers.KeepActive);
         
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
