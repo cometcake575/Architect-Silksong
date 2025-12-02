@@ -1101,6 +1101,19 @@ public static class ConfigGroup
                 }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> LastJudge = GroupUtils.Merge(Bosses, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Start Phase", "lj_phase",
+                (o, value) =>
+                {
+                    var val = value.GetValue();
+                    if (val == 0) return;
+                    var init = o.LocateMyFSM("Control").GetState("Init");
+                    ((MultiplyIntByFloat)init.actions[12]).multiplyFloat = 1.1f;
+                    if (val == 2) ((MultiplyIntByFloat)init.actions[13]).multiplyFloat = 1.1f;
+                }).WithOptions("Phase 1", "Phase 2", "Phase 3").WithDefaultValue(0))
+    ]);
+
     static ConfigGroup()
     {
         typeof(HealthManager).Hook(nameof(HealthManager.IsBlockingByDirection),

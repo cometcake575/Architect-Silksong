@@ -93,25 +93,65 @@ public static class EnemyFixers
         }
     }
 
-    public class CustomBehaviourMarker : MonoBehaviour;
+    private class LastJudge : MonoBehaviour
+    {
+        public bool moveLeft;
+        public bool moveRight;
+        public bool moveUp;
+        public bool moveDown;
+
+        private void OnCollisionStay2D(Collision2D other)
+        {
+            var firstContact = other.GetContact(0);
+            var contactPoint = firstContact.point;
+            var offset = transform.InverseTransformPoint(contactPoint);
+            
+            moveLeft = false;
+            moveRight = false;
+
+            switch (offset.y)
+            {
+                case > 0 when Mathf.Abs(offset.y) > Mathf.Abs(offset.x):
+                    moveUp = false;
+                    break;
+                case < 0 when Mathf.Abs(offset.y) > Mathf.Abs(offset.x):
+                    moveDown = false;
+                    break;
+            }
+        }
+    }
 
     public static void FixLastJudge(GameObject obj)
     {
         RemoveConstrainPosition(obj);
-        obj.AddComponent<LastJudgeFixer>();
+        var lj = obj.AddComponent<LastJudge>();
+
+        var rb2d = obj.GetComponent<Rigidbody2D>();
 
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("Dormant").AddAction(() => fsm.SetState("Idle"));
+        fsm.GetState("Dormant").AddAction(() => fsm.SetState("Intro Roar Antic"));
+        
+        fsm.GetState("First Idle").AddAction(() => fsm.SendEvent("ENCOUNTERED"), 0);
 
+        // Variables to reposition
         var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
         var jumpY = fsm.FsmVariables.FindFsmFloat("Jump Y");
+        
+        var xTarget = fsm.FsmVariables.FindFsmFloat("X Target");
+        var xDist = fsm.FsmVariables.FindFsmFloat("X Distance");
+        
+        var censerSlamSelfY = fsm.FsmVariables.FindFsmFloat("Censer Slam Self Y");
         var censerBotY = fsm.FsmVariables.FindFsmFloat("Censer Bot Y");
         var censerTopY = fsm.FsmVariables.FindFsmFloat("Censer Top Y");
         var stompY = fsm.FsmVariables.FindFsmFloat("Stomp Y");
+        
+        fsm.GetState("Throw Rise").AddAction(AdjustCenserGroundPos, 11);
+        fsm.GetState("Censer Slam").AddAction(AdjustCenserSlam, 0);
 
         var centre = obj.transform.position.x;
         fsm.FsmVariables.FindFsmFloat("Centre X").Value = centre;
         
+        // Disable position checks
         var cc = fsm.GetState("Charge Check");
         cc.DisableAction(1);
         cc.DisableAction(2);
@@ -132,8 +172,6 @@ public static class EnemyFixers
         fr.DisableAction(3);
         fr.DisableAction(4);
         
-        fsm.GetState("Dash Land").AddAction(() => fsm.SetState("Idle"), 4);
-
         obj.GetComponent<HealthManager>().IsInvincible = false;
 
         var ede = obj.GetComponent<EnemyDeathEffects>();
@@ -144,25 +182,216 @@ public static class EnemyFixers
 
         var fall = (CheckYPosition)corpseFsm.GetState("Fall").Actions[2];
         var land = (SetPosition)corpseFsm.GetState("Land").Actions[0];
+
+        var roar = fsm.GetState("Intro Roar");
+        ((StartRoarEmitter)roar.actions[3]).stunHero = false;
+        roar.AddAction(MakeDynamicWithGravity, 0);
         
-        AdjustGroundPos();
+        fsm.GetState("Charge Antic 1").AddAction(MakeDynamicWithGravity, 0);
+        fsm.GetState("Dash Antic").AddAction(MakeDynamicWithGravity, 0);
+        fsm.GetState("Evade Antic").AddAction(MakeDynamicWithGravity, 0);
+        sc.AddAction(MakeDynamicWithGravity, 0);
+        tc.AddAction(MakeDynamicWithGravity, 0);
+
+        var idle = fsm.GetState("Idle");
+        idle.AddAction(AdjustGroundPosForSelf, 0);
+        idle.AddAction(MakeDynamicWithGravity, 0);
+        
+        var rangeCheck = fsm.GetState("Range Check");
+        rangeCheck.AddAction(AdjustGroundPosForSelf, 0);
+        rangeCheck.AddAction(MakeKinematic, 0);
+
+        var stun = fsm.GetState("Stun Start");
+        stun.AddAction(AdjustGroundPosForGround, 0);
+        
+        fsm.GetState("Stomp JumpAntic").AddAction(MakeDynamic, 0);
+        fsm.GetState("OJump Antic").AddAction(MakeDynamic, 0);
+        fsm.GetState("Jump Antic").AddAction(MakeDynamic, 0);
+        
+        var jumpRise = fsm.GetState("Jump Rise");
+        var oJumpRise = fsm.GetState("Ojump Rise");
+        var stompRise = fsm.GetState("Stomp Rise and Antic");
+        var stompDown = fsm.GetState("Stomp Down");
+        var jumpFall = fsm.GetState("Jump Fall");
+        var jumpLand = fsm.GetState("Land");
+
+        var tweenX = fsm.FsmVariables.FindFsmFloat("Tween X");
+        var tweenY = fsm.FsmVariables.FindFsmFloat("Tween Y");
+        
+        // Use Rigidbody2D movement instead of changing position to add collision when jumping
+        jumpRise.DisableAction(10);
+        oJumpRise.DisableAction(14);
+        stompRise.DisableAction(13);
+        stompDown.DisableAction(0);
+        jumpFall.DisableAction(0);
+        jumpFall.DisableAction(6);
+        jumpLand.DisableAction(2);
+
+        ((SetVelocityByScale)stompDown.actions[3]).everyFrame = true;
+        stompDown.AddAction(AdjustGroundPosForGround, 4, true);
+        
+        jumpRise.AddAction(() =>
+        {
+            rb2d.MovePosition(new Vector2(
+                lj.moveRight || lj.moveLeft ? tweenX.Value : obj.transform.GetPositionX(), 
+                lj.moveUp ? tweenY.Value : obj.transform.GetPositionY()
+            ));
+
+            if (!lj.moveLeft && !lj.moveRight)
+            {
+                xTarget.Value = obj.transform.GetPositionX();
+                xDist.Value = 0;
+            }
+            if (!lj.moveUp) jumpY.Value = obj.transform.GetPositionY();
+        }, 10, true);
+        jumpRise.AddAction(() =>
+        {
+            lj.moveUp = true;
+            lj.moveLeft = xTarget.Value < obj.transform.GetPositionX();
+            lj.moveRight = !lj.moveLeft;
+        }, 8);
+        jumpRise.AddAction(AdjustGroundPosForTarget, 8);
+        
+        oJumpRise.AddAction(() =>
+        {
+            rb2d.MovePosition(new Vector2(
+                lj.moveRight || lj.moveLeft ? tweenX.Value : obj.transform.GetPositionX(), 
+                lj.moveUp ? tweenY.Value : obj.transform.GetPositionY()
+            ));
+
+            if (!lj.moveLeft && !lj.moveRight)
+            {
+                xTarget.Value = obj.transform.GetPositionX();
+                xDist.Value = 0;
+            }
+            if (!lj.moveUp) jumpY.Value = obj.transform.GetPositionY();
+        }, 14, true);
+        oJumpRise.AddAction(() =>
+        {
+            lj.moveUp = true;
+            lj.moveLeft = xTarget.Value < obj.transform.GetPositionX();
+            lj.moveRight = !lj.moveLeft;
+        }, 12);
+        oJumpRise.AddAction(AdjustGroundPosForTarget, 12);
+        
+        stompRise.AddAction(() =>
+        {
+            rb2d.MovePosition(new Vector2(
+                lj.moveRight || lj.moveLeft ? tweenX.Value : obj.transform.GetPositionX(), 
+                lj.moveUp ? tweenY.Value : obj.transform.GetPositionY()
+            ));
+        }, 13, true);
+        stompRise.AddAction(() =>
+        {
+            lj.moveUp = true;
+            lj.moveLeft = xTarget.Value < obj.transform.GetPositionX();
+            lj.moveRight = !lj.moveLeft;
+        }, 11);
+        
+        jumpFall.AddAction(() =>
+        {
+            rb2d.MovePosition(new Vector2(
+                lj.moveRight || lj.moveLeft ? tweenX.Value : obj.transform.GetPositionX(), 
+                lj.moveDown ? tweenY.Value : obj.transform.GetPositionY()
+            ));
+        }, 6, true);
+        jumpFall.AddAction(() =>
+        {
+            lj.moveDown = true;
+        }, 4);
+        
+        AdjustGroundPosForSelf();
         return;
         
-        void AdjustGroundPos()
+        // Adjusts ground positions based on current position
+        void AdjustGroundPosForSelf()
         {
-            if (HeroController.instance.TryFindGroundPoint(out var pos, obj.transform.position, 
+            var ground = obj.transform.GetPositionY() + 1.1057f;
+            groundY.Value = ground;
+            jumpY.Value = ground + 5.78f;
+            stompY.Value = ground + 4.58f;
+                
+            fall.compareTo = ground - 1;
+            land.y = ground - 1;
+        }
+        
+        // Adjusts ground positions based on ground below current position
+        void AdjustGroundPosForGround()
+        {
+            AdjustGroundPos(obj.transform.position, false);
+        }
+        
+        // Adjusts ground positions based on target X position
+        void AdjustGroundPosForTarget()
+        {
+            AdjustGroundPos(new Vector2(xTarget.value + xDist.value, obj.transform.GetPositionY()), true);
+        }
+        
+        void AdjustGroundPos(Vector2 source, bool cannotJumpDown)
+        {
+            if (HeroController.instance.TryFindGroundPoint(out var pos, 
+                    source, 
                     true))
             {
-                var ground = pos.y;
+                var ground = pos.y + 2.7f;
                 groundY.Value = ground;
-                jumpY.Value = ground + 5.78f;
-                censerBotY.Value = ground - 3.64f;
-                censerTopY.Value = ground + 7.18f;
+                var jumpHeight = ground;
+                if (cannotJumpDown) jumpHeight = Mathf.Max(source.y - 3, jumpHeight);
+                jumpY.Value = jumpHeight + 5.78f;
                 stompY.Value = ground + 4.58f;
                 
-                fall.compareTo = ground;
-                land.y = ground;
+                fall.compareTo = ground - 1;
+                land.y = ground - 1;
             }
+        }
+
+        // Adjusts based on target so it can fall above or below Last Judge
+        // Adds censer X distance to censer target X as target X is halfway
+        void AdjustCenserGroundPos()
+        {
+            var selfY = obj.transform.GetPositionY();
+            if (HeroController.instance.TryFindGroundPoint(out var pos, 
+                    new Vector2(xTarget.Value + xDist.Value, selfY + 4.5f),
+                    true))
+            {
+                var ground = pos.y - 0.94f;
+                
+                censerTopY.Value = Mathf.Clamp(ground, selfY - 2.5f, selfY) + 10.82f;
+                censerBotY.Value = ground;
+                if (selfY > ground)
+                {
+                    var dist = Mathf.Sqrt(Mathf.Abs(selfY - ground)) / 4;
+                    if (xDist.Value < 0) dist = -dist;
+                    xTarget.Value += dist;
+                    xDist.Value += dist;
+                }
+            }
+        }
+        
+        void AdjustCenserSlam()
+        {
+            var selfY = obj.transform.GetPositionY();
+            censerSlamSelfY.value = censerBotY.Value - selfY;
+        }
+
+        void MakeDynamicWithGravity()
+        {
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            rb2d.gravityScale = 3;
+        }
+
+        void MakeDynamic()
+        {
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            rb2d.gravityScale = 0;
+            rb2d.linearVelocity = Vector2.zero;
+        }
+
+        void MakeKinematic()
+        {
+            rb2d.bodyType = RigidbodyType2D.Kinematic;
+            rb2d.gravityScale = 0;
+            rb2d.linearVelocity = Vector2.zero;
         }
     }
 
@@ -170,8 +399,6 @@ public static class EnemyFixers
     {
         obj.RemoveComponent<ConstrainPosition>();
     }
-
-    private class LastJudgeFixer : MonoBehaviour;
 
     public static void FixBloatroachPreload(GameObject obj)
     {

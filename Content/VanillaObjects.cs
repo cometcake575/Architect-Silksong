@@ -638,8 +638,10 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Bell of Judgement", "hang_bell",
             ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite));
 
-        /*AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
-            postSpawnAction:EnemyFixers.FixLastJudge);*/
+        AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
+            postSpawnAction:EnemyFixers.FixLastJudge)
+            .WithConfigGroup(ConfigGroup.LastJudge)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
     }
 
     private static void AddMiscObjects()

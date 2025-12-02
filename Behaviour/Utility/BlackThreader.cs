@@ -49,8 +49,8 @@ public class BlackThreader : MonoBehaviour
 
         bts.customAttack = Effects.BlackThreadAttacksDefault[_attackIndex];
         
-        bts.extraSpriteRenderers = [];
-        bts.extraMeshRenderers = [];
+        bts.extraSpriteRenderers = target.GetComponentsInChildren<SpriteRenderer>(true);
+        bts.extraMeshRenderers = target.GetComponentsInChildren<MeshRenderer>(true);
         
         hm.blackThreadState = bts;
         hm.hasBlackThreadState = true;
