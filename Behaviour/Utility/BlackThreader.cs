@@ -11,6 +11,7 @@ public class BlackThreader : MonoBehaviour
     public string id;
     public int mode;
     public bool requireAct3;
+    public float hpMultiplier = 1;
 
     public float[] chances = [0, 0, 0, 0];
 
@@ -51,6 +52,9 @@ public class BlackThreader : MonoBehaviour
         
         bts.extraSpriteRenderers = target.GetComponentsInChildren<SpriteRenderer>(true);
         bts.extraMeshRenderers = target.GetComponentsInChildren<MeshRenderer>(true);
+
+        bts.useCustomHPMultiplier = true;
+        bts.customHPMultiplier = hpMultiplier;
         
         hm.blackThreadState = bts;
         hm.hasBlackThreadState = true;
@@ -123,6 +127,8 @@ public class BlackThreader : MonoBehaviour
             FirstThreadedSetUp();
             
             BecomeThreadedNoSing();
+
+            healthManager.hp = Mathf.FloorToInt(healthManager.hp * customHPMultiplier);
 
             return true;
         }

@@ -47,10 +47,6 @@ public static class ConfigGroup
                     col.a = 0;
                     renderer.color = col;
                 }
-                foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>())
-                {
-                    renderer.enabled = false;
-                }
 
                 o.AddComponent<MiscFixers.ColorLock>();
             }))
@@ -111,6 +107,11 @@ public static class ConfigGroup
             {
                 o.GetComponent<BlackThreader>().mode = value.GetValue();
             }).WithOptions("From Start", "Event Only").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Health Multiplier", "voider_hp_mul", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().hpMultiplier = value.GetValue();
+            }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Require Act 3", "voider_do_check", (o, value) =>
             {
@@ -1109,8 +1110,8 @@ public static class ConfigGroup
                     var val = value.GetValue();
                     if (val == 0) return;
                     var init = o.LocateMyFSM("Control").GetState("Init");
-                    ((MultiplyIntByFloat)init.actions[12]).multiplyFloat = 1.1f;
-                    if (val == 2) ((MultiplyIntByFloat)init.actions[13]).multiplyFloat = 1.1f;
+                    ((MultiplyIntByFloat)init.actions[12]).multiplyFloat = 10000000f;
+                    if (val == 2) ((MultiplyIntByFloat)init.actions[13]).multiplyFloat = 10000000f;
                 }).WithOptions("Phase 1", "Phase 2", "Phase 3").WithDefaultValue(0))
     ]);
 
