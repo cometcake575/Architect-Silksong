@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Architect.Content.Custom;
 using Architect.Utils;
+using GlobalEnums;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
@@ -64,7 +65,9 @@ public class CrestBinding : Binding
                                          !hc.cState.dashing &&
                                          !hc.cState.downAttacking &&
                                          !hc.cState.downSpikeAntic &&
-                                         !hc.cState.airDashing);
+                                         !hc.cState.airDashing &&
+                                         HeroController.instance.transitionState ==
+                                         HeroTransitionState.WAITING_TO_TRANSITION);
         RefreshCrest();
         yield return null;
         hc.RegainControl();

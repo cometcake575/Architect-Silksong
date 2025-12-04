@@ -17,7 +17,6 @@ using Architect.Objects.Tools;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
-using MonoMod.RuntimeDetour;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -193,7 +192,8 @@ public static class EditManager
         var actions = InputHandler.Instance.inputActions;
 
         if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
-            !_loadPos && !HeroController.instance.cState.dead)
+            !_loadPos && !HeroController.instance.cState.dead &&
+            HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION)
         {
             if (Settings.ToggleEditor.WasPressed) ToggleEditor();
             else if (ReloadRequired) ReloadScene();
