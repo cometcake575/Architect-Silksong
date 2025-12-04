@@ -434,6 +434,7 @@ public static class MiscFixers
         fsm.fsmTemplate = null;
         var pdbt = (PlayerDataBoolTest)fsm.GetState("Init").actions[7];
         pdbt.isFalse = pdbt.isTrue;
+        fsm.FsmVariables.FindFsmBool("Hornet Dead").Value = false;
     }
     
     public static void FixSecondSentinelAlly(GameObject obj)
