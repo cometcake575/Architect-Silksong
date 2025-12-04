@@ -1108,9 +1108,12 @@ public static class ConfigGroup
                 {
                     var val = value.GetValue();
                     if (val == 0) return;
-                    var init = o.LocateMyFSM("Control").GetState("Init");
-                    ((MultiplyIntByFloat)init.actions[12]).multiplyFloat = 10000000f;
-                    if (val == 2) ((MultiplyIntByFloat)init.actions[13]).multiplyFloat = 10000000f;
+                    var fsm = o.LocateMyFSM("Control");
+                    var init = fsm.GetState("Init");
+                    init.DisableAction(12);
+                    init.DisableAction(13);
+                    fsm.FsmVariables.FindFsmInt("HP P2").Value = int.MaxValue;
+                    if (val == 2) fsm.FsmVariables.FindFsmInt("HP P3").Value = int.MaxValue;
                 }).WithOptions("Phase 1", "Phase 2", "Phase 3").WithDefaultValue(0))
     ]);
 
