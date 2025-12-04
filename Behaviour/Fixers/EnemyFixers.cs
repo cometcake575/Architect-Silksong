@@ -1148,6 +1148,7 @@ public static class EnemyFixers
     public static void FixCorrcrustKaraka(GameObject obj)
     {
         FixSpearSpawned(obj);
+        RemoveConstrainPosition(obj);
         var ck = obj.AddComponent<CorrcrustKaraka>();
 
         var fsm = obj.LocateMyFSM("Control");

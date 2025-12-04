@@ -696,6 +696,24 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.FixGarmond)
             .WithConfigGroup(ConfigGroup.Npcs));
 
+        /*
+        Categories.Interactable.Add(new PreloadObject("Shakra Summon Pole", "mapper_pole",
+                ("Greymoor_08_mapper", "Mapper Call Pole")));
+
+        Categories.Misc.Add(new PreloadObject("Shakra Ring", "mapper_ring",
+                ("Shadow_02",
+                    "Mapper/Mapper_ambient_rings/rings/mapper extra rings/mapper rings/Mapper_Ring_world (3)"),
+                preloadAction: MiscFixers.MarkRing)
+            .WithConfigGroup(ConfigGroup.MapperRing)
+            .WithBroadcasterGroup(BroadcasterGroup.MapperRing));
+
+        // 
+        AddEnemy("Shakra (Boss)", "shakra_boss",
+                ("Greymoor_08_mapper", "Mapper Spar NPC"),
+                postSpawnAction: MiscFixers.FixShakraBoss)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);*/
+
         Categories.Misc.Add(new PreloadObject("Shakra NPC (Ally)", "shakra",
                 ("Shellwood_01",
                     "Black Thread States/Black Thread World/Shakra Guard Scene/Scene Folder/Mapper StandGuard NPC"),
@@ -704,7 +722,9 @@ public static class VanillaObjects
 
         AddEnemy("Second Sentinel (Boss)", "second_sentinel_boss",
             ("Hang_17b", "Boss Scene - To Additive Load/Song Knight"),
-            postSpawnAction: MiscFixers.FixSecondSentinelBoss).DoFlipX();
+            postSpawnAction: MiscFixers.FixSecondSentinelBoss)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
 
         Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
@@ -727,13 +747,6 @@ public static class VanillaObjects
                     "Black Thread States/Black Thread World/Enclave Act 3/Sherma Caretaker"),
                 postSpawnAction: MiscFixers.FixShermaCaretaker)
             .WithConfigGroup(ConfigGroup.Npcs));
-
-        Categories.Misc.Add(new PreloadObject("Shakra Ring", "mapper_ring",
-                ("Shadow_02",
-                    "Mapper/Mapper_ambient_rings/rings/mapper extra rings/mapper rings/Mapper_Ring_world (3)"),
-                preloadAction: MiscFixers.MarkRing)
-            .WithConfigGroup(ConfigGroup.MapperRing)
-            .WithBroadcasterGroup(BroadcasterGroup.MapperRing));
 
         PreloadManager.RegisterPreload(new BasicPreload("Bellway_01_boss", "Bellbeast Children",
             o =>
