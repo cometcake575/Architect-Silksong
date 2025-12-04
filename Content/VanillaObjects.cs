@@ -103,6 +103,18 @@ public static class VanillaObjects
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 2/Coral Warrior (1)"),
             postSpawnAction: EnemyFixers.FixKaraka);
 
+        AddEnemy("Corrcrust Karaka", "corrcrust_karaka",
+            ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 4/Wave 3/Coral Bubble Brute"),
+            postSpawnAction: EnemyFixers.FixCorrcrustKaraka);
+
+        AddEnemy("Karak Gor", "karak_gor",
+            ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)"),
+            preloadAction: EnemyFixers.FixKarakGor).DoFlipX();
+        
+        AddEnemy("Alita", "alita",
+            ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 1/Coral Hunter"),
+            postSpawnAction: EnemyFixers.FixAlita);
+
         AddEnemy("Yuma", "coral_swimmer_small",
             ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Swimmer Small"));
         AddEnemy("Yumama", "coral_big_jellyfish",
@@ -431,7 +443,7 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.KeepActive);
         AddEnemy("Thread Raker", "thread_raker",
             ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"),
-            preloadAction: EnemyFixers.KeepActive);
+            preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
         
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
@@ -690,9 +702,13 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.FixShakra)
             .WithConfigGroup(ConfigGroup.Shakra));
 
+        AddEnemy("Second Sentinel (Boss)", "second_sentinel_boss",
+            ("Hang_17b", "Boss Scene - To Additive Load/Song Knight"),
+            postSpawnAction: MiscFixers.FixSecondSentinelBoss).DoFlipX();
+
         Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
-            postSpawnAction: MiscFixers.FixSecondSentinel));
+            postSpawnAction: MiscFixers.FixSecondSentinelAlly));
 
         Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
                 ("Song_Enclave",

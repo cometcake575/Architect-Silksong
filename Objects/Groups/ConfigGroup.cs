@@ -577,22 +577,22 @@ public static class ConfigGroup
                 o.GetComponent<SplineObjects.Spline>().speed = value.GetValue();
             }).WithDefaultValue(10)),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("R", "track_r", (o, value) =>
+            new FloatConfigType("Colour R", "track_r", (o, value) =>
             {
                 o.GetComponent<SplineObjects.Spline>().r = value.GetValue();
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("G", "track_g", (o, value) =>
+            new FloatConfigType("Colour G", "track_g", (o, value) =>
             {
                 o.GetComponent<SplineObjects.Spline>().g = value.GetValue();
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("B", "track_b", (o, value) =>
+            new FloatConfigType("Colour B", "track_b", (o, value) =>
             {
                 o.GetComponent<SplineObjects.Spline>().b = value.GetValue();
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("A", "track_a", (o, value) =>
+            new FloatConfigType("Colour A", "track_a", (o, value) =>
             {
                 o.GetComponent<SplineObjects.Spline>().a = value.GetValue();
             }).WithDefaultValue(0.1f)),
@@ -1027,16 +1027,30 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     o.AddComponent<EnemyFixers.DisableHealthScaling>();
                 }).WithDefaultValue(true)),
-        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Dead", "enemy_stay_dead",
-            (o, item) =>
+        ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Stay Dead", "enemy_stay_dead", (o, value) =>
+        {
+            var val = value.GetValue();
+
+            if (val == 0)
             {
-                item.OnSetSaveState += b => {
+                o.RemoveComponentsInChildren<PersistentBoolItem>();
+            }
+            else
+            {
+                var item = o.GetComponentInChildren<PersistentBoolItem>();
+                if (!item)
                 {
-                    o.GetComponent<HealthManager>().isDead = b;
-                    if (b) item.SetValueOverride(true);
-                } };
-                item.OnGetSaveState += (out bool b) => { b = o.GetComponent<HealthManager>().isDead; };
-            }))
+                    var pd = new GameObject(o.name + " Persistent Death");
+                    var epf = pd.AddComponent<EnemyPersistentFix>();
+                    epf.semiPersistent = val == 1;
+                    epf.hm = o.GetComponent<HealthManager>();
+                    o.AddComponent<EnemyPersistentFixLink>().epf = epf;
+                    return;
+                }
+
+                item.itemData.IsSemiPersistent = val == 1;
+            }
+        }).WithOptions("False", "Bench", "True"))
     ]);
 
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
@@ -1795,6 +1809,11 @@ public static class ConfigGroup
                 if (!item)
                 {
                     var it = o.AddComponent<PersistentBoolItem>();
+                    it.itemData = new PersistentBoolItem.PersistentBoolData
+                    {
+                        ID = o.name,
+                        SceneName = o.scene.name
+                    };
                     action?.Invoke(o, it);
                 }
 

@@ -419,7 +419,24 @@ public static class MiscFixers
     }
 
     private static readonly int EnemyLayer = LayerMask.NameToLayer("Enemies");
-    public static void FixSecondSentinel(GameObject obj)
+
+    public static void FixSecondSentinelBoss(GameObject obj)
+    {
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpseFsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Death");
+        corpseFsm.GetState("Land").transitions = [];
+        var ff = corpseFsm.GetState("Force Facing?");
+        ff.DisableAction(0);
+        ff.DisableAction(1);
+        
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.fsmTemplate = null;
+        var pdbt = (PlayerDataBoolTest)fsm.GetState("Init").actions[7];
+        pdbt.isFalse = pdbt.isTrue;
+    }
+    
+    public static void FixSecondSentinelAlly(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.fsmTemplate = null;

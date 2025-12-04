@@ -1,4 +1,3 @@
-using System;
 using Architect.Events;
 using JetBrains.Annotations;
 using UnityEngine;

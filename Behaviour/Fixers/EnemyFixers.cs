@@ -59,6 +59,12 @@ public static class EnemyFixers
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalse>();
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalseDelayed>();
     }
+
+    public static void KeepActiveRemoveConstrainPos(GameObject obj)
+    {
+        KeepActive(obj);
+        RemoveConstrainPosition(obj);
+    }
     
     public static void FixJailer(GameObject obj)
     {
@@ -1124,6 +1130,7 @@ public static class EnemyFixers
                 fsm.enabled = false;
                 return;
             }
+
             hm.enemyDeathEffects.GetInstantiatedCorpse(AttackTypes.Generic).RemoveComponent<ConstrainPosition>();
             fsm.SendEvent("FINISHED");
         }, 0);
@@ -1136,5 +1143,98 @@ public static class EnemyFixers
         fsm.fsmTemplate = null;
         fsm.GetState("Start Pause").AddAction(() => fsm.SetState("Left or Right?"), 11);
         obj.GetComponent<HealthManager>().hasSpecialDeath = false;
+    }
+
+    public static void FixCorrcrustKaraka(GameObject obj)
+    {
+        FixSpearSpawned(obj);
+        var ck = obj.AddComponent<CorrcrustKaraka>();
+
+        var fsm = obj.LocateMyFSM("Control");
+        var rise = fsm.GetState("Stomp Rise");
+        
+        // Disable normal behaviour
+        rise.DisableAction(2);
+        rise.DisableAction(3);
+
+        // Target positions
+        var targetX = fsm.FsmVariables.FindFsmFloat("Target X");
+        var targetY = fsm.FsmVariables.FindFsmFloat("Target Y");
+
+        // Initial positions
+        var runningTime = 0f;
+        var fromX = 0f;
+        var fromY = 0f;
+        
+        rise.AddAction(() =>
+        {
+            runningTime = 0;
+            fromX = obj.transform.GetPositionX();
+            fromY = obj.transform.GetPositionY();
+            ck.moveValid = true;
+        }, 2);
+        
+        // Move with Rigidbody2D
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        rise.AddAction(() =>
+        {
+            if (!ck.moveValid) return;
+            
+            runningTime += Time.deltaTime;
+
+            var percentage = Mathf.Clamp01(runningTime * 2);
+            
+            rb2d.MovePosition(new Vector2(
+                EaseInOutSine(fromX, targetX.Value, percentage),
+                EaseOutCubic(fromY, targetY.Value, percentage))
+            );
+        }, 3, true);
+
+        return;
+
+        float EaseOutCubic(float start, float end, float value)
+        {
+            --value;
+            end -= start;
+            return end * (float) (value * value * value + 1.0) + start;
+        }
+
+        float EaseInOutSine(float start, float end, float value)
+        {
+            end -= start;
+            return (float)(-(double)end / 2.0 * (Mathf.Cos((float)(3.1415927410125732 * value / 1.0)) - 1.0)) + start;
+        }
+    }
+
+    private class CorrcrustKaraka : MonoBehaviour
+    {
+        public bool moveValid;
+        
+        private void OnCollisionStay2D(Collision2D other)
+        {
+            if (other.gameObject.layer == 8) moveValid = false;
+        }
+    }
+
+    public static void FixKarakGor(GameObject obj)
+    {
+        obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Spear Spawner").Value = false;
+        obj.GetComponent<tk2dSpriteAnimator>().defaultClipId = 8;
+    }
+
+    public static void FixAlita(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmBool("Spear Spawner").Value = false;
+
+        var ground = obj.transform.GetPositionY();
+        fsm.FsmVariables.FindFsmFloat("Tele Air Y Max").Value = ground + 8;
+        fsm.FsmVariables.FindFsmFloat("Tele Air Y Min").Value = ground + 2;
+        fsm.FsmVariables.FindFsmFloat("Tele Ground Y").Value = ground;
+
+        fsm.FsmVariables.FindFsmFloat("Tele X Max").Value = obj.transform.GetPositionX() + 11;
+        fsm.FsmVariables.FindFsmFloat("Tele X Min").Value = obj.transform.GetPositionX() - 11;
+
+        fsm.FsmVariables.FindFsmGameObject("Aiming Cursor").Value = new GameObject(obj.name + " Aim Cursor");
     }
 }

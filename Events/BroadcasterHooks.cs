@@ -1,4 +1,5 @@
 using System;
+using Architect.Behaviour.Fixers;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -39,8 +40,9 @@ public static class BroadcasterHooks
                 self.gameObject.BroadcastEvent("OnDeath");
                 self.gameObject.BroadcastEvent("FirstDeath");
 
-                var pbi = self.GetComponent<PersistentBoolItem>();
-                if (pbi) pbi.SetValueOverride(true);
+                var epf = self.GetComponent<EnemyPersistentFixLink>().epf;
+                epf.dead = true;
+                epf.item.UpdateValue();
             }, 
             typeof(float?), 
             typeof(AttackTypes), 
