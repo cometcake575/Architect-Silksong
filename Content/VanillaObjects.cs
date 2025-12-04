@@ -696,7 +696,7 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.FixGarmond)
             .WithConfigGroup(ConfigGroup.Npcs));
 
-        /*
+        // TODO Add events
         Categories.Interactable.Add(new PreloadObject("Shakra Summon Pole", "mapper_pole",
                 ("Greymoor_08_mapper", "Mapper Call Pole")));
 
@@ -707,12 +707,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.MapperRing)
             .WithBroadcasterGroup(BroadcasterGroup.MapperRing));
 
-        // 
+        // TODO Fix
         AddEnemy("Shakra (Boss)", "shakra_boss",
                 ("Greymoor_08_mapper", "Mapper Spar NPC"),
                 postSpawnAction: MiscFixers.FixShakraBoss)
             .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses);*/
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
 
         Categories.Misc.Add(new PreloadObject("Shakra NPC (Ally)", "shakra",
                 ("Shellwood_01",

@@ -39,14 +39,13 @@ public static class BroadcasterHooks
                 
                 self.gameObject.BroadcastEvent("OnDeath");
                 self.gameObject.BroadcastEvent("FirstDeath");
-
-                var epf = self.GetComponent<EnemyPersistentFixLink>().epf;
-                epf.dead = true;
-                epf.item.UpdateValue();
+                
+                var pbi = self.GetComponent<PersistentBoolItem>();
+                if (pbi) pbi.SetValueOverride(true);
             }, 
             typeof(float?), 
             typeof(AttackTypes), 
-            typeof(NailElements), 
+            typeof(NailElements),
             typeof(GameObject),
             typeof(bool),
             typeof(float),

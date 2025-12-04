@@ -1027,30 +1027,15 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     o.AddComponent<EnemyFixers.DisableHealthScaling>();
                 }).WithDefaultValue(true)),
-        ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Stay Dead", "enemy_stay_dead", (o, value) =>
-        {
-            var val = value.GetValue();
-
-            if (val == 0)
-            {
-                o.RemoveComponentsInChildren<PersistentBoolItem>();
-            }
-            else
-            {
-                var item = o.GetComponentInChildren<PersistentBoolItem>();
-                if (!item)
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Dead", "enemy_stay_dead", 
+            (o, item) => {
+                item.OnSetSaveState += b =>
                 {
-                    var pd = new GameObject(o.name + " Persistent Death");
-                    var epf = pd.AddComponent<EnemyPersistentFix>();
-                    epf.semiPersistent = val == 1;
-                    epf.hm = o.GetComponent<HealthManager>();
-                    o.AddComponent<EnemyPersistentFixLink>().epf = epf;
-                    return;
-                }
-
-                item.itemData.IsSemiPersistent = val == 1;
-            }
-        }).WithOptions("False", "Bench", "True"))
+                    o.GetComponent<HealthManager>().isDead = b;
+                    if (b) item.SetValueOverride(true);
+                };
+                item.OnGetSaveState += (out bool b) => { b = o.GetComponent<HealthManager>().isDead; };
+            }))
     ]);
 
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
