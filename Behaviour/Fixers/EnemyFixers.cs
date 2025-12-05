@@ -1143,6 +1143,21 @@ public static class EnemyFixers
         fsm.fsmTemplate = null;
         fsm.GetState("Start Pause").AddAction(() => fsm.SetState("Left or Right?"), 11);
         obj.GetComponent<HealthManager>().hasSpecialDeath = false;
+
+        obj.AddComponent<Freshfly>().pos = obj.transform.position;
+    }
+
+    private class Freshfly : MonoBehaviour
+    {
+        public Vector3 pos;
+        
+        private void OnEnable()
+        {
+            var fsm = GetComponent<PlayMakerFSM>();
+            if (fsm.enabled) return; 
+            transform.position = pos;
+            fsm.enabled = true;
+        }
     }
 
     public static void FixCorrcrustKaraka(GameObject obj)

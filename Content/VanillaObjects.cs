@@ -704,9 +704,11 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.MapperRing));
 
         /*
+        // TODO
         Categories.Interactable.Add(new PreloadObject("Shakra Summon Pole", "mapper_pole",
                 ("Greymoor_08_mapper", "Mapper Call Pole")));
 
+        // TODO
         AddEnemy("Shakra (Boss)", "shakra_boss",
                 ("Greymoor_08_mapper", "Mapper Spar NPC"),
                 postSpawnAction: MiscFixers.FixShakraBoss)

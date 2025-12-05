@@ -415,7 +415,7 @@ public static class MiscFixers
 
     public static void FixShakraBoss(GameObject obj)
     {
-        EnemyFixers.RemoveConstrainPosition(obj);
+        //EnemyFixers.RemoveConstrainPosition(obj);
     }
 
     public static void FixShakra(GameObject obj)
