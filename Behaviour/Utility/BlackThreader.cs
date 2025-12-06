@@ -65,7 +65,7 @@ public class BlackThreader : MonoBehaviour
         if (mode == 0 && !_blackThreaded) BlackThread();
     }
 
-    private class CustomBlackThreadState : BlackThreadState
+    public class CustomBlackThreadState : BlackThreadState
     {
         public BlackThreadAttack customAttack;
 

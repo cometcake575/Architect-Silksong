@@ -806,7 +806,7 @@ public static class ConfigGroup
                     o.GetComponent<PlayerDataSetter>().dataName = value.GetValue();
                 }
             )),
-            ConfigurationManager.RegisterConfigType(new BoolConfigType("Set Value", "pd_value",
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Set/Compare Value", "pd_value",
                 (o, value) =>
                 {
                     o.GetComponent<PlayerDataSetter>().value = value.GetValue();
@@ -1065,6 +1065,17 @@ public static class ConfigGroup
                     o.RemoveComponentsInChildren<DamageEnemies>();
                 }).WithDefaultValue(false)
         )
+    ]);
+
+    public static readonly List<ConfigType> LeafRoller = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Hidden", "hidden_leaf_roller",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    var anim = o.GetComponent<tk2dSpriteAnimator>();
+                    anim.defaultClipId = anim.GetClipIdByName("Hidden");
+                }).WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> CameraShaker = GroupUtils.Merge(Generic, [

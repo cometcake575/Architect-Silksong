@@ -110,4 +110,12 @@ public static class InteractableFixers
     {
         obj.transform.GetChild(1).GetChild(1).SetAsFirstSibling();
     }
+
+    public static void FixGong(GameObject obj)
+    {
+        var activator = obj.GetComponentInChildren<TinkEffect>();
+        activator.OnTinked.AddListener(() => obj.BroadcastEvent("OnActivate"));
+        
+        obj.GetComponentInChildren<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+    }
 }

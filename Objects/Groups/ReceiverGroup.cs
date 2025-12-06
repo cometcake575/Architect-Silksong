@@ -83,6 +83,10 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("pd_set", "SetValue", o =>
         {
             o.GetComponent<PlayerDataSetter>().SetValue();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("pd_check", "Call", o =>
+        {
+            o.GetComponent<PlayerDataSetter>().Relay();
         }))
     ]);
     

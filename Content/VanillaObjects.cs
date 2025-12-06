@@ -167,10 +167,23 @@ public static class VanillaObjects
         AddEnemy("Roachcatcher", "roachcatcher", ("Dust_02", "Roachfeeder Short"));
         AddEnemy("Roachfeeder", "roachfeeder",
             ("Dust_02", "Black Thread States Thread Only Variant/Normal World/Roachfeeder Tall")).DoFlipX();
+        AddEnemy("Roachkeeper", "roachkeeper",
+            ("Dust_05", "Roachkeeper")).DoFlipX();
 
         Categories.Interactable.Add(new PreloadObject("Temporary Gate", "greymoor_flip_bridge",
                 ("Dust_02", "greymoor_flip_bridge (1)"))
             .WithRotationGroup(RotationGroup.Four));
+
+        Categories.Interactable.Add(new PreloadObject("Gong", "gong",
+                ("Dust_Chef", "kitchen_string"), postSpawnAction: InteractableFixers.FixGong)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+        
+        /* TODO
+        AddEnemy("Roachserver", "roachserver",
+            ("Dust_Chef", "Battle Parent/Battle Scene/Wave 1/Roachkeeper Chef Tiny"));
+        AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
+            ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
+            postSpawnAction: EnemyFixers.FixLugoli);*/
     }
 
     private static void AddUnderworksObjects()
@@ -424,7 +437,8 @@ public static class VanillaObjects
             ("Clover_04b", "Lilypad Trap Setter/Lilypad Plat (1)"))
             .WithConfigGroup(ConfigGroup.Lilypad));
 
-        AddEnemy("Leaf Roller", "leaf_roller", ("Clover_02c", "Grass Goomba"));
+        AddEnemy("Leaf Roller", "leaf_roller", ("Clover_02c", "Grass Goomba"))
+            .WithConfigGroup(ConfigGroup.LeafRoller);
         AddEnemy("Leaf Glider", "leaf_glider", ("Clover_02c", "Lilypad Plat/Lilypad Fly")).DoFlipX();
 
         AddEnemy("Cloverstag", "cloverstag", ("Clover_06", "Cloverstag (2)"));
@@ -723,9 +737,8 @@ public static class VanillaObjects
 
         AddEnemy("Second Sentinel (Boss)", "second_sentinel_boss",
             ("Hang_17b", "Boss Scene - To Additive Load/Song Knight"),
-            postSpawnAction: MiscFixers.FixSecondSentinelBoss)
-            .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
+            postSpawnAction: EnemyFixers.FixSecondSentinelBoss)
+            .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
 
         Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
@@ -1088,7 +1101,9 @@ public static class VanillaObjects
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
             .WithConfigGroup(ConfigGroup.Breakable));
 
-        AddEnemy("Cragglite", "cragglite", ("Crawl_04", "Little Crabs/Crabs/Small Crab")).DoFlipX();
+        AddEnemy("Cragglite", "cragglite", ("Crawl_04", "Little Crabs/Crabs/Small Crab"))
+            .WithRotationGroup(RotationGroup.Four)
+            .DoFlipX();
         AddEnemy("Craggler", "craggler", ("Crawl_04", "Roof Crab"),
             postSpawnAction: EnemyFixers.FixCraggler);
 

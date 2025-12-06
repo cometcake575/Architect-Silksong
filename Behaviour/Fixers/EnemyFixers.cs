@@ -13,6 +13,7 @@ public static class EnemyFixers
 {
     private static GameObject _bouldersPrefab;
     private static GameObject _freshflyCagePrefab;
+    private static GameObject _robotParticles;
     
     public static void Init()
     {
@@ -40,6 +41,9 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Slab_16b", 
             "Broodmother Scene Control/Broodmother Scene/Battle Scene Broodmother/Spawner Flies", 
             o => _freshflyCagePrefab = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Cog_Dancers_boss", 
+            "Dancer Control/Death Chunks 1", 
+            o => _robotParticles = o));
     }
     
     public static void ApplyGravity(GameObject obj)
@@ -1252,5 +1256,37 @@ public static class EnemyFixers
         fsm.FsmVariables.FindFsmFloat("Tele X Min").Value = obj.transform.GetPositionX() - 11;
 
         fsm.FsmVariables.FindFsmGameObject("Aiming Cursor").Value = new GameObject(obj.name + " Aim Cursor");
+    }
+
+    public static void FixSecondSentinelBoss(GameObject obj)
+    {
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        var blow = corpse.LocateMyFSM("Death").GetState("Blow");
+        blow.transitions = [];
+        blow.AddAction(() =>
+        {
+            var rp = Object.Instantiate(_robotParticles, corpse.transform.position, corpse.transform.rotation);
+            rp.transform.Find("Chunks").gameObject.SetActive(false);
+            rp.SetActive(true);
+            corpse.SetActive(false);
+        });
+        
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.fsmTemplate = null;
+        var pdbt = (PlayerDataBoolTest)fsm.GetState("Init").actions[7];
+        pdbt.isFalse = pdbt.isTrue;
+        fsm.FsmVariables.FindFsmBool("Hornet Dead").Value = false;
+        fsm.GetState("Dash Slash 3").DisableAction(2);
+        
+        obj.transform.Find("Catch Markers").gameObject.RemoveComponent<ConstrainPosition>();
+        Object.Destroy(obj.LocateMyFSM("Save Hero"));
+    }
+
+    public static void FixLugoli(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
     }
 }

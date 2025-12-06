@@ -448,12 +448,16 @@ public static class UtilityObjects
         
         dataSetter.AddComponent<PlayerDataSetter>();
 
-        return new CustomObject("PlayerData Setter", "player_data_setter", dataSetter,
-                description:"Sets a PlayerData boolean value, intended for giving/taking upgrades.\n" +
-                            "May act strangely when changing certain values.",
+        return new CustomObject("PlayerData Hook", "player_data_setter", dataSetter,
+                description:"Sets or checks a PlayerData boolean value,\n" +
+                            "intended for giving/taking/detecting upgrades or world states.\n" +
+                            "May act strangely when changing certain values.\n\n" +
+                            "Use the 'Call' trigger and the 'OnCall' event to relay an event if the\n" +
+                            "PlayerData value matches the 'Value' option.",
                 sprite:ResourceUtils.LoadSpriteResource("player_data_changer", FilterMode.Point, ppu:64))
             .WithReceiverGroup(ReceiverGroup.PlayerDataSetter)
-            .WithConfigGroup(ConfigGroup.PlayerDataSetter);
+            .WithConfigGroup(ConfigGroup.PlayerDataSetter)
+            .WithBroadcasterGroup(BroadcasterGroup.Callable);
     }
 
     private static PlaceableObject CreateKeyListener()
