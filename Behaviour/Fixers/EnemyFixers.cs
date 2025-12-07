@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
+using Architect.Behaviour.Custom;
 using Architect.Content.Preloads;
 using Architect.Utils;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace Architect.Behaviour.Fixers;
 
@@ -44,6 +46,8 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Cog_Dancers_boss", 
             "Dancer Control/Death Chunks 1", 
             o => _robotParticles = o));
+
+        AknidMother.InitSounds();
     }
     
     public static void ApplyGravity(GameObject obj)
@@ -1288,5 +1292,71 @@ public static class EnemyFixers
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+    }
+
+    public static void FixGms(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+
+        var fsm = obj.LocateMyFSM("Control");
+
+        fsm.FsmVariables.FindFsmFloat("Idle Y").Value = obj.transform.GetPositionY();
+        var ground1 = fsm.FsmVariables.FindFsmFloat("Stun Y");
+        var ground2 = fsm.FsmVariables.FindFsmFloat("Bell Stun Y");
+
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("READY"), 0);
+        fsm.GetState("Ready").AddAction(() => fsm.SendEvent("BEGIN"));
+
+        var up = fsm.GetState("Intro Up");
+        up.DisableAction(7);
+        ((Wait)up.actions[8]).time = 0;
+
+        FixGround();
+
+        return;
+
+        void FixGround()
+        {
+            if (HeroController.instance.TryFindGroundPoint(out var pos,
+                    obj.transform.position,
+                    true))
+            {
+                var y = pos.y + 3.3091f;
+                ground1.Value = y;
+                ground2.Value = y;
+            }
+        }
+    }
+
+    public static void FixAknidMother(GameObject obj)
+    {
+        obj.AddComponent<AknidMother>();
+    }
+
+    private class AknidMother : SoundMaker
+    {
+        private static readonly AudioClip[] Clips = new AudioClip[4];
+        private static AudioClip _sporeClip;
+
+        public static void InitSounds()
+        {
+            ResourceUtils.LoadClipResource("AknidMother.hit_1", clip => Clips[0] = clip);
+            ResourceUtils.LoadClipResource("AknidMother.hit_2", clip => Clips[1] = clip);
+            ResourceUtils.LoadClipResource("AknidMother.hit_3", clip => Clips[2] = clip);
+            ResourceUtils.LoadClipResource("AknidMother.hit_4", clip => Clips[3] = clip);
+            ResourceUtils.LoadClipResource("AknidMother.spore", clip => _sporeClip = clip);
+        }
+        
+        private void Start()
+        {
+            GetComponent<EnemyHitEffectsRegular>().ReceivedHitEffect += (_, _) =>
+            {
+                PlaySound(Clips[Random.RandomRangeInt(0, 4)]);
+            };
+            var ctrl = gameObject.LocateMyFSM("Control");
+            ctrl.GetState("Sing End").transitions[0].toFsmState = ctrl.GetState("Recover");
+            
+            
+        }
     }
 }

@@ -60,6 +60,9 @@ public static class VanillaObjects
                 description: "Works best in small spaces, hitbox is very tall and pink glow extends much further.")
             .WithConfigGroup(ConfigGroup.Zaprock)
             .WithRotationGroup(RotationGroup.All));
+        
+        Categories.Hazards.Add(new PreloadObject("Voltsphere", "coral_lightning_orb",
+                ("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap")));
     }
 
     private static void AddSandsObjects()
@@ -304,6 +307,10 @@ public static class VanillaObjects
                     o.transform
                 ).GetComponent<TinkEffect>().overrideCamShake = true;
             }));
+
+        /*
+        AddEnemy("Grand Mother Silk", "gms_boss", ("Cradle_03", "Boss Scene/Silk Boss"),
+            postSpawnAction: EnemyFixers.FixGms);*/
     }
 
     private static void AddSurfaceObjects()
@@ -1161,9 +1168,14 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.MossMother)
             .WithBroadcasterGroup(BroadcasterGroup.MossMother).DoFlipX();
 
+        AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
+            ("Dust_11", "Aspid Hatchling"), hideAndDontSave: true);
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),
             postSpawnAction: EnemyFixers.FixAknid);
+        AddEnemy("Aknid Mother", "grove_pilgrim",
+            ("Dust_11", "Grove Pilgrim Fly"), hideAndDontSave: true,
+            preloadAction: EnemyFixers.FixAknidMother).DoFlipX();
 
         AddEnemy("Overgrown Pilgrim", "pilgrim_moss_spitter",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Normal World/Pilgrim Moss Spitter"));
@@ -1223,12 +1235,17 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Pilby);
     }
 
-    private static PlaceableObject AddEnemy(string name, string id, (string, string) path,
+    private static PlaceableObject AddEnemy(
+        string name,
+        string id,
+        (string, string) path, 
+        bool hideAndDontSave = false,
         [CanBeNull] Action<GameObject> preloadAction = null,
         [CanBeNull] Action<GameObject> postSpawnAction = null)
     {
         return Categories.Enemies.Add(new PreloadObject(name, id,
                 path,
+                hideAndDontSave: hideAndDontSave,
                 preloadAction: preloadAction,
                 postSpawnAction: postSpawnAction)
             .WithReceiverGroup(ReceiverGroup.Enemies)

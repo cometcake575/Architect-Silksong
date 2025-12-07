@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Architect.Editor;
+using Architect.Objects.Categories;
+using Architect.Objects.Placeable;
 using Architect.Storage;
 using Architect.Utils;
 using MonoMod.RuntimeDetour;
@@ -149,7 +152,12 @@ public static class PreloadManager
         {
             try
             {
-                var foundObject = ObjectUtils.GetGameObjectFromArray(rootObjects, preload.Item1);
+                GameObject foundObject;
+                if (preload.Item2.IsHideAndDontSave)
+                {
+                    foundObject = Resources.FindObjectsOfTypeAll<GameObject>()
+                        .First(o => o.name == preload.Item2.Path);
+                } else foundObject = ObjectUtils.GetGameObjectFromArray(rootObjects, preload.Item1);
             
                 preload.Item2.BeforePreload(foundObject);
                 

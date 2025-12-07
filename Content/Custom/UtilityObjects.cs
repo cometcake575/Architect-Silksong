@@ -39,6 +39,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateAnimatorController());
         Categories.Utility.Add(CreateTimeSlower());
         Categories.Utility.Add(CreateDarkness());
+        Categories.Utility.Add(CreateMemoryToggle());
         
         Categories.Utility.Add(CreateTitleDisplay());
         Categories.Utility.Add(CreateTextDisplay());
@@ -298,6 +299,25 @@ public static class UtilityObjects
                             "Placing 2 darkness objects at once will increase the effect.",
                 sprite:ResourceUtils.LoadSpriteResource("darkness"))
             .WithConfigGroup(ConfigGroup.Generic);
+    }
+
+    private static PlaceableObject CreateMemoryToggle()
+    {
+        MapStateHook.Init();
+        
+        var msh = new GameObject("Memory Toggler");
+        
+        Object.DontDestroyOnLoad(msh);
+        msh.SetActive(false);
+
+        msh.AddComponent<MapStateHook>();
+        
+        return new CustomObject("Memory Toggler", "memory_toggle", msh,
+                description:"Controls whether the current room is considered a memory.\n\n" +
+                            "Rosaries, Shell Shards and Items cannot spawn in memories\n" +
+                            "and dying does not leave a cocoon.",
+                sprite:ResourceUtils.LoadSpriteResource("memory_toggle"))
+            .WithConfigGroup(ConfigGroup.MapStateHook);
     }
 
     private static PlaceableObject CreateTransitionPoint()

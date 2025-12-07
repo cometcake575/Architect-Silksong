@@ -13,6 +13,7 @@ public interface IPlayable
 public interface IPausable
 {
     public void Pause();
+    public void Reset();
 }
 
 public class PngObject : MonoBehaviour, IPlayable, IPausable
@@ -75,6 +76,12 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
     }
 
     public void Pause() => playing = false;
+
+    public void Reset()
+    {
+        _frame = 0;
+        _renderer.sprite = _sprites[0];
+    }
 }
 
 public class Mp4Object : MonoBehaviour, IPlayable, IPausable
@@ -132,6 +139,11 @@ public class Mp4Object : MonoBehaviour, IPlayable, IPausable
         _player.Pause();
         _shouldPlay = false;
         _playing = false;
+    }
+
+    public void Reset()
+    {
+        _player.time = 0;
     }
 }
 

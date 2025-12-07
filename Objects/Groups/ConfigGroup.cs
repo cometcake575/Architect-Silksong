@@ -229,6 +229,14 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> MapStateHook = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Memory", "msh_state", (o, value) =>
+            {
+                o.GetComponent<MapStateHook>().memory = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
+
     public static readonly List<ConfigType> CameraBorder = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Border Type", "camera_border_type", (o, value) =>

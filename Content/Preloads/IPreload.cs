@@ -9,4 +9,6 @@ public interface IPreload
 
     public void BeforePreload(GameObject original) {}
     public void AfterPreload(GameObject preload) {}
+
+    public bool IsHideAndDontSave { get; }
 }

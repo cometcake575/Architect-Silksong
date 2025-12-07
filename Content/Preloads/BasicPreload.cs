@@ -9,4 +9,6 @@ public class BasicPreload(string scene, string path, Action<GameObject> callback
     public string Path { get; } = path;
 
     public void AfterPreload(GameObject preload) => callback(preload);
+    
+    public bool IsHideAndDontSave => false;
 }

@@ -97,6 +97,8 @@ public abstract class PlaceableObject : SelectableObject
         ParentScale = Prefab.transform.lossyScale;
         if (Sprite) LossyScale = ParentScale;
         else Sprite = RetrieveSprite();
+        
+        if (!Sprite) ArchitectPlugin.Logger.LogError($"No sprite found for {_name}");
     }
 
     public PlaceableObject WithRotationGroup(RotationGroup group)
@@ -261,6 +263,7 @@ public abstract class PlaceableObject : SelectableObject
         if (child) ChildOffset += center;
         else Offset += center;
         
+        ArchitectPlugin.Logger.LogInfo($"Preparing with tk2d for {_name}");
         return PreviewUtils.ConvertFrom2DToolkit(def,
             Mathf.Abs(1 / (sprite.scale.x * sprite.GetCurrentSpriteDef().texelSize.x)));
     }

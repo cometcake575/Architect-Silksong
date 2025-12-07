@@ -8,6 +8,8 @@ public class PreloadObject : PlaceableObject, IPreload
 {
     public string Scene { get; }
     public string Path { get; }
+    public bool IsHideAndDontSave { get; }
+    
     private readonly Action<GameObject> _preloadAction;
 
     public PreloadObject(
@@ -18,12 +20,14 @@ public class PreloadObject : PlaceableObject, IPreload
         Action<GameObject> postSpawnAction = null, 
         Action<GameObject> preloadAction = null,
         bool preview = false,
+        bool hideAndDontSave = false,
         Sprite sprite = null,
         Sprite uiSprite = null)
         : base(name, id, description, postSpawnAction, preview, sprite, uiSprite)
     {
         Scene = path.Item1;
         Path = path.Item2;
+        IsHideAndDontSave = hideAndDontSave;
 
         _preloadAction = preloadAction;
         
