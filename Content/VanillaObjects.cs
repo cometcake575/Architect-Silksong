@@ -60,9 +60,9 @@ public static class VanillaObjects
                 description: "Works best in small spaces, hitbox is very tall and pink glow extends much further.")
             .WithConfigGroup(ConfigGroup.Zaprock)
             .WithRotationGroup(RotationGroup.All));
-        
+        /*
         Categories.Hazards.Add(new PreloadObject("Voltsphere", "coral_lightning_orb",
-                ("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap")));
+                ("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap")));*/
     }
 
     private static void AddSandsObjects()
@@ -276,9 +276,6 @@ public static class VanillaObjects
                 ("Coral_10", "Song Gate Entrance Right"),
                 preloadAction: o => o.transform.GetChild(2).gameObject.SetActive(false))
             .WithReceiverGroup(ReceiverGroup.Gates));
-        
-        Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
-                ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
 
         Categories.Platforming.Add(new PreloadObject("Metronome Platform", "metronome_plat",
                 ("Song_11", "metronome_plat (11)"),
@@ -470,6 +467,18 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixFlyin);
         AddEnemy("Verdanir", "verdanir", ("Clover_04b", "Battle Scene/Return Scene/Grasshopper Slasher"));
         AddEnemy("Escalion", "escalion", ("Clover_04b", "Grasshopper Fly")).DoFlipX();
+        
+        Categories.Interactable.Add(new PreloadObject("Verdania Button", "verdania_button",
+                ("Clover_05c", "Hornet_pressure_plate_small_persistent"),
+                postSpawnAction: InteractableFixers.FixButton,
+                preloadAction: o => o.transform.GetChild(0).gameObject.SetActive(false))
+            .WithBroadcasterGroup(BroadcasterGroup.Buttons)
+            .WithConfigGroup(ConfigGroup.Buttons));
+        
+        Categories.Interactable.Add(new PreloadObject("Verdania Gate", "verdania_gate",
+                ("Clover_05c", "Clover Gate (1)"),
+                preloadAction: o => o.transform.GetChild(3).gameObject.SetActive(false))
+            .WithReceiverGroup(ReceiverGroup.Gates));
     }
 
     private static void AddMoorObjects()
@@ -739,6 +748,15 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.MarkRing)
             .WithConfigGroup(ConfigGroup.MapperRing)
             .WithBroadcasterGroup(BroadcasterGroup.MapperRing));
+        
+        Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
+            ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
+
+        Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
+            ("Ant_04", "Silkcatcher Plant")));
+        
+        Categories.Misc.Add(new PreloadObject("Silkdew", "silkcatcher_dew",
+            ("Clover_06", "Group/Clover_Silk_Pod")));
 
         /*
         // TODO
@@ -963,9 +981,6 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixKarmelitaPreload,
             postSpawnAction: EnemyFixers.FixKarmelita);
             */
-
-        Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
-            ("Ant_04", "Silkcatcher Plant")));
 
         Categories.Platforming.Add(new PreloadObject("Hunterfruit", "march_pogo",
             ("Ant_04", "White Palace Fly")));
