@@ -413,6 +413,12 @@ public static class MiscFixers
         obj.AddComponent<GreenPrince>();
     }
 
+    public static void FixSeth(GameObject obj)
+    {
+        obj.LocateMyFSM("Location").enabled = false;
+        obj.AddComponent<Seth>();
+    }
+
     public static void FixShakraBoss(GameObject obj)
     {
         //EnemyFixers.RemoveConstrainPosition(obj);
@@ -555,6 +561,18 @@ public static class MiscFixers
             txt.Key = text;
             npc.talkText = [txt];
             npc.repeatText = txt;
+        }
+    }
+    
+    public class Seth : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
         }
     }
     

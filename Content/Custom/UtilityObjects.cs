@@ -316,7 +316,7 @@ public static class UtilityObjects
                 description:"Controls whether the current room is considered a memory.\n\n" +
                             "Rosaries, Shell Shards and Items cannot spawn in memories\n" +
                             "and dying does not leave a cocoon.",
-                sprite:ResourceUtils.LoadSpriteResource("memory_toggle"))
+                sprite:ResourceUtils.LoadSpriteResource("memory_toggle", ppu:64))
             .WithConfigGroup(ConfigGroup.MapStateHook);
     }
 

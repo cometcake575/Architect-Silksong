@@ -256,14 +256,25 @@ public static class VanillaObjects
         AddEnemy("Clawmaiden", "clawmaiden", ("Hang_04_boss", "Battle Scene/Wave 4/Song Handmaiden"),
             preloadAction: EnemyFixers.FixClawmaiden);
 
-        Categories.Interactable.Add(new PreloadObject("Citadel Button", "citadel_button",
+        Categories.Interactable.Add(new PreloadObject("Citadel Button S", "citadel_button",
                 ("Song_09", "Hornet_pressure_plate_small_persistent"),
                 preloadAction: InteractableFixers.FixButtonPreload,
                 postSpawnAction: InteractableFixers.FixButton)
             .WithBroadcasterGroup(BroadcasterGroup.Buttons)
             .WithConfigGroup(ConfigGroup.Buttons));
-        Categories.Interactable.Add(new PreloadObject("Citadel Gate", "citadel_gate",
+
+        Categories.Interactable.Add(new PreloadObject("Citadel Button L", "citadel_button_big",
+                ("Coral_10", "Hornet_pressure_plate/Plate"),
+                postSpawnAction: InteractableFixers.FixButton)
+            .WithBroadcasterGroup(BroadcasterGroup.Buttons)
+            .WithConfigGroup(ConfigGroup.Buttons));
+        
+        Categories.Interactable.Add(new PreloadObject("Citadel Gate S", "citadel_gate",
                 ("Song_09", "Citadel Switch Gate"))
+            .WithReceiverGroup(ReceiverGroup.Gates));
+        Categories.Interactable.Add(new PreloadObject("Citadel Gate L", "citadel_gate_big",
+                ("Coral_10", "Song Gate Entrance Right"),
+                preloadAction: o => o.transform.GetChild(2).gameObject.SetActive(false))
             .WithReceiverGroup(ReceiverGroup.Gates));
         
         Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
@@ -438,6 +449,11 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Green Prince NPC", "green_prince",
             ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
             postSpawnAction: MiscFixers.FixGreenPrince)
+            .WithConfigGroup(ConfigGroup.Npcs));
+
+        Categories.Misc.Add(new PreloadObject("Wandering Seth NPC", "seth_npc",
+            ("Coral_10", "Seth Stand NPC"), 
+            postSpawnAction: MiscFixers.FixSeth)
             .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Lily Pad / Nuphar", "lilypad",
