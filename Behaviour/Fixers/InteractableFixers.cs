@@ -1,3 +1,4 @@
+using System;
 using Architect.Events;
 using Architect.Utils;
 using UnityEngine;
@@ -79,6 +80,19 @@ public static class InteractableFixers
             obj.BroadcastEvent("OnPress");
             obj.BroadcastEvent("LoadedPressed");
         });
+    }
+
+    public static void FixCoralNut(GameObject obj)
+    {
+        obj.AddComponent<CoralNut>();
+    }
+
+    private class CoralNut : MonoBehaviour
+    {
+        private void OnEnable()
+        {
+            GetComponent<CircleCollider2D>().enabled = true;
+        }
     }
 
     public static void FixActivator(GameObject obj)

@@ -134,6 +134,7 @@ public static class VanillaObjects
 
         Categories.Interactable.Add(new PreloadObject("Coral Nut", "coral_crust_tree_activator",
                 ("Coral_24", "coral_crust_tree (5)/Coral Crust Tree Activator"),
+                preloadAction: InteractableFixers.FixCoralNut,
                 postSpawnAction: InteractableFixers.FixActivator)
             .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable)
             .WithRotationGroup(RotationGroup.Eight));
