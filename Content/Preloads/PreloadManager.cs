@@ -45,6 +45,12 @@ public static class PreloadManager
 
     private static void DoPreload(Action<GameManager> orig, GameManager self)
     {
+        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("Patchwork"))
+        {
+            ArchitectPlugin.Logger.LogInfo("Patchwork fix...");
+            PatchworkFix.Init();
+        }
+        
         orig(self);
         if (HasPreloaded) return;
         self.StartCoroutine(Preload(self));

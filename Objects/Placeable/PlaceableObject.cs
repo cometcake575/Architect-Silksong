@@ -263,7 +263,6 @@ public abstract class PlaceableObject : SelectableObject
         if (child) ChildOffset += center;
         else Offset += center;
         
-        ArchitectPlugin.Logger.LogInfo($"Preparing with tk2d for {_name}");
         return PreviewUtils.ConvertFrom2DToolkit(def,
             Mathf.Abs(1 / (sprite.scale.x * sprite.GetCurrentSpriteDef().texelSize.x)));
     }

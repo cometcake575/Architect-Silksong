@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>2.30.2</Version>
+    <Version>2.30.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +32,9 @@
     <PackageReference Include="Silksong.GameLibs" Version="*-*"/>
     <PackageReference Include="Silksong.PrepatcherPlugin" Version="1.0.1"/>
     <PackageReference Include="Silksong.SSMP" Version="0.0.5"/>
+    <Reference Include="Patchwork">
+      <HintPath>libs/Patchwork.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

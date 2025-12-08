@@ -35,21 +35,7 @@ public static class PreviewUtils
 
     public static Sprite ConvertFrom2DToolkit(tk2dSpriteDefinition def, float ppu)
     {
-        if (def.material.mainTexture is not Texture2D texture)
-        {
-            var mainTexture = def.material.mainTexture;
-            texture = new Texture2D(mainTexture.width, mainTexture.height, TextureFormat.RGBA32, false);
- 
-            var currentRT = RenderTexture.active;
- 
-            var renderTexture = new RenderTexture(mainTexture.width, mainTexture.height, 32);
-            Graphics.Blit(mainTexture, renderTexture);
- 
-            RenderTexture.active = renderTexture;
-            texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-            texture.Apply();
-            RenderTexture.active = currentRT;
-        }
+        if (def.material.mainTexture is not Texture2D texture) return null;
         
         var minX = def.uvs[0].x;
         var minY = def.uvs[0].y;
