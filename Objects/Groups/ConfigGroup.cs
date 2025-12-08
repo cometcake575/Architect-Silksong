@@ -488,6 +488,24 @@ public static class ConfigGroup
             }).WithDefaultValue(1).WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> Slope = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Slide Speed", "slope_speed",
+                (o, value) =>
+                {
+                    var val = value.GetValue();
+                    o.GetComponent<SlideSurface>().shallowSlideSpeed *= val;
+                    o.GetComponent<SlideSurface>().steepSlideSpeed *= val;
+                }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Show Particles", "slope_particles",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.GetComponent<SlideSurface>().slideParticles = [null, null, null];
+                }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> DreamBlock = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Particles", "show_particles_dream",

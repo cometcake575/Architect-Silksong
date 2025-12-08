@@ -608,6 +608,21 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four));
         Categories.Misc.Add(new PreloadObject("Coal Lamp", "coal_lamp",
             ("Peak_05", "coal_lantern_jail_wall_mount/string_cap")));
+        
+        Categories.Platforming.Add(new PreloadObject("Slope Area", "slope_area",
+            ("Peak_05", "Slide Surface (2)"), 
+            sprite: ResourceUtils.LoadSpriteResource("slope", FilterMode.Point, ppu:25.6f),
+            preloadAction: o =>
+            {
+                o.GetComponent<PolygonCollider2D>().points =
+                [
+                    new Vector2(-2.5f, -2.5f),
+                    new Vector2(-2.5f, 2.5f),
+                    new Vector2(2.5f, 2.5f),
+                    new Vector2(2.5f, -2.5f)
+                ];
+            }).WithConfigGroup(ConfigGroup.Slope)
+            .WithRotationGroup(RotationGroup.All));
     }
 
     private static void AddBileObjects()
