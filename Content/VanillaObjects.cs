@@ -581,7 +581,9 @@ public static class VanillaObjects
                 var anim = o.GetComponent<tk2dSpriteAnimator>();
                 anim.defaultClipId = anim.GetClipIdByName("Idle");
             },
-            postSpawnAction: EnemyFixers.FixFirstSinner);
+            postSpawnAction: EnemyFixers.FixFirstSinner)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
 
         Categories.Interactable.Add(new PreloadObject("Slab Pressure Plate", "slab_pressure_plate",
                 ("Slab_05", "spike_trap_slab_jail/pressure_plate"), postSpawnAction: InteractableFixers.FixSlabPlate)
