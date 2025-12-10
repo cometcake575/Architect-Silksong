@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Custom;
 using Architect.Content.Preloads;
 using Architect.Utils;
+using GlobalEnums;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -13,9 +15,21 @@ namespace Architect.Behaviour.Fixers;
 
 public static class EnemyFixers
 {
+    // Skull Tyrant
     private static GameObject _bouldersPrefab;
+    
+    // Broodmother
     private static GameObject _freshflyCagePrefab;
+    
+    // Second Sentinel
     private static GameObject _robotParticles;
+    
+    // First Sinner
+    private static GameObject _pinProjectiles;
+    private static GameObject _loosePins;
+    private static GameObject _blasts;
+
+    private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
     public static void Init()
     {
@@ -46,6 +60,15 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Cog_Dancers_boss", 
             "Dancer Control/Death Chunks 1", 
             o => _robotParticles = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Slab_10b", 
+            "Boss Scene/Pin Projectiles", 
+            o => _pinProjectiles = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Slab_10b", 
+            "Boss Scene/Loose Pins", 
+            o => _loosePins = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Slab_10b", 
+            "Boss Scene/Blasts", 
+            o => _blasts = o));
 
         AknidMother.InitSounds();
     }
@@ -1358,5 +1381,314 @@ public static class EnemyFixers
             
             
         }
+    }
+
+    public static void FixSplinter(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Branch 01 Idle");
+    }
+
+    public static void FixSisterSplinter(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+        fsm.GetState("Intro Shake").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Emerge Antic").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Reappear 4").AddAction(() => fsm.SendEvent("FINISHED"), 1);
+        fsm.GetState("Reappear 5").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Reappear 6").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+        var roar = fsm.GetState("Roar 4");
+        roar.DisableAction(0);
+        roar.DisableAction(2);
+        ((StartRoarEmitter)roar.actions[3]).stunHero = false;
+
+        var roarEnd = fsm.GetState("Roar End 4");
+        roarEnd.DisableAction(3);
+        roarEnd.DisableAction(4);
+        roarEnd.DisableAction(5);
+        
+        fsm.GetState("Can Summon?").DisableAction(1);
+
+        var xMid = fsm.FsmVariables.FindFsmFloat("Mid X");
+        var xMin = fsm.FsmVariables.FindFsmFloat("X Min");
+        var xMax = fsm.FsmVariables.FindFsmFloat("X Max");
+        
+        var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        var deathGroundY = corpse.LocateMyFSM("Death").FsmVariables.FindFsmFloat("Ground Y");
+        
+        fsm.GetState("Idle").AddAction(AdjustAllPos, 0);
+        fsm.GetState("Stun Hit").AddAction(AdjustYPos, 0);
+        AdjustAllPos();
+
+        /*fsm.FsmVariables.FindFsmGameObject("Spikes Folder").Value = 
+            Object.Instantiate(_splinterSpikes, obj.transform.position, obj.transform.rotation);*/
+
+        return;
+
+        void AdjustAllPos()
+        {
+            xMid.Value = obj.transform.position.x;
+            xMin.Value = obj.transform.position.x - 10.5f;
+            xMax.Value = obj.transform.position.x + 10.5f;
+            AdjustYPos();
+        }
+
+        void AdjustYPos()
+        {
+            if (!HeroController.instance.TryFindGroundPoint(
+                    out var point, 
+                    obj.transform.position, 
+                    true)) return;
+            groundY.Value = point.y - 1.8f;
+            deathGroundY.Value = point.y - 1.8f;
+        }
+    }
+
+    public static void FixFirstSinner(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        var fsm = obj.LocateMyFSM("Control");
+
+        // Disable music and roar stun
+        var roarEnd = fsm.GetState("Intro Roar End");
+        roarEnd.DisableAction(0);
+        roarEnd.DisableAction(1);
+        
+        var p2Tele = fsm.GetState("P2 Tele Pause");
+        p2Tele.DisableAction(0);
+        p2Tele.AddAction(NoGravity, 0);
+        fsm.GetState("Music Stop").DisableAction(0);
+        
+        var p2Roar = fsm.GetState("P2 Roar");
+        p2Roar.DisableAction(0);
+        p2Roar.DisableAction(2);
+        ((StartRoarEmitter)p2Roar.actions[4]).stunHero = false;
+
+        var roar = fsm.GetState("Roar");
+        ((StartRoarEmitter)roar.actions[6]).stunHero = false;
+
+        // Start fight
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("REFIGHT START"));
+
+        var appear = fsm.GetState("Refight Appear");
+        appear.DisableAction(1);
+        appear.DisableAction(5);
+
+        // General positions
+        var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        var slashY = fsm.FsmVariables.FindFsmFloat("Slash Y");
+        var teleMinX = fsm.FsmVariables.FindFsmFloat("Tele Min X");
+        var teleMaxX = fsm.FsmVariables.FindFsmFloat("Tele Max X");
+        var slashMinX = fsm.FsmVariables.FindFsmFloat("Slash Min X");
+        var slashMaxX = fsm.FsmVariables.FindFsmFloat("Slash Max X");
+
+        var teleY = fsm.FsmVariables.FindFsmFloat("Tele Y");
+        var bombTeleY1 = ((RandomFloatEither)fsm.GetState("Set Bomb").actions[3]).value1;
+        var bombTeleY2 = ((SetFloatValue)fsm.GetState("Set P2 Start").actions[3]).floatValue;
+        
+        // Pins
+        var loosePins = Object.Instantiate(_loosePins);
+        for (var i = 0; i < loosePins.transform.childCount; i++)
+        {
+            var child = loosePins.transform.GetChild(i).gameObject;
+            RemoveConstrainPosition(child);
+            child.SetActive(true);
+            child.transform.position = obj.transform.position + new Vector3(Random.Range(-2f, 2f), -1.25f);
+        }
+        loosePins.SetActive(true);
+        var pins = Object.Instantiate(_pinProjectiles);
+        for (var i = 0; i < pins.transform.childCount; i++)
+        {
+            var child = pins.transform.GetChild(i).gameObject;
+            child.SetActive(true);
+            var pinFsm = child.LocateMyFSM("Control");
+            pinFsm.FsmVariables.FindFsmGameObject("Loose Pins").Value = loosePins;
+        }
+        var pinsFsm = pins.LocateMyFSM("Pattern Control");
+        var sceneCentreX = pinsFsm.FsmVariables.FindFsmFloat("Scene Centre X");
+        var pincerMinX = pinsFsm.FsmVariables.FindFsmFloat("Pincer Min X");
+        var pincerMaxX = pinsFsm.FsmVariables.FindFsmFloat("Pincer Max X");
+
+        var sweepR = pinsFsm.GetState("Sweep R");
+        var sweepR1Y = ((SetPosition)sweepR.actions[5]).y;
+        var sweepR2Y = ((SetPosition)sweepR.actions[12]).y;
+        var sweepL = pinsFsm.GetState("Sweep L");
+        var sweepL1Y = ((SetPosition)sweepL.actions[5]).y;
+        var sweepL2Y = ((SetPosition)sweepL.actions[12]).y;
+
+        var clawR = pinsFsm.GetState("Claw R");
+        var clawR1Y = ((SetPosition)clawR.actions[5]).y;
+        var clawR2Y = ((SetPosition)clawR.actions[12]).y;
+        var clawR3Y = ((SetPosition)clawR.actions[19]).y;
+        var clawR1X = ((FloatOperator)clawR.actions[3]).float1;
+        var clawR2X = ((FloatOperator)clawR.actions[10]).float1;
+        var clawR3X = ((FloatOperator)clawR.actions[17]).float1;
+        var clawL = pinsFsm.GetState("Claw L");
+        var clawL1Y = ((SetPosition)clawL.actions[5]).y;
+        var clawL2Y = ((SetPosition)clawL.actions[12]).y;
+        var clawL3Y = ((SetPosition)clawL.actions[19]).y;
+        var clawL1X = ((FloatOperator)clawL.actions[3]).float1;
+        var clawL2X = ((FloatOperator)clawL.actions[10]).float1;
+        var clawL3X = ((FloatOperator)clawL.actions[17]).float1;
+
+        var rain1 = pinsFsm.GetState("Rain 1");
+        var rain1XMin = ((RandomFloat)rain1.actions[0]).min;
+        var rain1XMax = ((RandomFloat)rain1.actions[0]).max;
+        var rain1YMin = ((RandomFloat)rain1.actions[1]).min;
+        var rain1YMax = ((RandomFloat)rain1.actions[1]).max;
+        var rain2 = pinsFsm.GetState("Rain 2");
+        var rain2YMin = ((RandomFloat)rain2.actions[1]).min;
+        var rain2YMax = ((RandomFloat)rain2.actions[1]).max;
+        
+        pins.SetActive(true);
+        
+        fsm.FsmVariables.FindFsmGameObject("Pin Projectiles").Value = pins;
+
+        var attackEvent = fsm.FsmVariables.FindFsmString("Attack Event");
+
+        // Running position fixes
+        fsm.GetState("First Idle").DisableAction(0);
+        
+        var idle = fsm.GetState("Idle");
+        idle.DisableAction(0);
+        idle.AddAction(FixPositions, 0);
+        var teleOut = fsm.GetState("Tele Out");
+        teleOut.AddAction(NoGravity, 0);
+        fsm.GetState("Phase Check").AddAction(FixPositions, 0);
+        fsm.GetState("Tele In").AddAction(FixPositions, 0);
+        fsm.GetState("After Tele").AddAction(FixPositions, 0);
+        
+        fsm.GetState("Death Stagger F").DisableAction(11);
+        
+        fsm.GetState("Fall").AddAction(() =>
+        {
+            if (rb2d.linearVelocityY == 0) fsm.SendEvent("LAND");
+        });
+        
+        fsm.GetState("Charge").AddAction(() =>
+        {
+            if ((obj.transform.position - HeroController.instance.transform.position).magnitude > 25) 
+                fsm.SendEvent("FINISHED");
+        }, 3, true);
+
+        // Blasts
+        var blast = Object.Instantiate(_blasts);
+        blast.SetActive(true);
+        foreach (var blastFsm in blast.GetComponentsInChildren<PlayMakerFSM>())
+        {
+            var wait = blastFsm.GetState("Wait");
+            if (wait == null) continue;
+            var xMin = blastFsm.FsmVariables.FindFsmFloat("X Min");
+            var xMax = blastFsm.FsmVariables.FindFsmFloat("X Max");
+
+            var low = blastFsm.GetState("Pos Low");
+            var high = blastFsm.GetState("Pos High");
+            var lowMin = ((RandomFloat)low.actions[0]).min;
+            var lowMax = ((RandomFloat)low.actions[0]).max;
+            var highMin = ((RandomFloat)high.actions[0]).min;
+            var highMax = ((RandomFloat)high.actions[0]).max;
+            wait.AddAction(() =>
+            {
+                xMin.Value = obj.transform.GetPositionX() - 12;
+                xMax.Value = obj.transform.GetPositionX() + 12;
+
+                lowMin.Value = groundY.Value - 0.09f;
+                lowMax.Value = groundY.Value + 0.91f;
+                highMin.Value = groundY.Value + 3.8f;
+                highMax.Value = groundY.Value + 6.3f;
+            }, 0);
+        }
+        fsm.FsmVariables.FindFsmGameObject("Blasts").Value = blast;
+        
+        // Don't break after death
+        idle.transitions = idle.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        teleOut.transitions = teleOut.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+
+        rb2d.gravityScale = 1;
+        rb2d.bodyType = RigidbodyType2D.Dynamic;
+        FixPositions();
+        return;
+
+        void NoGravity()
+        {
+            rb2d.gravityScale = 0;
+            rb2d.linearVelocityY = 0;
+        }
+
+        void FixPositions()
+        {
+            if (fsm.ActiveStateName != "Tele In" || attackEvent.Value != "BOMB" && rb2d.gravityScale == 0)
+            {
+                obj.transform.SetPositionX(obj.transform.GetPositionX() + 0.2f);
+                rb2d.gravityScale = 1;
+                rb2d.bodyType = RigidbodyType2D.Dynamic;
+            }
+
+            var posX = HeroController.instance.transform.GetPositionX();
+            teleMinX.Value = slashMinX.Value = posX - 12.5f;
+            teleMaxX.Value = slashMaxX.Value = posX + 12.5f;
+            
+            // Pins
+            sceneCentreX.Value = obj.transform.GetPositionX();
+            pincerMinX.Value = sceneCentreX.Value - 7.5f;
+            pincerMaxX.Value = sceneCentreX.Value + 7.5f;
+
+            clawR1X.Value = sceneCentreX.Value - 14.2f;
+            clawR2X.Value = sceneCentreX.Value - 7.2f;
+            clawR3X.Value = sceneCentreX.Value - 0.2f;
+            clawL1X.Value = sceneCentreX.Value + 14.2f;
+            clawL2X.Value = sceneCentreX.Value + 7.2f;
+            clawL3X.Value = sceneCentreX.Value + 0.2f;
+
+            rain1XMin.Value = sceneCentreX.Value - 14f;
+            rain1XMax.Value = sceneCentreX.Value - 10f;
+
+            if (!HeroController.instance.TryFindGroundPoint(
+                    out var point,
+                    new Vector2(posX,
+                        Mathf.Max(obj.transform.position.y, HeroController.instance.transform.position.y) + 3),
+                    true)) return;
+            groundY.Value = point.y + 1.68f;
+            slashY.Value = point.y + 5.98f;
+            teleY.Value = point.y + 1.68f;
+            bombTeleY1.Value = bombTeleY2.Value = point.y + 4.48f;
+            
+            // Pins
+            sweepL1Y.Value = sweepR1Y.Value = point.y + 0.48f;
+            sweepL2Y.Value = sweepR2Y.Value = point.y + 7.48f;
+
+            clawR1Y.Value = clawL1Y.Value = point.y + 8.78f;
+            clawR2Y.Value = clawL2Y.Value = point.y + 9.78f;
+            clawR3Y.Value = clawL3Y.Value = point.y + 10.78f;
+
+            rain1YMin.Value = rain2YMin.Value = point.y + 9.48f;
+            rain1YMax.Value = rain2YMax.Value = point.y + 10.08f;
+        }
+    }
+
+    public static void FixRoachserver(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        var range = obj.GetComponentInChildren<AlertRange>();
+
+        obj.layer = EnemiesLayer;
+
+        var work = fsm.GetState("BG Work");
+        work.DisableAction(0);
+        work.DisableAction(1);
+        work.AddAction(() =>
+        {
+            if (range.IsHeroInRange()) fsm.SendEvent("BATTLE START");
+        }, 0, true);
     }
 }

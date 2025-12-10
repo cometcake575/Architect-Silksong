@@ -182,9 +182,11 @@ public static class VanillaObjects
                 ("Dust_Chef", "kitchen_string"), postSpawnAction: InteractableFixers.FixGong)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
         
-        /* TODO
         AddEnemy("Roachserver", "roachserver",
-            ("Dust_Chef", "Battle Parent/Battle Scene/Wave 1/Roachkeeper Chef Tiny"));
+            ("Dust_Chef", "Battle Parent/Battle Scene/Wave 1/Roachkeeper Chef Tiny"),
+            preloadAction: o => o.transform.SetPositionZ(0.006f),
+            postSpawnAction: EnemyFixers.FixRoachserver);
+        /* 
         AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
             postSpawnAction: EnemyFixers.FixLugoli);*/
@@ -573,6 +575,14 @@ public static class VanillaObjects
                 preloadAction: EnemyFixers.KeepActive, postSpawnAction: EnemyFixers.FixJailer)
             .WithConfigGroup(ConfigGroup.Jailer).DoFlipX();
 
+        AddEnemy("First Sinner", "first_sinner", ("Slab_10b", "Boss Scene/First Weaver"),
+            preloadAction: o =>
+            {
+                var anim = o.GetComponent<tk2dSpriteAnimator>();
+                anim.defaultClipId = anim.GetClipIdByName("Idle");
+            },
+            postSpawnAction: EnemyFixers.FixFirstSinner);
+
         Categories.Interactable.Add(new PreloadObject("Slab Pressure Plate", "slab_pressure_plate",
                 ("Slab_05", "spike_trap_slab_jail/pressure_plate"), postSpawnAction: InteractableFixers.FixSlabPlate)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
@@ -960,6 +970,19 @@ public static class VanillaObjects
         AddEnemy("Disguised Phacia", "flower_drifter_hidden", ("Arborium_03", "Flower Drifter (3)"));
         AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"))
             .WithRotationGroup(RotationGroup.Eight);
+        AddEnemy("Wood Wasp", "wood_wasp", ("Shellwood_02", "Shellwood Wasp"));
+        AddEnemy("Splinter", "splinter", ("Shellwood_02", "Stick Insect"),
+            preloadAction: EnemyFixers.FixSplinter);
+        AddEnemy("Splinterhorn", "splinterhorn", ("Shellwood_02", "Stick Insect Charger"),
+            preloadAction: EnemyFixers.FixSplinter);
+        AddEnemy("Splinterbark", "splinterbark", 
+            ("Shellwood_26", "Black Thread States/Normal World/Stick Insect Flyer (1)"));
+        
+        /*
+        AddEnemy("Sister Splinter", "sister_splinter",
+            ("Shellwood_18", "Boss Scene Parent/Boss Scene/Splinter Queen"),
+            postSpawnAction: EnemyFixers.FixSisterSplinter)
+            .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();*/
     }
 
     private static void AddMarchObjects()
