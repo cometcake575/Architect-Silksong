@@ -1571,7 +1571,7 @@ public static class EnemyFixers
         fsm.GetState("Fall").AddAction(() =>
         {
             if (rb2d.linearVelocityY == 0) fsm.SendEvent("LAND");
-        });
+        }, everyFrame: true);
         
         fsm.GetState("Charge").AddAction(() =>
         {
