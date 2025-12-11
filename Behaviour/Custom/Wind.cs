@@ -43,14 +43,6 @@ public class Wind : MonoBehaviour
         {
             _setForce = true;
             if (transform.localScale.x < 0) speed = -speed;
-            _force = transform.localRotation * new Vector3(speed, 0, 0);
-            _wallForce = new Vector3(0, _force.y, 0);
-
-            if (_main.HasValue)
-            {
-                var main = _main.Value;
-                main.startRotationMultiplier = Mathf.Deg2Rad * -transform.localRotation.eulerAngles.z;
-            }
 
             if (_emission.HasValue)
             {
@@ -58,6 +50,15 @@ public class Wind : MonoBehaviour
                 emission.rateOverTimeMultiplier *= transform.localScale.y;
             }
         }
+        
+        if (_main.HasValue)
+        {
+            var main = _main.Value;
+            main.startRotationMultiplier = Mathf.Deg2Rad * -transform.localRotation.eulerAngles.z;
+        }
+        
+        _force = transform.localRotation * new Vector3(speed, 0, 0);
+        _wallForce = new Vector3(0, _force.y, 0);
     }
 
     private void OnTriggerExit2D(Collider2D other)
