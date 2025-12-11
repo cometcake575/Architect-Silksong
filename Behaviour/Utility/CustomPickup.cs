@@ -25,7 +25,12 @@ public class CustomPickup : MonoBehaviour
         typeof(CollectableItemPickup).Hook(nameof(CollectableItemPickup.DoPickupAction),
             (Func<CollectableItemPickup, bool, bool> orig, CollectableItemPickup self, bool breakIfAtMax) =>
             {
-                if (self.GetComponentInParent<CustomPickup>()) breakIfAtMax = true;
+                var pickup = self.GetComponentInParent<CustomPickup>();
+                if (pickup)
+                {
+                    breakIfAtMax = true;
+                    pickup.gameObject.BroadcastEvent("BeforePickup");
+                }
                 return orig(self, breakIfAtMax);
             });
     }

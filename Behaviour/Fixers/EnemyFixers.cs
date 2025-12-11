@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Custom;
+using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Utils;
-using GlobalEnums;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -1758,5 +1757,56 @@ public static class EnemyFixers
             leftX.Value = xPos - 8.5f;
             rightX.Value = xPos + 8.5f;
         }
+    }
+
+    public static void FixLostGarmondPreload(GameObject obj)
+    {
+        var old = obj.GetComponent<BlackThreadState>();
+        var bts = obj.AddComponent<BlackThreader.CustomBlackThreadState>();
+
+        bts.customAttack = old.attacks[0];
+
+        bts.extraSpriteRenderers = obj.GetComponentsInChildren<SpriteRenderer>(true);
+        bts.extraMeshRenderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+
+        var hm = obj.GetComponent<HealthManager>();
+
+        hm.blackThreadState = bts;
+        hm.hasBlackThreadState = true;
+
+        Object.Destroy(old);
+    }
+
+    public static void FixLostGarmond(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        var range = obj.transform.Find("Stomp Range").GetComponent<AlertRange>();
+        fsm.GetState("Out of Start Range").AddAction(() =>
+        {
+            if (range.IsHeroInRange()) fsm.SendEvent("ENTER");
+        }, everyFrame: true);
+        
+        fsm.GetState("Roar Antic").DisableAction(1);
+        ((StartRoarEmitter)fsm.GetState("Intro Roar").actions[4]).stunHero = false;
+        var sting = fsm.GetState("Sting");
+        sting.DisableAction(0);
+        sting.DisableAction(1);
+        var roarEnd = fsm.GetState("Roar End");
+        roarEnd.DisableAction(1);
+        roarEnd.DisableAction(2);
+        
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        corpse.RemoveComponent<ConstrainPosition>();
+        
+        var blow = corpse.LocateMyFSM("Control").GetState("Blow");
+        blow.transitions = [];
+        blow.AddAction(() =>
+        {
+            corpse.SetActive(false);
+        });
+        
     }
 }

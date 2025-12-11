@@ -756,6 +756,11 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
+        Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
+                ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
+                postSpawnAction: MiscFixers.FixGarmond)
+            .WithConfigGroup(ConfigGroup.Npcs));
+
         AddEnemy("Garmond and Zaza (Boss)", "garmond_zaza_boss",
             ("Library_09", "Black Thread States/Normal World/Scene Control/Garmond Scene/Garmond Fighter"),
             preloadAction: o =>
@@ -767,10 +772,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.GarmondBoss)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
 
-        Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
-                ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
-                postSpawnAction: MiscFixers.FixGarmond)
-            .WithConfigGroup(ConfigGroup.Npcs));
+        AddEnemy("Lost Garmond", "lost_garmond",
+            ("Coral_33", "Black Thread States/Black Thread World/Garmond Scenes/Garmond Black Threaded Scene/Garmond Black Threaded Fighter"),
+            preloadAction: EnemyFixers.FixLostGarmondPreload,
+            postSpawnAction: EnemyFixers.FixLostGarmond)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
 
         Categories.Misc.Add(new PreloadObject("Shakra Ring", "mapper_ring",
                 ("Shadow_02",
@@ -806,14 +813,14 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.FixShakra)
             .WithConfigGroup(ConfigGroup.Shakra));
 
+        Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
+            ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
+            postSpawnAction: MiscFixers.FixSecondSentinelAlly));
+
         AddEnemy("Second Sentinel (Boss)", "second_sentinel_boss",
             ("Hang_17b", "Boss Scene - To Additive Load/Song Knight"),
             postSpawnAction: EnemyFixers.FixSecondSentinelBoss)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
-
-        Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
-            ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
-            postSpawnAction: MiscFixers.FixSecondSentinelAlly));
 
         Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
                 ("Song_Enclave",

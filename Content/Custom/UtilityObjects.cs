@@ -180,7 +180,8 @@ public static class UtilityObjects
                 "A list of valid item IDs can be found in the Architect guide.",
                 sprite:ResourceUtils.LoadSpriteResource("item_pickup", ppu:64))
             .WithConfigGroup(ConfigGroup.Item)
-            .WithReceiverGroup(ReceiverGroup.Item);
+            .WithReceiverGroup(ReceiverGroup.Item)
+            .WithBroadcasterGroup(BroadcasterGroup.Item);
     }
 
     private static PlaceableObject CreateVoider()

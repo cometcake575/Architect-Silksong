@@ -38,6 +38,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Callable = ["OnCall"];
     
+    public static readonly List<string> Item = ["BeforePickup"];
+    
     public static readonly List<string> MapperRing = ["InAir", "OnHit", "OnLand"];
     
     public static readonly List<string> Hittable = ["OnHit"];
