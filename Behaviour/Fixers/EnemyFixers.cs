@@ -1691,4 +1691,72 @@ public static class EnemyFixers
             if (range.IsHeroInRange()) fsm.SendEvent("BATTLE START");
         }, 0, true);
     }
+
+    public static PlayMakerFSM FixForebrother(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        var fsm = obj.LocateMyFSM("Control");
+
+        var xMin = fsm.FsmVariables.FindFsmFloat("X Min");
+        var xMax = fsm.FsmVariables.FindFsmFloat("X Max");
+        
+        fsm.GetState("Idle").AddAction(FixXPos, 0);
+        
+        return fsm;
+
+        void FixXPos()
+        {
+            var posX = HeroController.instance.transform.GetPositionX();
+            xMin.Value = posX - 11;
+            xMax.Value = posX + 11;
+        }
+    }
+
+    public static void FixSignis(GameObject obj)
+    {
+        var fsm = FixForebrother(obj);
+        var range = obj.GetComponentInChildren<AlertRange>();
+        fsm.GetState("Pointing").AddAction(() =>
+        {
+            if (range.IsHeroInRange()) fsm.SendEvent("BATTLE START");
+        }, 0);
+    }
+
+    public static void FixGron(GameObject obj)
+    {
+        var fsm = FixForebrother(obj);
+        var pause = fsm.GetState("Start Pause");
+        pause.DisableAction(0);
+        pause.DisableAction(1);
+
+        var range = obj.GetComponentInChildren<AlertRange>();
+        pause.AddAction(() =>
+        {
+            if (range.IsHeroInRange()) fsm.SetState("Entry Land");
+        }, 0);
+    }
+
+    // TODO
+    public static void FixPhantom(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        var fsm = obj.LocateMyFSM("Control");
+
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("PHANTOM START"));
+
+        var leftX = fsm.FsmVariables.FindFsmFloat("Left X");
+        var rightX = fsm.FsmVariables.FindFsmFloat("Right X");
+
+        fsm.GetState("Idle").AddAction(FixPositions, 0);
+        fsm.GetState("Range Check").AddAction(FixPositions, 0);
+
+        return;
+
+        void FixPositions()
+        {
+            var xPos = HeroController.instance.transform.GetPositionX();
+            leftX.Value = xPos - 8.5f;
+            rightX.Value = xPos + 8.5f;
+        }
+    }
 }

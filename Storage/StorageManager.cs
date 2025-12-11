@@ -116,7 +116,13 @@ public static class StorageManager
     public static List<string> LoadFavourites()
     {
         var path = DataPath + "favourites.json";
-        return File.Exists(path) ? JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(path)) : [];
+        if (File.Exists(path))
+        {
+            var deserialized = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(path));
+            if (deserialized != null) return deserialized;
+        }
+
+        return [];
     }
 
     public static void SavePrefabs(List<PrefabObject> prefabs)
@@ -135,8 +141,13 @@ public static class StorageManager
     public static List<PrefabObject> LoadPrefabs()
     {
         var path = DataPath + "prefabs.json";
-        return File.Exists(path) ? DeserializePlacements(File.ReadAllText(path))
-            .Select(obj => new PrefabObject(obj)).ToList() : [];
+        if (File.Exists(path))
+        {
+            var deserialized = DeserializePlacements(File.ReadAllText(path));
+            if (deserialized != null) return deserialized.Select(obj => new PrefabObject(obj)).ToList();
+        }
+
+        return [];
     }
 
     public static string SerializeAllScenes()

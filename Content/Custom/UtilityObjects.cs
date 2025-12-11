@@ -603,7 +603,7 @@ public static class UtilityObjects
         return new CustomObject("Object Spawner", "object_duplicator",
                 duplicator,
                 sprite: ResourceUtils.LoadSpriteResource("object_duplicator", FilterMode.Point),
-                description: "Spawns a copy of a placed object." +
+                description: "Spawns a copy of a placed object.\n" +
                              "Copies have the same settings as the original object.\n\n" +
                              "Find the ID of the object to copy using the Cursor tool.\n\n" +
                              "The original object should have 'Start Enabled' set to false.")

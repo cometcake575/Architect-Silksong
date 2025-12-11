@@ -703,6 +703,8 @@ public static class VanillaObjects
     private static void AddMistObjects()
     {
         AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"));
+        /*AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
+            postSpawnAction: EnemyFixers.FixPhantom);*/
 
         Categories.Hazards.Add(new PreloadObject("Pressure Plate Trap", "dust_trap_spike_plate",
             ("Dust_Maze_01", "Mist Maze Controller/Trap Sets/Trap Set/Dust Trap Spike Plate")));
