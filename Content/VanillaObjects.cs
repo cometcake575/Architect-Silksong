@@ -139,6 +139,15 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable)
             .WithRotationGroup(RotationGroup.Eight));
 
+        Categories.Hazards.Add(new PreloadObject("Coral Spike", "coral_spike",
+                ("Memory_Coral_Tower", "Boss Scene/Roar Spikes/Spike Holder 1/Coral Spike"),
+                description: "This spike starts hidden, the 'Activate' trigger will\n" +
+                             "cause the spike to come out of the ground.",
+                postSpawnAction: HazardFixers.FixCoralSpike)
+            .WithReceiverGroup(ReceiverGroup.CoralSpike)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable)
+            .WithRotationGroup(RotationGroup.Eight).DoFlipX());
+
         Categories.Platforming.Add(new PreloadObject("Red Coral Spike", "red_coral_spike",
                 ("Coral_24", "coral_crust_tree (5)/Interactive Activate Parent/Branch 1/Coral Crust Tree Spike Red"),
                 preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral))
@@ -1187,7 +1196,8 @@ public static class VanillaObjects
     {
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
-            .WithConfigGroup(ConfigGroup.Breakable));
+            .WithConfigGroup(ConfigGroup.LifebloodCocoons)
+            .WithReceiverGroup(ReceiverGroup.LifebloodCocoons));
 
         AddEnemy("Cragglite", "cragglite", ("Crawl_04", "Little Crabs/Crabs/Small Crab"))
             .WithRotationGroup(RotationGroup.Four)

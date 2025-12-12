@@ -38,6 +38,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> CoralSpike = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_rise", "Activate", o =>
+        {
+            o.GetComponent<PlayMakerFSM>().SendEvent("SPIKE UP");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Plasmifier = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_plasmify", "Activate", o =>
         {
@@ -107,6 +114,13 @@ public static class ReceiverGroup
             var ip = o.GetComponentInChildren<CollectableItemPickup>();
             ip.canPickupTime = 0;
             ip.DoPickupInstant();
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> LifebloodCocoons = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("lifeblood_get", "Collect", o =>
+        {
+            foreach (var _ in o.GetComponentsInChildren<HealthFlyer>(true)) GameManager.instance.AddBlueHealthQueued();
         }))
     ]);
     

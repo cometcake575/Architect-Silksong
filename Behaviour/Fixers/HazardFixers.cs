@@ -1,8 +1,5 @@
-using System;
-using System.Reflection;
 using Architect.Content.Preloads;
 using Architect.Utils;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.Animations;
 using Object = UnityEngine.Object;
@@ -125,5 +122,19 @@ public static class HazardFixers
     public static void FixSpikeBall(GameObject obj)
     {
         obj.transform.GetChild(1).SetAsFirstSibling();
+    }
+
+    public static void FixCoralSpike(GameObject obj)
+    {
+        var beenDormant = false;
+        obj.LocateMyFSM("Control").GetState("Dormant").AddAction(() =>
+        {
+            if (!beenDormant)
+            {
+                beenDormant = true;
+                return;
+            }
+            obj.BroadcastEvent("OnBreak");
+        }, 0);
     }
 }

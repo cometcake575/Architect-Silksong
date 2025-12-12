@@ -261,6 +261,14 @@ public static class ConfigGroup
         }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> LifebloodCocoons = GroupUtils.Merge(Breakable, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Lifeseed Count", "lifeblood_count", (o, value) =>
+        {
+            var fling = o.GetComponent<HealthCocoon>().flingPrefabs[2];
+            fling.MinAmount = fling.MaxAmount = value.GetValue();
+        }).WithDefaultValue(2).WithPriority(-1))
+    ]);
+
     public static readonly List<ConfigType> CloseableGates = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Start Open", "gate_start_open", (o, value) =>
