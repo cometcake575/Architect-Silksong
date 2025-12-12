@@ -466,8 +466,15 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Lily Pad / Nuphar", "lilypad",
-            ("Clover_04b", "Lilypad Trap Setter/Lilypad Plat (1)"))
-            .WithConfigGroup(ConfigGroup.Lilypad));
+            ("Clover_04b", "Lilypad Trap Setter/Lilypad Plat (1)"),
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Trap Antic 1").AddAction(() => o.BroadcastEvent("OnActivate"), 0);
+                fsm.GetState("Activate").AddAction(() => o.BroadcastEvent("OnDeactivate"));
+            })
+            .WithConfigGroup(ConfigGroup.Lilypad)
+            .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable));
 
         AddEnemy("Leaf Roller", "leaf_roller", ("Clover_02c", "Grass Goomba"))
             .WithConfigGroup(ConfigGroup.LeafRoller);
