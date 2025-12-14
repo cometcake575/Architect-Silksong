@@ -1241,9 +1241,9 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixCraggler);
         
         AddEnemy("Plasmid", "plasmid",
-            ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"));
+            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"));
         AddEnemy("Plasmidas", "plasmidas",
-            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),
+            ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"),
             preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false))
             .DoFlipX();
 
