@@ -1845,4 +1845,31 @@ public static class EnemyFixers
             obj.GetComponent<DamageHero>().enabled = true;
         }, 0);
     }
+
+    public static void FixGiantFlea(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        var init = fsm.GetState("Init");
+        init.DisableAction(4);
+
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[5]).stunHero = false;
+    }
+
+    public static void FixPharlidDiver(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Behaviour");
+        fsm.FsmVariables.FindFsmGameObject("Home").Value = new GameObject(obj.name + " Home");
+    }
+
+    public static void FixShardillard(GameObject obj)
+    {
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.GetComponent<DamageHero>().damageDealt = 1;
+        
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").AddAction(() =>
+        {
+            fsm.SetState("Recover");
+        }, 3);
+    }
 }

@@ -219,6 +219,14 @@ public static class VanillaObjects
         AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"));
         AddEnemy("Underloft", "undercrank", ("Under_19b", "Understore Thrower")).DoFlipX();
 
+        AddEnemy("Drapemite", "drapemite", ("Slab_15", "Mite Heavy (1)"));
+        AddEnemy("Giant Drapemite", "giant_drapemite", ("Hang_10", "Understore Mite Giant"),
+            preloadAction: EnemyFixers.RemoveConstrainPosition);
+        
+        AddEnemy("Drapefly", "drapefly", ("Hang_10", "Citadel Bat"));
+        AddEnemy("Drapelord", "drapelord",
+            ("Arborium_11", "Merchant Quest Parent/Quest Active/Battle Scene/Wave 1/Citadel Bat Large"));
+
         Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_4",
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
                 preloadAction: HazardFixers.FixUnderworksCog)
@@ -348,6 +356,10 @@ public static class VanillaObjects
         ]));
         
         AddSolid("Surface Platform", "plat_float_06", ("Abandoned_town", "plat_float_06"));
+        
+        AddEnemy("Pharlid", "pharlid", ("Cradle_Destroyed_Challenge_02", "Blade Spider")).DoFlipX();
+        AddEnemy("Pharlid Diver", "pharlid_diver", ("Cradle_Destroyed_Challenge_02", "Blade Spider Hang"),
+            postSpawnAction: EnemyFixers.FixPharlidDiver);
         
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
             postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
@@ -511,6 +523,7 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
         
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
+        AddEnemy("Mitemother", "mitemother", ("Greymoor_16", "Gnat Giant")).DoFlipX();
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
             postSpawnAction: EnemyFixers.FixFluttermite);
         
@@ -910,6 +923,10 @@ public static class VanillaObjects
         
         AddEnemy("Memoria", "memoria", ("Arborium_03", "Arborium Keeper"),
             preloadAction: EnemyFixers.FixFlyin);
+
+        AddEnemy("Huge Flea", "huge_flea", ("Arborium_08", "Giant Flea Scene/Giant Flea"),
+            postSpawnAction: EnemyFixers.FixGiantFlea)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
     }
     
     private static void AddCogworksObjects()
@@ -1134,6 +1151,17 @@ public static class VanillaObjects
         AddEnemy("Marrowmaw", "bone_thumper", ("Arborium_04", "Enemy Respawner/Source Folder/Bone Thumper"),
             preloadAction: EnemyFixers.ApplyGravity);
 
+        AddEnemy("Tarmite", "tarmite", ("Bone_East_LavaChallenge", "Bone Spitter"),
+            preloadAction: EnemyFixers.KeepActive);
+
+        /*
+        AddEnemy("Flintbeetle", "flintbeetle", ("Bone_06", "Rock Roller Scene/Rock Roller"),
+            preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);*/
+
+        AddEnemy("Shardillard", "shardillard", ("Bone_06", "Shell Fossil Mimic AppearVariant"),
+            preloadAction: o => o.transform.SetRotation2D(0),
+            postSpawnAction: EnemyFixers.FixShardillard).DoFlipX();
+
         Categories.Platforming.Add(new PreloadObject("Magnetite Platform 1", "bone_plat_crumble_1",
             ("Bone_East_LavaChallenge", "bone_plat_01_crumble_small (2)")));
 
@@ -1241,11 +1269,10 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixCraggler);
         
         AddEnemy("Plasmid", "plasmid",
-            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"));
+            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)")).DoFlipX();
         AddEnemy("Plasmidas", "plasmidas",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"),
-            preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false))
-            .DoFlipX();
+            preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false));
 
         AddEnemy("Plasmified Zango", "zango_boss", ("Crawl_10", "Area_States/Infected/Blue Assistant"),
                 postSpawnAction: EnemyFixers.FixZango)

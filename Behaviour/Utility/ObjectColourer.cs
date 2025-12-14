@@ -10,6 +10,7 @@ public class ObjectColourer : MonoBehaviour
     public string targetId;
 
     public bool useAlpha;
+    public bool directSet;
 
     public float r;
     public float g;
@@ -42,18 +43,20 @@ public class ObjectColourer : MonoBehaviour
         var lk = _target.GetOrAddComponent<MiscFixers.ColorLock>();
         lk.enabled = false;
 
-        foreach (var sr in _target.GetComponentsInChildren<SpriteRenderer>())
+        foreach (var sr in _target.GetComponentsInChildren<SpriteRenderer>(true))
         {
             var col = _color;
             if (!useAlpha) col.a = sr.color.a;
-            sr.color = col;
+            if (directSet) sr.color = col;
+            else sr.color *= col;
         }
 
-        foreach (var sr in _target.GetComponentsInChildren<tk2dSprite>())
+        foreach (var sr in _target.GetComponentsInChildren<tk2dSprite>(true))
         {
             var col = _color;
             if (!useAlpha) col.a = sr.color.a;
-            sr.color = col;
+            if (directSet) sr.color = col;
+            else sr.color *= col;
         }
 
         lk.enabled = true;

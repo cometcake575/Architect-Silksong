@@ -808,7 +808,12 @@ public static class ConfigGroup
                 var oc = o.GetComponent<ObjectColourer>();
                 oc.useAlpha = true;
                 oc.a = value.GetValue();
-            }))
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Tint Mode", "colourer_mode", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().directSet = value.GetValue() == 1;
+            }).WithOptions("Multiply", "Set").WithDefaultValue(0))
     ];
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [

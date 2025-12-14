@@ -86,11 +86,14 @@ public class BlackThreader : MonoBehaviour
             if (!singFsm)
             {
                 var anim = GetComponent<tk2dSpriteAnimator>();
-                if (!anim) return false;
-                var clipName = (anim.GetClipByName("Sing") ?? 
-                                anim.GetClipByName("Idle") ?? 
-                                anim.currentClip ??
-                                anim.DefaultClip).name;
+                var clipName = "";
+                if (anim)
+                {
+                    clipName = (anim.GetClipByName("Sing") ??
+                                    anim.GetClipByName("Idle") ??
+                                    anim.currentClip ??
+                                    anim.DefaultClip).name;
+                }
 
                 var fsm = GetComponent<PlayMakerFSM>();
                 if (!fsm) return false;
@@ -159,13 +162,16 @@ public class BlackThreader : MonoBehaviour
                     !state.Contains("Chase")) return;
                 _lastStateName = fsm.ActiveStateName;
                 fsm.SetState("Sing");
-                _lastClip = animator.currentClip.name;
-                animator.Play(animClip);
+                if (animator)
+                {
+                    _lastClip = animator.currentClip.name;
+                    animator.Play(animClip);
+                }
             }
             else
             {
                 fsm.SetState(_lastStateName);
-                animator.Play(_lastClip);
+                if (animator) animator.Play(_lastClip);
             }
             
             _forcedSing = fs;
