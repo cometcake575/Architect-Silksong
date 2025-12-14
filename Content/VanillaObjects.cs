@@ -28,7 +28,7 @@ public static class VanillaObjects
         AddMoorObjects();
         AddRoadObjects();
         AddWispObjects();
-        //AddBellObjects();
+        AddBellObjects();
         AddShellwoodObjects();
         AddStepsObjects();
         AddVoltObjects();
@@ -70,6 +70,10 @@ public static class VanillaObjects
     {
         AddEnemy("Coral Furm", "coral_spike_goomba", ("Coral_24", "Coral Spike Goomba"));
         AddEnemy("Driznarga", "coral_conch_shooter_heavy", ("Coral_24", "Coral Conch Shooter Heavy (1)"));
+        
+        AddEnemy("Pokenabbin", "pokenabbin", ("Coral_24", "Coral Conch Stabber (1)"),
+            preloadAction: EnemyFixers.FixPatroller)
+            .WithConfigGroup(ConfigGroup.Patroller);
 
         AddEnemy("Conchfly", "coral_conch_driller",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 9/Coral Conch Driller"),
@@ -250,6 +254,11 @@ public static class VanillaObjects
             ("Song_11", "Black Thread States Thread Only Variant/Normal World/Pilgrim 01 Song"));
         AddEnemy("Choir Hornhead", "pilgrim_02_song", ("Song_11", "Pilgrim 02 Song"));
         AddEnemy("Choristor", "choristor", ("Hang_04_boss", "Battle Scene/Wave 1/Song Pilgrim 03"));
+
+        AddEnemy("Envoy", "envoy", ("Song_17", "March Group Control/March Group R/Song Pilgrim 01"));
+        AddEnemy("Choir Flyer", "choir_flyer", ("Song_11", "Pilgrim 04 Song (2)"),
+                preloadAction:EnemyFixers.FixPatroller)
+            .WithConfigGroup(ConfigGroup.Patroller);
         
         AddEnemy("Choir Bellbearer", "pilgrim_03_song", ("Hang_04_boss", "Battle Scene/Wave 3/Pilgrim 03 Song"),
             postSpawnAction: EnemyFixers.FixForumEnemy);
@@ -308,6 +317,9 @@ public static class VanillaObjects
     {
         AddEnemy("Vaultborn", "vaultborn", ("Library_04", "Acolyte Control/Song Scholar Acolyte"),
             preloadAction: EnemyFixers.FixVaultborn);
+        AddEnemy("Lampbearer", "lampbearer", ("Library_04", "Black Thread States/Normal World/Lightbearer (3)"),
+                preloadAction: EnemyFixers.FixPatroller)
+            .WithConfigGroup(ConfigGroup.YPatroller).DoFlipX();
         AddEnemy("Scrollreader", "scrollreader", ("Library_04", "Black Thread States/Normal World/Scrollkeeper"));
         AddEnemy("Vaultkeeper", "vaultkeeper", ("Library_04", "Scholar"));
     }
@@ -362,6 +374,8 @@ public static class VanillaObjects
         AddEnemy("Pharlid Diver", "pharlid_diver", ("Cradle_Destroyed_Challenge_02", "Blade Spider Hang"),
             postSpawnAction: EnemyFixers.FixPharlidDiver);
         
+        AddEnemy("Imoba", "imoba", ("Cradle_Destroyed_Challenge_01", "Spike Lazy Flyer"),
+            postSpawnAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
             postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
     }
@@ -526,7 +540,8 @@ public static class VanillaObjects
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
         AddEnemy("Mitemother", "mitemother", ("Greymoor_16", "Gnat Giant")).DoFlipX();
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
-            postSpawnAction: EnemyFixers.FixFluttermite);
+            postSpawnAction: EnemyFixers.FixPatroller)
+            .WithConfigGroup(ConfigGroup.YPatroller);
         
         AddEnemy("Craw", "crow", ("Greymoor_15b",
                 "Crow Court Objects (Children activated on start)/crowcourt - not in session/Crow (3)"),
@@ -982,8 +997,7 @@ public static class VanillaObjects
 
     private static void AddBellObjects()
     {
-        // TODO
-        AddEnemy("Furm", "furm", ("Belltown_basement_03", "Bell Goomba")).DoFlipX();
+        // AddEnemy("Furm", "furm", ("Belltown_basement_03", "Bell Goomba")).DoFlipX();
         AddEnemy("Winged Furm", "winged_furm", ("Belltown_basement_03", "Bell Fly"),
             preloadAction: EnemyFixers.RemoveConstrainPosition,
             postSpawnAction: EnemyFixers.FixWingedFurm)
@@ -1246,7 +1260,8 @@ public static class VanillaObjects
             .WithScaleAction(EnemyFixers.ScaleBrushflit);
         AddEnemy("Fertid", "fertid", ("Bone_East_15", "Fields Goomba")).DoFlipX();
         AddEnemy("Flapping Fertid", "flapping_fertid", ("Bone_East_15", "Fields Flyer"),
-            preloadAction: EnemyFixers.FixFlappingFertid).DoFlipX();
+            preloadAction: EnemyFixers.FixPatroller)
+            .WithConfigGroup(ConfigGroup.Patroller).DoFlipX();
 
         AddEnemy("Hardbone Hopper", "hardbone_hopper", ("Bone_East_24", "Bone Hopper Group/Bone Hopper Simple"));
         AddEnemy("Hardbone Elder", "hardbone_elder", ("Bone_East_24", "Bone Hopper Group/Bone Hopper Giant"));
@@ -1357,6 +1372,12 @@ public static class VanillaObjects
         AddEnemy("Pilgrim Pouncer", "pilgrim_01",
             ("Mosstown_01", "Pilgrim 01")).DoFlipX();
 
+        AddEnemy("Pilgrim Hornfly", "pilgrim_hornfly",
+            ("Bone_East_14b", "Pilgrim 04")).DoFlipX();
+
+        AddEnemy("Pilgrim Hulk", "pilgrim_hulk",
+            ("Bone_East_14b", "Pilgrim 02 (1)")).DoFlipX();
+
         AddEnemy("Winged Pilgrim", "pilgrim_fly",
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Fly")).DoFlipX();
 
@@ -1381,6 +1402,12 @@ public static class VanillaObjects
 
         AddEnemy("Pilgrim Hiker", "pilgrim_hiker",
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Hiker"));
+
+        AddEnemy("Pilgrim Bellbearer", "pilgrim_bell",
+            ("Greymoor_13", "Black Thread States Thread Only Variant/Normal World/Pilgrim BellThrower"));
+        AddEnemy("Winged Pilgrim Bellbearer", "pilgrim_wingbell",
+            ("Greymoor_13", "Black Thread States Thread Only Variant/Black Thread World/Pilgrim Bellthrower Fly"))
+            .DoFlipX();
 
         AddSolid("Moss Grotto Platform 1", "bone_plat_01",
             ("Tut_02", "bone_plat_01"));

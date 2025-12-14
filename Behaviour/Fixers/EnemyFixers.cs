@@ -456,19 +456,6 @@ public static class EnemyFixers
         }, 4, true);
     }
 
-    public static void FixFluttermite(GameObject obj)
-    {
-        var fsm = obj.LocateMyFSM("Control");
-        fsm.FsmVariables.FindFsmGameObject("Start Point").value = new GameObject("Start Point")
-        {
-            transform = { position = obj.transform.position }
-        };
-        fsm.FsmVariables.FindFsmGameObject("Patrol Point").value = new GameObject("Patrol Point")
-        {
-            transform = { position = obj.transform.position }
-        };
-    }
-
     public class DisableHealthScaling : MonoBehaviour;
     public class DisableBossTitle : MonoBehaviour;
 
@@ -1083,29 +1070,6 @@ public static class EnemyFixers
     {
         var anim = obj.GetComponent<tk2dSpriteAnimator>();
         anim.defaultClipId = anim.GetClipIdByName("Idle");
-    }
-
-    public static void FixFlappingFertid(GameObject obj)
-    {
-        var fsm = obj.LocateMyFSM("Control");
-        fsm.FsmVariables.FindFsmGameObject("Patrol Start Point").value =
-            new GameObject("Start Point (Flapping Fertid)")
-            {
-                transform =
-                {
-                    parent = obj.transform,
-                    localPosition = Vector3.zero
-                }
-            };
-        fsm.FsmVariables.FindFsmGameObject("Patrol Point").value =
-            new GameObject("Patrol Point (Flapping Fertid)")
-            {
-                transform =
-                {
-                    parent = obj.transform,
-                    localPosition = new Vector3(6, 0, 0)
-                }
-            };
     }
 
     public static void FixBrushflit(GameObject obj)
@@ -1877,5 +1841,34 @@ public static class EnemyFixers
     {
         var init = obj.LocateMyFSM("Tween").GetState("Init");
         init.DisableAction(0);
+    }
+
+    public static void FixPatroller(GameObject obj)
+    {
+        obj.AddComponent<PatrollerFix>();
+    }
+    
+    public class PatrollerFix : MonoBehaviour
+    {
+        public float xOffset;
+        public float yOffset;
+        
+        private void Awake()
+        {
+            var fsm = GetComponent<PlayMakerFSM>();
+
+            var startPoint = fsm.FsmVariables.FindFsmGameObject("Start Point") 
+                             ?? fsm.FsmVariables.FindFsmGameObject("Patrol Start Point");
+
+            startPoint.Value = new GameObject(name + " Start Point")
+            {
+                transform = { position = transform.position }
+            };
+
+            fsm.FsmVariables.FindFsmGameObject("Patrol Point").Value = new GameObject(name + " Patrol Point")
+            {
+                transform = { position = transform.position + new Vector3(xOffset, yOffset) }
+            };
+        }
     }
 }

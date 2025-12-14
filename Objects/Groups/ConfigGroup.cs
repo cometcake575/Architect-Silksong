@@ -1097,7 +1097,7 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> WingedFurm = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("X Offset", "winged_furm_x", (o, value) =>
+            new FloatConfigType("Target X Offset", "winged_furm_x", (o, value) =>
             {
                 var mp = o.LocateMyFSM("Tween").FsmVariables.FindFsmVector3("Move Pos");
                 var mpPos = mp.Value;
@@ -1105,13 +1105,29 @@ public static class ConfigGroup
                 mp.Value = mpPos;
             }).WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Y Offset", "winged_furm_y", (o, value) =>
+            new FloatConfigType("Target Y Offset", "winged_furm_y", (o, value) =>
             {
                 var mp = o.LocateMyFSM("Tween").FsmVariables.FindFsmVector3("Move Pos");
                 var mpPos = mp.Value;
                 mpPos.y = o.transform.GetPositionY() + value.GetValue();
                 mp.Value = mpPos;
             }).WithDefaultValue(5))
+    ]);
+
+    public static readonly List<ConfigType> YPatroller = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Target Y Offset", "patroller_y", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.PatrollerFix>().yOffset = value.GetValue();
+            }).WithDefaultValue(0).WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> Patroller = GroupUtils.Merge(YPatroller, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Target X Offset", "patroller_x", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.PatrollerFix>().xOffset = value.GetValue();
+            }).WithDefaultValue(5).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
@@ -1892,7 +1908,7 @@ public static class ConfigGroup
                     action?.Invoke(o, it);
                 }
 
-                if (val == 1) o.AddComponent<SemiPersistentBool>();
+                o.AddComponent<SemiPersistentBool>().semiPersistent = val == 1;
             }
         }).WithOptions("False", "Bench", "True");
         cc.WithPriority(-1);
