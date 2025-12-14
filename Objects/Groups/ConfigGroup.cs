@@ -1095,6 +1095,25 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
 
+    public static readonly List<ConfigType> WingedFurm = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Offset", "winged_furm_x", (o, value) =>
+            {
+                var mp = o.LocateMyFSM("Tween").FsmVariables.FindFsmVector3("Move Pos");
+                var mpPos = mp.Value;
+                mpPos.x = o.transform.GetPositionX() + value.GetValue();
+                mp.Value = mpPos;
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Offset", "winged_furm_y", (o, value) =>
+            {
+                var mp = o.LocateMyFSM("Tween").FsmVariables.FindFsmVector3("Move Pos");
+                var mpPos = mp.Value;
+                mpPos.y = o.transform.GetPositionY() + value.GetValue();
+                mp.Value = mpPos;
+            }).WithDefaultValue(5))
+    ]);
+
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Boss Title", "boss_title",

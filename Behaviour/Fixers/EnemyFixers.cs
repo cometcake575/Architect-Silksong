@@ -1872,4 +1872,10 @@ public static class EnemyFixers
             fsm.SetState("Recover");
         }, 3);
     }
+
+    public static void FixWingedFurm(GameObject obj)
+    {
+        var init = obj.LocateMyFSM("Tween").GetState("Init");
+        init.DisableAction(0);
+    }
 }

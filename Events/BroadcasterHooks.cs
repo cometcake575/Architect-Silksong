@@ -70,39 +70,32 @@ public static class BroadcasterHooks
         typeof(Lever_tk2d).Hook(nameof(Lever_tk2d.Hit),
             (Func<Lever_tk2d, HitInstance, IHitResponder.HitResponse> orig, Lever_tk2d self, HitInstance hit) =>
             {
-                if (!self.activated)
+                var canActivate = !self.activated;
+                var response = orig(self, hit);
+                
+                if (canActivate && self.activated)
                 {
                     self.gameObject.BroadcastEvent("OnPull");
                     self.gameObject.BroadcastEvent("FirstPull");
                 }
-
-                return orig(self, hit);
+                
+                return response;
             }
         );
 
         typeof(Lever).Hook(nameof(Lever.Hit),
             (Func<Lever, HitInstance, IHitResponder.HitResponse> orig, Lever self, HitInstance hit) =>
             {
-                if (!self.activated)
+                var canActivate = !self.activated;
+                var response = orig(self, hit);
+                
+                if (canActivate && self.activated)
                 {
                     self.gameObject.BroadcastEvent("OnPull");
                     self.gameObject.BroadcastEvent("FirstPull");
                 }
-
-                return orig(self, hit);
-            }
-        );
-
-        typeof(Lever).Hook(nameof(Lever.Hit),
-            (Func<Lever, HitInstance, IHitResponder.HitResponse> orig, Lever self, HitInstance hit) =>
-            {
-                if (!self.activated)
-                {
-                    self.gameObject.BroadcastEvent("OnPull");
-                    self.gameObject.BroadcastEvent("FirstPull");
-                }
-
-                return orig(self, hit);
+                
+                return response;
             }
         );
         

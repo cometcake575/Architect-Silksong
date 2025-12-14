@@ -28,6 +28,7 @@ public static class VanillaObjects
         AddMoorObjects();
         AddRoadObjects();
         AddWispObjects();
+        //AddBellObjects();
         AddShellwoodObjects();
         AddStepsObjects();
         AddVoltObjects();
@@ -977,6 +978,16 @@ public static class VanillaObjects
             ("Cog_07", "Black Thread States/Normal World/Repairable Scene/Song Automaton Ball (1)"),
             preloadAction: EnemyFixers.FixCogworkClapperAnim,
             postSpawnAction: EnemyFixers.FixCogworkClapper);
+    }
+
+    private static void AddBellObjects()
+    {
+        // TODO
+        AddEnemy("Furm", "furm", ("Belltown_basement_03", "Bell Goomba")).DoFlipX();
+        AddEnemy("Winged Furm", "winged_furm", ("Belltown_basement_03", "Bell Fly"),
+            preloadAction: EnemyFixers.RemoveConstrainPosition,
+            postSpawnAction: EnemyFixers.FixWingedFurm)
+            .WithConfigGroup(ConfigGroup.WingedFurm);
     }
 
     private static void AddWispObjects()
