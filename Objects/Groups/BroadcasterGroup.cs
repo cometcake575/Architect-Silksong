@@ -10,6 +10,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
+    public static readonly List<string> Snitchfly = GroupUtils.Merge(Enemies, ["OnFlee"]);
+    
     public static readonly List<string> Bosses = ["OnRoar", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
     public static readonly List<string> SkullTyrant = GroupUtils.Merge(Bosses, ["Stomp"]);

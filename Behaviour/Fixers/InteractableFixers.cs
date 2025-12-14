@@ -1,5 +1,6 @@
 using System;
 using Architect.Events;
+using Architect.Objects.Placeable;
 using Architect.Utils;
 using UnityEngine;
 
@@ -131,5 +132,13 @@ public static class InteractableFixers
         activator.OnTinked.AddListener(() => obj.BroadcastEvent("OnActivate"));
         
         obj.GetComponentInChildren<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+
+    public static void FixSilkLever(GameObject obj)
+    {
+        obj.transform.parent = null;
+        obj.transform.SetPositionZ(0.006f);
+        obj.transform.SetRotation2D(4.8057f);
+        obj.transform.GetChild(0).gameObject.SetActive(false);
     }
 }

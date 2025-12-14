@@ -3,6 +3,7 @@ using System.Globalization;
 using Architect.Utils;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Architect.Config.Types;
@@ -73,25 +74,26 @@ public class ChoiceConfigValue(ChoiceConfigType type, int value) : ConfigValue<C
 public class ChoiceConfigElement : ConfigElement
 {
     private readonly Button _input;
+    private readonly string[] _options;
+    private readonly Button _apply;
+    private readonly UIUtils.Label _txt;
     private int _active = -1;
 
     public ChoiceConfigElement(GameObject parent, Button apply, Vector3 pos, [CanBeNull] string currentVal, string[] options)
     {
-        (_input, var txt) = UIUtils.MakeTextButton("Config Input", "Default", parent, pos, 
+        (_input, _txt) = UIUtils.MakeTextButton("Config Input", "Default", parent, pos, 
             Vector2.zero, Vector2.zero, size:new Vector2(120, 25));
+        _options = options;
+        _apply = apply;
+        
+        var choice = _input.gameObject.AddComponent<ChoiceButton>();
+        choice.Cce = this;
 
         if (currentVal != null)
         {
             _active = Convert.ToInt32(currentVal, CultureInfo.InvariantCulture);
-            txt.textComponent.text = options[_active];
+            _txt.textComponent.text = options[_active];
         }
-
-        _input.onClick.AddListener(() =>
-        {
-            _active = (_active + 1) % options.Length;
-            txt.textComponent.text = options[_active];
-            apply.interactable = true;
-        });
     }
 
     public override RectTransform GetElement()
@@ -102,5 +104,32 @@ public class ChoiceConfigElement : ConfigElement
     public override string GetValue()
     {
         return _active.ToString(CultureInfo.InvariantCulture);
+    }
+
+    public class ChoiceButton : MonoBehaviour, IPointerClickHandler
+    {
+        public ChoiceConfigElement Cce;
+        
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            switch (eventData.button)
+            {
+                case PointerEventData.InputButton.Left:
+                    Cce._active += 1;
+                    break;
+                case PointerEventData.InputButton.Right:
+                    if (Cce._active != -1) Cce._active -= 1;
+                    break;
+                case PointerEventData.InputButton.Middle:
+                default:
+                    return;
+            }
+
+            if (Cce._active < 0) Cce._active += Cce._options.Length;
+            Cce._active %= Cce._options.Length;
+            
+            Cce._txt.textComponent.text = Cce._options[Cce._active];
+            Cce._apply.interactable = true;
+        }
     }
 }

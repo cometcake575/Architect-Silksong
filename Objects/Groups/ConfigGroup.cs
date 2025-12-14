@@ -8,6 +8,7 @@ using Architect.Config;
 using Architect.Config.Types;
 using Architect.Content.Custom;
 using Architect.Editor;
+using Architect.Events;
 using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
@@ -210,14 +211,6 @@ public static class ConfigGroup
                 if (value.GetValue()) return;
                 o.RemoveComponentsInChildren<NeedolinTextOwner>();
             }).WithDefaultValue(true))
-    ]);
-
-    public static readonly List<ConfigType> Lilypad = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Is Trap", "nuphar_mode", (o, value) =>
-            {
-                o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
-            }).WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
@@ -568,6 +561,20 @@ public static class ConfigGroup
                         o.RemoveComponent<PersistentIntItem>();
                     })
                 .WithDefaultValue(false))
+    ]);
+
+    public static readonly List<ConfigType> SilkLever = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Pulled", "silk_lever_stay", (o, item) =>
+        {
+            o.GetComponent<Lever>().persistent = item;
+            
+            item.OnSetSaveState += value =>
+            {
+                if (!value) return;
+                EventManager.BroadcastEvent(o, "OnPull");
+                EventManager.BroadcastEvent(o, "LoadedPulled");
+            };
+        }))
     ]);
 
     private static readonly ConfigType ZOffset =
@@ -1028,16 +1035,16 @@ public static class ConfigGroup
     public static readonly List<ConfigType> SimpleEnemies = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Shell Shard Drops", "shell_shard",
-                (o, value) => { o.GetComponent<HealthManager>().SetShellShards(value.GetValue()); })),
+                (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetShellShards(value.GetValue()); })),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Small Rosary Drops", "small_money",
-                (o, value) => { o.GetComponent<HealthManager>().SetGeoSmall(value.GetValue()); })),
+                (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetGeoSmall(value.GetValue()); })),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Medium Rosary Drops", "med_money",
-                (o, value) => { o.GetComponent<HealthManager>().SetGeoMedium(value.GetValue()); })),
+                (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetGeoMedium(value.GetValue()); })),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Large Rosary Drops", "large_money",
-                (o, value) => { o.GetComponent<HealthManager>().SetGeoLarge(value.GetValue()); })),
+                (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetGeoLarge(value.GetValue()); })),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Invincible", "invulnerable",
                 (o, value) =>
@@ -1047,12 +1054,12 @@ public static class ConfigGroup
                 }))
     ]);
 
-    public static readonly List<ConfigType> Enemies = GroupUtils.Merge(SimpleEnemies, [
+    public static readonly List<ConfigType> NonPersistentEnemies = GroupUtils.Merge(SimpleEnemies, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Health", "enemy_hp",
                 (o, value) =>
                 {
-                    o.GetComponent<HealthManager>().hp = value.GetValue();
+                    o.GetComponentInChildren<HealthManager>(true).hp = value.GetValue();
                 }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Enable Health Scaling", "enemy_hp_scale",
@@ -1060,7 +1067,10 @@ public static class ConfigGroup
                 {
                     if (value.GetValue()) return;
                     o.AddComponent<EnemyFixers.DisableHealthScaling>();
-                }).WithDefaultValue(true)),
+                }).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> Enemies = GroupUtils.Merge(NonPersistentEnemies, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Dead", "enemy_stay_dead", 
             (o, item) => {
                 item.OnSetSaveState += b =>
@@ -1070,6 +1080,14 @@ public static class ConfigGroup
                 };
                 item.OnGetSaveState += (out bool b) => { b = o.GetComponent<HealthManager>().isDead; };
             }))
+    ]);
+
+    public static readonly List<ConfigType> Lilypad = GroupUtils.Merge(NonPersistentEnemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Is Trap", "nuphar_mode", (o, value) =>
+            {
+                o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
+            }).WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
@@ -1167,7 +1185,7 @@ public static class ConfigGroup
         typeof(HealthManager).Hook(nameof(HealthManager.IsBlockingByDirection),
             (Func<HealthManager, int, AttackTypes, SpecialTypes, bool> orig, HealthManager self, int cardinalDirection,
                     AttackTypes attackType, SpecialTypes specialType) =>
-                self.GetComponent<EnemyInvulnerabilityMarker>() ||
+                self.GetComponentInParent<EnemyInvulnerabilityMarker>() ||
                 orig(self, cardinalDirection,
                     attackType, specialType));
     }

@@ -521,7 +521,6 @@ public static class VanillaObjects
             preloadAction:EnemyFixers.KeepActive);
         AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),
             preloadAction:EnemyFixers.KeepActive);
-
         AddEnemy("Moorwing", "moorwing", ("Greymoor_05_boss", "Vampire Gnat Boss Scene/Vampire Gnat"),
             postSpawnAction:EnemyFixers.FixMoorwing)
             .WithConfigGroup(ConfigGroup.Bosses)
@@ -804,6 +803,19 @@ public static class VanillaObjects
         
         Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
             ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
+        
+        AddEnemy("Servitor Ignim", "servitor_small", ("Weave_04", "Weaver Servitor (2)"),
+            preloadAction: EnemyFixers.FixServitorIgnim);
+        
+        AddEnemy("Servitor Boran", "servitor_large", ("Peak_04d", "Weaver Servitor Large"),
+            preloadAction: EnemyFixers.FixServitorBoran);
+
+        Categories.Misc.Add(new PreloadObject("Silk Lever", "silk_lever",
+            ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
+            preloadAction: InteractableFixers.FixSilkLever)
+            .WithConfigGroup(ConfigGroup.SilkLever)
+            .WithBroadcasterGroup(BroadcasterGroup.Levers)
+            .WithRotationGroup(RotationGroup.Eight));
 
         Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
             ("Ant_04", "Silkcatcher Plant")));
@@ -876,7 +888,11 @@ public static class VanillaObjects
             .WithRotateAction(MiscFixers.DelayRotation));
 
         AddEnemy("Snitchfly", "snitchfly",
-                ("Bonetown", "Black Thread States/Black Thread World/Thief Scene/Rosary Thief Group/Rosary Thief"))
+                ("Bonetown", "Black Thread States/Black Thread World/Thief Scene/Rosary Thief Group/Rosary Thief"),
+                postSpawnAction: o =>
+                {
+                    o.LocateMyFSM("Control").GetState("Left").AddAction(() => o.BroadcastEvent("OnFlee"), 0);
+                }).WithBroadcasterGroup(BroadcasterGroup.Snitchfly)
             .DoFlipX();
 
         AddEnemy("Summoned Saviour", "summoned_saviour",
@@ -925,6 +941,10 @@ public static class VanillaObjects
 
         AddEnemy("Cogwork Choirbug", "song_auto_1",
             ("Cog_04", "Black Thread States Thread Only Variant/Normal World/Song Automaton 01")).DoFlipX();
+        
+        AddEnemy("Cogwork Defender", "cogwork_defender",
+            ("Cog_06", "Song Automaton Shield")).DoFlipX();
+        
         AddEnemy("Cogwork Cleanser", "song_auto_2",
             ("Cog_04", "Black Thread States Thread Only Variant/Black Thread World/Group (1)/Song Automaton 02"));
         AddEnemy("Cogwork Crawler", "song_auto_crawl",
@@ -935,6 +955,11 @@ public static class VanillaObjects
                 obj.transform.SetScaleY(-obj.transform.GetScaleY());
                 obj.transform.SetRotation2D(obj.transform.GetRotation2D() + rot - 180);
             }).WithRotationGroup(RotationGroup.Vertical);
+        
+        AddEnemy("Cogwork Clapper", "cog_clapper",
+            ("Cog_07", "Black Thread States/Normal World/Repairable Scene/Song Automaton Ball (1)"),
+            preloadAction: EnemyFixers.FixCogworkClapperAnim,
+            postSpawnAction: EnemyFixers.FixCogworkClapper);
     }
 
     private static void AddWispObjects()
@@ -1183,6 +1208,9 @@ public static class VanillaObjects
         AddEnemy("Fertid", "fertid", ("Bone_East_15", "Fields Goomba")).DoFlipX();
         AddEnemy("Flapping Fertid", "flapping_fertid", ("Bone_East_15", "Fields Flyer"),
             preloadAction: EnemyFixers.FixFlappingFertid).DoFlipX();
+
+        AddEnemy("Hardbone Hopper", "hardbone_hopper", ("Bone_East_24", "Bone Hopper Group/Bone Hopper Simple"));
+        AddEnemy("Hardbone Elder", "hardbone_elder", ("Bone_East_24", "Bone Hopper Group/Bone Hopper Giant"));
         
         AddEnemy("Hoker", "spine_floater", ("Bone_East_14", "Spine Floater (9)"),
                 postSpawnAction: MiscFixers.FixHoker)
@@ -1211,6 +1239,13 @@ public static class VanillaObjects
             .DoFlipX();
         AddEnemy("Craggler", "craggler", ("Crawl_04", "Roof Crab"),
             postSpawnAction: EnemyFixers.FixCraggler);
+        
+        AddEnemy("Plasmid", "plasmid",
+            ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"));
+        AddEnemy("Plasmidas", "plasmidas",
+            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),
+            preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false))
+            .DoFlipX();
 
         AddEnemy("Plasmified Zango", "zango_boss", ("Crawl_10", "Area_States/Infected/Blue Assistant"),
                 postSpawnAction: EnemyFixers.FixZango)

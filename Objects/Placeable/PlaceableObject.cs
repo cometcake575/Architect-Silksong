@@ -200,23 +200,27 @@ public abstract class PlaceableObject : SelectableObject
     
     private Sprite RetrieveSprite()
     {
-        var spriteRenderer = Prefab.GetComponent<SpriteRenderer>();
-        if (spriteRenderer)
-        {
-            Rotation = Prefab.transform.rotation.eulerAngles.z;
-            LossyScale = ParentScale;
-            return spriteRenderer.sprite;
-        }
-
-        var sprite = Prefab.GetComponent<tk2dSprite>();
-        if (sprite)
-        {
-            Rotation = Prefab.transform.rotation.eulerAngles.z;
-            LossyScale = ParentScale;
-            return PrepareSpriteWithTk2D(sprite, false);
-        }
-
         var sprSource = Prefab.GetComponentInChildren<SpriteSource>(true);
+
+        if (!sprSource)
+        {
+            var spriteRenderer = Prefab.GetComponent<SpriteRenderer>();
+            if (spriteRenderer)
+            {
+                Rotation = Prefab.transform.rotation.eulerAngles.z;
+                LossyScale = ParentScale;
+                return spriteRenderer.sprite;
+            }
+
+            var sprite = Prefab.GetComponent<tk2dSprite>();
+            if (sprite)
+            {
+                Rotation = Prefab.transform.rotation.eulerAngles.z;
+                LossyScale = ParentScale;
+                return PrepareSpriteWithTk2D(sprite, false);
+            }
+        }
+
         var source = sprSource?.gameObject ?? Prefab;
         
         var cSprite = source.GetComponentInChildren<tk2dSprite>();

@@ -3,6 +3,7 @@ using System.Linq;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
+using Architect.Objects.Placeable;
 using Architect.Utils;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
@@ -42,7 +43,7 @@ public static class EnemyFixers
         
         typeof(HealthManager).Hook("ApplyDamageScaling",
             (Func<HealthManager, HitInstance, HitInstance> orig, HealthManager self, HitInstance hit) => 
-                self.GetComponent<DisableHealthScaling>() ? hit : orig(self, hit));
+                self.GetComponentInParent<DisableHealthScaling>() ? hit : orig(self, hit));
         
         typeof(DisplayBossTitle).Hook(nameof(DisplayBossTitle.OnEnter),
             (Action<DisplayBossTitle> orig, DisplayBossTitle self) =>
@@ -1808,5 +1809,40 @@ public static class EnemyFixers
             corpse.SetActive(false);
         });
         
+    }
+
+    public static void FixServitorBoran(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+
+        obj.transform.Find("Legs Container").GetChild(0).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+    }
+
+    public static void FixServitorIgnim(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        
+        obj.transform.SetRotation2D(0);
+        obj.transform.SetPositionZ(0.006f);
+    }
+
+    public static void FixCogworkClapperAnim(GameObject obj)
+    {
+        KeepActiveRemoveConstrainPos(obj);
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.transform.Find("Hero Solid").gameObject.SetActive(false);
+        obj.GetComponent<HealthManager>().invincible = false;
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Idle");
+    }
+
+    public static void FixCogworkClapper(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Sleep").AddAction(() =>
+        {
+            fsm.SetState("Idle");
+            obj.GetComponent<DamageHero>().enabled = true;
+        }, 0);
     }
 }

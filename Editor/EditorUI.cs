@@ -12,6 +12,7 @@ using Architect.Objects.Tools;
 using Architect.Storage;
 using Architect.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -388,6 +389,29 @@ public static class EditorUI
         }
     }
 
+    public class ChoiceButton : MonoBehaviour, IPointerClickHandler
+    {
+        public Action OnLeftClick;
+        public Action OnRightClick;
+        
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            switch (eventData.button)
+            {
+                case PointerEventData.InputButton.Left:
+                    OnLeftClick.Invoke();
+                    break;
+                case PointerEventData.InputButton.Right:
+                    OnRightClick.Invoke();
+                    break;
+                case PointerEventData.InputButton.Middle:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
     private static void SetupReceiverTab(List<EventReceiverType> group)
     {
         _receiverTab = PrepareTab("Receiver Tab");
@@ -405,11 +429,20 @@ public static class EditorUI
         var currentTriggerIndex = 0;
         var (btn, btnLabel) = UIUtils.MakeTextButton("Receiver Trigger Choice", group[currentTriggerIndex].Name, _receiverTab,
             new Vector3(142, 220), Vector2.zero, Vector2.zero, size: new Vector2(200, 25));
-        btn.onClick.AddListener(() =>
+
+        var cBtn = btn.gameObject.AddComponent<ChoiceButton>();
+        
+        cBtn.OnLeftClick += () =>
         {
             currentTriggerIndex = (currentTriggerIndex + 1) % group.Count;
             btnLabel.textComponent.text = group[currentTriggerIndex].Name;
-        });
+        };
+        cBtn.OnRightClick += () =>
+        {
+            currentTriggerIndex = (currentTriggerIndex - 1) % group.Count;
+            if (currentTriggerIndex < 0) currentTriggerIndex += group.Count;
+            btnLabel.textComponent.text = group[currentTriggerIndex].Name;
+        };
 
         var (timesField, _) = UIUtils.MakeTextbox("Receiver Times", _receiverTab, new Vector3(204, 220),
             Vector2.zero, Vector2.zero, 80, 25);
@@ -477,11 +510,20 @@ public static class EditorUI
         var (btn, btnLabel) = UIUtils.MakeTextButton("Broadcaster Cause Choice", 
             group[currentTriggerIndex], _broadcasterTab, new Vector3(50, 220), 
             Vector2.zero, Vector2.zero, size: new Vector2(200, 25));
-        btn.onClick.AddListener(() =>
+        
+        var cBtn = btn.gameObject.AddComponent<ChoiceButton>();
+        
+        cBtn.OnLeftClick += () =>
         {
             currentTriggerIndex = (currentTriggerIndex + 1) % group.Count;
             btnLabel.textComponent.text = group[currentTriggerIndex];
-        });
+        };
+        cBtn.OnRightClick += () =>
+        {
+            currentTriggerIndex = (currentTriggerIndex - 1) % group.Count;
+            if (currentTriggerIndex < 0) currentTriggerIndex += group.Count;
+            btnLabel.textComponent.text = group[currentTriggerIndex];
+        };
 
         var (eventInput, _) = UIUtils.MakeTextbox("Broadcaster Event Input", _broadcasterTab,
             new Vector3(142, 220), Vector2.zero, Vector2.zero, 200, 25);

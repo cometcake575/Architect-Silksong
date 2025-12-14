@@ -92,6 +92,19 @@ public static class BroadcasterHooks
                 return orig(self, hit);
             }
         );
+
+        typeof(Lever).Hook(nameof(Lever.Hit),
+            (Func<Lever, HitInstance, IHitResponder.HitResponse> orig, Lever self, HitInstance hit) =>
+            {
+                if (!self.activated)
+                {
+                    self.gameObject.BroadcastEvent("OnPull");
+                    self.gameObject.BroadcastEvent("FirstPull");
+                }
+
+                return orig(self, hit);
+            }
+        );
         
         typeof(StartRoarEmitter).Hook(nameof(StartRoarEmitter.StartRoar),
             (Action<StartRoarEmitter> orig, StartRoarEmitter self) =>

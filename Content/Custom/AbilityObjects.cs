@@ -52,8 +52,9 @@ public static class AbilityObjects
         Categories.Abilities.Add(MakeAbilityBinding("Double Jump", "double_jump"));
         Categories.Abilities.Add(MakeAbilityBinding("Silk Heart", "silk_heart"));
         Categories.Abilities.Add(MakeAbilityBinding("Frost", "frost"));
+        // Categories.Abilities.Add(MakeAbilityBinding("Tool", "tools"));
         SetupBindingHooks();
-
+        
         CrestBinding.InitCrestBindings();
         Categories.Abilities.Add(MakeCrestBinding("Hunter", "hunter_crest", "Hunter"));
         Categories.Abilities.Add(MakeCrestBinding("Hunter v2", "hunter_2_crest", "Hunter_v2"));
@@ -357,6 +358,16 @@ public static class AbilityObjects
             cursor.Emit(OpCodes.Call, typeof(AbilityObjects).GetMethod(nameof(ShouldDisableFreezing)));
             cursor.Emit(OpCodes.Stloc_1);
         });
+        
+        /*
+        ToolItemManager.SetExtraEquippedTool();
+        ToolItemManager.SetEquippedTools(PlayerData.instance.CurrentCrestID, []);
+        typeof(ToolItemManager).Hook(nameof(ToolItemManager.GetCurrentEquippedTools),
+            (Func<List<ToolItem>> orig) =>
+            {
+                if (!BindingCheck(true, "tools")) return [];
+                return orig();
+            });*/
     }
 
     public static bool ShouldDisableFreezing()
