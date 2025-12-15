@@ -69,6 +69,10 @@ public static class VanillaObjects
     private static void AddSandsObjects()
     {
         AddEnemy("Coral Furm", "coral_spike_goomba", ("Coral_24", "Coral Spike Goomba"));
+        AddEnemy("Driznit", "coral_conch_shooter", ("Coral_32", "Coral Conch Shooter (1)"),
+            preloadAction: EnemyFixers.FixDriznit)
+            .WithConfigGroup(ConfigGroup.Wakeable)
+            .WithReceiverGroup(ReceiverGroup.Wakeable);
         AddEnemy("Driznarga", "coral_conch_shooter_heavy", ("Coral_24", "Coral Conch Shooter Heavy (1)"));
         
         AddEnemy("Pokenabbin", "pokenabbin", ("Coral_24", "Coral Conch Stabber (1)"),
@@ -223,6 +227,13 @@ public static class VanillaObjects
         AddEnemy("Undersweep", "undersweep", ("Under_19", "Pilgrim Staff Understore")).DoFlipX();
         AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"));
         AddEnemy("Underloft", "undercrank", ("Under_19b", "Understore Thrower")).DoFlipX();
+        
+        AddEnemy("Underworker", "underworker", ("Under_10", "Battle Scene/Wave 1/Understore Small"));
+        
+        AddEnemy("Underpoke", "underpoke", ("Under_10", "Battle Scene/Wave 2/Understore Poker"),
+            preloadAction: EnemyFixers.FixUnderworksArenaEnemy).DoFlipX();
+        AddEnemy("Undercrank", "understore_heavy", ("Under_10", "Battle Scene/Wave 6/Understore Heavy (1)"),
+            preloadAction: EnemyFixers.FixUnderworksArenaEnemy).DoFlipX();
 
         AddEnemy("Drapemite", "drapemite", ("Slab_15", "Mite Heavy (1)"));
         AddEnemy("Giant Drapemite", "giant_drapemite", ("Hang_10", "Understore Mite Giant"),
@@ -374,6 +385,22 @@ public static class VanillaObjects
         AddEnemy("Pharlid Diver", "pharlid_diver", ("Cradle_Destroyed_Challenge_02", "Blade Spider Hang"),
             postSpawnAction: EnemyFixers.FixPharlidDiver);
         
+        Categories.Enemies.Add(new PreloadObject("Garpid", "garpid",
+                ("Cradle_Destroyed_Challenge_01", "Centipede Trap Control/Centipede Trap"),
+                preloadAction: o =>
+                {
+                    var anim = o.GetComponent<tk2dSpriteAnimator>();
+                    anim.defaultClipId = anim.GetClipIdByName("Damage Hero");
+                }))
+            .WithConfigGroup(ConfigGroup.Garpid)
+            .WithRotateAction((o, rot) =>
+            {
+                o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Rotation").Value = rot;
+            })
+            .WithRotationGroup(RotationGroup.All)
+            .WithReceiverGroup(ReceiverGroup.Garpid)
+            .WithBroadcasterGroup(BroadcasterGroup.Damageable);
+        
         AddEnemy("Imoba", "imoba", ("Cradle_Destroyed_Challenge_01", "Spike Lazy Flyer"),
             postSpawnAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
@@ -418,7 +445,7 @@ public static class VanillaObjects
         Categories.Enemies.Add(new PreloadObject("Wingmould", "white_palace_fly",
             ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)")).DoFlipX())
             .WithConfigGroup(ConfigGroup.SimpleEnemies)
-            .WithBroadcasterGroup(BroadcasterGroup.Wingmould);
+            .WithBroadcasterGroup(BroadcasterGroup.Damageable);
 
         Categories.Interactable.Add(new PreloadObject("Reusable Lever", "reusable_lever",
                 ("Memory_Red", "Scenery Groups/Deepnest Scenery/Control Lever"),
@@ -550,6 +577,21 @@ public static class VanillaObjects
             preloadAction:EnemyFixers.KeepActive);
         AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),
             preloadAction:EnemyFixers.KeepActive);
+        
+        /*
+        AddEnemy("Craw Juror", "craw_juror",
+            ("Room_CrowCourt_02", "Battle Scene/Wave 2/Crowman Juror Tiny"),
+            preloadAction: EnemyFixers.FixCrawJurorPreload,
+            postSpawnAction: EnemyFixers.FixTinyCrawJuror);
+        AddEnemy("Tallcraw Juror", "tallcraw_juror",
+            ("Room_CrowCourt_02", "Battle Scene/Wave 1/Crowman Juror"),
+            preloadAction: EnemyFixers.FixCrawJurorPreload,
+            postSpawnAction: EnemyFixers.FixCrawJuror);
+        AddEnemy("Squatcraw Juror", "squatcraw_juror", 
+            ("Room_CrowCourt_02", "Battle Scene/Wave 1/Crowman Dagger Juror"),
+            preloadAction: EnemyFixers.FixCrawJurorPreload,
+            postSpawnAction: EnemyFixers.FixCrawJuror);*/
+        
         AddEnemy("Moorwing", "moorwing", ("Greymoor_05_boss", "Vampire Gnat Boss Scene/Vampire Gnat"),
             postSpawnAction:EnemyFixers.FixMoorwing)
             .WithConfigGroup(ConfigGroup.Bosses)
@@ -699,6 +741,8 @@ public static class VanillaObjects
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
             postSpawnAction:EnemyFixers.FixStilkinTrapper).DoFlipX();
 
+        AddEnemy("Mothleaf Lagnia", "mothleaf", ("Shadow_26", "Swamp Drifter"));
+
         AddEnemy("Groal the Great", "groal", ("Shadow_18", "Battle Scene/Wave 6 - Boss/Swamp Shaman"),
             preloadAction:EnemyFixers.RemoveConstrainPosition,
             postSpawnAction:EnemyFixers.FixGroal)
@@ -765,7 +809,8 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"))
-            .WithConfigGroup(ConfigGroup.Judge);
+            .WithConfigGroup(ConfigGroup.Judge)
+            .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         Categories.Platforming.Add(new PreloadObject("Bell of Judgement", "hang_bell",
             ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite));
@@ -977,6 +1022,10 @@ public static class VanillaObjects
         
         AddEnemy("Cogwork Defender", "cogwork_defender",
             ("Cog_06", "Song Automaton Shield")).DoFlipX();
+
+        AddEnemy("Cogwork Spine", "cogwork_spine",
+            ("Cog_05", "Battle Scene/Wave 2/Song Automaton Fly Spike"),
+            preloadAction: EnemyFixers.FixCogworkSpine).WithConfigGroup(ConfigGroup.Patroller);
         
         AddEnemy("Cogwork Cleanser", "song_auto_2",
             ("Cog_04", "Black Thread States Thread Only Variant/Black Thread World/Group (1)/Song Automaton 02"));
@@ -1095,8 +1144,10 @@ public static class VanillaObjects
             ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter"));
 
         AddEnemy("Spear Skarr", "bone_hunter_fly",
-                ("Ant_21", "Enemy Control/Ant Merchant Killed/Big Guard Dead/Bone Hunter Fly"))
-            .WithConfigGroup(ConfigGroup.SpearSkarr).DoFlipX();
+                ("Ant_21", "Enemy Control/Ant Merchant Killed/Big Guard Dead/Bone Hunter Fly"),
+                preloadAction: EnemyFixers.FixSpearSkarr)
+            .WithConfigGroup(ConfigGroup.SpearSkarr)
+            .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX();
 
         AddEnemy("Skarrgard", "bone_hunter_throw",
             ("Ant_21", "Enemy Control/Normal/Bone Hunter Throw"),
@@ -1179,9 +1230,12 @@ public static class VanillaObjects
         AddEnemy("Tarmite", "tarmite", ("Bone_East_LavaChallenge", "Bone Spitter"),
             preloadAction: EnemyFixers.KeepActive);
 
-        /*
         AddEnemy("Flintbeetle", "flintbeetle", ("Bone_06", "Rock Roller Scene/Rock Roller"),
-            preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);*/
+            preloadAction: EnemyFixers.FixFlintbeetlePreload,
+            postSpawnAction: EnemyFixers.FixFlintbeetle)
+            .WithRotationGroup(RotationGroup.Four)
+            .WithConfigGroup(ConfigGroup.Wakeable)
+            .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         AddEnemy("Shardillard", "shardillard", ("Bone_06", "Shell Fossil Mimic AppearVariant"),
             preloadAction: o => o.transform.SetRotation2D(0),
@@ -1338,9 +1392,11 @@ public static class VanillaObjects
 
     private static void AddMossObjects()
     {
-        AddEnemy("Mossgrub", "mossbone_crawler", ("Arborium_09", "MossBone Crawler (1)")).DoFlipX()
+        AddEnemy("Mossgrub", "mossbone_crawler", ("Arborium_09", "MossBone Crawler (1)"),
+                preloadAction: EnemyFixers.FixMossgrub)
+            .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX()
             .WithRotationGroup(RotationGroup.Four)
-            .WithConfigGroup(ConfigGroup.Mossgrub);
+            .WithConfigGroup(ConfigGroup.Wakeable);
 
         AddEnemy("Massive Mossgrub", "mossbone_crawler_fat",
             ("Arborium_09", "MossBone Crawler Fat"));

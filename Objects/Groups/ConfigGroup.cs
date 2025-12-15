@@ -13,6 +13,7 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
+using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
@@ -1037,6 +1038,15 @@ public static class ConfigGroup
             ).WithPriority(1))
     ]);
 
+    private static readonly ConfigType Invincible =
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Invincible", "invulnerable",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    o.AddComponent<EnemyInvulnerabilityMarker>();
+                }));
+
     public static readonly List<ConfigType> SimpleEnemies = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Shell Shard Drops", "shell_shard",
@@ -1050,13 +1060,19 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Large Rosary Drops", "large_money",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetGeoLarge(value.GetValue()); })),
+        Invincible
+    ]);
+
+    public static readonly List<ConfigType> Garpid = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Invincible", "invulnerable",
+            new BoolConfigType("Loop", "garpid_loop",
                 (o, value) =>
                 {
                     if (!value.GetValue()) return;
-                    o.AddComponent<EnemyInvulnerabilityMarker>();
-                }))
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("ALERT"));
+                }).WithDefaultValue((true))),
+        Invincible
     ]);
 
     public static readonly List<ConfigType> NonPersistentEnemies = GroupUtils.Merge(SimpleEnemies, [
@@ -1232,12 +1248,12 @@ public static class ConfigGroup
 
     private class EnemyInvulnerabilityMarker : MonoBehaviour;
 
-    public static readonly List<ConfigType> Mossgrub = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> Wakeable = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Start Walking", "mossgrub_walk", (o, value) =>
+            new BoolConfigType("Start Awake", "mossgrub_walk", (o, value) =>
             {
                 if (!value.GetValue()) return;
-                o.LocateMyFSM("Noise Reaction").SendEvent("WAKE");
+                o.GetComponent<EnemyFixers.Wakeable>().DoWake();
             }).WithDefaultValue(true))
     ]);
 
@@ -1699,8 +1715,7 @@ public static class ConfigGroup
             new BoolConfigType("Start Awake", "spear_awake", (o, value) =>
             {
                 if (!value.GetValue()) return;
-                var fsm = o.LocateMyFSM("Control");
-                fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                o.GetComponent<EnemyFixers.Wakeable>().DoWake();
             }).WithDefaultValue(true))
     ]);
 
@@ -1709,8 +1724,7 @@ public static class ConfigGroup
             new BoolConfigType("Start Awake", "judge_awake", (o, value) =>
             {
                 if (!value.GetValue()) return;
-                var fsm = o.LocateMyFSM("Control");
-                fsm.GetState("Init").AddAction(() => fsm.SendEvent("PATROL"), 2);
+                o.GetComponent<EnemyFixers.Wakeable>().DoWake();
             }).WithDefaultValue(true))
     ]);
 

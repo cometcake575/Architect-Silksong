@@ -726,6 +726,7 @@ public static class EnemyFixers
                 fsm.SendEvent("AMBUSH");
         }, 0, true);
         fsm.GetState("Positioning Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Hidden Underwater").DisableAction(0);
     }
 
     public static void FixStilkinTrapper(GameObject obj)
@@ -761,6 +762,8 @@ public static class EnemyFixers
         });
         
         fsm.GetState("Water Exit Q").DisableAction(6);
+        fsm.GetState("Hide Underwater").DisableAction(0);
+        fsm.GetState("Water Pos").DisableAction(1);
     }
 
     public static void FixLastClawPreload(GameObject obj)
@@ -1827,6 +1830,7 @@ public static class EnemyFixers
 
     public static void FixShardillard(GameObject obj)
     {
+        KeepActive(obj);
         obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
         obj.GetComponent<DamageHero>().damageDealt = 1;
         
@@ -1870,5 +1874,126 @@ public static class EnemyFixers
                 transform = { position = transform.position + new Vector3(xOffset, yOffset) }
             };
         }
+    }
+
+    public static void FixCogworkSpine(GameObject obj)
+    {
+        FixPatroller(obj);
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Fly");
+    }
+
+    public static void FixFlintbeetlePreload(GameObject obj)
+    {
+        KeepActiveRemoveConstrainPos(obj);
+        Object.Destroy(obj.transform.Find("CamLock").gameObject);
+    }
+
+    public static void FixFlintbeetle(GameObject obj)
+    {
+        obj.AddComponent<Flintbeetle>();
+    }
+
+    public abstract class Wakeable : MonoBehaviour
+    {
+        public abstract void DoWake();
+    }
+
+    public class Mossgrub : Wakeable
+    {
+        public override void DoWake() 
+        {
+            gameObject.LocateMyFSM("Noise Reaction").SendEvent("WAKE");
+        }
+    }
+
+    public class SpearSkarr : Wakeable
+    {
+        public override void DoWake() 
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        }
+    }
+
+    public class Judge : Wakeable
+    {
+        public override void DoWake() 
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Init").AddAction(() => fsm.SendEvent("PATROL"), 2);
+        }
+    }
+
+    public class Driznit : Wakeable
+    {
+        public override void DoWake() 
+        {
+            gameObject.LocateMyFSM("Control").SendEvent("ALERT");
+        }
+    }
+
+    public class Flintbeetle : Wakeable
+    {
+        public override void DoWake() 
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Wall").AddAction(() => fsm.SendEvent("WAKE"));
+        }
+    }
+
+    public static void FixMossgrub(GameObject obj)
+    {
+        obj.AddComponent<Mossgrub>();
+    }
+
+    public static void FixJudge(GameObject obj)
+    {
+        obj.AddComponent<Judge>();
+    }
+
+    public static void FixSpearSkarr(GameObject obj)
+    {
+        obj.AddComponent<SpearSkarr>();
+    }
+
+    public static void FixCrawJurorPreload(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        
+        obj.transform.SetPositionZ(0.006f);
+        
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Idle");
+    }
+
+    public static void FixTinyCrawJuror(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Behaviour");
+        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FG"), 14);
+    }
+
+    public static void FixCrawJuror(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmBool("Spawner").Value = false;
+        fsm.FsmVariables.FindFsmBool("z_Summon").Value = false;
+    }
+
+    public static void FixUnderworksArenaEnemy(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Idle");
+
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.GetComponent<MeshRenderer>().enabled = true;
+        obj.layer = EnemiesLayer;
+    }
+
+    public static void FixDriznit(GameObject obj)
+    {
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Ceiling Hang");
+        obj.AddComponent<Driznit>();
     }
 }

@@ -343,6 +343,20 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Garpid = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("garpid_attack", "Attack", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("ALERT");
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> Wakeable = GroupUtils.Merge(Enemies, [
+        EventManager.RegisterReceiverType(new EventReceiverType("enemy_wake", "Wake", o =>
+        {
+            o.GetComponent<EnemyFixers.Wakeable>().DoWake();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Binoculars = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("start_using", "StartUsing", o =>
         {
