@@ -1502,7 +1502,8 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
             ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
             postSpawnAction: MiscFixers.FixStatue)
-            .WithConfigGroup(ConfigGroup.Breakable));
+            .WithConfigGroup(ConfigGroup.Breakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
     private static PlaceableObject AddEnemy(

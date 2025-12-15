@@ -957,5 +957,11 @@ public static class MiscFixers
     public static void FixStatue(GameObject obj)
     {
         obj.transform.GetChild(1).gameObject.SetActive(false);
+
+        var bh = obj.GetComponent<BreakableHolder>();
+        bh.Broken.AddListener(() =>
+        {
+            obj.BroadcastEvent("OnBreak");
+        });
     }
 }
