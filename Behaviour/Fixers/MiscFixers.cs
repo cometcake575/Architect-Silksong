@@ -953,4 +953,9 @@ public static class MiscFixers
         obj.transform.SetRotation2D(0);
         obj.transform.SetPositionZ(0.006f);
     }
+
+    public static void FixStatue(GameObject obj)
+    {
+        obj.transform.GetChild(1).gameObject.SetActive(false);
+    }
 }

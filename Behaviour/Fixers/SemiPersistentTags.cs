@@ -8,6 +8,9 @@ public class SemiPersistentBool : MonoBehaviour
     
     private void Start()
     {
-        GetComponent<PersistentBoolItem>().ItemData.IsSemiPersistent = semiPersistent;
+        var item1 = GetComponent<PersistentBoolItem>();
+        var item2 = GetComponent<PersistentIntItem>();
+        if (item1) item1.ItemData.IsSemiPersistent = semiPersistent;
+        if (item2) item2.ItemData.IsSemiPersistent = semiPersistent;
     }
 }

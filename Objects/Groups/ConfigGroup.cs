@@ -1111,6 +1111,20 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
 
+    public static readonly List<ConfigType> Furm = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Silver Chance", "furm_silver", (o, value) =>
+            {
+                var silver = o.LocateMyFSM("Control").GetState("Silver?");
+                silver.DisableAction(1);
+                var eve = (SendRandomEventV4)silver.actions[2];
+                eve.enabled = true;
+                var val = Mathf.Clamp(value.GetValue(), 0, 1);
+                eve.weights[0] = 1 - val;
+                eve.weights[1] = val;
+            }).WithDefaultValue(0))
+    ]);
+
     public static readonly List<ConfigType> WingedFurm = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Target X Offset", "winged_furm_x", (o, value) =>
@@ -1907,11 +1921,13 @@ public static class ConfigGroup
             if (val == 0)
             {
                 o.RemoveComponentsInChildren<PersistentBoolItem>();
+                o.RemoveComponentsInChildren<PersistentIntItem>();
             }
             else
             {
-                var item = o.GetComponentInChildren<PersistentBoolItem>();
-                if (!item)
+                var item1 = o.GetComponentInChildren<PersistentBoolItem>();
+                var item2 = o.GetComponentInChildren<PersistentIntItem>();
+                if (!item1 && !item2)
                 {
                     var it = o.AddComponent<PersistentBoolItem>();
                     it.itemData = new PersistentBoolItem.PersistentBoolData

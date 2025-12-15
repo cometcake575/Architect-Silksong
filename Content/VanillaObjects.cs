@@ -430,6 +430,13 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four);
         AddEnemy("Shadow Charger", "shadow_charger", ("Abyss_05", "Abyss Crawler Large (1)")).DoFlipX()
             .WithRotationGroup(RotationGroup.Four);
+        
+        AddEnemy("Gloomsac", "gloomsac", ("Abyss_02b", "Gloomfly"), hideAndDontSave: true,
+            postSpawnAction: EnemyFixers.FixGloomsac);
+        
+        AddEnemy("Gargant Gloom", "gargant_gloom", ("Abyss_02b", "Gloom Beast"),
+            preloadAction: EnemyFixers.FixGargantGloomPreload,
+            postSpawnAction: EnemyFixers.FixGargantGloom);
 
         AddSolid("Abyss Platform 1", "abyss_plat_mid",
             ("Abyss_05", "abyss_plat_mid"));
@@ -898,11 +905,9 @@ public static class VanillaObjects
             ("Clover_06", "Group/Clover_Silk_Pod")));
 
         /*
-        // TODO
         Categories.Interactable.Add(new PreloadObject("Shakra Summon Pole", "mapper_pole",
                 ("Greymoor_08_mapper", "Mapper Call Pole")));
 
-        // TODO
         AddEnemy("Shakra (Boss)", "shakra_boss",
                 ("Greymoor_08_mapper", "Mapper Spar NPC"),
                 postSpawnAction: MiscFixers.FixShakraBoss)
@@ -1046,7 +1051,10 @@ public static class VanillaObjects
 
     private static void AddBellObjects()
     {
-        // AddEnemy("Furm", "furm", ("Belltown_basement_03", "Bell Goomba")).DoFlipX();
+        AddEnemy("Furm", "furm", ("Belltown_basement_03", "Bell Goomba"),
+            postSpawnAction: EnemyFixers.FixFurm)
+            .WithConfigGroup(ConfigGroup.Furm)
+            .WithRotationGroup(RotationGroup.Four).DoFlipX();
         AddEnemy("Winged Furm", "winged_furm", ("Belltown_basement_03", "Bell Fly"),
             preloadAction: EnemyFixers.RemoveConstrainPosition,
             postSpawnAction: EnemyFixers.FixWingedFurm)
@@ -1175,6 +1183,10 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Sickle Trap", "hunter_sickle_trap",
                 ("Ant_04", "Hunter Sickle Trap"))
+            .WithReceiverGroup(ReceiverGroup.Trap)).DoFlipX();
+
+        Categories.Hazards.Add(new PreloadObject("Gurr Trap", "hunter_landmine",
+                ("Bone_East_24", "Ant Trapper Quest Scene (3)/Tracking Scene/Trapper Barb Trap Landmine"))
             .WithReceiverGroup(ReceiverGroup.Trap));
 
         Categories.Interactable.Add(new PreloadObject("Hunter's March Pressure Plate", "hunter_trap_plate",
@@ -1384,8 +1396,7 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixFleamaster)
             .WithConfigGroup(ConfigGroup.Npcs));
 
-        /*
-        Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",
+        /*Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",
             ("Aqueduct_05_festival",
                 "Caravan_States/Flea Festival/Flea Game - Dodging/Active While Playing/Dodge Plat L")));*/
     }
@@ -1487,6 +1498,11 @@ public static class VanillaObjects
             postSpawnAction: MiscFixers.FixPilby))
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithReceiverGroup(ReceiverGroup.Pilby);
+
+        Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
+            ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
+            postSpawnAction: MiscFixers.FixStatue)
+            .WithConfigGroup(ConfigGroup.Breakable));
     }
 
     private static PlaceableObject AddEnemy(

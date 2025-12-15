@@ -89,6 +89,7 @@ public static class EnemyFixers
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataTrue>();
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalse>();
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalseDelayed>();
+        obj.RemoveComponentsInChildren<TestGameObjectActivator>();
     }
 
     public static void KeepActiveRemoveConstrainPos(GameObject obj)
@@ -1703,7 +1704,6 @@ public static class EnemyFixers
         }, 0);
     }
 
-    // TODO
     public static void FixPhantom(GameObject obj)
     {
         RemoveConstrainPosition(obj);
@@ -1845,6 +1845,41 @@ public static class EnemyFixers
     {
         var init = obj.LocateMyFSM("Tween").GetState("Init");
         init.DisableAction(0);
+    }
+
+    public static void FixFurm(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+                
+        var digPos = new GameObject(obj.name + " Dig Pos")
+        {
+            transform = { position = obj.transform.position }
+        };
+        fsm.FsmVariables.FindFsmGameObject("Dig Min X Obj").Value = digPos;
+        fsm.FsmVariables.FindFsmGameObject("Dig Max X Obj").Value = digPos;
+                
+        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"));
+                
+        fsm.GetState("Positioning Check").DisableAction(3);
+                
+        var set1 = fsm.GetState("Set To Ground");
+        set1.DisableAction(4);
+        set1.DisableAction(5);
+
+        var set2 = fsm.GetState("Set To Wall L");
+        set2.DisableAction(5);
+        set2.DisableAction(6);
+                
+        var set3 = fsm.GetState("Set To Wall R");
+        set3.DisableAction(5);
+        set3.DisableAction(6);
+                
+        var set4 = fsm.GetState("Set To Roof");
+        set4.DisableAction(5);
+        set4.DisableAction(6);
+        
+        fsm.GetState("Surface Dig Prepare").AddAction(() => fsm.SendEvent("START"), 0);
+        fsm.GetState("Surface Dig").AddAction(() => fsm.SendEvent("EMERGE"), 0);
     }
 
     public static void FixPatroller(GameObject obj)
@@ -1995,5 +2030,44 @@ public static class EnemyFixers
         var anim = obj.GetComponent<tk2dSpriteAnimator>();
         anim.defaultClipId = anim.GetClipIdByName("Ceiling Hang");
         obj.AddComponent<Driznit>();
+    }
+
+    private static Material GloomCorpseMaterial;
+    
+    public static void FixGargantGloomPreload(GameObject obj)
+    {
+        var psr = obj.transform.Find("Pt Spit").GetChild(0).GetComponent<ParticleSystemRenderer>();
+        psr.material = psr.material;
+        
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        GloomCorpseMaterial = corpse.transform.GetChild(0).GetChild(0).GetChild(1)
+            .GetComponent<ParticleSystemRenderer>().material;
+    }
+
+    public static void FixGargantGloom(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmGameObject("Home").Value = new GameObject(obj.name + " Home");
+        
+        fsm.GetState("Start L").DisableAction(0);
+        fsm.GetState("Start R").DisableAction(0);
+
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("WAKE"));
+        
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        corpse.transform.GetChild(0).GetChild(0).GetChild(1)
+            .GetComponent<ParticleSystemRenderer>().material = GloomCorpseMaterial;
+    }
+
+    public static void FixGloomsac(GameObject obj)
+    {
+        obj.LocateMyFSM("Control").GetState("Capture").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnDeath");
+        });
     }
 }

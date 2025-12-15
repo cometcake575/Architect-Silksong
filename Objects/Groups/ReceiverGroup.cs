@@ -159,8 +159,10 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Trap = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("activate_trap", "Activate", o =>
         {
-            o.LocateMyFSM("Control").SendEvent("ACTIVATE");
-            o.LocateMyFSM("Control").SendEvent("TRAP");
+            var fsm = o.LocateMyFSM("Control");
+            fsm.SendEvent("ACTIVATE");
+            fsm.SendEvent("TRAP");
+            fsm.SendEvent("ATTACK");
         }))
     ]);
     
