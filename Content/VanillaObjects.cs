@@ -815,7 +815,8 @@ public static class VanillaObjects
                 ("Coral_34", "Harpoon Ring Pinstress Rope (4)"), postSpawnAction: MiscFixers.FixRing).DoFlipX()
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
-        AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"))
+        AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
+                preloadAction: EnemyFixers.FixJudge)
             .WithConfigGroup(ConfigGroup.Judge)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
