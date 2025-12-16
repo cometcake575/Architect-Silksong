@@ -13,7 +13,7 @@ public class RoarEffect : MonoBehaviour
     private void Start()
     {
         _roar = Instantiate(GameManager.instance.gameCams.gameObject.transform
-            .Find(small ? "Roar Wave Emitter Small" : "Roar Wave Emitter").gameObject);
+            .Find(small ? "Roar Wave Emitter Small" : "Roar Wave Emitter").gameObject, transform);
         _roar.transform.position = transform.position;
     }
     
