@@ -20,15 +20,15 @@ public static class MiscObjects
         Categories.Misc.AddStart(CreateCircle());
         Categories.Misc.AddStart(CreateSquare());
         
-        Categories.Misc.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
+        Categories.Effects.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
             .WithConfigGroup(ConfigGroup.Mp4)
             .WithReceiverGroup(ReceiverGroup.Pausable));
         
-        Categories.Misc.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
+        Categories.Effects.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
             .WithConfigGroup(ConfigGroup.Wav)
             .WithReceiverGroup(ReceiverGroup.Playable));
         
-        Categories.Misc.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
+        Categories.Effects.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
                 "\n\nSetting 'Frame Count' to a number above 1 will make the PNG animated\n" +
                 "by splitting it into frames vertically. Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.Png)

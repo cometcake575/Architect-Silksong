@@ -11,6 +11,7 @@ using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Bounds = UnityEngine.Bounds;
 using Object = UnityEngine.Object;
 
 namespace Architect.Behaviour.Fixers;
@@ -963,5 +964,19 @@ public static class MiscFixers
         {
             obj.BroadcastEvent("OnBreak");
         });
+    }
+
+    public static void FixDecoration(GameObject obj)
+    {
+        obj.transform.SetScale2D(Vector2.one);
+        obj.transform.SetPositionZ(0.006f);
+    }
+
+    public static void FixSnow(GameObject obj)
+    {
+        FixDecoration(obj);
+        var vars = obj.LocateMyFSM("FSM").FsmVariables;
+        vars.FindFsmFloat("X Min").Value = -1000;
+        vars.FindFsmFloat("Y Min").Value = -1000;
     }
 }

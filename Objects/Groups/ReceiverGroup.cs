@@ -38,6 +38,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Roar = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_roar", "Roar", o =>
+        {
+            o.GetComponent<RoarEffect>().DoRoar();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> CoralSpike = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_rise", "Activate", o =>
         {

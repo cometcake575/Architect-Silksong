@@ -255,12 +255,30 @@ public static class ConfigGroup
         }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> BreakableWall = GroupUtils.Merge(Breakable, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Required Hits", "breakable_hits", (o, value) =>
+        {
+            o.LocateMyFSM("breakable_wall_v2").FsmVariables.FindFsmInt("Hits").Value = value.GetValue();
+        }).WithDefaultValue(4))
+    ]);
+
     public static readonly List<ConfigType> LifebloodCocoons = GroupUtils.Merge(Breakable, [
         ConfigurationManager.RegisterConfigType(new IntConfigType("Lifeseed Count", "lifeblood_count", (o, value) =>
         {
             var fling = o.GetComponent<HealthCocoon>().flingPrefabs[2];
             fling.MinAmount = fling.MaxAmount = value.GetValue();
         }).WithDefaultValue(2).WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> Roar = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Time", "roar_time", (o, value) =>
+        {
+            o.GetComponent<RoarEffect>().time = value.GetValue();
+        }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Size", "roar_size", (o, value) =>
+        {
+            o.GetComponent<RoarEffect>().small = value.GetValue() == 1;
+        }).WithOptions("Large", "Small").WithDefaultValue(0))
     ]);
 
     public static readonly List<ConfigType> CloseableGates = GroupUtils.Merge(Visible, [

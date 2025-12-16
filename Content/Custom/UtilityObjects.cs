@@ -160,6 +160,8 @@ public static class UtilityObjects
                    "settings determine which objects are removed.")
             .WithConfigGroup(ConfigGroup.RoomClearer)
             .WithReceiverGroup(ReceiverGroup.Generic));
+        
+        Categories.Effects.Add(CreateRoar());
     }
 
     private static PlaceableObject CreateItem()
@@ -182,6 +184,20 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.Item)
             .WithReceiverGroup(ReceiverGroup.Item)
             .WithBroadcasterGroup(BroadcasterGroup.Item);
+    }
+
+    private static PlaceableObject CreateRoar()
+    {
+        var roar = new GameObject("Roar Spawner");
+        Object.DontDestroyOnLoad(roar);
+        roar.SetActive(false);
+
+        roar.AddComponent<RoarEffect>();
+        
+        return new CustomObject("Roar Effect", "roar_effect", roar,
+                sprite:ResourceUtils.LoadSpriteResource("roar", ppu:64))
+            .WithConfigGroup(ConfigGroup.Roar)
+            .WithReceiverGroup(ReceiverGroup.Roar);
     }
 
     private static PlaceableObject CreateVoider()

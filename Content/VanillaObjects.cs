@@ -422,6 +422,41 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Trapped Wardenfly", "swamp_barnacle_slab_fly",
             ("Aqueduct_04", "Swamp Barnacle Slab Fly")));
+        
+        Categories.Effects.Add(new PreloadObject("Ducts Effect", "wet_particles",
+                ("Aqueduct_03", "waterways_particles (1)"), description: "Affects the whole room.",
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("drip", ppu: 77.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations);
+
+        Categories.Interactable.Add(new PreloadObject("Breakable Wall", "breakable_wall",
+            ("Aqueduct_03", "Breakable Wall"),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(0).gameObject.SetActive(false);
+                var col2d = o.GetComponent<BoxCollider2D>();
+                col2d.offset = Vector2.zero;
+                col2d.size = new Vector2(2.25f, 4.25f);
+            }, postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("breakable_wall_v2");
+                fsm.fsmTemplate = null;
+                var idle = fsm.GetState("Idle");
+                var t2d = (Trigger2dEvent)idle.actions[2];
+                var rd = (ReceivedDamage)idle.actions[4];
+                rd.sendEventHeavy = rd.sendEvent;
+                t2d.sendEvent = rd.sendEvent;
+                
+                var hit2 = fsm.GetState("Hit 2");
+                var rd2 = (ReceivedDamage)hit2.actions[2];
+                rd2.sendEventHeavy = rd2.sendEvent;
+            })
+            .WithConfigGroup(ConfigGroup.BreakableWall));
+        
     }
 
     private static void AddAbyssObjects()
@@ -571,7 +606,13 @@ public static class VanillaObjects
             ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"),
             preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
         
-        AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"));
+        AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"))
+            .WithRotationGroup(RotationGroup.Three)
+            .WithRotateAction((o, f) =>
+            {
+                o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Eating").Value = f % 180 != 0;
+                o.transform.SetRotation2D(f);
+            }).DoFlipX();
         AddEnemy("Mitemother", "mitemother", ("Greymoor_16", "Gnat Giant")).DoFlipX();
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
             postSpawnAction: EnemyFixers.FixPatroller)
@@ -623,6 +664,16 @@ public static class VanillaObjects
                 ("Greymoor_07", "grey_lever_gate (1)"))
             .WithReceiverGroup(ReceiverGroup.CloseableGates)
             .WithConfigGroup(ConfigGroup.CloseableGates));
+
+        Categories.Effects.Add(new PreloadObject("Rain Effect", "rain_effect",
+                ("Greymoor_07", "Greymoor_Rain_Tiled_Set"), description: "Affects the whole room.",
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("rain", ppu: 77.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations);
     }
 
     private static void AddWhitewardObjects()
@@ -729,6 +780,18 @@ public static class VanillaObjects
                 ];
             }).WithConfigGroup(ConfigGroup.Slope)
             .WithRotationGroup(RotationGroup.All));
+
+        Categories.Effects.Add(new PreloadObject("Snow Effect", "snow_effect",
+                ("Peak_05", "peak_storm_set_mid_strength"), 
+                description: "Affects the whole room.\n" + 
+                             "Rotate the object to rotate the direction of the storm.",
+                preloadAction: MiscFixers.FixSnow,
+                sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 77.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations).WithRotationGroup(RotationGroup.All);
     }
 
     private static void AddBileObjects()
@@ -759,7 +822,12 @@ public static class VanillaObjects
             ("Shadow_02", "plank_plat (4)"), preloadAction:MiscFixers.FixBilePlat);
         AddSolid("Bilewater Platform 2", "swamp_plat_2",
             ("Shadow_26", "gloom_lift_destroy/gloom_lift_set/gloom_plat_lift destroy"));
-
+        
+        /*
+        Categories.Effects.Add(new PreloadObject("Maggots", "maggot_effect",
+            ("Shadow_18", "maggot_pool (1)/swamp_maggot_animated0000 (10)"), preloadAction: MiscFixers.FixDecoration)
+            .WithConfigGroup(ConfigGroup.Decorations));*/
+        
         Categories.Platforming.Add(new PreloadObject("Muck Pod", "swap_bounce_pod",
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
@@ -846,7 +914,7 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Toll)
             .WithConfigGroup(ConfigGroup.Toll));
 
-        Categories.Misc.AddStart(new PreloadObject("Reflection Effect", "mirror_effect",
+        Categories.Effects.Add(new PreloadObject("Reflection Effect", "mirror_effect",
                 ("Hang_06b", "new_scene/Reflection_surface"),
                 description: "Reflects objects above itself, can be configured\n" +
                              "in the same way as the Custom PNG for custom mirror shapes.",
@@ -1129,6 +1197,16 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixSplinter);
         AddEnemy("Splinterbark", "splinterbark", 
             ("Shellwood_26", "Black Thread States/Normal World/Stick Insect Flyer (1)"));
+
+        Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
+                ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 77.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations);
         
         /*
         AddEnemy("Sister Splinter", "sister_splinter",
@@ -1224,7 +1302,7 @@ public static class VanillaObjects
             ("Bone_East_03", "Black Thread States Thread Only Variant/Black Thread World/Bone Circler Vicious (1)"));
 
         AddEnemy("Kilik", "bone_crawler", ("Ant_19", "Bone Crawler (2)"),
-            preloadAction: EnemyFixers.RemoveConstrainPosition);
+            preloadAction: EnemyFixers.RemoveConstrainPosition).WithRotationGroup(RotationGroup.Four);
 
         AddEnemy("Beastfly", "beastfly", ("Ant_19", "Enemy Break Cage (9)/Enemy/Bone Flyer"),
                 preloadAction: EnemyFixers.RemoveConstrainPosition).DoFlipX();
@@ -1375,7 +1453,7 @@ public static class VanillaObjects
 
     private static void AddFleaObjects()
     {
-        Categories.Misc.AddStart(new PreloadObject("Confetti Burst", "confetti_burst",
+        Categories.Effects.Add(new PreloadObject("Confetti Burst", "confetti_burst",
             ("Aqueduct_05_festival", "Caravan_States/Flea_Games_Start_effect/confetti_burst (1)"),
             description:"Appears when the 'Burst' trigger is run.",
             sprite: ResourceUtils.LoadSpriteResource("confetti_burst", ppu:1500),

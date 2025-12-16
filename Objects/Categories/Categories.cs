@@ -7,7 +7,9 @@ public static class Categories
     public static readonly List<AbstractCategory> AllCategories = [];
     
     /** Miscellaneous objects like benches or items that give free silk */
-    public static readonly Category Misc = RegisterCategory("Miscellaneous", 6);
+    public static readonly Category Misc = RegisterCategory("Miscellaneous", 7);
+    /** Effects such as particles */
+    public static readonly Category Effects = RegisterCategory("Effects", 6);
     /** Things that do damage (except for enemies) */
     public static readonly Category Hazards = RegisterCategory("Hazards", 5);
     /** Usable objects like levers, doors etc. */
@@ -21,7 +23,7 @@ public static class Categories
     /** Utility objects for things like trigger zones and object removers */
     public static readonly Category Utility = RegisterCategory("Utility", 9);
     /** Objects relating to giving or limiting abilities */
-    public static readonly Category Abilities = RegisterCategory("Abilities", 7);
+    public static readonly Category Abilities = RegisterCategory("Abilities", 8);
     /** Every object in a single category */
     public static readonly AbstractCategory All = RegisterCategory(AllCategory.Instance);
     
