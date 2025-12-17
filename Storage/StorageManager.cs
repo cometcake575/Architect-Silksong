@@ -202,10 +202,9 @@ public static class StorageManager
         foreach (var config in downloads.Values)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
-            
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
         }
-        while (CustomAssetManager.DownloadingAssets > 0) yield return null;
+        while (CustomAssetManager.Downloaded < downloadCount) yield return null;
         
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
