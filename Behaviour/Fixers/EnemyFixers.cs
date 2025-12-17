@@ -1801,6 +1801,7 @@ public static class EnemyFixers
         corpse.RemoveComponent<ConstrainPosition>();
         
         var blow = corpse.LocateMyFSM("Control").GetState("Blow");
+        blow.DisableAction(5);
         blow.transitions = [];
         blow.AddAction(() =>
         {
