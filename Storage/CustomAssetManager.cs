@@ -11,6 +11,7 @@ using Architect.Editor;
 using Architect.Utils;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
@@ -132,16 +133,26 @@ public static class CustomAssetManager
         return $"{StorageManager.DataPath}Assets/{pathUrl}";
     }
 
-    public static async Task<bool> TryDownloadAssets(StringConfigValue config)
+    public static int DownloadingAssets;
+    public static int Downloaded;
+    public static int Failed;
+
+    public static async Task TryDownloadAssets(StringConfigValue config, Text status, int downloadCount)
     {
-        string fileType = null;
+        string fileType;
         if (config.GetTypeId().Equals("png_url")) fileType = ".png";
         else if (config.GetTypeId().Equals("wav_url")) fileType = ".wav";
         else if (config.GetTypeId().Equals("mp4_url")) fileType = ".mov";
-        if (fileType == null) return true;
+        else return;
 
         var url = config.GetValue();
+        DownloadingAssets += 1;
         var b = await SaveFile(url, GetPath(url) + fileType);
-        return b;
+        DownloadingAssets -= 1;
+        Downloaded += 1;
+        status.text = "Downloading Assets...\n" +
+                      $"{Downloaded}/{downloadCount}";
+
+        if (!b) Failed++;
     }
 }

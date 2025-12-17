@@ -1213,6 +1213,9 @@ public static class VanillaObjects
             ("Shellwood_18", "Boss Scene Parent/Boss Scene/Splinter Queen"),
             postSpawnAction: EnemyFixers.FixSisterSplinter)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();*/
+
+        /*AddEnemy("Shrine Guardian Seth", "seth_boss", ("Shellwood_22", "Boss Scene/Seth"),
+            postSpawnAction: EnemyFixers.FixSeth);*/
     }
 
     private static void AddMarchObjects()
@@ -1234,7 +1237,7 @@ public static class VanillaObjects
                 ("Ant_21", "Enemy Control/Ant Merchant Killed/Big Guard Dead/Bone Hunter Fly"),
                 preloadAction: EnemyFixers.FixSpearSkarr)
             .WithConfigGroup(ConfigGroup.SpearSkarr)
-            .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX();
+            .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         AddEnemy("Skarrgard", "bone_hunter_throw",
             ("Ant_21", "Enemy Control/Normal/Bone Hunter Throw"),

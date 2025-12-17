@@ -28,6 +28,9 @@ public static class EnemyFixers
     private static GameObject _pinProjectiles;
     private static GameObject _loosePins;
     private static GameObject _blasts;
+    
+    // Seth
+    private static GameObject _shieldTrail;
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -58,17 +61,20 @@ public static class EnemyFixers
             "Broodmother Scene Control/Broodmother Scene/Battle Scene Broodmother/Spawner Flies", 
             o => _freshflyCagePrefab = o));
         PreloadManager.RegisterPreload(new BasicPreload("Cog_Dancers_boss", 
-            "Dancer Control/Death Chunks 1", 
+            "Dancer Control/Death Chunks 1",
             o => _robotParticles = o));
         PreloadManager.RegisterPreload(new BasicPreload("Slab_10b", 
-            "Boss Scene/Pin Projectiles", 
+            "Boss Scene/Pin Projectiles",
             o => _pinProjectiles = o));
         PreloadManager.RegisterPreload(new BasicPreload("Slab_10b", 
-            "Boss Scene/Loose Pins", 
+            "Boss Scene/Loose Pins",
             o => _loosePins = o));
         PreloadManager.RegisterPreload(new BasicPreload("Slab_10b", 
-            "Boss Scene/Blasts", 
+            "Boss Scene/Blasts",
             o => _blasts = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Shellwood_22", 
+            "Boss Scene/Pt Shield Trail",
+            o => _shieldTrail = o));
 
         AknidMother.InitSounds();
     }
@@ -435,7 +441,7 @@ public static class EnemyFixers
 
     public static void RemoveConstrainPosition(GameObject obj)
     {
-        obj.RemoveComponent<ConstrainPosition>();
+        obj.RemoveComponentsInChildren<ConstrainPosition>();
     }
 
     public static void FixBloatroachPreload(GameObject obj)
@@ -797,10 +803,35 @@ public static class EnemyFixers
             accelerationMax = 20,
             speedMax = 5
         });
+        
+        var firstMoveTime = 0f;
 
-        // Stops attacks upon hitting a transition gate too
-        ((RayCast2dV2)fsm.GetState("Charge").actions[4]).layerMask = [8, LayerMask.NameToLayer("Enemy Detector")];
-        ((RayCast2dV2)fsm.GetState("Dthrust").actions[8]).layerMask = [8, LayerMask.NameToLayer("Enemy Detector")];
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+
+        var charge = fsm.GetState("Charge");
+        
+        charge.AddAction(() =>
+        {
+            firstMoveTime = Time.time;
+        });
+        charge.AddAction(() =>
+        {
+            if (Time.time - firstMoveTime < 0.1f) return;
+
+            if (Mathf.Abs(rb2d.linearVelocityX) < 0.05f) fsm.SendEvent("END");
+        }, everyFrame: true);
+
+        var dThrust = fsm.GetState("Dthrust");
+        dThrust.AddAction(() =>
+        {
+            firstMoveTime = Time.time;
+        });
+        dThrust.AddAction(() =>
+        {
+            if (Time.time - firstMoveTime < 0.1f) return;
+            
+            if (Mathf.Abs(rb2d.linearVelocityY) < 0.05f) fsm.SendEvent("LAND");
+        }, everyFrame: true);
 
         fsm.FsmVariables.FindFsmFloat("Max Height").value = obj.transform.GetPositionY() + 15;
     }
@@ -1948,6 +1979,7 @@ public static class EnemyFixers
         {
             var fsm = gameObject.LocateMyFSM("Control");
             fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.SendEvent("WAKE");
         }
     }
 
@@ -1957,6 +1989,7 @@ public static class EnemyFixers
         {
             var fsm = gameObject.LocateMyFSM("Control");
             fsm.GetState("Init").AddAction(() => fsm.SendEvent("PATROL"), 2);
+            fsm.SendEvent("WAKE");
         }
     }
 
@@ -2032,7 +2065,7 @@ public static class EnemyFixers
         obj.AddComponent<Driznit>();
     }
 
-    private static Material GloomCorpseMaterial;
+    private static Material _gloomCorpseMaterial;
     
     public static void FixGargantGloomPreload(GameObject obj)
     {
@@ -2042,7 +2075,7 @@ public static class EnemyFixers
         var ede = obj.GetComponent<EnemyDeathEffects>();
         ede.PreInstantiate();
         var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
-        GloomCorpseMaterial = corpse.transform.GetChild(0).GetChild(0).GetChild(1)
+        _gloomCorpseMaterial = corpse.transform.GetChild(0).GetChild(0).GetChild(1)
             .GetComponent<ParticleSystemRenderer>().material;
     }
 
@@ -2060,7 +2093,7 @@ public static class EnemyFixers
         ede.PreInstantiate();
         var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
         corpse.transform.GetChild(0).GetChild(0).GetChild(1)
-            .GetComponent<ParticleSystemRenderer>().material = GloomCorpseMaterial;
+            .GetComponent<ParticleSystemRenderer>().material = _gloomCorpseMaterial;
     }
 
     public static void FixGloomsac(GameObject obj)
@@ -2069,5 +2102,31 @@ public static class EnemyFixers
         {
             obj.BroadcastEvent("OnDeath");
         });
+    }
+
+    public static void FixSeth(GameObject obj)
+    {
+        KeepActiveRemoveConstrainPos(obj);
+        
+        var fsm = obj.LocateMyFSM("Control");
+        
+        var idle = fsm.GetState("Idle");
+        idle.transitions = idle.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        var attackChoice = fsm.GetState("Attack Choice");
+        attackChoice.transitions = attackChoice.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+
+        var trail = Object.Instantiate(_shieldTrail);
+        trail.SetActive(true);
+        fsm.FsmVariables.FindFsmGameObject("Pt Shield Trail").Value = trail;
+        
+        fsm.FsmVariables.FindFsmFloat("Tele Min X").Value = obj.transform.GetPositionX() - 50;
+        fsm.FsmVariables.FindFsmFloat("Tele Max X").Value = obj.transform.GetPositionX() + 50;
+        fsm.FsmVariables.FindFsmFloat("Jump X").Value = obj.transform.GetPositionX();
+        fsm.FsmVariables.FindFsmFloat("Ground Y").Value = obj.transform.GetPositionY() + 0.2f;
+        fsm.FsmVariables.FindFsmFloat("Air Y").Value = obj.transform.GetPositionY() + 6.1f;
+        
+        var shield = obj.transform.Find("Shield Projectile").gameObject;
     }
 }

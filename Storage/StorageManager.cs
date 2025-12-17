@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Objects.Categories;
@@ -177,20 +178,34 @@ public static class StorageManager
     {
         WipeLevelData();
         var startTime = Time.realtimeSinceStartup;
-        var passed = true;
 
+        Dictionary<string, StringConfigValue> downloads = [];
+        
         foreach (var (scene, data) in levels)
         {
             foreach (var config in data.Placements.SelectMany(obj => obj.Config)
                          .OfType<StringConfigValue>())
             {
-                var download = CustomAssetManager.TryDownloadAssets(config);
-                yield return new WaitUntil(() => download.IsCompleted);
-                if (!download.Result) passed = false;
+                if (!config.GetTypeId().Contains("_url")) continue;
+                var cfg = config.GetValue();
+                downloads.TryAdd(cfg, config);
             }
             
             SaveScene(scene, data);
         }
+
+        CustomAssetManager.DownloadingAssets = 0;
+        CustomAssetManager.Downloaded = 0;
+        CustomAssetManager.Failed = 0;
+        var downloadCount = downloads.Count;
+        
+        foreach (var config in downloads.Values)
+        {
+            while (CustomAssetManager.DownloadingAssets > 4) yield return null;
+            
+            Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
+        }
+        while (CustomAssetManager.DownloadingAssets > 0) yield return null;
         
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
@@ -198,7 +213,9 @@ public static class StorageManager
         LevelSharerUI.CurrentlyDownloading = false;
         LevelSharerUI.RefreshActiveOptions();
 
-        status.text = "Download Complete" + (passed ? "" : "\nSome assets could not be downloaded");
+        var plural = CustomAssetManager.Failed == 1 ? "" : "s";
+        status.text = "Download Complete" + (CustomAssetManager.Failed == 0 ? "" : 
+            $"\n{CustomAssetManager.Failed} asset{plural} could not be downloaded");
     }
 
     public static void SaveApiKey([CanBeNull] string key)
