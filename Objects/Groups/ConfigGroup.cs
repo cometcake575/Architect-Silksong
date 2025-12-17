@@ -388,13 +388,17 @@ public static class ConfigGroup
             }))
     ]);
     
-    public static readonly List<ConfigType> Zaprock =  GroupUtils.Merge(Generic, [
+    public static readonly List<ConfigType> Zaprock =  GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Start Delay", "zap_delay", (o, value) =>
+            {
+                ((Wait)o.LocateMyFSM("Control").GetState("Start Pause").Actions[0]).time = value.GetValue();
+            }).WithDefaultValue(0.25f)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Cooldown", "zap_cooldown", (o, value) =>
             {
                 var wait = (WaitRandom)o.LocateMyFSM("Control").GetState("Zap Pause").Actions[1];
-                wait.timeMin = value.GetValue();
-                wait.timeMax = value.GetValue();
+                wait.timeMin = wait.timeMax = value.GetValue();
             }).WithDefaultValue(1))
     ]);
 
@@ -1078,6 +1082,9 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Large Rosary Drops", "large_money",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetGeoLarge(value.GetValue()); })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Give Silk", "give_silk",
+                (o, value) => { o.GetComponentInChildren<HealthManager>(true).doNotGiveSilk = !value.GetValue(); })),
         Invincible
     ]);
 
@@ -1939,6 +1946,31 @@ public static class ConfigGroup
                     {
                         o.GetComponent<BouncePod>().startActive = value.GetValue();
                     }).WithDefaultValue(false))
+    ]);
+
+    public static readonly List<ConfigType> FallingBell = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Reset Time", "bell_reset",
+                    (o, value) =>
+                    {
+                        ((Wait)o.LocateMyFSM("Control").GetState("Reset Pause").actions[0]).time = value.GetValue();
+                    }).WithDefaultValue(1))
+    ]);
+
+    public static readonly List<ConfigType> GrindPlat = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Fall Distance", "grind_plat_dist",
+                    (o, value) =>
+                    {
+                        o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Drop Y").Value = 
+                            o.transform.GetPositionY() - value.GetValue();
+                    }).WithDefaultValue(5)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Stay Time", "grind_plat_time",
+                    (o, value) =>
+                    {
+                        ((Wait)o.LocateMyFSM("Control").GetState("Land Grind").actions[4]).time = value.GetValue();
+                    }).WithDefaultValue(1.5f))
     ]);
 
     private static ChoiceConfigType MakePersistenceConfigType(string name, string id,

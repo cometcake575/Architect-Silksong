@@ -61,9 +61,19 @@ public static class VanillaObjects
                 description: "Works best in small spaces, hitbox is very tall and pink glow extends much further.")
             .WithConfigGroup(ConfigGroup.Zaprock)
             .WithRotationGroup(RotationGroup.All));
-        /*
-        Categories.Hazards.Add(new PreloadObject("Voltsphere", "coral_lightning_orb",
-                ("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap")));*/
+
+        var sphere = new GameObject("Voltring");
+        sphere.SetActive(false);
+        Object.DontDestroyOnLoad(sphere);
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap",
+            o =>
+            {
+                o.transform.parent = sphere.transform;
+                o.transform.localPosition = Vector3.zero;
+            }));
+        Categories.Hazards.Add(new CustomObject("Voltring", "coral_lightning_orb", sphere,
+            sprite: ResourceUtils.LoadSpriteResource("voltring", ppu:64))
+            .WithReceiverGroup(ReceiverGroup.Voltring));
     }
 
     private static void AddSandsObjects()
@@ -252,6 +262,11 @@ public static class VanillaObjects
                 preloadAction: HazardFixers.FixUnderworksCog)
             .WithConfigGroup(ConfigGroup.Cogs));
 
+        Categories.Platforming.Add(new PreloadObject("Grind Platform", "grind_plat",
+            ("Under_03b", "Grind Plat Control (1)/Understore Grind Plat (1)"),
+            postSpawnAction: MiscFixers.FixGrindPlat)
+            .WithConfigGroup(ConfigGroup.GrindPlat));
+
         Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
             ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
             preloadAction: MiscFixers.PreFixLoam,
@@ -426,7 +441,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Ducts Effect", "wet_particles",
                 ("Aqueduct_03", "waterways_particles (1)"), description: "Affects the whole room.",
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("drip", ppu: 77.5f)))
+                sprite: ResourceUtils.LoadSpriteResource("drip", ppu: 377.5f)))
             .WithScaleAction((o, f) =>
             {
                 o.transform.SetScale2D(new Vector2(f, f));
@@ -511,6 +526,16 @@ public static class VanillaObjects
             ("Memory_Red", "Scenery Groups/Entry Scenery/memory_ground_plat (6)"),
             preloadAction: MiscFixers.FixMemoryPlat));
 
+        Categories.Effects.Add(new PreloadObject("Web Effect", "web_effect",
+                ("Memory_Red", "thread_memory_region/web_particles (1)"), description: "Affects the whole room.",
+                preloadAction: MiscFixers.FixWebDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("web", ppu: 377.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations);
+
         Categories.Platforming.Add(new PreloadObject("Silk Pod", "silk_pod",
             ("Memory_Red", "Scenery Groups/Entry Scenery/red_memory_silk_pod0007 (15)")));
 
@@ -554,11 +579,6 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Green Prince NPC", "green_prince",
             ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
             postSpawnAction: MiscFixers.FixGreenPrince)
-            .WithConfigGroup(ConfigGroup.Npcs));
-
-        Categories.Misc.Add(new PreloadObject("Wandering Seth NPC", "seth_npc",
-            ("Coral_10", "Seth Stand NPC"), 
-            postSpawnAction: MiscFixers.FixSeth)
             .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Lily Pad / Nuphar", "lilypad",
@@ -668,7 +688,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Rain Effect", "rain_effect",
                 ("Greymoor_07", "Greymoor_Rain_Tiled_Set"), description: "Affects the whole room.",
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("rain", ppu: 77.5f)))
+                sprite: ResourceUtils.LoadSpriteResource("rain", ppu: 377.5f)))
             .WithScaleAction((o, f) =>
             {
                 o.transform.SetScale2D(new Vector2(f, f));
@@ -786,7 +806,7 @@ public static class VanillaObjects
                 description: "Affects the whole room.\n" + 
                              "Rotate the object to rotate the direction of the storm.",
                 preloadAction: MiscFixers.FixSnow,
-                sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 77.5f)))
+                sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 377.5f)))
             .WithScaleAction((o, f) =>
             {
                 o.transform.SetScale2D(new Vector2(f, f));
@@ -902,6 +922,10 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),
             preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling()));
+        
+        Categories.Misc.Add(new PreloadObject("Rosary Bell", "rosary_bell",
+            ("Belltown_basement_03", "rosary_cache_bell_ground"),
+            preloadAction: o => o.transform.GetChild(1).GetChild(3).SetAsFirstSibling()));
 
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
                 ("Bone_East_15", "bell_bench/RestBench"),
@@ -920,6 +944,11 @@ public static class VanillaObjects
                              "in the same way as the Custom PNG for custom mirror shapes.",
                 preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
+
+        Categories.Misc.Add(new PreloadObject("Wandering Seth NPC", "seth_npc",
+                ("Coral_10", "Seth Stand NPC"), 
+                postSpawnAction: MiscFixers.FixSeth)
+            .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
                 ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
@@ -1128,6 +1157,11 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.RemoveConstrainPosition,
             postSpawnAction: EnemyFixers.FixWingedFurm)
             .WithConfigGroup(ConfigGroup.WingedFurm);
+        
+        Categories.Interactable.Add(new PreloadObject("Falling Bell", "falling_bell",
+                ("Belltown_04", "Drop Bell (1)"))
+            .WithConfigGroup(ConfigGroup.FallingBell)
+            .WithReceiverGroup(ReceiverGroup.Dropper));
     }
 
     private static void AddWispObjects()
@@ -1201,7 +1235,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
                 ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 77.5f)))
+                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 377.5f)))
             .WithScaleAction((o, f) =>
             {
                 o.transform.SetScale2D(new Vector2(f, f));
@@ -1350,7 +1384,7 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Bone Boulder", "bone_boulder",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder"))
             .WithConfigGroup(ConfigGroup.Hazards)
-            .WithReceiverGroup(ReceiverGroup.BoneBoulder));
+            .WithReceiverGroup(ReceiverGroup.Dropper));
 
         Categories.Interactable.Add(new PreloadObject("Bone Lever", "bone_lever",
                 ("Mosstown_01", "Bone Lever"), postSpawnAction: InteractableFixers.FixLever)

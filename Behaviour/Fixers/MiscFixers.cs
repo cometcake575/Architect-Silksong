@@ -968,8 +968,16 @@ public static class MiscFixers
 
     public static void FixDecoration(GameObject obj)
     {
-        obj.transform.SetScale2D(Vector2.one);
+        obj.transform.SetScale2D(Vector2.one * 5);
         obj.transform.SetPositionZ(0.006f);
+    }
+
+    public static void FixWebDecoration(GameObject obj)
+    {
+        FixDecoration(obj);
+        var fc = obj.AddComponent<FollowCamera>();
+        fc.followX = true;
+        fc.followY = true;
     }
 
     public static void FixSnow(GameObject obj)
@@ -978,5 +986,12 @@ public static class MiscFixers
         var vars = obj.LocateMyFSM("FSM").FsmVariables;
         vars.FindFsmFloat("X Min").Value = -1000;
         vars.FindFsmFloat("Y Min").Value = -1000;
+    }
+
+    public static void FixGrindPlat(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmBool("Drop Self").Value = true;
+        fsm.FsmVariables.FindFsmFloat("Drop Y").Value = obj.transform.GetPositionY() - 5;
     }
 }
