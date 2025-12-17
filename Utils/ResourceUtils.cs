@@ -54,7 +54,7 @@ public static class ResourceUtils
     }
 
     [CanBeNull]
-    internal static Sprite[] LoadSprites(string spritePath, bool point, float ppu, int count)
+    internal static Sprite[] LoadSprites(string spritePath, bool point, float ppu, int hcount, int vcount)
     {
         if (!File.Exists(spritePath)) return null;
 
@@ -63,12 +63,18 @@ public static class ResourceUtils
         tex.wrapMode = TextureWrapMode.Clamp;
         tex.filterMode = point ? FilterMode.Point : FilterMode.Bilinear;
 
-        var sprites = new Sprite[count];
-        var height = tex.height / (float)count;
-        for (var i = 0; i < count; i++)
+        var sprites = new Sprite[hcount*vcount];
+        var height = tex.height / (float)vcount;
+        var width = tex.width / (float)hcount;
+        var k = 0;
+        for (var j = vcount - 1; j >= 0; j--)
         {
-            sprites[count - i - 1] = Sprite.Create(tex, new Rect(0, height * i, tex.width, height),
-                new Vector2(0.5f, 0.5f), ppu);
+            for (var i = 0; i < hcount; i++)
+            {
+                sprites[k] = Sprite.Create(tex, new Rect(width * i, height * j, width, height),
+                    new Vector2(0.5f, 0.5f), ppu);
+                k++;
+            }
         }
 
         return sprites;

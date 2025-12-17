@@ -27,7 +27,10 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
     public string url;
     public bool point;
     public float ppu = 100;
-    public int count = 1;
+    private int _count = 1;
+    public int vcount = 1;
+    public int hcount = 1;
+    public int dummy;
     public float frameTime = 1;
     public bool playing;
 
@@ -36,7 +39,8 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
         if (string.IsNullOrEmpty(url)) return;
         
         _renderer = GetComponent<SpriteRenderer>();
-        CustomAssetManager.DoLoadSprite(url, point, ppu, count, SaveSprites);
+        CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
+        _count = Mathf.Max(1, hcount * vcount - dummy);
 
         var anim = GetComponent<Animator>();
         if (anim) anim.enabled = false;
@@ -47,22 +51,22 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
         _sprites = newSprites;
         _renderer.sprite = _sprites[0];
 
-        if (frameTime == 0) count = 1;
+        if (frameTime == 0) _count = 1;
         else _remainingFrameTime = frameTime;
     }
 
     private void Update()
     {
-        if (count <= 1 || !playing) return;
+        if (_count <= 1 || !playing) return;
         _remainingFrameTime -= Time.deltaTime;
         while (_remainingFrameTime < 0)
         {
             _remainingFrameTime += frameTime;
             _frame++;
-            if (_frame >= count)
+            if (_frame >= _count)
             {
                 gameObject.BroadcastEvent("OnFinish");
-                _frame %= count;
+                _frame %= _count;
             }
 
             if (playing) _renderer.sprite = _sprites[_frame];
@@ -176,5 +180,7 @@ public class PngPreview : MonoBehaviour
     
     public bool point;
 
-    public int count = 1;
+    public int vcount = 1;
+    
+    public int hcount = 1;
 }

@@ -29,8 +29,8 @@ public static class MiscObjects
             .WithReceiverGroup(ReceiverGroup.Playable));
         
         Categories.Effects.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
-                "\n\nSetting 'Frame Count' to a number above 1 will make the PNG animated\n" +
-                "by splitting it into frames vertically. Broadcasts 'OnFinish' when the animation ends.")
+                "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
+                "Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.Png)
             .WithReceiverGroup(ReceiverGroup.Pausable)
             .WithBroadcasterGroup(BroadcasterGroup.Finishable));

@@ -1450,8 +1450,9 @@ public static class ConfigGroup
                     var prev = o.GetOrAddComponent<PngPreview>();
                     var point = (prev?.point).GetValueOrDefault(true);
                     var ppu = (prev?.ppu).GetValueOrDefault(100);
-                    var count = (prev?.count).GetValueOrDefault(1);
-                    CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, count, 
+                    var vcount = (prev?.vcount).GetValueOrDefault(1);
+                    var hcount = (prev?.hcount).GetValueOrDefault(1);
+                    CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, hcount, vcount,
                         sprites =>
                         {
                             if (o) o.GetComponent<SpriteRenderer>().sprite = sprites[0];
@@ -1469,10 +1470,21 @@ public static class ConfigGroup
                 .WithDefaultValue(100)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType("Frame Count", "png_framecount",
-                    (o, value) => { o.GetComponentInChildren<PngObject>().count = value.GetValue(); },
-                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().count = value.GetValue(); })
+            new IntConfigType("Vertical Frame Count", "png_framecount",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().vcount = value.GetValue(); },
+                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().vcount = value.GetValue(); })
                 .WithDefaultValue(1)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Horizontal Frame Count", "png_hframecount",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().hcount = value.GetValue(); },
+                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().hcount = value.GetValue(); })
+                .WithDefaultValue(1)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Empty Frame Count", "png_eframecount",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().dummy = value.GetValue(); })
+                .WithDefaultValue(0)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Frames per Second", "png_frametime",

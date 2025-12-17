@@ -72,23 +72,23 @@ public static class CustomAssetManager
     }
 
 
-    public static void DoLoadSprite(string url, bool point, float ppu, int count, Action<Sprite[]> callback)
+    public static void DoLoadSprite(string url, bool point, float ppu, int hcount, int vcount, Action<Sprite[]> callback)
     {
-        ArchitectPlugin.Instance.StartCoroutine(LoadSprite(url, point, ppu, Mathf.Max(1, count), callback));
+        ArchitectPlugin.Instance.StartCoroutine(LoadSprite(url, point, ppu, Mathf.Max(1, hcount), Mathf.Max(1, vcount), callback));
     }
 
-    private static IEnumerator LoadSprite(string url, bool point, float ppu, int count, Action<Sprite[]> callback)
+    private static IEnumerator LoadSprite(string url, bool point, float ppu, int hcount, int vcount, Action<Sprite[]> callback)
     {
-        var id = $"{url}_{point}_{ppu}_{count}";
+        var id = $"{url}_{point}_{ppu}_{hcount}_{vcount}";
         if (!Sprites.ContainsKey(id))
         {
             var path = $"{GetPath(url)}.png";
-            var tmp = ResourceUtils.LoadSprites(path, point, ppu, count);
+            var tmp = ResourceUtils.LoadSprites(path, point, ppu, hcount, vcount);
             if (tmp == null)
             {
                 var task = Task.Run(() => SaveFile(url, path));
                 while (!task.IsCompleted) yield return null;
-                tmp = ResourceUtils.LoadSprites(path, point, ppu, count);
+                tmp = ResourceUtils.LoadSprites(path, point, ppu, hcount, vcount);
             }
 
             if (tmp == null) yield break;
