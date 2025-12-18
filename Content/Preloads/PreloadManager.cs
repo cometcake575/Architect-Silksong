@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Architect.Editor;
-using Architect.Objects.Categories;
-using Architect.Objects.Placeable;
 using Architect.Storage;
 using Architect.Utils;
 using MonoMod.RuntimeDetour;

@@ -1021,22 +1021,58 @@ public static class EnemyFixers
         fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 0);
     }
 
+    private static int HeroDetector = LayerMask.NameToLayer("Hero Detector");
     public static void FixWatcher(GameObject obj)
     {
-        var watcher = obj.AddComponent<Watcher>();
+        obj.AddComponent<Watcher>();
         
         var fsm = obj.LocateMyFSM("Control");
         
-        fsm.GetState("Start State").AddAction(() => { fsm.SendEvent(watcher.startAwake ? "WAKE" : "SLEEP"); }, 0);
+        fsm.GetState("Start State").AddAction(() => fsm.SendEvent("SLEEP"), 0);
         fsm.GetState("Away").DisableAction(2);
-        fsm.GetState("Refight Ready").DisableAction(3);
         
         fsm.GetState("Die").DisableAction(0);
+
+        ((StartRoarEmitter)fsm.GetState("Wake Roar 2").actions[4]).stunHero = false;
+
+        fsm.FsmVariables.FindFsmFloat("Dig Min X").Value = obj.transform.GetPositionX() - 12.5f;
+        fsm.FsmVariables.FindFsmFloat("Dig Max X").Value = obj.transform.GetPositionX() + 12.5f;
+        fsm.FsmVariables.FindFsmFloat("Start Dig X Max").Value = 99999;
+
+        var br = new GameObject("Battle Range")
+        {
+            transform =
+            {
+                parent = obj.transform,
+                localPosition = Vector3.zero
+            },
+            layer = HeroDetector
+        };
+        var bc = br.AddComponent<BoxCollider2D>();
+        bc.isTrigger = true;
+        bc.size = new Vector2(50, 16);
+        var alertRange = br.AddComponent<AlertRange>();
+        fsm.FsmVariables.FindFsmObject("Battle Range").Value = alertRange;
+
+        fsm.GetState("Uppercut Launch").DisableAction(4);
+        
+        var idle = fsm.GetState("Idle");
+        idle.transitions = idle.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        
+        var rc = fsm.GetState("Range Check");
+        rc.transitions = rc.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
     }
 
-    public class Watcher : MonoBehaviour
+    public class Watcher : Wakeable
     {
-        public bool startAwake;
+        public override void DoWake()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Sleep").AddAction(() => fsm.SendEvent("WAKE"), 0);
+            fsm.SendEvent("WAKE");
+        }
     }
 
     public static void FixZango(GameObject obj)
@@ -1190,69 +1226,7 @@ public static class EnemyFixers
         }
     }
 
-    public static void FixCorrcrustKaraka(GameObject obj)
-    {
-        FixSpearSpawned(obj);
-        RemoveConstrainPosition(obj);
-        var ck = obj.AddComponent<CorrcrustKaraka>();
-
-        var fsm = obj.LocateMyFSM("Control");
-        var rise = fsm.GetState("Stomp Rise");
-        
-        // Disable normal behaviour
-        rise.DisableAction(2);
-        rise.DisableAction(3);
-
-        // Target positions
-        var targetX = fsm.FsmVariables.FindFsmFloat("Target X");
-        var targetY = fsm.FsmVariables.FindFsmFloat("Target Y");
-
-        // Initial positions
-        var runningTime = 0f;
-        var fromX = 0f;
-        var fromY = 0f;
-        
-        rise.AddAction(() =>
-        {
-            runningTime = 0;
-            fromX = obj.transform.GetPositionX();
-            fromY = obj.transform.GetPositionY();
-            ck.moveValid = true;
-        }, 2);
-        
-        // Move with Rigidbody2D
-        var rb2d = obj.GetComponent<Rigidbody2D>();
-        rise.AddAction(() =>
-        {
-            if (!ck.moveValid) return;
-            
-            runningTime += Time.deltaTime;
-
-            var percentage = Mathf.Clamp01(runningTime * 2);
-            
-            rb2d.MovePosition(new Vector2(
-                EaseInOutSine(fromX, targetX.Value, percentage),
-                EaseOutCubic(fromY, targetY.Value, percentage))
-            );
-        }, 3, true);
-
-        return;
-
-        float EaseOutCubic(float start, float end, float value)
-        {
-            --value;
-            end -= start;
-            return end * (float) (value * value * value + 1.0) + start;
-        }
-
-        float EaseInOutSine(float start, float end, float value)
-        {
-            end -= start;
-            return (float)(-(double)end / 2.0 * (Mathf.Cos((float)(3.1415927410125732 * value / 1.0)) - 1.0)) + start;
-        }
-    }
-
-    private class CorrcrustKaraka : MonoBehaviour
+    private class FixedMovement : MonoBehaviour
     {
         public bool moveValid;
         
@@ -2034,12 +2008,41 @@ public static class EnemyFixers
         
         var anim = obj.GetComponent<tk2dSpriteAnimator>();
         anim.defaultClipId = anim.GetClipIdByName("Idle");
+
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.layer = EnemiesLayer;
+    }
+
+    public static void FixTallcrawJuror(GameObject obj)
+    {
+        obj.GetComponent<MeshRenderer>().enabled = true;
+        obj.GetComponent<tk2dSprite>().color = Color.white;
+        
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Roost L").DisableAction(0);
+        fsm.GetState("Roost R").DisableAction(0);
+        fsm.FsmVariables.FindFsmBool("Spawner").Value = false;
+        fsm.FsmVariables.FindFsmBool("z_Summon").Value = false;
+        
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.GetComponent<tk2dSpriteAnimator>().Play("Idle");
     }
 
     public static void FixTinyCrawJuror(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Behaviour");
-        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FG"), 14);
+        var setFg = fsm.GetState("Set FG");
+        setFg.DisableAction(1);
+        setFg.DisableAction(2);
+        fsm.GetState("Init").AddAction(() =>
+        {
+            obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            obj.layer = EnemiesLayer;
+            fsm.SendEvent("FG");
+        }, 14);
+
+        obj.GetComponent<MeshRenderer>().enabled = true;
+        obj.GetComponent<tk2dSprite>().color = Color.white;
     }
 
     public static void FixCrawJuror(GameObject obj)
@@ -2129,5 +2132,150 @@ public static class EnemyFixers
         fsm.FsmVariables.FindFsmFloat("Air Y").Value = obj.transform.GetPositionY() + 6.1f;
         
         var shield = obj.transform.Find("Shield Projectile").gameObject;
+    }
+
+    public static void FixCorrcrustKaraka(GameObject obj)
+    {
+        FixSpearSpawned(obj);
+        RemoveConstrainPosition(obj);
+
+        var fsm = obj.LocateMyFSM("Control");
+        var rise = fsm.GetState("Stomp Rise");
+        
+        // Disable normal behaviour
+        rise.DisableAction(2);
+        rise.DisableAction(3);
+
+        // Target positions
+        var targetX = fsm.FsmVariables.FindFsmFloat("Target X");
+        var targetY = fsm.FsmVariables.FindFsmFloat("Target Y");
+
+        // Initial positions
+        var runningTime = 0f;
+        var fromX = 0f;
+        var fromY = 0f;
+        
+        rise.AddAction(() =>
+        {
+            runningTime = 0;
+            fromX = obj.transform.GetPositionX();
+            fromY = obj.transform.GetPositionY();
+        }, 2);
+        
+        // Move with Rigidbody2D
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        rise.AddAction(() =>
+        {
+            runningTime += Time.deltaTime;
+
+            var percentage = Mathf.Clamp01(runningTime * 2);
+            
+            rb2d.MovePosition(new Vector2(
+                EaseInOutSine(fromX, targetX.Value, percentage),
+                EaseOutCubic(fromY, targetY.Value, percentage))
+            );
+        }, 3, true);
+    }
+
+    private static float EaseOutCubic(float start, float end, float value)
+    {
+        --value;
+        end -= start;
+        return end * (float) (value * value * value + 1.0) + start;
+    }
+
+    private static float EaseInOutSine(float start, float end, float value)
+    {
+        end -= start;
+        return (float)(-(double)end / 2.0 * (Mathf.Cos((float)(3.1415927410125732 * value / 1.0)) - 1.0)) + start;
+    }
+
+    public static void FixCrawfather(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("BG Idle").AddAction(() => fsm.SendEvent("BATTLE START"));
+        fsm.GetState("Emerge Announce").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Emerge Antic").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Emerge").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[1]).stunHero = false;
+        
+        var flapY = fsm.FsmVariables.FindFsmFloat("Flap Y");
+        fsm.GetState("Idle").AddAction(AdjustFlapY, 0);
+        fsm.GetState("Range Check").AddAction(AdjustFlapY, 0);
+        
+        fsm.GetState("Call").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
+
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        var launch = fsm.GetState("Launch");
+
+        // Initial positions
+        var runningTime = 0f;
+        var fromY = 0f;
+        
+        // Modify launch to use collision
+        launch.DisableAction(3);
+        launch.AddAction(() =>
+        {
+            runningTime = 0;
+            fromY = obj.transform.GetPositionY();
+        }, 3);
+        launch.AddAction(() =>
+        {
+            runningTime += Time.deltaTime;
+            var percentage = Mathf.Clamp01(runningTime * 2.22f);
+
+            rb2d.MovePosition(new Vector2(
+                obj.transform.GetPositionX(),
+                EaseOutCubic(fromY, flapY.Value, percentage))
+            );
+
+            if (percentage >= 1) fsm.SendEvent("FINISHED");
+        }, 4, true);
+        
+        var dive = fsm.GetState("Dive");
+        var firstMoveTime = 0f;
+        dive.AddAction(() =>
+        {
+            firstMoveTime = Time.time;
+        });
+        dive.AddAction(() =>
+        {
+            if (Time.time - firstMoveTime < 0.1f) return;
+            if (Mathf.Abs(rb2d.linearVelocityY) < 0.05f) fsm.SendEvent("LAND");
+        }, everyFrame: true);
+
+        
+        AdjustFlapY();
+        return;
+        
+        void AdjustFlapY() 
+        {
+            if (HeroController.instance.TryFindGroundPoint(out var pos,
+                    obj.transform.position,
+                    true))
+            {
+                flapY.Value = pos.y + 6.5f;
+            }
+        }
+    }
+
+    public static void FixKahnn(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        var hds = fsm.GetState("Heart Death Start");
+        hds.DisableAction(0);
+        hds.DisableAction(1);
+    }
+
+    public static void FixPinstress(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+
+        fsm.FsmVariables.FindFsmFloat("Centre X").Value = obj.transform.GetPositionX();
+        fsm.FsmVariables.FindFsmFloat("Jump X Min").Value = obj.transform.GetPositionX() - 7.5f;
+        fsm.FsmVariables.FindFsmFloat("Jump X Max").Value = obj.transform.GetPositionX() + 7.5f;
+        fsm.FsmVariables.FindFsmFloat("Ground Y").Value = obj.transform.GetPositionY() - 1.9273f;
     }
 }

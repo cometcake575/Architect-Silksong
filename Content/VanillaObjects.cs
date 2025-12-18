@@ -202,6 +202,16 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.Four));
         
         AddSolid("Coral Platform 1", "coral_plat_float", ("Coral_24", "Coral_plat_float_green_medium (1)"));
+        
+        AddEnemy("Watcher at the Edge", "watcher", ("Coral_39", "Coral Warrior Grey"),
+            postSpawnAction: EnemyFixers.FixWatcher)
+            .WithConfigGroup(ConfigGroup.Watcher)
+            .WithReceiverGroup(ReceiverGroup.Wakeable)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
+        
+        /*
+        AddEnemy("Crust King Kahnn", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
+            postSpawnAction: EnemyFixers.FixKahnn);*/
     }
 
     private static void AddRoadObjects()
@@ -225,10 +235,12 @@ public static class VanillaObjects
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 1/Roachkeeper Chef Tiny"),
             preloadAction: o => o.transform.SetPositionZ(0.006f),
             postSpawnAction: EnemyFixers.FixRoachserver);
-        /* 
-        AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
+        
+        /*AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
-            postSpawnAction: EnemyFixers.FixLugoli);*/
+            postSpawnAction: EnemyFixers.FixLugoli)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.Bosses);*/
     }
 
     private static void AddUnderworksObjects()
@@ -239,7 +251,8 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs));
         
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
-            ("Under_19", "lava_crumble_plat")));
+            ("Under_19", "lava_crumble_plat"))
+            .WithConfigGroup(ConfigGroup.CrumblePlat));
 
         AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"));
         AddEnemy("Cogwork Hauler", "understore_auto_ex", 
@@ -656,8 +669,13 @@ public static class VanillaObjects
             preloadAction:EnemyFixers.KeepActive);
         AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),
             preloadAction:EnemyFixers.KeepActive);
+
+        AddEnemy("Crawfather", "crawfather", ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather"),
+            preloadAction: o => o.transform.SetPositionZ(0.006f),
+            postSpawnAction: EnemyFixers.FixCrawfather)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses);
         
-        /*
         AddEnemy("Craw Juror", "craw_juror",
             ("Room_CrowCourt_02", "Battle Scene/Wave 2/Crowman Juror Tiny"),
             preloadAction: EnemyFixers.FixCrawJurorPreload,
@@ -665,11 +683,22 @@ public static class VanillaObjects
         AddEnemy("Tallcraw Juror", "tallcraw_juror",
             ("Room_CrowCourt_02", "Battle Scene/Wave 1/Crowman Juror"),
             preloadAction: EnemyFixers.FixCrawJurorPreload,
-            postSpawnAction: EnemyFixers.FixCrawJuror);
+            postSpawnAction: EnemyFixers.FixTallcrawJuror);
         AddEnemy("Squatcraw Juror", "squatcraw_juror", 
             ("Room_CrowCourt_02", "Battle Scene/Wave 1/Crowman Dagger Juror"),
             preloadAction: EnemyFixers.FixCrawJurorPreload,
-            postSpawnAction: EnemyFixers.FixCrawJuror);*/
+            postSpawnAction: EnemyFixers.FixCrawJuror);
+
+        Categories.Hazards.Add(new PreloadObject("Craw Chain", "craw_chain",
+                ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather/Chains/Crawfather Attack Chain"),
+                description: "Starts hidden, the 'Activate' trigger will activate the chain.",
+                preloadAction: o =>
+                {
+                    var anim = o.GetComponent<tk2dSpriteAnimator>();
+                    anim.defaultClipId = anim.GetClipIdByName("Chain Spike");
+                }, postSpawnAction: o => o.LocateMyFSM("Control").GetState("Emerge Pause").DisableAction(2))
+            .WithReceiverGroup(ReceiverGroup.Trap)
+            .WithRotationGroup(RotationGroup.All));
         
         AddEnemy("Moorwing", "moorwing", ("Greymoor_05_boss", "Vampire Gnat Boss Scene/Vampire Gnat"),
             postSpawnAction:EnemyFixers.FixMoorwing)
@@ -767,7 +796,8 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Slab Lever", "jail_lever",
                 ("Slab_22", "slab_jail_lever"), postSpawnAction: InteractableFixers.FixLever)
             .WithBroadcasterGroup(BroadcasterGroup.Levers)
-            .WithConfigGroup(ConfigGroup.Levers));
+            .WithConfigGroup(ConfigGroup.Levers)
+            .WithRotationGroup(RotationGroup.Eight));
 
         Categories.Interactable.Add(new PreloadObject("Slab Gate", "jail_gate_door",
                 ("Slab_05", "Jail Gate Door (2)"), preloadAction: EnemyFixers.KeepActive)
@@ -823,6 +853,11 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(f, f));
             })
             .WithConfigGroup(ConfigGroup.Decorations).WithRotationGroup(RotationGroup.All);
+
+        /*
+        AddEnemy("Pinstress", "pinstress_boss", 
+            ("Peak_07", "Pinstress Control/Pinstress Scene/Pinstress Boss"),
+            postSpawnAction: EnemyFixers.FixPinstress);*/
     }
 
     private static void AddBileObjects()
@@ -862,7 +897,8 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Muck Pod", "swap_bounce_pod",
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
-            ("Shadow_02", "moss_crumble_plat")));
+            ("Shadow_02", "moss_crumble_plat"))
+            .WithConfigGroup(ConfigGroup.CrumblePlat));
         
         Categories.Hazards.Add(new PreloadObject("Stake Trap", "bilewater_trap",
             ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
@@ -1169,7 +1205,7 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixWingedFurm)
             .WithConfigGroup(ConfigGroup.WingedFurm);
         
-        Categories.Interactable.Add(new PreloadObject("Falling Bell", "falling_bell",
+        Categories.Hazards.Add(new PreloadObject("Falling Bell", "falling_bell",
                 ("Belltown_04", "Drop Bell (1)"))
             .WithConfigGroup(ConfigGroup.FallingBell)
             .WithReceiverGroup(ReceiverGroup.Dropper));
@@ -1440,7 +1476,8 @@ public static class VanillaObjects
         AddSolid("Docks Platform 2", "dock_plat_02", ("Bone_East_01", "dock_plat_float_01 (9)"));
 
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 1", "lava_crumble_plat",
-            ("Dock_02b", "lava_crumble_plat (5)")));
+            ("Dock_02b", "lava_crumble_plat (5)"))
+            .WithConfigGroup(ConfigGroup.CrumblePlat));
     }
 
     private static void AddFieldsObjects()

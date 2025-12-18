@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Behaviour.Abilities;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
@@ -573,6 +574,30 @@ public static class ConfigGroup
                 {
                     o.GetComponent<CrankPlat>().maxReturnSpeed = value.GetValue();
                 }).WithPriority(-1))
+    ]);
+
+    private static readonly string[] CrumbleHazardStates = ["Drop Antic", "Drop", "Return Antic"];
+    public static readonly List<ConfigType> CrumblePlat = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Respawn on Hazard", "crumble_hazard_respawn",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    var fsm = o.LocateMyFSM("Control");
+
+                    foreach (var s in CrumbleHazardStates)
+                    {
+                        var drop = fsm.GetState(s);
+                        drop.transitions = drop.transitions
+                            .Where(trans => trans.EventName != "HAZARD RESPAWNED").ToArray();
+                    }
+                }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Respawn Time", "crumble_respawn_time",
+                (o, value) =>
+                {
+                    o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Return Time").Value = value.GetValue();
+                }).WithDefaultValue(3))
     ]);
 
     public static readonly List<ConfigType> SilkSpool = GroupUtils.Merge(Visible, [
@@ -1295,6 +1320,15 @@ public static class ConfigGroup
                 o.GetComponent<EnemyFixers.Wakeable>().DoWake();
             }).WithDefaultValue(true))
     ]);
+    
+    public static readonly List<ConfigType> Watcher = GroupUtils.Merge(Wakeable, GroupUtils.Merge(Bosses, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Nook Y Offset", "watcher_nook_y", (o, value) =>
+            {
+                o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Cliff Y")
+                    .value = o.transform.GetPositionY() + value.GetValue();
+            }).WithDefaultValue(1000))
+    ]));
 
     public static readonly List<ConfigType> BurningBug = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
@@ -1948,7 +1982,7 @@ public static class ConfigGroup
                     }).WithDefaultValue(false))
     ]);
 
-    public static readonly List<ConfigType> FallingBell = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> FallingBell = GroupUtils.Merge(Hazards, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Reset Time", "bell_reset",
                     (o, value) =>
