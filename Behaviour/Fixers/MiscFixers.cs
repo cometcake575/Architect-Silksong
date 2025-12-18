@@ -335,6 +335,22 @@ public static class MiscFixers
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Alt Pos?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        var explode = fsm.GetState("Explode");
+        explode.DisableAction(5);
+        explode.AddAction(() =>
+        {
+            var ede = obj.GetComponent<EnemyDeathEffects>();
+            ede.EmitSound();
+            ede.EmitEffects(ede.EmitCorpse(
+                90, 
+                1, 
+                AttackTypes.Generic, 
+                NailElements.None, 
+                null, 
+                null, 
+                out _));
+            Object.Destroy(obj);
+        });
     }
 
     public static void FixUpdraft(GameObject obj)

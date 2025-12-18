@@ -19,6 +19,17 @@ public static class VanillaObjects
 {
     public static void Init()
     {
+        /*
+         * TODO Fly in effect
+         * 3 modes:
+         * - tk2d default anim
+         * - fsm config option
+         * - Custom fly in code
+         * Make a class EnemyObject extending PreloadObject that runs the associated code to attach the logic as a component
+         * public class BattleController : MonoBehaviour
+         * then all others inherit from that and have parameters
+         */
+        
         AddMossObjects();
         AddMarrowObjects();
         AddDocksObjects();
