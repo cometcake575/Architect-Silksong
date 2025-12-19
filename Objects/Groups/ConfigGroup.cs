@@ -1220,6 +1220,15 @@ public static class ConfigGroup
                 }).WithDefaultValue(true))
     ]);
 
+    private static readonly ConfigType DamagesEnemies = ConfigurationManager.RegisterConfigType(
+        new BoolConfigType("Damages Enemies", "damages_enemies",
+            (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.RemoveComponentsInChildren<DamageEnemies>();
+            })
+    );
+
     public static readonly List<ConfigType> GarmondBoss = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Lethal Damage", "garmond_lethal",
@@ -1229,15 +1238,12 @@ public static class ConfigGroup
                     foreach (var comp in o.GetComponentsInChildren<DamageHero>(true))
                         comp.damagePropertyFlags &= ~DamagePropertyFlags.NonLethal;
                 }).WithDefaultValue(true)),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Damages Enemies", "damages_enemies",
-                (o, value) =>
-                {
-                    if (value.GetValue()) return;
-                    o.RemoveComponentsInChildren<DamageEnemies>();
-                }).WithDefaultValue(false)
-        )
+        DamagesEnemies
     ]);
+
+    public static readonly List<ConfigType> Moorwing = GroupUtils.Merge(Bosses, [DamagesEnemies]);
+    
+    public static readonly List<ConfigType> Boran = GroupUtils.Merge(Bosses, [DamagesEnemies]);
 
     public static readonly List<ConfigType> LeafRoller = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
@@ -1897,16 +1903,9 @@ public static class ConfigGroup
                 .WithPriority(-1)
         )
     ]);
-
+    
     public static readonly List<ConfigType> Hazards = GroupUtils.Merge(Decorations, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Damages Enemies", "damages_enemies",
-                (o, value) =>
-                {
-                    if (value.GetValue()) return;
-                    o.RemoveComponentsInChildren<DamageEnemies>();
-                })
-        ),
+        DamagesEnemies,
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Damages Player", "damages_player",
                 (o, value) =>

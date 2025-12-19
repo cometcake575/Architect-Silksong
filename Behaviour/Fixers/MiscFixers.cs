@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Architect.Behaviour.Custom;
+using Architect.Editor;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using GlobalSettings;
@@ -134,6 +135,8 @@ public static class MiscFixers
         HookUtils.OnFsmAwake += fsm =>
         {
             if (fsm.name == "door_act3_wakeUp") fsm.GetState("Init").DisableAction(1);
+            if (EditManager.IsEditing && fsm.FsmName == "Detect Grab" && fsm.name == "Tendril") 
+                fsm.gameObject.SetActive(false);
         };
     }
 
@@ -309,6 +312,7 @@ public static class MiscFixers
     public static void FixMemoryPlat(GameObject obj)
     {
         obj.transform.GetChild(2).GetChild(1).GetChild(2).GetChild(1).SetAsFirstSibling();
+        Object.Destroy(obj.transform.GetChild(0).gameObject);
     }
 
     public static void SetMetronomeTime(GameObject obj, float delay)
@@ -1009,5 +1013,20 @@ public static class MiscFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.FsmVariables.FindFsmBool("Drop Self").Value = true;
         fsm.FsmVariables.FindFsmFloat("Drop Y").Value = obj.transform.GetPositionY() - 5;
+    }
+
+    public static void FixBreakableWall(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("breakable_wall_v2");
+        fsm.fsmTemplate = null;
+        var idle = fsm.GetState("Idle");
+        var t2d = (Trigger2dEvent)idle.actions[2];
+        var rd = (ReceivedDamage)idle.actions[4];
+        rd.sendEventHeavy = rd.sendEvent;
+        t2d.sendEvent = rd.sendEvent;
+
+        var hit2 = fsm.GetState("Hit 2");
+        var rd2 = (ReceivedDamage)hit2.actions[2];
+        rd2.sendEventHeavy = rd2.sendEvent;
     }
 }

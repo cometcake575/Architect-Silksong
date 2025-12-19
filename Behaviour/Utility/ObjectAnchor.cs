@@ -87,7 +87,15 @@ public class ObjectAnchor : PreviewableBehaviour
 
         // Moving platform fix so the player sticks to the platform
         // Uses a Motion Parent object as the parent and not the anchor itself as the anchor can be disabled
-        if (target.layer == 8 && stickPlayer)
+        var b = target.layer == 8;
+        var stickTarget = target;
+        foreach (var col in target.GetComponentsInChildren<Collider2D>())
+        {
+            if (b) break;
+            stickTarget = col.gameObject;
+            b = stickTarget.layer == 8;
+        }
+        if (b && stickPlayer)
         {
             if (!target.transform.parent)
             {
@@ -95,8 +103,8 @@ public class ObjectAnchor : PreviewableBehaviour
                 target.transform.position = Vector3.zero;
                 target.transform.SetParent(motionParent);
             }
-            target.AddComponent<StickPlayer>();
             
+            stickTarget.AddComponent<StickPlayer>().target = target.transform.parent;
             target = target.transform.parent.gameObject;
         }
 
@@ -380,13 +388,15 @@ public class ObjectAnchor : PreviewableBehaviour
 
     public class StickPlayer : MonoBehaviour
     {
+        public Transform target;
+        
         private void OnCollisionEnter2D(Collision2D collision)
         {
             var collisionObject = collision.gameObject;
             if (collisionObject.layer != 9) return;
             var component1 = collisionObject.GetComponent<HeroController>();
-            if (component1) component1.SetHeroParent(transform.parent);
-            else collisionObject.transform.SetParent(transform.parent);
+            if (component1) component1.SetHeroParent(target);
+            else collisionObject.transform.SetParent(target);
             var component2 = collisionObject.GetComponent<Rigidbody2D>();
             if (!component2) return;
             component2.interpolation = RigidbodyInterpolation2D.None;

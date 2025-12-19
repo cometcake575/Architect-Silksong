@@ -471,31 +471,6 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(f, f));
             })
             .WithConfigGroup(ConfigGroup.Decorations);
-
-        Categories.Interactable.Add(new PreloadObject("Breakable Wall", "breakable_wall",
-            ("Aqueduct_03", "Breakable Wall"),
-            preloadAction: o =>
-            {
-                o.transform.GetChild(0).gameObject.SetActive(false);
-                var col2d = o.GetComponent<BoxCollider2D>();
-                col2d.offset = Vector2.zero;
-                col2d.size = new Vector2(2.25f, 4.25f);
-            }, postSpawnAction: o =>
-            {
-                var fsm = o.LocateMyFSM("breakable_wall_v2");
-                fsm.fsmTemplate = null;
-                var idle = fsm.GetState("Idle");
-                var t2d = (Trigger2dEvent)idle.actions[2];
-                var rd = (ReceivedDamage)idle.actions[4];
-                rd.sendEventHeavy = rd.sendEvent;
-                t2d.sendEvent = rd.sendEvent;
-                
-                var hit2 = fsm.GetState("Hit 2");
-                var rd2 = (ReceivedDamage)hit2.actions[2];
-                rd2.sendEventHeavy = rd2.sendEvent;
-            })
-            .WithConfigGroup(ConfigGroup.BreakableWall));
-        
     }
 
     private static void AddAbyssObjects()
@@ -702,7 +677,7 @@ public static class VanillaObjects
         
         AddEnemy("Moorwing", "moorwing", ("Greymoor_05_boss", "Vampire Gnat Boss Scene/Vampire Gnat"),
             postSpawnAction:EnemyFixers.FixMoorwing)
-            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.Moorwing)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
 
         Categories.Hazards.Add(new PreloadObject("Mill Trap", "mill_trap",
@@ -966,6 +941,28 @@ public static class VanillaObjects
 
     private static void AddMiscObjects()
     {
+        Categories.Misc.Add(new PreloadObject("Breakable Wall A", "breakable_wall_2",
+            ("Bone_19", "Breakable Wall"),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(0).gameObject.SetActive(false);
+                o.transform.GetChild(1).gameObject.SetActive(false);
+            },
+            postSpawnAction: MiscFixers.FixBreakableWall)
+            .WithConfigGroup(ConfigGroup.BreakableWall));
+
+        Categories.Misc.Add(new PreloadObject("Breakable Wall B", "breakable_wall",
+                ("Aqueduct_03", "Breakable Wall"),
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(0).gameObject.SetActive(false);
+                    o.transform.GetChild(1).gameObject.SetActive(false);
+                    var col2d = o.GetComponent<BoxCollider2D>();
+                    col2d.offset = Vector2.zero;
+                    col2d.size = new Vector2(2.25f, 4.25f);
+                }, postSpawnAction: MiscFixers.FixBreakableWall)
+            .WithConfigGroup(ConfigGroup.BreakableWall));
+        
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),
             preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling()));
@@ -1034,7 +1031,8 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixServitorIgnim);
         
         AddEnemy("Servitor Boran", "servitor_large", ("Peak_04d", "Weaver Servitor Large"),
-            preloadAction: EnemyFixers.FixServitorBoran);
+            preloadAction: EnemyFixers.FixServitorBoran)
+            .WithConfigGroup(ConfigGroup.Boran);
 
         Categories.Misc.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
