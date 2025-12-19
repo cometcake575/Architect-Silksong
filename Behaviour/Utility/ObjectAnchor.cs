@@ -160,6 +160,8 @@ public class ObjectAnchor : PreviewableBehaviour
             }
         }
     }
+    
+    private SplineAnchor _splineAnchor;
 
     public void Reset()
     {
@@ -173,6 +175,8 @@ public class ObjectAnchor : PreviewableBehaviour
         _offset = startOffset;
         rotation = startRotation + transform.rotation.eulerAngles.z;
         _currentSpeed = speed;
+        
+        if (_splineAnchor) _splineAnchor.Reset();
     }
 
     private void OnDisable()
@@ -332,19 +336,19 @@ public class ObjectAnchor : PreviewableBehaviour
 
     private void SetupSpline(SplineObjects.SplinePoint sp)
     {
-
         var splineAnchor = new GameObject(name + " Spline Anchor")
         {
             transform = { position = sp.transform.position.Where(z: transform.GetPositionZ()) }
         };
 
-        var spa = splineAnchor.AddComponent<SplineAnchor>();
+        _splineAnchor = splineAnchor.AddComponent<SplineAnchor>();
         if (sp.spline.splines.Contains(sp))
         {
-            spa.time = (sp.spline.splines.IndexOf(sp)+1) * 25;
+            _splineAnchor.startTime = (sp.spline.splines.IndexOf(sp)+1) * 25;
+            _splineAnchor.Reset();
         }
 
-        spa.spline = sp.spline;
+        _splineAnchor.spline = sp.spline;
 
         var pc = transform.parent.gameObject.AddComponent<PositionConstraint>();
         
@@ -363,6 +367,7 @@ public class ObjectAnchor : PreviewableBehaviour
     {
         public SplineObjects.Spline spline;
 
+        public float startTime;
         public float time;
 
         private bool _started;
@@ -384,6 +389,8 @@ public class ObjectAnchor : PreviewableBehaviour
 
             time += Time.deltaTime * spline.speed / Vector3.Distance(p1, p2);
         }
+
+        public void Reset() => time = startTime;
     }
 
     public class StickPlayer : MonoBehaviour
