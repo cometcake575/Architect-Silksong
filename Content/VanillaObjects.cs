@@ -441,7 +441,7 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Damageable);
         
         AddEnemy("Imoba", "imoba", ("Cradle_Destroyed_Challenge_01", "Spike Lazy Flyer"),
-            postSpawnAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
+            preloadAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
             postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
     }
@@ -659,7 +659,7 @@ public static class VanillaObjects
             }).DoFlipX();
         AddEnemy("Mitemother", "mitemother", ("Greymoor_16", "Gnat Giant")).DoFlipX();
         AddEnemy("Fluttermite", "mitefly", ("Greymoor_03", "Mitefly (1)"),
-            postSpawnAction: EnemyFixers.FixPatroller)
+            preloadAction: EnemyFixers.FixPatroller)
             .WithConfigGroup(ConfigGroup.YPatroller);
         
         AddEnemy("Craw", "crow", ("Greymoor_15b",
@@ -669,12 +669,6 @@ public static class VanillaObjects
             preloadAction:EnemyFixers.KeepActive);
         AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),
             preloadAction:EnemyFixers.KeepActive);
-
-        AddEnemy("Crawfather", "crawfather", ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather"),
-            preloadAction: o => o.transform.SetPositionZ(0.006f),
-            postSpawnAction: EnemyFixers.FixCrawfather)
-            .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses);
         
         AddEnemy("Craw Juror", "craw_juror",
             ("Room_CrowCourt_02", "Battle Scene/Wave 2/Crowman Juror Tiny"),
@@ -688,6 +682,12 @@ public static class VanillaObjects
             ("Room_CrowCourt_02", "Battle Scene/Wave 1/Crowman Dagger Juror"),
             preloadAction: EnemyFixers.FixCrawJurorPreload,
             postSpawnAction: EnemyFixers.FixCrawJuror);
+
+        AddEnemy("Crawfather", "crawfather", ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather"),
+                preloadAction: o => o.transform.SetPositionZ(0.006f),
+                postSpawnAction: EnemyFixers.FixCrawfather)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses);
 
         Categories.Hazards.Add(new PreloadObject("Craw Chain", "craw_chain",
                 ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather/Chains/Crawfather Attack Chain"),
@@ -1350,7 +1350,8 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Gurr Trap", "hunter_landmine",
                 ("Bone_East_24", "Ant Trapper Quest Scene (3)/Tracking Scene/Trapper Barb Trap Landmine"))
-            .WithReceiverGroup(ReceiverGroup.Trap));
+            .WithReceiverGroup(ReceiverGroup.Trap)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Interactable.Add(new PreloadObject("Hunter's March Pressure Plate", "hunter_trap_plate",
                 ("Ant_04", "Hunter Trap Plate"), postSpawnAction: InteractableFixers.FixMarchPlate)
