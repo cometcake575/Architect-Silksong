@@ -653,6 +653,7 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.FsmVariables.FindFsmBool("Spawner").value = false;
         obj.GetComponent<HealthManager>().invincible = false;
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
     }
 
     public static void FixMoorwing(GameObject obj)
