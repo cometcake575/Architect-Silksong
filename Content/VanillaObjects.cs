@@ -276,15 +276,23 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Cogs));
 
         Categories.Platforming.Add(new PreloadObject("Grind Platform", "grind_plat",
-            ("Under_03b", "Grind Plat Control (1)/Understore Grind Plat (1)"),
+            ("Under_06", "Grind Plat Control/Understore Grind Plat (1)"),
             postSpawnAction: MiscFixers.FixGrindPlat)
             .WithConfigGroup(ConfigGroup.GrindPlat));
+
+        Categories.Hazards.Add(new PreloadObject("Junk Pipe", "junk_pipe",
+            ("Under_06", "understore_junk_pipe"),
+            preloadAction: HazardFixers.FixJunkPipe)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
             ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
             preloadAction: MiscFixers.PreFixLoam,
             postSpawnAction: MiscFixers.FixLoam)
             .WithConfigGroup(ConfigGroup.Npcs));
+        
+        AddSolid("Underworks Platform 1", "under_plat_1", ("Under_05", "dock_metal_grate_floor_set (1)"),
+            preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling());
     }
     
     private static void AddCitadelObjects()
@@ -961,6 +969,11 @@ public static class VanillaObjects
             ("Belltown_basement_03", "rosary_cache_bell_ground"),
             preloadAction: o => o.transform.GetChild(1).GetChild(3).SetAsFirstSibling()));
 
+        Categories.Misc.AddStart(new PreloadObject("Toll Bench", "toll_bench",
+                ("Under_08", "Understore Toll Bench (2)"),
+                preloadAction: MiscFixers.FixTollBench, preview: true)
+            .WithConfigGroup(ConfigGroup.Benches));
+        
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
                 ("Bone_East_15", "bell_bench/RestBench"),
                 preloadAction: MiscFixers.FixBench, preview: true)
@@ -1112,6 +1125,11 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixSummonedSaviour)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
+        
+        AddSolid("Shellwood Platform 1", "wood_plat_1", 
+            ("Shellwood_01", "shellwood_plat_float_thin"));
+        AddSolid("Shellwood Platform 2", "wood_plat_2", 
+            ("Shellwood_01", "shellwood_plat_float_wide"));
     }
 
     private static void AddMemoriumObjects()

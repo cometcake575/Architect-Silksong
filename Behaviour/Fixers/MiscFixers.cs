@@ -12,7 +12,6 @@ using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Bounds = UnityEngine.Bounds;
 using Object = UnityEngine.Object;
 
 namespace Architect.Behaviour.Fixers;
@@ -146,10 +145,18 @@ public static class MiscFixers
     
     public delegate void GetRespawnInfo(GameManager self, out string a, out string b);
     
-    public static void FixBench(GameObject bench)
+    public static void FixTollBench(GameObject obj)
     {
-        Object.DestroyImmediate(bench.transform.GetChild(2).gameObject);
-        bench.AddComponent<CustomBench>();
+        obj.transform.GetChild(3).GetChild(1).GetChild(2).GetChild(0)
+            .gameObject.AddComponent<PlaceableObject.SpriteSource>();
+        Object.DestroyImmediate(obj.transform.GetChild(4).GetChild(2).gameObject);
+        obj.AddComponent<CustomBench>();
+    }
+    
+    public static void FixBench(GameObject obj)
+    {
+        Object.DestroyImmediate(obj.transform.GetChild(2).gameObject);
+        obj.AddComponent<CustomBench>();
     }
 
     public class CustomBench : MonoBehaviour
@@ -162,10 +169,13 @@ public static class MiscFixers
         }
     }
 
+    private static readonly int ParticleLayer = LayerMask.NameToLayer("Particle");
+
     public static void MarkRing(GameObject obj)
     {
         obj.AddComponent<MapperRing>();
         obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
+        obj.layer = ParticleLayer;
     }
 
     public class MapperRing : TriggerActivator
@@ -283,6 +293,7 @@ public static class MiscFixers
     public static void FixBellBaby(GameObject obj)
     {
         obj.AddComponent<TriggerActivator>();
+        obj.layer = ParticleLayer;
         
         var fsm = obj.LocateMyFSM("Control");
         
@@ -957,11 +968,25 @@ public static class MiscFixers
 
             var confirm = fsm.GetState("Confirm");
             confirm.DisableAction(0);
-            var dialogue = (DialogueYesNoV2)confirm.actions[1];
-            dialogue.TranslationSheet = "ArchitectMod";
-            dialogue.TranslationKey = text;
             
+            var dialogue = confirm.actions[1];
+            switch (dialogue)
+            {
+                case DialogueYesNoV2 ynv2:
+                    ynv2.TranslationSheet = "ArchitectMod";
+                    ynv2.TranslationKey = text;
+                    break;
+                case GetLocalisedString gls:
+                {
+                    gls.Enabled = false;
+                    var str = fsm.FsmVariables.FindFsmString("Prompt Text Override");
+                    confirm.AddAction(() => str.Value = text);
+                    break;
+                }
+            }
+
             var give = fsm.GetState("Give Object");
+            if (give == null) return;
             give.DisableAction(0);
             give.AddAction(() => gameObject.BroadcastEvent("OnPay"), 0);
         }

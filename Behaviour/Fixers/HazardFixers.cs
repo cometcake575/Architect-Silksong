@@ -10,6 +10,7 @@ public static class HazardFixers
 {
     private static Transform _heroGrind;
     private static GameObject _cogDamager;
+    private static GameObject _junkFall;
 
     private static float _lanternTime = 1;
         
@@ -26,6 +27,9 @@ public static class HazardFixers
                 cmh.useSelfForAngle = true;
                 _cogDamager = o;
             }));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Under_06", "junk_chute_ manual (1)", 
+            o => _junkFall = o));
 
         HookUtils.OnFsmAwake += fsm =>
         {
@@ -136,5 +140,14 @@ public static class HazardFixers
             }
             obj.BroadcastEvent("OnBreak");
         }, 0);
+    }
+
+    public static void FixJunkPipe(GameObject obj)
+    {
+        obj.transform.GetChild(2).SetAsFirstSibling();
+        var junkFall = Object.Instantiate(_junkFall, obj.transform);
+        junkFall.transform.SetLocalPosition2D(new Vector2(2.5f, -6.5f));
+        junkFall.SetActive(true);
+        junkFall.transform.Find("Spike Collider").gameObject.LocateMyFSM("Shift Hero").enabled = false;
     }
 }

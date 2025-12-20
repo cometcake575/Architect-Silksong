@@ -79,6 +79,14 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
+    public static readonly List<ConfigType> JellyEgg = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Regen Time", "egg_regen", (o, value) =>
+            {
+                o.GetComponent<Behaviour.Custom.JellyEgg>().regenTime = Mathf.Max(0.2f, value.GetValue());
+            }).WithDefaultValue(-1))
+    ]);
+
     public static readonly List<ConfigType> BlackThreader = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new IdConfigType("Object ID", "voider_id", (o, value) =>
@@ -925,7 +933,8 @@ public static class ConfigGroup
             (o, value) =>
             {
                 if (value.GetValue()) return;
-                var burst = o.LocateMyFSM("Bench Control").GetState("Rest Burst");
+                var burst = o.GetComponentsInChildren<PlayMakerFSM>()
+                    .First(fsm => fsm.FsmName == "Bench Control").GetState("Rest Burst");
                 burst.DisableAction(9);
                 burst.DisableAction(10);
                 burst.DisableAction(11);

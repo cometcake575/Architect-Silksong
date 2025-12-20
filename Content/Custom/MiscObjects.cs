@@ -52,7 +52,46 @@ public static class MiscObjects
             new Vector2(3.754f, -0.674f)
         ]));
 
+        Categories.Hazards.Add(CreateJellyEgg());
         Categories.Hazards.Add(CreateWhiteSpikes());
+    }
+
+    private static PlaceableObject CreateJellyEgg()
+    {
+        var obj = new GameObject("Jelly Egg Bomb");
+        obj.SetActive(false);
+        Object.DontDestroyOnLoad(obj);
+
+        obj.AddComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+
+        var je = obj.AddComponent<Behaviour.Custom.JellyEgg>();
+        PreloadManager.RegisterPreload(new BasicPreload("Bone_East_14", "Gas Explosion Recycle M",
+            o =>
+            {
+                je.explosion = o;
+            }, true));
+
+        var sr = obj.AddComponent<SpriteRenderer>();
+        sr.sprite = ResourceUtils.LoadSpriteResource("jelly_egg_bomb", ppu:64);
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "Tut_02", "bone_plat_01", o =>
+            {
+                sr.material = o.GetComponent<SpriteRenderer>().material;
+            }));
+
+        var col = obj.AddComponent<CircleCollider2D>();
+        col.radius = 0.6f;
+        col.isTrigger = true;
+        
+        obj.layer = LayerMask.NameToLayer("Terrain");
+        
+        obj.transform.SetPositionZ(0.0065f);
+
+        return new CustomObject("Jelly Egg Bomb", "jelly_egg", obj, 
+                description:"Setting 'Regen Time' to 0 or more will make the\n" +
+                            "egg automatically regenerate after the configured number of seconds.")
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.JellyEgg);
     }
 
     private static PlaceableObject CreateWhiteSpikes()
