@@ -19,17 +19,6 @@ public static class VanillaObjects
 {
     public static void Init()
     {
-        /*
-         * TODO Fly in effect
-         * 3 modes:
-         * - tk2d default anim
-         * - fsm config option
-         * - Custom fly in code
-         * Make a class EnemyObject extending PreloadObject that runs the associated code to attach the logic as a component
-         * public class BattleController : MonoBehaviour
-         * then all others inherit from that and have parameters
-         */
-        
         AddMossObjects();
         AddMarrowObjects();
         AddDocksObjects();
@@ -907,7 +896,8 @@ public static class VanillaObjects
 
     private static void AddMistObjects()
     {
-        AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"));
+        AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"),
+            preloadAction: EnemyFixers.RemoveConstrainPosition);
         /*AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
             postSpawnAction: EnemyFixers.FixPhantom);*/
 

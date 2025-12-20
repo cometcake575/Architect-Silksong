@@ -1170,6 +1170,8 @@ public static class EnemyFixers
         var dash = fsm.GetState("Dash Dir");
         dash.DisableAction(1);
         dash.DisableAction(2);
+        
+        fsm.GetState("Dash To").DisableAction(0);
     }
 
     public static void FixBroodmother(GameObject obj)
