@@ -83,7 +83,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Regen Time", "egg_regen", (o, value) =>
             {
-                o.GetComponent<Behaviour.Custom.JellyEgg>().regenTime = Mathf.Max(0.2f, value.GetValue());
+                o.GetComponent<Behaviour.Custom.JellyEgg>().regenTime = value.GetValue();
             }).WithDefaultValue(-1))
     ]);
 
