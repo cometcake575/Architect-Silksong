@@ -12,7 +12,9 @@ public class AllCategory : AbstractCategory
     public override List<SelectableObject> GetObjects()
     {
         return _objects ??= Categories.AllCategories
-            .OfType<Category>().OrderBy(category => category.Priority)
+            .OfType<Category>()
+            .Where(category => category.Priority >= 0)
+            .OrderBy(category => category.Priority)
             .SelectMany(category => category.GetObjects()).ToList();
     }
 

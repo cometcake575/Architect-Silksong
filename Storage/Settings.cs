@@ -31,6 +31,7 @@ public static class Settings
     public static Keybind Lock;
     public static Keybind TileChanger;
 
+    public static ConfigEntry<bool> LegacyEventSystem;
     public static ConfigEntry<bool> TestMode;
     public static ConfigEntry<bool> ShowRespawnPoint;
 
@@ -212,6 +213,13 @@ public static class Settings
             "TestMode",
             false,
             "Stops the game from storing persistent data in such as enemies being killed"
+        );
+        
+        LegacyEventSystem = config.Bind(
+            "Options",
+            "LegacyEventSystem",
+            false,
+            "Enables the Legacy objects tab and the Events and Listeners tabs"
         );
         
         ShowRespawnPoint = config.Bind(

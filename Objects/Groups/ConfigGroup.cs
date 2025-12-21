@@ -14,7 +14,6 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
-using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
@@ -1218,7 +1217,7 @@ public static class ConfigGroup
                 o.GetComponent<EnemyFixers.PatrollerFix>().xOffset = value.GetValue();
             }).WithDefaultValue(5).WithPriority(-1))
     ]);
-
+    
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Boss Title", "boss_title",
