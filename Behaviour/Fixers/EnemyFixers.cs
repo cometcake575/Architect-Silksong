@@ -2113,10 +2113,9 @@ public static class EnemyFixers
 
     public static void FixGloomsac(GameObject obj)
     {
-        obj.LocateMyFSM("Control").GetState("Capture").AddAction(() =>
-        {
-            obj.BroadcastEvent("OnDeath");
-        });
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.FsmVariables.FindFsmBool("Hornet Dead").Value = false;
+        fsm.GetState("Capture").AddAction(() => { obj.BroadcastEvent("OnDeath"); });
     }
 
     public static void FixSeth(GameObject obj)
