@@ -50,9 +50,9 @@ public static class EditorUI
 
     private static string _currentSearch = "";
 
-    private static Button _configButton;
-    private static Button _broadcastersButton;
-    private static Button _receiversButton;
+    private static (Button, UIUtils.Label) _configButton;
+    private static (Button, UIUtils.Label) _broadcastersButton;
+    private static (Button, UIUtils.Label) _receiversButton;
     
     private static GameObject _shareLevelButton;
     private static GameObject _shareLevelLabel;
@@ -118,6 +118,8 @@ public static class EditorUI
         ObjectIdLabel.textComponent.alignment = TextAnchor.LowerCenter;
     }
 
+    private static (Button, UIUtils.Label) _legacyCategory;
+
     private static void SetupCategories()
     {
         var anchor = new Vector2(1, 0);
@@ -134,6 +136,7 @@ public static class EditorUI
                 anchor,
                 anchor
             );
+            if (category is Category { Priority: < 0 }) _legacyCategory = (btn, label); 
             btn.onClick.AddListener(() =>
             {
                 _pageIndex = 0;
@@ -230,10 +233,36 @@ public static class EditorUI
             
             foreach (var obj in DisableWhenPlaying) obj.SetActive(paused);
             foreach (var obj in EnableWhenPlaying) obj.SetActive(!paused);
+            
+            SetupLegacy(Settings.LegacyEventSystem.Value);
 
             var share = paused && CoopManager.Instance.IsActive();
             _shareLevelButton.SetActive(share);
             _shareLevelLabel.SetActive(share);
+        }
+    }
+
+    private static void SetupLegacy(bool legacy)
+    {
+        _legacyCategory.Item1.gameObject.SetActive(legacy);
+        _legacyCategory.Item2.gameObject.SetActive(legacy);
+            
+        _configButton.Item1.gameObject.SetActive(legacy);
+        _configButton.Item2.gameObject.SetActive(legacy);
+        _broadcastersButton.Item1.gameObject.SetActive(legacy);
+        _broadcastersButton.Item2.gameObject.SetActive(legacy);
+        _receiversButton.Item1.gameObject.SetActive(legacy);
+        _receiversButton.Item2.gameObject.SetActive(legacy);
+
+        if (!legacy)
+        {
+            _currentOption = AttributeType.Config;
+            if (CurrentCategory == Categories.Legacy)
+            {
+                _pageIndex = 0;
+                CurrentCategory = Categories.All;
+                RefreshCurrentPage();
+            }
         }
     }
 
@@ -330,9 +359,9 @@ public static class EditorUI
             if (broadcasterBtn) SetupBroadcasterTab(placeable.BroadcasterGroup);
         }
 
-        _configButton.interactable = configBtn;
-        _receiversButton.interactable = receiverBtn;
-        _broadcastersButton.interactable = broadcasterBtn;
+        _configButton.Item1.interactable = configBtn;
+        _receiversButton.Item1.interactable = receiverBtn;
+        _broadcastersButton.Item1.interactable = broadcasterBtn;
     }
 
     private static GameObject _configTab; 
@@ -347,7 +376,7 @@ public static class EditorUI
     {
         _configTab = PrepareTab("Config Tab");
         ConfigIds.Clear();
-        _configButton.transform.SetAsLastSibling();
+        _configButton.Item1.transform.SetAsLastSibling();
 
         var y = 20 + 14 * group.Count;
         foreach (var type in group)
@@ -416,7 +445,7 @@ public static class EditorUI
     {
         _receiverTab = PrepareTab("Receiver Tab");
         _receiverCount = 0;
-        _receiversButton.transform.SetAsLastSibling();
+        _receiversButton.Item1.transform.SetAsLastSibling();
 
         MakeEventTabLabel(_receiverTab, "Name", new Vector3(50, 235));
         MakeEventTabLabel(_receiverTab, "Trigger", new Vector3(142, 235));
@@ -500,7 +529,7 @@ public static class EditorUI
     {
         _broadcasterTab = PrepareTab("Broadcaster Tab");
         _broadcasterCount = 0;
-        _broadcastersButton.transform.SetAsLastSibling();
+        _broadcastersButton.Item1.transform.SetAsLastSibling();
         
         MakeEventTabLabel(_broadcasterTab, "Event", new Vector3(50, 235));
         MakeEventTabLabel(_broadcasterTab, "Name", new Vector3(142, 235));
@@ -837,7 +866,7 @@ public static class EditorUI
         _receiversButton = SetupAttributeButton(AttributeType.Listeners, "Listeners", pos);
     }
     
-    private static Button SetupAttributeButton(AttributeType type, string name, Vector3 pos)
+    private static (Button, UIUtils.Label) SetupAttributeButton(AttributeType type, string name, Vector3 pos)
     {
         var size = new Vector2(260, 30);
         var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _canvasObj, pos, 
@@ -848,7 +877,7 @@ public static class EditorUI
         btn.onClick.AddListener(() => _currentOption = type);
         btn.interactable = false;
 
-        return btn;
+        return (btn, label);
     }
 
     private static void SetupHotbar()

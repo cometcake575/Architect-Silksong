@@ -56,6 +56,7 @@ public class ArchitectPlugin : BaseUnityPlugin
         
         VanillaObjects.Init();
         SplineObjects.Init();
+        LegacyObjects.Init();
         UtilityObjects.Init();
         AbilityObjects.Init();
         MiscObjects.Init();
