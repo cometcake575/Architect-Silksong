@@ -1022,7 +1022,7 @@ public static class EnemyFixers
         fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 0);
     }
 
-    private static int HeroDetector = LayerMask.NameToLayer("Hero Detector");
+    private static readonly int HeroDetector = LayerMask.NameToLayer("Hero Detector");
     public static void FixWatcher(GameObject obj)
     {
         obj.AddComponent<Watcher>();
@@ -1039,6 +1039,8 @@ public static class EnemyFixers
         fsm.FsmVariables.FindFsmFloat("Dig Min X").Value = obj.transform.GetPositionX() - 12.5f;
         fsm.FsmVariables.FindFsmFloat("Dig Max X").Value = obj.transform.GetPositionX() + 12.5f;
         fsm.FsmVariables.FindFsmFloat("Start Dig X Max").Value = 99999;
+
+        fsm.FsmVariables.FindFsmFloat("Cliff Y").value = float.MaxValue;
 
         var br = new GameObject("Battle Range")
         {
@@ -2034,15 +2036,21 @@ public static class EnemyFixers
     public static void FixTinyCrawJuror(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Behaviour");
+        
         var setFg = fsm.GetState("Set FG");
         setFg.DisableAction(1);
         setFg.DisableAction(2);
+        
         fsm.GetState("Init").AddAction(() =>
         {
             obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
             obj.layer = EnemiesLayer;
             fsm.SendEvent("FG");
         }, 14);
+
+        var flap = fsm.GetState("Flap");
+        flap.DisableAction(8);
+        ((GetPosition)flap.actions[7]).y = ((RandomFloat)flap.actions[8]).storeResult;
 
         obj.GetComponent<MeshRenderer>().enabled = true;
         obj.GetComponent<tk2dSprite>().color = Color.white;
