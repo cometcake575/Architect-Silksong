@@ -37,10 +37,4 @@ public abstract class CoopManager
     public abstract void RefreshRoom();
     
     public abstract void ShareEvent(string room, string name);
-
-    public void ReceiveEvent(string room, string name)
-    {
-        if (room != GameManager.instance.sceneName) return;
-        EventManager.Broadcast(name, false);
-    }
 }

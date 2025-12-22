@@ -270,6 +270,7 @@ public static class EditManager
 
         // Checks left click input
         var b1 = Input.GetMouseButtonDown(0);
+        var c1 = Input.GetMouseButtonDown(1);
         var b2 = Input.GetMouseButton(0);
 
         // Refresh the group selection box if group selection is active
@@ -311,8 +312,9 @@ public static class EditManager
         if (paused) return;
         
         // Click/release code based on input
-        if (b1 || b2) CurrentObject.Click(Input.mousePosition, b1);    
+        if (b1 || b2) CurrentObject.Click(Input.mousePosition, b1);
         else if (Input.GetMouseButtonUp(0)) CurrentObject.Release();
+        if (c1) CurrentObject.RightClick(Input.mousePosition);
         
         // Undo/Redo code
         if (Settings.Undo.WasPressed) ActionManager.UndoLast();

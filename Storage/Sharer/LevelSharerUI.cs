@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Architect.Content.Preloads;
+using Architect.Placements;
 using Architect.Utils;
 using GlobalEnums;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -152,6 +154,49 @@ public static class LevelSharerUI
                 _uiManager.UIGoToMainMenu();
             }
         });
+        
+        var (eraseBtn, eraseImg, _) = UIUtils.MakeButtonWithImage("Erase Edits", _levelSharerObj,
+            new Vector3(-50, -140), new Vector2(1, 1), new Vector2(1, 1),
+            220, 220);
+        var eraseAll = ResourceUtils.LoadSpriteResource("erase_all");
+        var eraseAll3 = ResourceUtils.LoadSpriteResource("erase_all_3");
+        var eraseAll2 = ResourceUtils.LoadSpriteResource("erase_all_2");
+        var eraseAll1 = ResourceUtils.LoadSpriteResource("erase_all_1");
+
+        eraseImg.sprite = eraseAll;
+
+        UninteractableWhenDownloading.Add(eraseBtn);
+        eraseBtn.gameObject.AddComponent<EraseBtn>().OnClick +=
+            () => ArchitectPlugin.Instance.StartCoroutine(DoErase());
+        return;
+
+        IEnumerator DoErase()
+        {
+            var time = Time.time;
+
+            while (Time.time - time < 3)
+            {
+                yield return null;
+                if (!Input.GetMouseButton(0))
+                {
+                    eraseImg.sprite = eraseAll;
+                    yield break;
+                }
+                var t = Time.time - time;
+                eraseImg.sprite = t > 2 ? eraseAll1 : t > 1 ? eraseAll2 : eraseAll3;
+            }
+
+            eraseImg.sprite = eraseAll;
+            StorageManager.WipeLevelData();
+            PlacementManager.InvalidateScene();
+        }
+    }
+
+    private class EraseBtn : MonoBehaviour, IPointerDownHandler
+    {
+        public Action OnClick;
+
+        public void OnPointerDown(PointerEventData eventData) => OnClick();
     }
     
     private static IEnumerator FadeGameTitle()

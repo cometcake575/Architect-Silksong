@@ -292,7 +292,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs));
         
         AddSolid("Underworks Platform 1", "under_plat_1", ("Under_05", "dock_metal_grate_floor_set (1)"),
-            preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling());
+            preloadAction: MiscFixers.FocusFirstChild);
     }
     
     private static void AddCitadelObjects()
@@ -358,6 +358,13 @@ public static class VanillaObjects
                 ("Song_11", "metronome_plat (11)"),
                 preloadAction: MiscFixers.FixMetronome)
             .WithConfigGroup(ConfigGroup.Metronome));
+        
+        AddSolid("Citadel Platform 1", "citadel_plat_1", ("Song_Enclave", "sc_plat_float_fat"));
+        AddSolid("Citadel Platform 2", "citadel_plat_2", ("Song_11", "sc_plat_float_mid (5)"));
+        AddSolid("Citadel Platform 3", "citadel_plat_3",
+            ("Song_12", "Black Thread States/Normal World/sc_plat_float_fat (1)"));
+        AddSolid("Citadel Platform 4", "citadel_plat_4",
+            ("Song_01", "sc_plat_float_tall"));
     }
 
     private static void AddVaultsObjects()
@@ -487,7 +494,7 @@ public static class VanillaObjects
         AddSolid("Abyss Platform 1", "abyss_plat_mid",
             ("Abyss_05", "abyss_plat_mid"));
         AddSolid("Abyss Platform 2", "abyss_plat_wide",
-            ("Abyss_05", "abyss_plat_wide"), preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling());
+            ("Abyss_05", "abyss_plat_wide"), preloadAction: MiscFixers.FocusFirstChild);
 
         Categories.Platforming.Add(new PreloadObject("Abyss Pod", "abyss_pod",
             ("Abyss_05", "Abyss Bounce Pod")));
@@ -963,7 +970,7 @@ public static class VanillaObjects
         
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),
-            preloadAction: o => o.transform.GetChild(1).SetAsFirstSibling()));
+            preloadAction: MiscFixers.FocusFirstChild));
         
         Categories.Misc.Add(new PreloadObject("Rosary Bell", "rosary_bell",
             ("Belltown_basement_03", "rosary_cache_bell_ground"),
@@ -1037,7 +1044,7 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixServitorBoran)
             .WithConfigGroup(ConfigGroup.Boran);
 
-        Categories.Misc.Add(new PreloadObject("Silk Lever", "silk_lever",
+        Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
             preloadAction: InteractableFixers.FixSilkLever)
             .WithConfigGroup(ConfigGroup.SilkLever)
@@ -1198,6 +1205,13 @@ public static class VanillaObjects
             ("Cog_07", "Black Thread States/Normal World/Repairable Scene/Song Automaton Ball (1)"),
             preloadAction: EnemyFixers.FixCogworkClapperAnim,
             postSpawnAction: EnemyFixers.FixCogworkClapper);
+        
+        AddSolid("Cogworks Platform 1", "cog_plat_1", 
+            ("Cog_04", "cog_plat_float_tiny (1)"),
+            preloadAction: MiscFixers.FocusFirstChild);
+        AddSolid("Cogworks Platform 2", "cog_plat_2", 
+            ("Cog_04", "cog_plat_float (2)"),
+            preloadAction: MiscFixers.FocusFirstChild);
     }
 
     private static void AddBellObjects()

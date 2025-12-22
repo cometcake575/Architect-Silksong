@@ -42,6 +42,10 @@
     <EmbeddedResource Include="Resources/**/*.wav"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+
   <Target Name="CopyMod" AfterTargets="PostBuildEvent" Condition="'$(SilksongFolder)' != ''">
     <ItemGroup>
       <Binaries Include="$(TargetPath)"/>

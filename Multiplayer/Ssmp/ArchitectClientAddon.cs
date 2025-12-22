@@ -156,7 +156,7 @@ public class ArchitectClientAddon : ClientAddon
     {
         ArchitectPlugin.Logger.LogInfo("Receiving Event Packet");
         if (packet.SceneName != GameManager.instance.sceneName) return;
-        EventManager.Broadcast(packet.Event, false);
+        EventManager.Broadcast(packet.Event);
     }
 
     public void RefreshRoom()

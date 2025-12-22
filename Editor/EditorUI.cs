@@ -91,29 +91,33 @@ public static class EditorUI
         _canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         _canvasObj.AddComponent<GraphicRaycaster>();
 
+        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-200, 15));
         _mapUI = new GameObject("Map Editor UI")
         {
             transform = { parent = _canvasObj.transform }
         };
+        _mapUI.SetActive(false);
         _mapTransform = _mapUI.AddComponent<RectTransform>();
         _mapTransform.anchorMax = Vector2.one;
         _mapTransform.anchorMin = Vector2.zero;
         _mapTransform.offsetMax = Vector2.zero;
         _mapTransform.offsetMin = Vector2.zero;
         if (!Settings.LegacyEventSystem.Value) _mapTransform.anchoredPosition = new Vector2(0, 20);
-        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-200, 15));
         
+        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(200, 15));
         _scriptUI = new GameObject("Script Editor UI")
         {
             transform = { parent = _canvasObj.transform }
         };
+        _scriptUI.SetActive(false);
         var st = _scriptUI.AddComponent<RectTransform>();
         st.anchorMax = Vector2.one;
         st.anchorMin = Vector2.zero;
         st.offsetMax = Vector2.zero;
         st.offsetMin = Vector2.zero;
         st.anchoredPosition = new Vector2(0, 20);
-        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(200, 15));
+        
+        ScriptEditorUI.Init(_scriptUI);
     }
     
     private static (Button, UIUtils.Label) SetupModeButton(EditorType type, string name, Vector3 pos)
@@ -121,11 +125,12 @@ public static class EditorUI
         var size = new Vector2(1150, 50);
         var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _canvasObj, pos, 
             new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
-        DisableWhenPlaying.Add(btn.gameObject);
-        DisableWhenPlaying.Add(label.gameObject);
         
         btn.onClick.AddListener(() => _currentType = type);
         label.textComponent.fontSize = 10;
+        
+        DisableWhenPlaying.Add(btn.gameObject);
+        DisableWhenPlaying.Add(label.gameObject);
         
         return (btn, label);
     }
@@ -143,7 +148,6 @@ public static class EditorUI
         _currentlySelectedDesc.textComponent.verticalOverflow = VerticalWrapMode.Overflow;
 
         _currentlySelectedDesc.textComponent.fontSize = 10;
-        DisableWhenPlaying.Add(_currentlySelectedDesc.gameObject);
 
         var currentScene = UIUtils.MakeLabel("Current Scene", _canvasObj,
             new Vector3(50, 45, 0), Vector2.zero, Vector2.zero);
@@ -158,8 +162,8 @@ public static class EditorUI
         EnableWhenPlaying.Add(currentScene.gameObject);
 
         var bottomAnchor = new Vector2(0.5f, 0);
-        ObjectIdLabel = UIUtils.MakeLabel("Object ID Description", _mapUI,
-            new Vector3(0, 45, 0), bottomAnchor, bottomAnchor);
+        ObjectIdLabel = UIUtils.MakeLabel("Object ID Description", _canvasObj,
+            new Vector3(0, 100, 0), bottomAnchor, bottomAnchor);
         ObjectIdLabel.textComponent.fontSize = 10;
         ObjectIdLabel.textComponent.alignment = TextAnchor.LowerCenter;
     }
@@ -189,8 +193,6 @@ public static class EditorUI
                 CurrentCategory = category;
                 RefreshCurrentPage();
             });
-            DisableWhenPlaying.Add(label.gameObject);
-            DisableWhenPlaying.Add(btn.gameObject);
         }
     }
 
@@ -213,10 +215,6 @@ public static class EditorUI
                 fav.onClick.AddListener(() => ToggleFavourite(index, favLabel));
 
                 GridIcons.Add((img, label, favLabel));
-
-                DisableWhenPlaying.Add(btn.gameObject);
-                DisableWhenPlaying.Add(fav.gameObject);
-                DisableWhenPlaying.Add(favLabel.gameObject);
             }
         }
 
@@ -266,8 +264,6 @@ public static class EditorUI
             new Vector3(-25 - xShift, 25 + yShift), anchor, anchor, 96, 48);
         toolBtn.onClick.AddListener(() => SetItem(obj.Index));
         toolImg.sprite = obj.GetUISprite();
-
-        DisableWhenPlaying.Add(toolBtn.gameObject);
     }
 
     public static void RefreshVisibility(bool editing, bool paused)
@@ -280,7 +276,17 @@ public static class EditorUI
             foreach (var obj in DisableWhenPlaying) obj.SetActive(paused);
             foreach (var obj in EnableWhenPlaying) obj.SetActive(!paused);
 
-            if (paused) SetupLegacy(Settings.LegacyEventSystem.Value);
+            if (paused)
+            {
+                SetupLegacy(Settings.LegacyEventSystem.Value);
+                ScriptEditorUI.UpdateColour();
+            }
+            else
+            {
+                _mapUI.SetActive(false);
+                _scriptUI.SetActive(false);
+                _currentType = EditorType.Map;
+            }
 
             var share = paused && CoopManager.Instance.IsActive();
             _shareLevelButton.SetActive(share);
@@ -290,8 +296,8 @@ public static class EditorUI
 
     private static void SetupLegacy(bool legacy)
     {
-        _legacyCategory.Item1.gameObject.SetActive(legacy);
         _legacyCategory.Item2.gameObject.SetActive(legacy);
+        _legacyCategory.Item1.gameObject.SetActive(legacy);
 
         _configButton.Item1.gameObject.SetActive(legacy);
         _configButton.Item2.gameObject.SetActive(legacy);
@@ -329,9 +335,6 @@ public static class EditorUI
 
     public static void WipeTabs()
     {
-        DisableWhenPlaying.Remove(_configTab);
-        DisableWhenPlaying.Remove(_receiverTab);
-        DisableWhenPlaying.Remove(_broadcasterTab);
         Object.Destroy(_configTab);
         Object.Destroy(_receiverTab);
         Object.Destroy(_broadcasterTab);
@@ -833,8 +836,8 @@ public static class EditorUI
     {
         var pos = new Vector3(-65, 131.25f);
         var anchor = new Vector2(1, 0);
-        var (txt, label) = UIUtils.MakeTextbox("Search Box", _mapUI, pos, anchor, anchor,
-            300, 32);
+        var txt = UIUtils.MakeTextbox("Search Box", _mapUI, pos, anchor, anchor,
+            300, 32).Item1;
         txt.onValueChanged.AddListener(s =>
         {
             _pageIndex = 0;
@@ -852,17 +855,13 @@ public static class EditorUI
         placeholder.fontStyle = FontStyle.Italic;
 
         txt.placeholder = placeholder;
-
-        DisableWhenPlaying.Add(txt.gameObject);
-        DisableWhenPlaying.Add(label.gameObject);
-        DisableWhenPlaying.Add(placeholder.gameObject);
     }
 
     private static void SetupPreciseSettings()
     {
         var anchor = new Vector2(1, 0);
-        (RotationText, var rotText) = UIUtils.MakeTextbox("Rotation Box", _mapUI, new Vector3(-65, 170)
-            , anchor, anchor, 70, 32);
+        RotationText = UIUtils.MakeTextbox("Rotation Box", _mapUI, new Vector3(-65, 170)
+            , anchor, anchor, 70, 32).Item1;
 
         RotationText.characterValidation = InputField.CharacterValidation.Decimal;
         RotationText.onValueChanged.AddListener(s =>
@@ -879,8 +878,8 @@ public static class EditorUI
             CursorManager.NeedsRefresh = true;
         });
 
-        (ScaleText, var scaleText) = UIUtils.MakeTextbox("Scale Box", _mapUI, new Vector3(-65, 190)
-            , anchor, anchor, 70, 32);
+        ScaleText = UIUtils.MakeTextbox("Scale Box", _mapUI, new Vector3(-65, 190)
+            , anchor, anchor, 70, 32).Item1;
 
         ScaleText.characterValidation = InputField.CharacterValidation.Decimal;
         ScaleText.onValueChanged.AddListener(s =>
@@ -907,13 +906,6 @@ public static class EditorUI
         scaleLabel.textComponent.fontSize = 8;
         scaleLabel.textComponent.alignment = TextAnchor.MiddleLeft;
 
-        DisableWhenPlaying.Add(RotationText.gameObject);
-        DisableWhenPlaying.Add(rotText.gameObject);
-        DisableWhenPlaying.Add(rotLabel.gameObject);
-        DisableWhenPlaying.Add(ScaleText.gameObject);
-        DisableWhenPlaying.Add(scaleText.gameObject);
-        DisableWhenPlaying.Add(scaleLabel.gameObject);
-
         EditManager.SetRotation(0);
         EditManager.SetScale(1);
     }
@@ -933,8 +925,6 @@ public static class EditorUI
         var size = new Vector2(260, 30);
         var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _mapUI, pos, 
             Vector2.zero, Vector2.zero, size:size);
-        DisableWhenPlaying.Add(btn.gameObject);
-        DisableWhenPlaying.Add(label.gameObject);
 
         btn.onClick.AddListener(() => _currentOption = type);
         btn.interactable = false;

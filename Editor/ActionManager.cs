@@ -264,6 +264,9 @@ public class ResetRoom : IEdit
         var data = PlacementManager.GetLevelData();
         while (data.Placements.Count > 0) data.Placements[0].Destroy();
 
+        foreach (var scriptBlock in data.ScriptBlocks) scriptBlock.DestroyObject();
+        data.ScriptBlocks.Clear();
+
         var map = PlacementManager.GetTilemap();
         
         if (!map) return;
@@ -279,7 +282,7 @@ public class ResetRoom : IEdit
 
     public static void Execute(string scene)
     {
-        StorageManager.SaveScene(scene, new LevelData([], []));
+        StorageManager.SaveScene(scene, new LevelData([], [], []));
     }
 
     public IEdit Undo() => null;

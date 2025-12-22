@@ -36,7 +36,9 @@ public static class Settings
     public static ConfigEntry<bool> ShowRespawnPoint;
 
     public static ConfigEntry<int> SaveSlot; 
-    public static ConfigEntry<int> PreloadCount; 
+    public static ConfigEntry<int> PreloadCount;
+    
+    public static ConfigEntry<Color> EditorBackgroundColour;
 
     public static void Init(ConfigFile config)
     {
@@ -241,6 +243,13 @@ public static class Settings
             "PreloadCount",
             4,
             "The maximum number of scenes that can be loaded at once during preloading"
+        );
+
+        EditorBackgroundColour = config.Bind(
+            "Options",
+            "EditorBackgroundColour",
+            new Color(0.1f, 0.1f, 0.1f),
+            "The background colour of the script editor"
         );
     }
 

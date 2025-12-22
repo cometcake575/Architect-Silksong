@@ -330,10 +330,7 @@ public static class ConfigGroup
                 o.GetComponent<Relay>().startActivated = value.GetValue();
             }).WithDefaultValue(true).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Broadcast over Multiplayer", "relay_multiplayer", (o, value) =>
-            {
-                o.GetComponent<Relay>().multiplayerBroadcast = value.GetValue();
-            }).WithDefaultValue(false))
+            new BoolConfigType("[Deprecated]", "relay_multiplayer", (_, _) => { }))
     ];
     
     public static readonly List<ConfigType> Timer =  GroupUtils.Merge(Generic, [

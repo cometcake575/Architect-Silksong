@@ -7,6 +7,7 @@ using Architect.Content.Custom;
 using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Events.Blocks;
 using Architect.Storage;
 using Architect.Utils;
 using JetBrains.Annotations;
@@ -94,27 +95,37 @@ public static class PlacementManager
         }
 
         var map = GetTilemap();
-        if (!map) return;
-
-        if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
+        if (map)
         {
-            foreach (var (x, y) in ext.TilemapChanges)
+            if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
             {
-                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                else map.ClearTile(x, y, 0);
+                foreach (var (x, y) in ext.TilemapChanges)
+                {
+                    if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                    else map.ClearTile(x, y, 0);
+                }
             }
+
+            if (!data.TilemapChanges.IsNullOrEmpty())
+            {
+                foreach (var (x, y) in data.TilemapChanges)
+                {
+                    if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                    else map.ClearTile(x, y, 0);
+                }
+            }
+
+            map.Build();
         }
 
-        if (!data.TilemapChanges.IsNullOrEmpty())
+        foreach (var (_, block) in ScriptBlock.Blocks) block.DestroyObject(); 
+        ScriptBlock.Blocks.Clear();
+        if (ext != null)
         {
-            foreach (var (x, y) in data.TilemapChanges)
-            {
-                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                else map.ClearTile(x, y, 0);
-            }
+            foreach (var block in ext.ScriptBlocks) block.Setup();
         }
-
-        map.Build();
+        
+        foreach (var block in data.ScriptBlocks) block.Setup();
     }
 
     public static void Init()

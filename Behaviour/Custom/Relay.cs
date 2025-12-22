@@ -13,7 +13,6 @@ public class Relay : MonoBehaviour
     public bool semiPersistent;
     [CanBeNull] public string id;
     public float relayChance = 1;
-    public bool multiplayerBroadcast;
     public float delay;
     public bool broadcastImmediately;
 
@@ -73,7 +72,7 @@ public class Relay : MonoBehaviour
         if (_schedule > 0)
         {
             _schedule -= Time.deltaTime;
-            if (_schedule <= 0) EventManager.BroadcastEvent(gameObject, "OnCall", multiplayerBroadcast);
+            if (_schedule <= 0) EventManager.BroadcastEvent(gameObject, "OnCall");
         }
     }
 
@@ -87,7 +86,7 @@ public class Relay : MonoBehaviour
     {
         if (!ShouldRelay()) return;
         canCall = false;
-        if (delay <= 0) EventManager.BroadcastEvent(gameObject, "OnCall", multiplayerBroadcast);
+        if (delay <= 0) EventManager.BroadcastEvent(gameObject, "OnCall");
         else _schedule = delay;
     }
 
