@@ -418,8 +418,6 @@ public class ObjectPlacement(
     {
         if (_previewObject) Object.Destroy(_previewObject);
         PlacementManager.GetLevelData().Placements.Remove(this);
-        foreach (var o in PlacementManager.GetLevelData().ScriptBlocks
-            .Where(o => o is ObjectBlock block && block.TargetId == id)) o.ScheduleDelete();
         PlacementManager.Objects.Remove(id);
     }
 }

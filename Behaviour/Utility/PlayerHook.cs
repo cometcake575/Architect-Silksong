@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Architect.Events.Blocks.Events;
 using Architect.Utils;
 using GlobalEnums;
 using UnityEngine;
@@ -7,8 +8,9 @@ using UnityEngine;
 namespace Architect.Behaviour.Utility;
 
 public class PlayerHook : MonoBehaviour
-{
+{ 
     public static readonly List<GameObject> PlayerListeners = [];
+    public static readonly List<PlayerBlock.PlayerEvent> PlayerListenerBlocks = [];
     
     public static void Init()
     {
@@ -96,6 +98,7 @@ public class PlayerHook : MonoBehaviour
     private static void PlayerEvent(string triggerName)
     {
         foreach (var obj in PlayerListeners.ToArray()) obj?.BroadcastEvent(triggerName);
+        foreach (var obj in PlayerListenerBlocks.ToArray()) obj?.Block.Event(triggerName);
     }
     
     private void OnEnable()

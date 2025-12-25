@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Api;
@@ -118,14 +119,24 @@ public static class PlacementManager
             map.Build();
         }
 
-        foreach (var (_, block) in ScriptBlock.Blocks) block.DestroyObject(); 
-        ScriptBlock.Blocks.Clear();
-        if (ext != null)
+        foreach (var block in ScriptManager.Blocks.Values)
         {
-            foreach (var block in ext.ScriptBlocks) block.Setup();
+            block.DestroyObject();
+        }
+        foreach (var link in ScriptManager.Links.Values)
+        {
+            Object.Destroy(link);
         }
         
-        foreach (var block in data.ScriptBlocks) block.Setup();
+        ScriptManager.Blocks.Clear();
+
+        if (ext != null)
+        {
+            foreach (var block in ext.ScriptBlocks) block.Setup(false);
+        }
+        
+        foreach (var block in data.ScriptBlocks) block.Setup(EditManager.IsEditing);
+        foreach (var block in data.ScriptBlocks) block.LateSetup();
     }
 
     public static void Init()
@@ -141,9 +152,10 @@ public static class PlacementManager
     }
 
     [CanBeNull]
-    public static ObjectPlacement FindObject(Vector3 mousePos, bool includeLocked = false)
+    public static ObjectPlacement FindObject(Vector3 mousePos, int includeLocked = 0)
     {
-        return GetLevelData().Placements.FirstOrDefault(placement => (includeLocked || !placement.Locked) 
+        return GetLevelData().Placements.FirstOrDefault(placement => (includeLocked == 1 || 
+                                                                      placement.Locked == (includeLocked == 2)) 
                                                                      && placement.Touching(mousePos));
     }
 }

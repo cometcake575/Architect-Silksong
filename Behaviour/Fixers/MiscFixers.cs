@@ -85,6 +85,12 @@ public static class MiscFixers
             });
 
         #endregion
+        
+        typeof(MatchHeroFacing).Hook(nameof(MatchHeroFacing.DoMatch),
+            (Action<MatchHeroFacing> orig, MatchHeroFacing self) =>
+            {
+                if (PreloadManager.HasPreloaded) orig(self);
+            });
 
         typeof(LocalisedString).Hook(nameof(LocalisedString.ToString),
             (ToStringOrig orig, ref LocalisedString self, bool allowBlankText) =>
@@ -617,6 +623,18 @@ public static class MiscFixers
         }
     }
     
+    public class Gilly : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Behaviour");
+            fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
     public class Sherma : Npc
     {
         private void Start()
@@ -1065,4 +1083,10 @@ public static class MiscFixers
     }
 
     public static void FocusFirstChild(GameObject obj) => obj.transform.GetChild(1).SetAsFirstSibling();
+
+    public static void FixGilly(GameObject obj)
+    {
+        EnemyFixers.KeepActive(obj);
+        obj.AddComponent<Gilly>();
+    }
 }

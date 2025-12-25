@@ -999,6 +999,11 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
+        Categories.Misc.Add(new PreloadObject("Gilly NPC", "gilly_npc",
+                ("Ant_17", "Gilly"), 
+                postSpawnAction: MiscFixers.FixGilly)
+            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+
         Categories.Misc.Add(new PreloadObject("Wandering Seth NPC", "seth_npc",
                 ("Coral_10", "Seth Stand NPC"), 
                 postSpawnAction: MiscFixers.FixSeth)
@@ -1706,7 +1711,8 @@ public static class VanillaObjects
                 postSpawnAction: postSpawnAction)
             .WithReceiverGroup(ReceiverGroup.Enemies)
             .WithBroadcasterGroup(BroadcasterGroup.Enemies)
-            .WithConfigGroup(ConfigGroup.Enemies));
+            .WithConfigGroup(ConfigGroup.Enemies)
+            .WithOutputGroup(OutputGroup.Enemies));
     }
 
     private static void AddSolid(string name, string id, (string, string) path,

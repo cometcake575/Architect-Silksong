@@ -1522,6 +1522,11 @@ public static class ConfigGroup
                 .WithDefaultValue(100)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Light Reflection", "png_glow",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
+                .WithDefaultValue(true)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
             new IntConfigType("Vertical Frame Count", "png_framecount",
                     (o, value) => { o.GetComponentInChildren<PngObject>().vcount = value.GetValue(); },
                     (o, value, _) => { o.GetOrAddComponent<PngPreview>().vcount = value.GetValue(); })

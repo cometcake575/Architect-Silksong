@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Events.Blocks;
 using Architect.Multiplayer;
 using Architect.Placements;
 using Architect.Storage;

@@ -8,6 +8,7 @@ using System.Linq;
 using Architect.Config;
 using Architect.Config.Types;
 using Architect.Content.Preloads;
+using Architect.Events.Blocks;
 using Architect.Multiplayer;
 using Architect.Objects;
 using Architect.Objects.Categories;
@@ -212,7 +213,7 @@ public static class EditManager
         if (IsEditing || _loadPos) DoNoclip(actions, paused);
         
         if (!IsEditing) return;
-
+        
         PlayerData.instance.isInvincible = true;
         
         HeroController.instance.ResetHardLandingTimer();

@@ -32,7 +32,7 @@ public abstract class CoopManager
     
     public abstract void PlaceObjects(string room, List<ObjectPlacement> placements);
     
-    public abstract void ShareScene(string room);
+    public abstract void ShareScene(string room, bool scriptOnly);
     
     public abstract void RefreshRoom();
     

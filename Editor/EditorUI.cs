@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Architect.Config.Types;
 using Architect.Events;
+using Architect.Events.Blocks;
 using Architect.Multiplayer;
 using Architect.Objects;
 using Architect.Objects.Categories;
@@ -63,6 +64,8 @@ public static class EditorUI
     
     private static GameObject _shareLevelButton;
     private static GameObject _shareLevelLabel;
+    private static GameObject _shareScriptButton;
+    private static GameObject _shareScriptLabel;
     
     private static AttributeType _currentOption = AttributeType.Config;
     private static EditorType _currentType = EditorType.Map;
@@ -126,7 +129,11 @@ public static class EditorUI
         var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _canvasObj, pos, 
             new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
         
-        btn.onClick.AddListener(() => _currentType = type);
+        btn.onClick.AddListener(() =>
+        {
+            _currentType = type;
+            Deletable.DeleteButton.SetActive(false);
+        });
         label.textComponent.fontSize = 10;
         
         DisableWhenPlaying.Add(btn.gameObject);
@@ -238,17 +245,35 @@ public static class EditorUI
             );
         _shareLevelButton = shareBtn.Item1.gameObject;
         _shareLevelLabel = shareBtn.Item2.gameObject;
+
+        var shareScriptBtn = UIUtils.MakeTextButton(
+            "Share Script", 
+            $"Share Script ({CoopManager.Instance.Name})",
+            _scriptUI,
+            new Vector3(60, 20),
+            new Vector2(0, 0),
+            new Vector2(0, 0),
+            size: new Vector2(250, 35)
+            );
+        _shareScriptButton = shareScriptBtn.Item1.gameObject;
+        _shareScriptLabel = shareScriptBtn.Item2.gameObject;
+        _shareScriptLabel.transform.parent = _shareScriptButton.transform;
         
         shareBtn.Item1.onClick.AddListener(() =>
         {
             if (!CoopManager.Instance.IsActive()) return;
-            CoopManager.Instance.ShareScene(GameManager.instance.sceneName);
+            CoopManager.Instance.ShareScene(GameManager.instance.sceneName, false);
+        });
+        shareScriptBtn.Item1.onClick.AddListener(() =>
+        {
+            if (!CoopManager.Instance.IsActive()) return;
+            CoopManager.Instance.ShareScene(GameManager.instance.sceneName, true);
         });
 
         var middle = new Vector2(0.5f, 0.5f);
         ResetRocketTime = UIUtils.MakeLabel(
             "Reset Time",
-            _mapUI,
+            _canvasObj,
             Vector3.zero,
             middle,
             middle).textComponent;
@@ -285,12 +310,15 @@ public static class EditorUI
             {
                 _mapUI.SetActive(false);
                 _scriptUI.SetActive(false);
+                Deletable.DeleteButton.SetActive(false);
                 _currentType = EditorType.Map;
             }
 
             var share = paused && CoopManager.Instance.IsActive();
             _shareLevelButton.SetActive(share);
             _shareLevelLabel.SetActive(share);
+            _shareScriptButton.SetActive(share);
+            _shareScriptLabel.SetActive(share);
         }
     }
 
@@ -317,6 +345,7 @@ public static class EditorUI
         if (legacy)
         {
             _currentType = EditorType.Map;
+            Deletable.DeleteButton.SetActive(false);
         }
         else
         {

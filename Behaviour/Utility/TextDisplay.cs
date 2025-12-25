@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Architect.Events.Blocks;
 using Architect.Utils;
 using TMProOld;
 using UnityEngine;
@@ -8,12 +9,16 @@ namespace Architect.Behaviour.Utility;
 
 public class TextDisplay : NPCControlBase, IDisplayable
 {
-    public string text;
+    public ScriptBlock Block;
+    
+    public string text = "";
     
     public float offsetY;
 
     public int verticalAlignment;
     public int horizontalAlignment;
+
+    public bool decorators = true;
     
     private DialogueBox.DisplayOptions _displayOptions;
     
@@ -37,7 +42,7 @@ public class TextDisplay : NPCControlBase, IDisplayable
 
         _displayOptions = new DialogueBox.DisplayOptions
         {
-            ShowDecorators = true,
+            ShowDecorators = decorators,
             Alignment = alignment,
             OffsetY = offsetY,
             TextColor = Color.white
@@ -57,7 +62,8 @@ public class TextDisplay : NPCControlBase, IDisplayable
 
         DialogueBox.StartConversation(text, this, false, _displayOptions, () =>
         {
-            gameObject.BroadcastEvent("OnClose");
+            if (Block != null) Block.Event("OnClose");
+            else gameObject.BroadcastEvent("OnClose");
             StartCoroutine(RegainControlDelayed());
         });
     }

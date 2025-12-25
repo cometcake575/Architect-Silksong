@@ -40,8 +40,13 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
         EditorUI.ObjectIdLabel.textComponent.text = $"{obj.GetPlacementType().GetName()} added";
         ArchitectPlugin.Instance.StartCoroutine(ClearCursorInfoLabel());
 
-        var block = new ObjectBlock(obj.GetId());
-        block.Setup();
+        var block = new ObjectBlock
+        {
+            TypeId = obj.GetPlacementType().GetId(),
+            TargetId = obj.GetId(),
+            Type = "object"
+        };
+        block.Setup(true);
         PlacementManager.GetLevelData().ScriptBlocks.Add(block);
     }
 

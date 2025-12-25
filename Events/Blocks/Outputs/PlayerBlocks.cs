@@ -1,0 +1,67 @@
+using System.Collections.Generic;
+using GlobalEnums;
+using UnityEngine;
+
+namespace Architect.Events.Blocks.Outputs;
+
+public class HpBlock : ScriptBlock
+{
+    protected override IEnumerable<string> Inputs => ["Give", "Take", "TakeHazard"];
+    protected override IEnumerable<(string, string)> OutputVars => [
+        ("Amount", "Number"),
+        ("Lifeblood", "Number")
+    ];
+
+    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Health Control";
+
+    public int Amount;
+    
+    protected override void Trigger(string trigger)
+    {
+        switch (trigger)
+        {
+            case "Give":
+                HeroController.instance.AddHealth(Amount);
+                break;
+            case "Take":
+                HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide.other, Amount,
+                    HazardType.ENEMY);
+                break;
+            case "TakeHazard":
+                HeroController.instance.TakeHealth(Amount - 1);
+                HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide.other, 1,
+                    HazardType.SPIKES);
+                break;
+        }
+    }
+
+    protected override object GetValue(string id)
+    {
+        return id == "Amount" ? PlayerData.instance.health : PlayerData.instance.healthBlue;
+    }
+}
+
+public class SilkBlock : ScriptBlock
+{
+    protected override IEnumerable<string> Inputs => ["Give", "Take"];
+    protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
+
+    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Silk Control";
+
+    public int Amount;
+    
+    protected override void Trigger(string trigger)
+    {
+        if (trigger == "Give") HeroController.instance.AddSilk(Amount, true);
+        else HeroController.instance.TakeSilk(Amount);
+    }
+
+    protected override object GetValue(string id)
+    {
+        return PlayerData.instance.silk;
+    }
+}

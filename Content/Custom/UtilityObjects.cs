@@ -37,6 +37,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateMemoryToggle());
         
         Categories.Utility.Add(CreateEnemyBarrier());
+        Categories.Utility.Add(CreateVignetteDisabler());
         Categories.Utility.Add(CreateObjectRemover("enemy_remover", "Disable Enemy", 
                 FindObjectsToDisable<HealthManager>, "Removes the nearest enemy.\n\n" +
                                                      "This should be placed at the enemy's spawn point, not its\n" +
@@ -383,6 +384,21 @@ public static class UtilityObjects
                         "This object is only a barrier, it does not function like terrain.",
             sprite:ResourceUtils.LoadSpriteResource("enemy_blocker", ppu:60))
             .WithConfigGroup(ConfigGroup.Stretchable);
+    }
+
+    private static PlaceableObject CreateVignetteDisabler()
+    {
+        VignetteDisabler.Init();
+        var vignetteDisabler = new GameObject("Vignette Disabler");
+
+        vignetteDisabler.SetActive(false);
+        Object.DontDestroyOnLoad(vignetteDisabler);
+
+        vignetteDisabler.AddComponent<VignetteDisabler>();
+
+        return new CustomObject("Disable Vignette", "vignette_disabler", vignetteDisabler,
+            description:"Disables the Vignette effect.", preview: true,
+            sprite:ResourceUtils.LoadSpriteResource("vignette_disabler", FilterMode.Point));
     }
 
     private static PlaceableObject CreateFakePerformance()

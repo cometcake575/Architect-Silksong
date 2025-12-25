@@ -1,20 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Events.Blocks;
+using Architect.Events.Blocks.Events;
 using Architect.Events.Blocks.Objects;
+using Architect.Events.Vars;
 using UnityEngine;
 
 namespace Architect.Events;
 
 public static class EventManager
 {
-    private static readonly Dictionary<string, List<LegacyReceiver>> Receivers = [];
     private static readonly Dictionary<string, EventReceiverType> ReceiverTypes = [];
-    
-    public static void ResetReceivers()
-    {
-        Receivers.Clear();
-    }
+    private static readonly Dictionary<string, OutputType> OutputTypes = [];
     
     public static EventReceiverType RegisterReceiverType(EventReceiverType type)
     {
@@ -26,10 +23,20 @@ public static class EventManager
         return ReceiverTypes[id];
     }
     
-    public static void RegisterReceiver(LegacyReceiver instance)
+    public static OutputType RegisterOutputType(OutputType type)
     {
-        if (!Receivers.ContainsKey(instance.eventName)) Receivers[instance.eventName] = [];
-        Receivers[instance.eventName].Add(instance);
+        return OutputTypes[type.Id] = type;
+    }
+    
+    public static OutputType GetOutputType(string id)
+    {
+        return OutputTypes[id];
+    }
+
+    public static void BroadcastMp(string eventName)
+    {
+        foreach (var mp in MultiplayerOutBlock.MpEvent.Events.Where(o => o.Block.EventName == eventName)) 
+            mp.Block.Event("OnReceive");
     }
 
     public static void BroadcastEvent(GameObject obj, string triggerName)
@@ -45,6 +52,20 @@ public static class EventManager
             block.OnEvent(triggerName);
         }
     }
+    
+    #region Legacy
+    private static readonly Dictionary<string, List<LegacyReceiver>> Receivers = [];
+    
+    public static void ResetReceivers()
+    {
+        Receivers.Clear();
+    }
+    
+    public static void RegisterReceiver(LegacyReceiver instance)
+    {
+        if (!Receivers.ContainsKey(instance.eventName)) Receivers[instance.eventName] = [];
+        Receivers[instance.eventName].Add(instance);
+    }
 
     public static void Broadcast(string eventName)
     {
@@ -52,4 +73,5 @@ public static class EventManager
         connectedReceivers.RemoveAll(o => !o);
         foreach (var receiver in connectedReceivers.ToList()) receiver.ReceiveEvent(eventName);
     }
+    #endregion
 }
