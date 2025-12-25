@@ -2115,7 +2115,10 @@ public static class EnemyFixers
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.FsmVariables.FindFsmBool("Hornet Dead").Value = false;
-        fsm.GetState("Capture").AddAction(() => { obj.BroadcastEvent("OnDeath"); });
+        fsm.GetState("Capture").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnDeath");
+        });
     }
 
     public static void FixSeth(GameObject obj)

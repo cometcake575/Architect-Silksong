@@ -1,3 +1,4 @@
+using Architect.Behaviour.Fixers;
 using Architect.Storage;
 using Architect.Utils;
 using UnityEngine;
@@ -26,6 +27,7 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
     
     public string url;
     public bool point;
+    public bool glow = true;
     public float ppu = 100;
     private int _count = 1;
     public int vcount = 1;
@@ -39,6 +41,7 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
         if (string.IsNullOrEmpty(url)) return;
         
         _renderer = GetComponent<SpriteRenderer>();
+        if (!glow) _renderer.material = MiscFixers.SpriteMaterial;
         CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
         _count = Mathf.Max(1, hcount * vcount - dummy);
 

@@ -10,7 +10,7 @@ public static class EventHooks
 
     public static void AddEvent(GameObject obj, string triggerName, string eventName)
     {
-        var bci = obj.AddComponent<EventBroadcasterInstance>();
+        var bci = obj.AddComponent<LegacyBroadcaster>();
 
         bci.triggerName = triggerName;
         bci.eventName = eventName;

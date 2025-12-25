@@ -14,7 +14,6 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
-using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
@@ -331,10 +330,7 @@ public static class ConfigGroup
                 o.GetComponent<Relay>().startActivated = value.GetValue();
             }).WithDefaultValue(true).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Broadcast over Multiplayer", "relay_multiplayer", (o, value) =>
-            {
-                o.GetComponent<Relay>().multiplayerBroadcast = value.GetValue();
-            }).WithDefaultValue(false))
+            new BoolConfigType("[Deprecated]", "relay_multiplayer", (_, _) => { }))
     ];
     
     public static readonly List<ConfigType> Timer =  GroupUtils.Merge(Generic, [
@@ -1218,7 +1214,7 @@ public static class ConfigGroup
                 o.GetComponent<EnemyFixers.PatrollerFix>().xOffset = value.GetValue();
             }).WithDefaultValue(5).WithPriority(-1))
     ]);
-
+    
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Boss Title", "boss_title",
@@ -1524,6 +1520,11 @@ public static class ConfigGroup
                     (o, value) => { o.GetComponentInChildren<PngObject>().ppu = value.GetValue(); },
                     (o, value, _) => { o.GetOrAddComponent<PngPreview>().ppu = value.GetValue(); })
                 .WithDefaultValue(100)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Light Reflection", "png_glow",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
+                .WithDefaultValue(true)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Vertical Frame Count", "png_framecount",

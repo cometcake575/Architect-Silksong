@@ -12,6 +12,7 @@ using Architect.Utils;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using PrepatcherPlugin;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -292,6 +293,8 @@ public static class AbilityObjects
     #region Hooks
     private static void SetupBindingHooks()
     {
+        PlayerDataVariableEvents.OnGetBool += (pd, name, current) => 
+            name == nameof(pd.hasDash) ? BindingCheck(current, "dash") : current;
         typeof(HeroController).Hook(nameof(HeroController.CanDash),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "dash")
                                                                       || (ActiveCrystals.GetValueOrDefault("dash", 0) > 0

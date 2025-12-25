@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Architect.Behaviour.Custom;
+using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Objects.Placeable;
 using Architect.Utils;
@@ -18,10 +19,18 @@ namespace Architect.Behaviour.Fixers;
 
 public static class MiscFixers
 {
+    public static Material SpriteMaterial;
+    
     public static void Init()
     {
         // Custom bench fix - if the bench was determined to be invalid, override it and use the saved data anyway
         // Fallback to first hazard respawn point
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "Tut_02", "bone_plat_01", o =>
+            {
+                SpriteMaterial = o.GetComponent<SpriteRenderer>().material;
+            }));
 
         #region Bench fixes
 
@@ -76,6 +85,12 @@ public static class MiscFixers
             });
 
         #endregion
+        
+        typeof(MatchHeroFacing).Hook(nameof(MatchHeroFacing.DoMatch),
+            (Action<MatchHeroFacing> orig, MatchHeroFacing self) =>
+            {
+                if (PreloadManager.HasPreloaded) orig(self);
+            });
 
         typeof(LocalisedString).Hook(nameof(LocalisedString.ToString),
             (ToStringOrig orig, ref LocalisedString self, bool allowBlankText) =>
@@ -608,6 +623,18 @@ public static class MiscFixers
         }
     }
     
+    public class Gilly : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Behaviour");
+            fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
     public class Sherma : Npc
     {
         private void Start()
@@ -1053,5 +1080,13 @@ public static class MiscFixers
         var hit2 = fsm.GetState("Hit 2");
         var rd2 = (ReceivedDamage)hit2.actions[2];
         rd2.sendEventHeavy = rd2.sendEvent;
+    }
+
+    public static void FocusFirstChild(GameObject obj) => obj.transform.GetChild(1).SetAsFirstSibling();
+
+    public static void FixGilly(GameObject obj)
+    {
+        EnemyFixers.KeepActive(obj);
+        obj.AddComponent<Gilly>();
     }
 }

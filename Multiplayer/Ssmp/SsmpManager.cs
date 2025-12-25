@@ -93,20 +93,20 @@ public class SsmpManager : CoopManager
         var json = StorageManager.SerializePlacements(placements);
         var bytes = Split(ZipUtils.Zip(json), SPLIT_SIZE);
 
-        Task.Run(() => SendSplitPlaceData(bytes, room, false));
+        Task.Run(() => SendSplitPlaceData(bytes, room, false, false));
     }
 
-    public override void ShareScene(string room)
+    public override void ShareScene(string room, bool scriptOnly)
     {
         ArchitectPlugin.Logger.LogInfo("Sending Scene Packet");
         
         var json = StorageManager.SerializeLevel(PlacementManager.GetLevelData(), Formatting.None);
         var bytes = Split(ZipUtils.Zip(json), SPLIT_SIZE);
         
-        Task.Run(() => SendSplitPlaceData(bytes, room, true));
+        Task.Run(() => SendSplitPlaceData(bytes, room, true, scriptOnly));
     }
 
-    private async Task SendSplitPlaceData(byte[][] bytes, string room, bool isFullScene)
+    private async Task SendSplitPlaceData(byte[][] bytes, string room, bool isFullScene, bool scriptOnly)
     {
         var guid = Guid.NewGuid().ToString();
 
@@ -121,7 +121,8 @@ public class SsmpManager : CoopManager
                 Index = i,
                 Length = length,
                 Guid = guid,
-                IsFullScene = isFullScene
+                IsFullScene = isFullScene,
+                IsScriptOnly = scriptOnly
             });
             i++;
             await Task.Delay(100);

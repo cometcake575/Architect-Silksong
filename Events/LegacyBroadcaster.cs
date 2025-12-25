@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Architect.Events;
 
-public class EventBroadcasterInstance : MonoBehaviour
+public class LegacyBroadcaster : MonoBehaviour
 {
     // The object event that triggers the broadcaster
     public string triggerName;
@@ -11,10 +11,10 @@ public class EventBroadcasterInstance : MonoBehaviour
     // The Architect event that is broadcast
     public string eventName;
 
-    public void Broadcast(string trigger, bool multiplayer)
+    public void Broadcast(string trigger)
     {
         if (trigger != triggerName) return;
         EventHooks.OnEvent?.Invoke(gameObject, eventName);
-        EventManager.Broadcast(eventName, multiplayer);
+        EventManager.Broadcast(eventName);
     }
 }

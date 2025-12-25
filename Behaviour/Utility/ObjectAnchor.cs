@@ -87,7 +87,7 @@ public class ObjectAnchor : PreviewableBehaviour
 
         // Moving platform fix so the player sticks to the platform
         // Uses a Motion Parent object as the parent and not the anchor itself as the anchor can be disabled
-        var b = target.layer == 8;
+        var b = target.layer == 8 && target.GetComponent<Collider2D>();
         var stickTarget = target;
         foreach (var col in target.GetComponentsInChildren<Collider2D>())
         {

@@ -1,4 +1,5 @@
 using System.Collections;
+using Architect.Events.Blocks;
 using Architect.Utils;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     public bool useItem;
     public CurrencyType currencyType = CurrencyType.Money;
     public int cost;
+
+    public ScriptBlock Block;
 
     public void Display()
     {
@@ -40,14 +43,16 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     {
         if (!this) return;
         StartCoroutine(RegainControlDelayed());
-        gameObject.BroadcastEvent("Yes");
+        if (Block != null) Block.Event("Yes");
+        else gameObject.BroadcastEvent("Yes");
     }
 
     private void No()
     {
         if (!this) return;
         StartCoroutine(RegainControlDelayed());
-        gameObject.BroadcastEvent("No");
+        if (Block != null) Block.Event("No");
+        else gameObject.BroadcastEvent("No");
     }
 
     private static IEnumerator RegainControlDelayed()

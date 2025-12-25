@@ -26,5 +26,5 @@ public class DummyManager : CoopManager
 
     public override void PlaceObjects(string room, List<ObjectPlacement> _) { }
     
-    public override void ShareScene(string room) { }
+    public override void ShareScene(string room, bool scriptOnly) { }
 }

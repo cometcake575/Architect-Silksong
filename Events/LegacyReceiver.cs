@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Architect.Events;
 
-public class EventReceiverInstance : MonoBehaviour
+public class LegacyReceiver : MonoBehaviour
 {
     // The Architect event that triggers the receiver
     public string eventName;

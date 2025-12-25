@@ -1,4 +1,5 @@
 using System.Collections;
+using Architect.Behaviour.Fixers;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;
@@ -15,6 +16,7 @@ public class JellyEgg : MonoBehaviour
     {
         _renderer = GetComponent<SpriteRenderer>();
         _col = GetComponent<Collider2D>();
+        _renderer.material = MiscFixers.SpriteMaterial;
     }
 
     private IEnumerator OnTriggerStay2D(Collider2D other)

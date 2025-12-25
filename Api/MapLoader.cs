@@ -23,7 +23,7 @@ public static class MapLoader
     {
         if (!ModMaps.TryGetValue(scene, out var map)) return null;
 
-        var ld = new LevelData([], []);
+        var ld = new LevelData([], [], []);
         foreach (var (asm, mapPath) in map)
         {
             using var s = asm.GetManifestResourceStream(mapPath);
@@ -36,6 +36,7 @@ public static class MapLoader
             
             ld.Placements.AddRange(level.Placements);
             ld.TilemapChanges.AddRange(level.TilemapChanges.Where(t => !ld.TilemapChanges.Contains(t)));
+            ld.ScriptBlocks.AddRange(level.ScriptBlocks);
         }
 
         return ld;

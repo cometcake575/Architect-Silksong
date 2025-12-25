@@ -9,10 +9,12 @@ public class PlacePacketData : ScenePacketData
     public int Index;
     public int Length;
     public bool IsFullScene;
+    public bool IsScriptOnly;
 
     protected override void WriteExtData(IPacket packet)
     {
         packet.Write(IsFullScene);
+        packet.Write(IsScriptOnly);
         packet.Write(Length);
         packet.Write(Index);
         packet.Write(Guid);
@@ -24,6 +26,7 @@ public class PlacePacketData : ScenePacketData
     protected override void ReadExtData(IPacket packet)
     {
         IsFullScene = packet.ReadBool();
+        IsScriptOnly = packet.ReadBool();
         Length = packet.ReadInt();
         Index = packet.ReadInt();
         Guid = packet.ReadString();

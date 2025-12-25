@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Api;
@@ -7,6 +8,7 @@ using Architect.Content.Custom;
 using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Events.Blocks;
 using Architect.Storage;
 using Architect.Utils;
 using JetBrains.Annotations;
@@ -94,27 +96,47 @@ public static class PlacementManager
         }
 
         var map = GetTilemap();
-        if (!map) return;
-
-        if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
+        if (map)
         {
-            foreach (var (x, y) in ext.TilemapChanges)
+            if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
             {
-                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                else map.ClearTile(x, y, 0);
+                foreach (var (x, y) in ext.TilemapChanges)
+                {
+                    if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                    else map.ClearTile(x, y, 0);
+                }
             }
+
+            if (!data.TilemapChanges.IsNullOrEmpty())
+            {
+                foreach (var (x, y) in data.TilemapChanges)
+                {
+                    if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                    else map.ClearTile(x, y, 0);
+                }
+            }
+
+            map.Build();
         }
 
-        if (!data.TilemapChanges.IsNullOrEmpty())
+        foreach (var block in ScriptManager.Blocks.Values)
         {
-            foreach (var (x, y) in data.TilemapChanges)
-            {
-                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                else map.ClearTile(x, y, 0);
-            }
+            block.DestroyObject();
         }
+        foreach (var link in ScriptManager.Links.Values)
+        {
+            Object.Destroy(link);
+        }
+        
+        ScriptManager.Blocks.Clear();
 
-        map.Build();
+        if (ext != null)
+        {
+            foreach (var block in ext.ScriptBlocks) block.Setup(false);
+        }
+        
+        foreach (var block in data.ScriptBlocks) block.Setup(EditManager.IsEditing);
+        foreach (var block in data.ScriptBlocks) block.LateSetup();
     }
 
     public static void Init()
@@ -130,9 +152,10 @@ public static class PlacementManager
     }
 
     [CanBeNull]
-    public static ObjectPlacement FindObject(Vector3 mousePos, bool includeLocked = false)
+    public static ObjectPlacement FindObject(Vector3 mousePos, int includeLocked = 0)
     {
-        return GetLevelData().Placements.FirstOrDefault(placement => (includeLocked || !placement.Locked) 
+        return GetLevelData().Placements.FirstOrDefault(placement => (includeLocked == 1 || 
+                                                                      placement.Locked == (includeLocked == 2)) 
                                                                      && placement.Touching(mousePos));
     }
 }

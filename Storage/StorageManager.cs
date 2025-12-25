@@ -61,7 +61,9 @@ public static class StorageManager
         var path = DataPath + "Scenes/" + scene + ".architect.json";
         if (File.Exists(path)) File.Delete(path);
 
-        if (level.Placements.IsNullOrEmpty() && level.TilemapChanges.IsNullOrEmpty()) return;
+        if (level.Placements.IsNullOrEmpty() && 
+            level.TilemapChanges.IsNullOrEmpty() &&
+            level.ScriptBlocks.IsNullOrEmpty()) return;
         
         var data = SerializeLevel(level, Formatting.Indented);
         
@@ -78,7 +80,7 @@ public static class StorageManager
         var path = DataPath + "Scenes/" + scene + ".architect.json";
 
         return File.Exists(path) ? DeserializeLevel(File.ReadAllText(path)) : 
-            new LevelData([], []);
+            new LevelData([], [], []);
     }
 
     public static LevelData DeserializeLevel(string data)
@@ -166,7 +168,7 @@ public static class StorageManager
         return JsonConvert.SerializeObject(data, Formatting.None, Ldc, Opc);
     }
 
-    private static void WipeLevelData()
+    public static void WipeLevelData()
     {
         foreach (var file in Directory.GetFiles(DataPath + "Scenes/")) File.Delete(file);
         foreach (var file in Directory.GetFiles(DataPath + "Assets/")) File.Delete(file);

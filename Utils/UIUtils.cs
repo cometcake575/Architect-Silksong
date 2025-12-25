@@ -8,10 +8,17 @@ namespace Architect.Utils;
 
 public static class UIUtils
 {
+    public static readonly Sprite Square = ResourceUtils.LoadSpriteResource("square");
+
     private static readonly Color LightGrey = new(0.7f, 0.7f, 0.7f);
     
     private static readonly Sprite ButtonSprite = ResourceUtils.LoadSpriteResource(
         "button_outline",
+        new Vector2(0.5f, 0.5f),
+        border: new Vector4(6, 5, 6, 5)
+    );
+    private static readonly Sprite ButtonSpriteBlank = ResourceUtils.LoadSpriteResource(
+        "button_no_outline",
         new Vector2(0.5f, 0.5f),
         border: new Vector4(6, 5, 6, 5)
     );
@@ -24,7 +31,8 @@ public static class UIUtils
         Vector2 anchorMin,
         Vector2 anchorMax,
         int size,
-        int imageSize)
+        int imageSize,
+        bool doOutline = true)
     {
         var gameObject = new GameObject(name);
 
@@ -39,7 +47,7 @@ public static class UIUtils
 
         btn.targetGraphic = outline;
 
-        outline.sprite = ButtonSprite;
+        outline.sprite = doOutline ? ButtonSprite : ButtonSpriteBlank;
         outline.type = Image.Type.Sliced;
         
         trans.SetParent(parent.transform, false);

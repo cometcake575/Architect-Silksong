@@ -6,6 +6,8 @@ using Architect.Config;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Events.Blocks;
+using Architect.Events.Blocks.Objects;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using Newtonsoft.Json;
@@ -225,7 +227,7 @@ public class ObjectPlacement(
         
         foreach (var receiver in Receivers)
         {
-            var eri = obj.AddComponent<EventReceiverInstance>();
+            var eri = obj.AddComponent<LegacyReceiver>();
             eri.eventName = receiver.Item1.ToLower();
             eri.ReceiverType = EventManager.GetReceiverType(receiver.Item2);
             eri.requiredCalls = receiver.Item3;
@@ -235,7 +237,7 @@ public class ObjectPlacement(
 
         foreach (var broadcaster in Broadcasters)
         {
-            var ebi = obj.AddComponent<EventBroadcasterInstance>();
+            var ebi = obj.AddComponent<LegacyBroadcaster>();
             ebi.triggerName = broadcaster.Item1;
             ebi.eventName = broadcaster.Item2.ToLower();
         }

@@ -83,8 +83,18 @@ public class ArchitectClientAddon : ClientAddon
         {
             var levelData = StorageManager.DeserializeLevel(json);
 
-            StorageManager.WipeScheduledEdits(packet.SceneName);
-            StorageManager.SaveScene(packet.SceneName, levelData);
+            if (packet.IsScriptOnly)
+            {
+                var scene = StorageManager.LoadScene(packet.SceneName);
+                scene.ScriptBlocks.Clear();
+                scene.ScriptBlocks.AddRange(levelData.ScriptBlocks);
+                StorageManager.SaveScene(packet.SceneName, scene);
+            }
+            else
+            {
+                StorageManager.WipeScheduledEdits(packet.SceneName);
+                StorageManager.SaveScene(packet.SceneName, levelData);
+            }
 
             if (packet.SceneName == GameManager.instance.sceneName)
             {
@@ -156,7 +166,7 @@ public class ArchitectClientAddon : ClientAddon
     {
         ArchitectPlugin.Logger.LogInfo("Receiving Event Packet");
         if (packet.SceneName != GameManager.instance.sceneName) return;
-        EventManager.Broadcast(packet.Event, false);
+        EventManager.BroadcastMp(packet.Event);
     }
 
     public void RefreshRoom()

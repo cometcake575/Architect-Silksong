@@ -31,11 +31,14 @@ public static class Settings
     public static Keybind Lock;
     public static Keybind TileChanger;
 
+    public static ConfigEntry<bool> LegacyEventSystem;
     public static ConfigEntry<bool> TestMode;
     public static ConfigEntry<bool> ShowRespawnPoint;
 
     public static ConfigEntry<int> SaveSlot; 
-    public static ConfigEntry<int> PreloadCount; 
+    public static ConfigEntry<int> PreloadCount;
+    
+    public static ConfigEntry<Color> EditorBackgroundColour;
 
     public static void Init(ConfigFile config)
     {
@@ -214,6 +217,13 @@ public static class Settings
             "Stops the game from storing persistent data in such as enemies being killed"
         );
         
+        LegacyEventSystem = config.Bind(
+            "Options",
+            "LegacyEventSystem",
+            false,
+            "Enables the Legacy objects tab and the Events and Listeners tabs"
+        );
+        
         ShowRespawnPoint = config.Bind(
             "Options",
             "ShowRespawnPoint",
@@ -233,6 +243,13 @@ public static class Settings
             "PreloadCount",
             4,
             "The maximum number of scenes that can be loaded at once during preloading"
+        );
+
+        EditorBackgroundColour = config.Bind(
+            "Options",
+            "EditorBackgroundColour",
+            new Color(0.1f, 0.1f, 0.1f),
+            "The background colour of the script editor"
         );
     }
 

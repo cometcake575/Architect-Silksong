@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Architect.Editor;
+using Architect.Events.Blocks;
 using Architect.Utils;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace Architect.Behaviour.Utility;
 
 public class AnimPlayer : MonoBehaviour
 {
+    public ScriptBlock Block;
+    
     private static AnimPlayer _active;
     
     public string clipName;
@@ -78,8 +81,9 @@ public class AnimPlayer : MonoBehaviour
         {
             _active = null;
             _animTimeRemaining = 0;
-            
-            gameObject.BroadcastEvent("OnFinish");
+
+            if (Block != null) Block.Event("Stop");
+            else gameObject.BroadcastEvent("OnFinish");
 
             if (_tookCtrl)
             {

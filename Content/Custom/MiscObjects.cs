@@ -73,11 +73,6 @@ public static class MiscObjects
 
         var sr = obj.AddComponent<SpriteRenderer>();
         sr.sprite = ResourceUtils.LoadSpriteResource("jelly_egg_bomb", ppu:64);
-        PreloadManager.RegisterPreload(new BasicPreload(
-            "Tut_02", "bone_plat_01", o =>
-            {
-                sr.material = o.GetComponent<SpriteRenderer>().material;
-            }));
 
         var col = obj.AddComponent<CircleCollider2D>();
         col.radius = 0.6f;
