@@ -22,7 +22,7 @@ public class PlayerDataBoolBlock : ScriptBlock
 
     protected override object GetValue(string id)
     {
-        return PlayerData.instance.GetBool(id);
+        return PlayerData.instance.GetBool(Data);
     }
 }
 
@@ -45,7 +45,7 @@ public class PlayerDataIntBlock : ScriptBlock
 
     protected override object GetValue(string id)
     {
-        return PlayerData.instance.GetInt(id);
+        return PlayerData.instance.GetInt(Data);
     }
 }
 
@@ -68,6 +68,6 @@ public class PlayerDataFloatBlock : ScriptBlock
 
     protected override object GetValue(string id)
     {
-        return PlayerData.instance.GetFloat(id);
+        return PlayerData.instance.GetFloat(Data);
     }
 }
