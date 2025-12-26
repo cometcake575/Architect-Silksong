@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Architect.Events.Blocks;
 using Architect.Events.Blocks.Events;
@@ -194,6 +195,14 @@ public static class ScriptEditorUI
             DoRefresh();
         });
         
+        typeof(HeroController).Hook(nameof(HeroController.SceneInit),
+            (Action<HeroController> orig, HeroController self) =>
+            {
+                orig(self);
+                BlocksParent.transform.localPosition = Vector3.zero;
+                LinesParent.transform.localPosition = Vector3.zero;
+            });
+        
         DoRefresh();
         return;
 
@@ -226,12 +235,6 @@ public static class ScriptEditorUI
         {
             BlocksParent.transform.position = eventData.position + _offset;
             LinesParent.transform.position = BlocksParent.transform.position;
-
-            var scale = BlocksParent.transform.localScale.x;
-            BlocksParent.transform.localPosition = new Vector3(
-                Mathf.Clamp(BlocksParent.transform.localPosition.x, -1250 * scale, 1250 * scale),
-                Mathf.Clamp(BlocksParent.transform.localPosition.y, -1250 * scale, 1250 * scale));
-            LinesParent.transform.localPosition = BlocksParent.transform.localPosition;
         }
         
         public void OnBeginDrag(PointerEventData eventData)
@@ -254,12 +257,6 @@ public static class ScriptEditorUI
                 Mathf.Clamp(_blockTransformSource.localScale.y + Input.mouseScrollDelta.y / 40, 0.25f, 2));
             BlocksParent.transform.SetParent(par, true);
             LinesParent.transform.SetParent(par, true);
-
-            var scale = BlocksParent.transform.localScale.x;
-            BlocksParent.transform.localPosition = new Vector3(
-                Mathf.Clamp(BlocksParent.transform.localPosition.x, -1250 * scale, 1250 * scale),
-                Mathf.Clamp(BlocksParent.transform.localPosition.y, -1250 * scale, 1250 * scale));
-            LinesParent.transform.localPosition = BlocksParent.transform.localPosition;
         }
     }
 }
