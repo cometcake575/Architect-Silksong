@@ -82,7 +82,7 @@ public class ObjectBlock : ScriptBlock
     {
         if (!_referencedObject) return;
         var receiver = EventManager.GetReceiverType(trigger);
-        if (_referencedObject.activeInHierarchy) receiver.Trigger(_referencedObject);
+        if (_referencedObject.activeInHierarchy || receiver.RunWhenInactive) receiver.Trigger(_referencedObject);
         foreach (var spawn in _reference.Spawns.Where(spawn => spawn))
         {
             receiver.Trigger(spawn);
