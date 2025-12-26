@@ -107,9 +107,10 @@ public static class ScriptManager
 
             var eMap = CurrentEventStart.Block.EventMap;
             if (!eMap.ContainsKey(CurrentEventStart.id)) eMap[CurrentEventStart.id] = [];
+            if (eMap[CurrentEventStart.id].Contains((Block.BlockId, id))) return;
             eMap[CurrentEventStart.id].Add((Block.BlockId, id));
             
-            MakeLink(CurrentEventStart.Block, CurrentEventStart.id, Block, id, Connection.LinkType.Var);
+            MakeLink(CurrentEventStart.Block, CurrentEventStart.id, Block, id, Connection.LinkType.Event);
             
             CurrentEventStart = null;
         }
@@ -196,6 +197,8 @@ public static class ScriptManager
     public static void DestroyLink(string sourceBlock, string sourceEvent, string block, string trigger,
         Connection.LinkType linkType)
     {
+        if (!Links.ContainsKey((sourceBlock, sourceEvent, block, trigger))) return;
+        
         if (!Links.Remove((sourceBlock, sourceEvent, block, trigger), out var value)) return;
         if (linkType == Connection.LinkType.Event)
         {

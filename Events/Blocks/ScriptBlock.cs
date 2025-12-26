@@ -429,6 +429,12 @@ public abstract class ScriptBlock
     {
         if (BlockObject) Object.Destroy(BlockObject);
     }
+
+    public void Delete()
+    {
+        if (!BlockObject) return;
+        BlockObject.GetComponent<ScriptBlockInstance>().Delete();
+    }
     
     public class ScriptBlockConverter : JsonConverter<ScriptBlock>
     {

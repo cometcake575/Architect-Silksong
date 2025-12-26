@@ -265,7 +265,10 @@ public class ResetRoom : IEdit
         var data = PlacementManager.GetLevelData();
         while (data.Placements.Count > 0) data.Placements[0].Destroy();
 
-        foreach (var scriptBlock in data.ScriptBlocks) scriptBlock.DestroyObject();
+        foreach (var scriptBlock in data.ScriptBlocks.ToArray())
+        {
+            scriptBlock.Delete();
+        }
         data.ScriptBlocks.Clear();
 
         var map = PlacementManager.GetTilemap();
