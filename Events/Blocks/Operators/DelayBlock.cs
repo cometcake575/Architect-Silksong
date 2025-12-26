@@ -24,7 +24,10 @@ public class DelayBlock : ScriptBlock
 
     private IEnumerator DelayedEvent()
     {
-        yield return new WaitForSeconds(Delay + GetVariable<float>("Extra Delay"));
+        var delay = Delay;
+        var ext = GetVariable<float?>("Extra Delay");
+        if (ext.HasValue) delay += ext.Value;
+        yield return new WaitForSeconds(delay);
         Event("Out");
     }
 }

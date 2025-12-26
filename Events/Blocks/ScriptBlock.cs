@@ -91,7 +91,8 @@ public abstract class ScriptBlock
 
     protected T GetVariable<T>(string id)
     {
-        var (blockId, targetId) = VarMap[id];
+        if (!VarMap.TryGetValue(id, out var value)) return (T)(object)null;
+        var (blockId, targetId) = value;
         return (T)ScriptManager.Blocks[blockId].GetValue(targetId);
     }
 
