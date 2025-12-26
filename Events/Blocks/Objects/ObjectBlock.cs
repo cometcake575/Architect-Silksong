@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Behaviour.Utility;
 using Architect.Editor;
 using Architect.Objects.Placeable;
 using Architect.Placements;
@@ -29,6 +30,7 @@ public class ObjectBlock : ScriptBlock
         $"{ObjectType.GetName()} (Invalid)";
     
     private GameObject _referencedObject;
+    private ObjectBlockReference _reference;
 
     public override bool IsValid
     {
@@ -64,23 +66,27 @@ public class ObjectBlock : ScriptBlock
         SetupObject();
     }
 
-    protected bool SetupObject()
+    protected void SetupObject()
     {
         var placement = PlacementManager.GetPlacement(TargetId);
-        if (placement == null) return false;
-        if (placement.GetPlacementType().GetId() != TypeId) return false;
+        if (placement == null) return;
+        if (placement.GetPlacementType().GetId() != TypeId) return;
 
         _referencedObject = PlacementManager.Objects[TargetId];
-        if (!_referencedObject) return false;
-        _referencedObject.AddComponent<ObjectBlockReference>().Block = this;
-        return true;
+        if (!_referencedObject) return;
+        _reference = _referencedObject.AddComponent<ObjectBlockReference>();
+        _reference.Block = this;
     }
 
     protected override void Trigger(string trigger)
     {
         if (!_referencedObject) return;
         var receiver = EventManager.GetReceiverType(trigger);
-        receiver.Trigger(_referencedObject);
+        if (_referencedObject.activeInHierarchy) receiver.Trigger(_referencedObject);
+        foreach (var spawn in _reference.Spawns.Where(spawn => spawn))
+        {
+            receiver.Trigger(spawn);
+        }
     }
 
     protected override object GetValue(string id)
@@ -92,6 +98,7 @@ public class ObjectBlock : ScriptBlock
     public class ObjectBlockReference : MonoBehaviour
     {
         public ObjectBlock Block;
+        public readonly List<GameObject> Spawns = [];
 
         public void OnEvent(string eName) => Block.Event(eName);
     }

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using Architect.Utils;
 using UnityEngine;
@@ -25,5 +27,13 @@ public class ObjectDuplicator : MonoBehaviour
         obj.name += " Copy " + Guid.NewGuid();
         obj.RemoveComponent<PersistentBoolItem>();
         obj.SetActive(true);
+
+        var o = PlacementManager.Objects[id];
+        var obr = o.GetComponent<ObjectBlock.ObjectBlockReference>();
+        if (obr)
+        {
+            obr.Spawns.Add(obj);
+            obj.AddComponent<ObjectBlock.ObjectBlockReference>().Block = obr.Block;
+        }
     }
 }
