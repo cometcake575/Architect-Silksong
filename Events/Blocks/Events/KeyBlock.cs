@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Events;
 
-public class KeyBlock : ScriptBlock
+public class KeyBlock : ToggleableBlock
 {
-    protected override IEnumerable<string> Inputs => [];
     protected override IEnumerable<string> Outputs => ["OnPress", "OnRelease"];
     protected override Color Color => Color.green;
     protected override string Name => "Key Listener";

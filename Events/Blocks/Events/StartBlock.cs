@@ -3,12 +3,9 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Events;
 
-public class StartBlock : ScriptBlock
+public class StartBlock : ToggleableBlock
 {
-    protected override IEnumerable<string> Inputs => [];
     protected override IEnumerable<string> Outputs => ["OnStart"];
-    protected override int InputCount => 0;
-    protected override int OutputCount => 1;
     protected override Color Color => Color.green;
     protected override string Name => "On Room Load";
 
@@ -20,7 +17,13 @@ public class StartBlock : ScriptBlock
     public class StartEvent : MonoBehaviour
     {
         public StartBlock Block;
+        private bool _done;
         
-        private void Start() => Block.Event("OnStart");
+        private void Update()
+        {
+            if (_done) return;
+            _done = true;
+            Block.Event("OnStart");
+        }
     }
 }

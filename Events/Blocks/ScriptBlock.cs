@@ -91,9 +91,20 @@ public abstract class ScriptBlock
 
     protected T GetVariable<T>(string id)
     {
-        if (!VarMap.TryGetValue(id, out var value)) return (T)(object)null;
+        if (!VarMap.TryGetValue(id, out var value))
+        {
+            return (T)GetDefaultValue<T>();
+        }
         var (blockId, targetId) = value;
         return (T)ScriptManager.Blocks[blockId].GetValue(targetId);
+    }
+
+    private static object GetDefaultValue<T>()
+    {
+        var t = typeof(T);
+        if (t == typeof(bool)) return false;
+        if (t == typeof(int) || t == typeof(float)) return 0;
+        return null;
     }
 
     [CanBeNull] protected virtual object GetValue(string id) => null;
@@ -413,7 +424,7 @@ public abstract class ScriptBlock
 
     protected virtual void SetupReference() { }
 
-    public void Event(string name)
+    public virtual void Event(string name)
     {
         if (EditManager.IsEditing) return;
         if (!EventMap.TryGetValue(name, out var targets)) return;

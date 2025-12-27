@@ -849,64 +849,79 @@ public static class VanillaObjects
         AddEnemy("Swamp Squit", "swamp_mosquito",
             ("Shadow_04", "Swamp Mosquito (3)"));
 
-        AddEnemy("Stilkin", "stilkin", 
+        AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
-            postSpawnAction:EnemyFixers.FixStilkin);
+            postSpawnAction: EnemyFixers.FixStilkin);
         AddEnemy("Stilkin Trapper", "stilkin_trapper",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
-            postSpawnAction:EnemyFixers.FixStilkinTrapper).DoFlipX();
+            postSpawnAction: EnemyFixers.FixStilkinTrapper).DoFlipX();
 
         AddEnemy("Mothleaf Lagnia", "mothleaf", ("Shadow_26", "Swamp Drifter"));
 
         AddEnemy("Groal the Great", "groal", ("Shadow_18", "Battle Scene/Wave 6 - Boss/Swamp Shaman"),
-            preloadAction:EnemyFixers.RemoveConstrainPosition,
-            postSpawnAction:EnemyFixers.FixGroal)
+                preloadAction: EnemyFixers.RemoveConstrainPosition,
+                postSpawnAction: EnemyFixers.FixGroal)
             .WithConfigGroup(ConfigGroup.Bosses).WithBroadcasterGroup(BroadcasterGroup.Groal);
-        
+
         AddSolid("Bilewater Platform 1", "swamp_plat_1",
-            ("Shadow_02", "plank_plat (4)"), preloadAction:MiscFixers.FixBilePlat);
+            ("Shadow_02", "plank_plat (4)"), preloadAction: MiscFixers.FixBilePlat);
         AddSolid("Bilewater Platform 2", "swamp_plat_2",
             ("Shadow_26", "gloom_lift_destroy/gloom_lift_set/gloom_plat_lift destroy"));
-        
+
         /*
         Categories.Effects.Add(new PreloadObject("Maggots", "maggot_effect",
             ("Shadow_18", "maggot_pool (1)/swamp_maggot_animated0000 (10)"), preloadAction: MiscFixers.FixDecoration)
             .WithConfigGroup(ConfigGroup.Decorations));*/
-        
+
         Categories.Platforming.Add(new PreloadObject("Muck Pod", "swap_bounce_pod",
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
-            ("Shadow_02", "moss_crumble_plat"))
+                ("Shadow_02", "moss_crumble_plat"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
-        
+
         Categories.Hazards.Add(new PreloadObject("Stake Trap", "bilewater_trap",
-            ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
-            preloadAction: o => o.transform.SetPositionZ(0.006f),
-            postSpawnAction: o =>
-            {
-                var fsm = o.LocateMyFSM("Control");
-                fsm.GetState("Fire").AddAction(() => fsm.SetState("Idle"));
-            }).DoFlipX().WithRotationGroup(RotationGroup.All)
+                ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
+                preloadAction: o => o.transform.SetPositionZ(0.006f),
+                postSpawnAction: o =>
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Fire").AddAction(() => fsm.SetState("Idle"));
+                }).DoFlipX().WithRotationGroup(RotationGroup.All)
             .WithReceiverGroup(ReceiverGroup.Trap));
-        
+
         Categories.Hazards.Add(new PreloadObject("Spike Ball", "swing_trap_small",
-            ("Shadow_10", "Spike Ball Folder/stake_trap_swing"), preloadAction: o =>
-            {
-                o.transform.SetPositionZ(3.65f);
-                o.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
-                o.transform.GetChild(1).GetChild(0).GetChild(1).gameObject.SetActive(false);
-                o.transform.GetChild(1).GetChild(0).GetChild(2).gameObject.SetActive(false);
-                o.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(false);
-                o.transform.GetChild(1).GetChild(1).GetChild(2).gameObject.SetActive(false);
-                o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>();
-            }).WithRotationGroup(RotationGroup.All).WithReceiverGroup(ReceiverGroup.Trap)
+                ("Shadow_10", "Spike Ball Folder/stake_trap_swing"), preloadAction: o =>
+                {
+                    o.transform.SetPositionZ(3.65f);
+                    o.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
+                    o.transform.GetChild(1).GetChild(0).GetChild(1).gameObject.SetActive(false);
+                    o.transform.GetChild(1).GetChild(0).GetChild(2).gameObject.SetActive(false);
+                    o.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(false);
+                    o.transform.GetChild(1).GetChild(1).GetChild(2).gameObject.SetActive(false);
+                    o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+                }).WithRotationGroup(RotationGroup.All).WithReceiverGroup(ReceiverGroup.Trap)
             .WithConfigGroup(ConfigGroup.Hazards));
-        
+
         Categories.Hazards.Add(new PreloadObject("Groal's Spike Ball", "swing_trap_spike",
-            ("Shadow_18", "Battle Scene/stake_trap_swing_repeater"), description:"Only has collision when swinging.", 
-            preloadAction:HazardFixers.FixSpikeBall)
+                ("Shadow_18", "Battle Scene/stake_trap_swing_repeater"),
+                description: "Only has collision when swinging.",
+                preloadAction: HazardFixers.FixSpikeBall)
             .WithConfigGroup(ConfigGroup.Hazards)
             .WithReceiverGroup(ReceiverGroup.SpikeBall));
+
+        Categories.Hazards.Add(new PreloadObject("Groal's Vengeful Spirit", "groal_fireball",
+            ("Shadow_18", "Swamp Shaman Fireball"), hideAndDontSave: true,
+            postSpawnAction: o =>
+            {
+                o.transform.SetScaleX(-o.transform.GetScaleX());
+                var rb2d = o.GetComponent<Rigidbody2D>();
+                var fly = o.LocateMyFSM("Control").GetState("Fly");
+                fly.DisableAction(2);
+                fly.AddAction(() =>
+                {
+                    rb2d.linearVelocity = o.transform.rotation * (new Vector3(-28, 0, 0) * o.transform.GetScaleX());
+                }, 0, true);
+            }).WithRotationGroup(RotationGroup.All));
     }
 
     private static void AddMistObjects()

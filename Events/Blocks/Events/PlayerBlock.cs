@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Events;
 
-public class PlayerBlock : ScriptBlock
+public class PlayerBlock : ToggleableBlock
 {
     protected override IEnumerable<string> Outputs => [
         "FaceLeft",

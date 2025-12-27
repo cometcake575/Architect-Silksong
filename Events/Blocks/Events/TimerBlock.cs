@@ -4,12 +4,9 @@ using Random = UnityEngine.Random;
 
 namespace Architect.Events.Blocks.Events;
 
-public class TimerBlock : ScriptBlock
+public class TimerBlock : ToggleableBlock
 {
-    protected override IEnumerable<string> Inputs => [];
     protected override IEnumerable<string> Outputs => ["OnCall"];
-    protected override int InputCount => 0;
-    protected override int OutputCount => 1;
     protected override Color Color => Color.green;
     protected override string Name => "Timer";
 

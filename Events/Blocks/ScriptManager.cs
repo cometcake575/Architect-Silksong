@@ -249,7 +249,8 @@ public static class ScriptManager
         var func = () => new T
         {
             Type = name, 
-            Config = configGroup
+            Config = configGroup,
+            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
         };
         InputBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -260,7 +261,8 @@ public static class ScriptManager
         var func = () => new T
         {
             Type = name, 
-            Config = configGroup
+            Config = configGroup,
+            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
         };
         ProcessBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -271,7 +273,8 @@ public static class ScriptManager
         var func = () => new T
         {
             Type = name, 
-            Config = configGroup
+            Config = configGroup,
+            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
         };
         OutputBlocks.Add((func, name));
         BlockTypes[name] = func;
