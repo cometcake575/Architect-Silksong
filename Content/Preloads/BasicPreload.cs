@@ -3,7 +3,11 @@ using UnityEngine;
 
 namespace Architect.Content.Preloads;
 
-public class BasicPreload(string scene, string path, Action<GameObject> callback, bool hads = false) : IPreload
+public class BasicPreload(
+    string scene, 
+    string path,
+    Action<GameObject> callback,
+    bool hads = false) : IPreload
 {
     public string Scene { get; } = scene;
     public string Path { get; } = path;

@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.0.7")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.0.8")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin
@@ -75,7 +75,7 @@ public class ArchitectPlugin : BaseUnityPlugin
         if (HeroController.instance)
         {
             EditManager.Update();
-            HazardFixers.Update();
+            HazardFixers.UpdateLanterns();
         }
         CursorManager.Update();
         LevelSharerUI.Update();

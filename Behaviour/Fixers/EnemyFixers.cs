@@ -1006,6 +1006,15 @@ public static class EnemyFixers
         var recover = fsm.GetState("Intro Recover");
         recover.DisableAction(4);
         recover.DisableAction(5);
+
+        // Floor stomp
+        fsm.GetState("Stomp").DisableAction(9);
+
+        var floorSlam = fsm.GetState("Floor Slam");
+        floorSlam.DisableAction(0);
+        floorSlam.AddAction(() => obj.BroadcastEvent("FloorSlam"), 0);
+
+        fsm.GetState("Wall Slam").AddAction(() => obj.BroadcastEvent("WallSlam"), 0);
     }
 
     public static void FixElderPilgrim(GameObject obj)
@@ -1751,6 +1760,9 @@ public static class EnemyFixers
 
         hm.blackThreadState = bts;
         hm.hasBlackThreadState = true;
+
+        bts.useCustomHPMultiplier = true;
+        bts.customHPMultiplier = 1;
 
         Object.Destroy(old);
     }

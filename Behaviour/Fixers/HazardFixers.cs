@@ -33,7 +33,6 @@ public static class HazardFixers
 
         HookUtils.OnFsmAwake += fsm =>
         {
-            
             if (fsm.FsmName == "Control" && fsm.gameObject.name == "Wisp Fireball(Clone)")
             {
                 var obj = fsm.FsmVariables.FindFsmGameObject("Wisp Fireball Master");
@@ -49,7 +48,7 @@ public static class HazardFixers
         };
     }
 
-    public static void Update() => _lanternTime -= Time.deltaTime;
+    public static void UpdateLanterns() => _lanternTime -= Time.deltaTime;
     
     public static void FixFan(GameObject fan)
     {
@@ -123,6 +122,21 @@ public static class HazardFixers
         }
     }
 
+    public static void FixWisp(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        var master = fsm.FsmVariables.FindFsmGameObject("Wisp Fireball Master");
+        fsm.GetState("Request Attack").AddAction(() =>
+        {
+            if (!master.Value && _lanternTime <= 0)
+            {
+                _lanternTime = 1;
+                fsm.SendEvent("APPROVED");
+            }
+        }, 2);
+    }
+
     public static void FixSpikeBall(GameObject obj)
     {
         obj.transform.GetChild(1).SetAsFirstSibling();
@@ -149,5 +163,59 @@ public static class HazardFixers
         junkFall.transform.SetLocalPosition2D(new Vector2(2.5f, -6.5f));
         junkFall.SetActive(true);
         junkFall.transform.Find("Spike Collider").gameObject.LocateMyFSM("Shift Hero").enabled = false;
+
+        junkFall.AddComponent<JunkPipe>();
+        
+        junkFall.GetComponent<PlayMakerFSM>().GetState("Pause").DisableAction(2);
+    }
+
+    public class JunkPipe : MonoBehaviour
+    {
+        private PlayMakerFSM _fsm;
+        
+        private void Awake()
+        {
+            _fsm = GetComponent<PlayMakerFSM>();
+            _fsm.GetState("Pause").DisableAction(2);
+            _fsm.GetState("Flow").AddAction(() => transform.GetChild(2).gameObject.SetActive(true));
+        }
+        
+        private void OnDisable()
+        {
+            transform.GetChild(2).gameObject.SetActive(false);
+        }
+        
+        private void OnEnable()
+        {
+            transform.GetChild(2).gameObject.SetActive(false);
+        }
+    }
+
+    public static void FixMaggotBlob(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.InitTemplate();
+        fsm.fsmTemplate = null;
+
+        obj.AddComponent<MaggotBlob>();
+        obj.RemoveComponent<RandomScale>();
+    }
+
+    private class MaggotBlob : MonoBehaviour
+    {
+        private bool _setup;
+        
+        private void Update()
+        {
+            if (_setup) return;
+            _setup = true;
+            
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.SendEvent("FINISHED");
+            var launch = fsm.GetState("Launch");
+            launch.DisableAction(4);
+            launch.DisableAction(7);
+            launch.DisableAction(8);
+        }
     }
 }

@@ -278,6 +278,15 @@ public static class ConfigGroup
         }).WithDefaultValue(2).WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> Wisp = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Range Multiplier", "wisp_range", (o, value) =>
+        {
+            var col = o.transform.GetChild(0).GetComponent<CircleCollider2D>();
+            if (value.GetValue() == 0) col.enabled = false;
+            else col.radius *= value.GetValue();
+        }).WithDefaultValue(1).WithPriority(-1))
+    ]);
+
     public static readonly List<ConfigType> Roar = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Time", "roar_time", (o, value) =>
         {
@@ -1330,6 +1339,19 @@ public static class ConfigGroup
                 if (!value.GetValue()) return;
                 o.GetComponent<EnemyFixers.Wakeable>().DoWake();
             }).WithDefaultValue(true))
+    ]);
+
+    public static readonly List<ConfigType> Velocity = GroupUtils.Merge(Gravity, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Velocity", "velocity_apply_x", (o, value) =>
+            {
+                o.GetOrAddComponent<VelocityApplier>().x = value.GetValue();
+            }).WithDefaultValue(10)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Velocity", "velocity_apply_y", (o, value) =>
+            {
+                o.GetOrAddComponent<VelocityApplier>().y = value.GetValue();
+            }).WithDefaultValue(0))
     ]);
     
     public static readonly List<ConfigType> Watcher = GroupUtils.Merge(Wakeable, GroupUtils.Merge(Bosses, [

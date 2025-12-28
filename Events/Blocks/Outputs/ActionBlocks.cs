@@ -10,6 +10,7 @@ public static class ActionBlocks
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
+        ScriptManager.RegisterInputBlock<StatusBlock>("Status Control");
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
         ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);

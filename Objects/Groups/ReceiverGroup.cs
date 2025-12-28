@@ -31,6 +31,19 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> RuneBomb = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("bomb_trigger", "Activate", o =>
+        {
+            var obj = Object.Instantiate(o.transform.GetChild(0).gameObject, o.transform.position,
+                o.transform.localRotation);
+            var ls = obj.transform.localScale;
+            ls.x *= o.transform.localScale.x;
+            ls.y *= o.transform.localScale.x;
+            obj.transform.localScale = ls;
+            obj.SetActive(true);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> BlackThreader = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_black_thread", "Activate", o =>
         {

@@ -29,6 +29,7 @@ public class ObjectDuplicator : MonoBehaviour
         obj.SetActive(true);
 
         var o = PlacementManager.Objects[id];
+        if (!o) return;
         var obr = o.GetComponent<ObjectBlock.ObjectBlockReference>();
         if (obr)
         {

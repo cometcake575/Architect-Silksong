@@ -65,3 +65,50 @@ public class SilkBlock : ScriptBlock
         return PlayerData.instance.silk;
     }
 }
+
+public class StatusBlock : ScriptBlock
+{
+    protected override IEnumerable<string> Inputs => ["Maggot", "Unmaggot", "Void", "Plasmify", "Deplasmify"];
+    protected override IEnumerable<(string, string)> OutputVars => [
+        ("Maggoted", "Boolean"),
+        ("Frosted", "Boolean"), 
+        ("Plasmified", "Boolean")];
+
+    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Status Control";
+
+    protected override void Trigger(string trigger)
+    {
+        switch (trigger)
+        {
+            case "Void":
+                HeroController.instance.ActivateVoidAcid();
+                break;
+            case "Maggot":
+                HeroController.instance.SetIsMaggoted(true);
+                break;
+            case "Unmaggot":
+                HeroController.instance.SetIsMaggoted(false);
+                break;
+            case "Plasmify":
+                HeroController.instance.HitMaxBlueHealth();
+                HeroController.instance.HitMaxBlueHealthBurst();
+                break;
+            case "Deplasmify":
+                HeroController.instance.ResetLifebloodState();
+                break;
+        }
+    }
+
+    protected override object GetValue(string id)
+    {
+        return id switch
+        {
+            "Maggoted" => HeroController.instance.cState.isMaggoted,
+            "Plasmified" => HeroController.instance.IsInLifebloodState,
+            "Frosted" => HeroController.instance.cState.isFrosted,
+            _ => false
+        };
+    }
+}

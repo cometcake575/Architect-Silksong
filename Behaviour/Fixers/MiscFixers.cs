@@ -62,7 +62,8 @@ public static class MiscFixers
                 {
                     var hrm = SceneManager.GetActiveScene().GetRootGameObjects()
                         .SelectMany(obj => obj.GetComponentsInChildren<HazardRespawnMarker>(true))
-                        .First();
+                        .FirstOrDefault();
+                    if (!hrm) return null;
                     return hrm.transform.position;
                 }
 
@@ -77,8 +78,8 @@ public static class MiscFixers
                 {
                     var hrm = SceneManager.GetActiveScene().GetRootGameObjects()
                         .SelectMany(obj => obj.GetComponentsInChildren<HazardRespawnMarker>(true))
-                        .First();
-                    return hrm.transform;
+                        .FirstOrDefault();
+                    return hrm ? hrm.transform : null;
                 }
 
                 return point;

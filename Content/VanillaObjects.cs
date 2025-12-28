@@ -158,7 +158,16 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable)
             .WithRotationGroup(RotationGroup.Eight));
 
-        Categories.Hazards.Add(new PreloadObject("Coral Spike", "coral_spike",
+        Categories.Hazards.Add(new PreloadObject("Coral Spike S", "stomp_spire",
+                ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)/Stomp Spire L"),
+                description: "This spike starts hidden, the 'Activate' trigger will\n" +
+                             "cause the spike to come out of the ground.",
+                postSpawnAction: HazardFixers.FixCoralSpike)
+            .WithReceiverGroup(ReceiverGroup.CoralSpike)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable)
+            .WithRotationGroup(RotationGroup.Eight));
+
+        Categories.Hazards.Add(new PreloadObject("Coral Spike L", "coral_spike",
                 ("Memory_Coral_Tower", "Boss Scene/Roar Spikes/Spike Holder 1/Coral Spike"),
                 description: "This spike starts hidden, the 'Activate' trigger will\n" +
                              "cause the spike to come out of the ground.",
@@ -224,6 +233,13 @@ public static class VanillaObjects
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 1/Roachkeeper Chef Tiny"),
             preloadAction: o => o.transform.SetPositionZ(0.006f),
             postSpawnAction: EnemyFixers.FixRoachserver);
+
+        Categories.Hazards.Add(new PreloadObject("Maggot Blob", "chef_blob",
+                ("Dust_Chef", "Chef Maggot Blob"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                hideAndDontSave: true, postSpawnAction: HazardFixers.FixMaggotBlob)
+            .WithConfigGroup(ConfigGroup.Velocity));
         
         /*AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
@@ -313,7 +329,34 @@ public static class VanillaObjects
         AddEnemy("Choir Clapper", "heavy_sentry", 
             ("Hang_04_boss", "Battle Scene/Wave 8 - Heavy Sentry/Song Heavy Sentry"),
             postSpawnAction: MiscFixers.FixChoirClapper).DoFlipX();
+
+        var choirBombS = new GameObject("[Architect] Choir Bomb S");
+        choirBombS.SetActive(false);
+        Object.DontDestroyOnLoad(choirBombS);
+        var bombS = Categories.Hazards.Add(new CustomObject("Rune Bomb S", "choir_bomb_s", choirBombS,
+                description:"Appears when the 'Activate' trigger is run.",
+            sprite: ResourceUtils.LoadSpriteResource("rune_bomb_small", ppu:64))
+            .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
+
+        var choirBombL = new GameObject("[Architect] Choir Bomb L");
+        choirBombL.SetActive(false);
+        Object.DontDestroyOnLoad(choirBombL);
+        var bombL = Categories.Hazards.Add(new CustomObject("Rune Bomb L", "choir_bomb_l", choirBombL,
+                description:"Appears when the 'Activate' trigger is run.",
+            sprite: ResourceUtils.LoadSpriteResource("rune_slam_large", ppu:50))
+            .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
         
+        PreloadManager.RegisterPreload(new BasicPreload("Hang_04_boss", "rune bomb small", o =>
+        {
+            o.transform.parent = choirBombS.transform;
+            bombS.Offset = o.transform.GetChild(1).transform.localPosition;
+        }, hads: true));
+        PreloadManager.RegisterPreload(new BasicPreload("Hang_04_boss", "rune slam", o =>
+        {
+            o.transform.parent = choirBombL.transform;
+            bombL.Offset = o.transform.GetChild(1).transform.localPosition;
+        }, hads: true));
+
         AddEnemy("Minister", "song_admin", 
             ("Hang_04_boss", "Battle Scene/Wave 5 - Song Admins/Song Administrator"), 
             postSpawnAction:EnemyFixers.FixMinister);
@@ -453,6 +496,13 @@ public static class VanillaObjects
     private static void AddDuctObjects()
     {
         AddEnemy("Spit Squit", "swamp_mosquito_skinny", ("Aqueduct_03", "Swamp Mosquito Skinny"));
+        Categories.Hazards.Add(new PreloadObject("Squit Bullet", "muck_bullet",
+            ("Aqueduct_03", "Skinny Mosquito Bullet"),
+            description:"Usually already landed by the time the room finishes loading.\n" +
+                        "Best used with the Object Spawner.",
+            hideAndDontSave: true)
+            .WithConfigGroup(ConfigGroup.Velocity));
+        
         AddEnemy("Barnak", "swamp_barnacle", ("Aqueduct_03", "Swamp Barnacle (1)")).DoFlipX();
         AddEnemy("Ductsucker", "swamp_ductsucker", ("Aqueduct_03", "Swamp Ductsucker"),
             postSpawnAction: EnemyFixers.FixDuctsucker);
@@ -1260,6 +1310,10 @@ public static class VanillaObjects
                 ("Wisp_02", "Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
             .WithConfigGroup(ConfigGroup.Unbreakable));
 
+        Categories.Hazards.Add(new PreloadObject("Wisp", "wisp",
+                ("Wisp_02", "Wisp Fireball"), postSpawnAction: HazardFixers.FixWisp, hideAndDontSave: true)
+            .WithConfigGroup(ConfigGroup.Wisp));
+
         AddEnemy("Burning Bug", "farmer_wisp", 
             ("Wisp_02", "Wisp Farmers/Farmer Wisp"), preloadAction: o =>
             {
@@ -1309,8 +1363,10 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four);
         AddEnemy("Phacia", "flower_drifter", ("Shellwood_10", "Flower Drifter"));
         AddEnemy("Disguised Phacia", "flower_drifter_hidden", ("Arborium_03", "Flower Drifter (3)"));
+        
         AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"))
             .WithRotationGroup(RotationGroup.Eight);
+        
         AddEnemy("Wood Wasp", "wood_wasp", ("Shellwood_02", "Shellwood Wasp"));
         AddEnemy("Splinter", "splinter", ("Shellwood_02", "Stick Insect"),
             preloadAction: EnemyFixers.FixSplinter);
@@ -1452,6 +1508,13 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Wakeable)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
+
+        Categories.Hazards.Add(new PreloadObject("Flintbomb", "flint_bomb",
+            ("Bone_06", "Rock Roller Bomb"),
+            description:"Usually already landed by the time the room finishes loading.\n" +
+                        "Best used with the Object Spawner.",
+            hideAndDontSave: true)
+            .WithConfigGroup(ConfigGroup.Velocity));
 
         AddEnemy("Shardillard", "shardillard", ("Bone_06", "Shell Fossil Mimic AppearVariant"),
             preloadAction: o => o.transform.SetRotation2D(0),

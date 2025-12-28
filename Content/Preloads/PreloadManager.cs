@@ -161,6 +161,7 @@ public static class PreloadManager
                 {
                     foundObject = Resources.FindObjectsOfTypeAll<GameObject>()
                         .First(o => o.name == preload.Item2.Path);
+                    foundObject.SetActive(false);
                 } else foundObject = ObjectUtils.GetGameObjectFromArray(rootObjects, preload.Item1);
             
                 preload.Item2.BeforePreload(foundObject);
