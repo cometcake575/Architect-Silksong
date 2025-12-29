@@ -632,9 +632,10 @@ public static class EnemyFixers
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("SPAWN M"), 0);
         ((SetFloatValue)fsm.GetState("Spawn Mid").actions[0]).floatValue.value = obj.transform.position.x;
         fsm.FsmVariables.FindFsmFloat("Ground Y").value = obj.transform.position.y;
-        
-        fsm.GetState("Spawn Roll Clamp").DisableAction(2);
-        
+
+        var clamp = fsm.GetState("Spawn Roll Clamp");
+        clamp?.DisableAction(2);
+
         fsm.FsmVariables.FindFsmBool("No Respawn").value = true;
         obj.GetComponent<HealthManager>().hasSpecialDeath = false;
         

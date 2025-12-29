@@ -96,7 +96,12 @@ public abstract class ScriptBlock
             return (T)GetDefaultValue<T>();
         }
         var (blockId, targetId) = value;
-        return (T)ScriptManager.Blocks[blockId].GetValue(targetId);
+        var val = ScriptManager.Blocks[blockId].GetValue(targetId);
+        if (typeof(T) == typeof(float) && val is int i)
+        {
+            return (T)(object)(float)i;
+        }
+        return (T)val;
     }
 
     private static object GetDefaultValue<T>()

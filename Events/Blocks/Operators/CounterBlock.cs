@@ -14,7 +14,12 @@ public class CounterBlock : ScriptBlock
 
     public int Count;
     private int _count;
-    
+
+    protected override void SetupReference()
+    {
+        _count = 0;
+    }
+
     protected override void Trigger(string trigger)
     {
         if (trigger == "Reset")
