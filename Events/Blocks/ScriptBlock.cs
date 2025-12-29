@@ -91,12 +91,17 @@ public abstract class ScriptBlock
 
     protected T GetVariable<T>(string id)
     {
+        object val;
         if (!VarMap.TryGetValue(id, out var value))
         {
-            return (T)GetDefaultValue<T>();
+            val = GetDefaultValue<T>();
         }
-        var (blockId, targetId) = value;
-        var val = ScriptManager.Blocks[blockId].GetValue(targetId);
+        else
+        {
+            var (blockId, targetId) = value;
+            val = ScriptManager.Blocks[blockId].GetValue(targetId);
+        }
+
         if (typeof(T) == typeof(float) && val is int i)
         {
             return (T)(object)(float)i;
