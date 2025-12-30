@@ -1081,6 +1081,18 @@ public static class MiscFixers
         var hit2 = fsm.GetState("Hit 2");
         var rd2 = (ReceivedDamage)hit2.actions[2];
         rd2.sendEventHeavy = rd2.sendEvent;
+        
+        obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
+        {
+            if (!value) return;
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("LoadedBroken");
+        };
+        fsm.GetState("Break").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("FirstBreak");
+        });
     }
 
     public static void FocusFirstChild(GameObject obj) => obj.transform.GetChild(1).SetAsFirstSibling();

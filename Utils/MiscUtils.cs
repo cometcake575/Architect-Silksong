@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GlobalEnums;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -13,8 +14,10 @@ public static class MiscUtils
         var fsm = hero.sprintFSM;
         if (fsm.ActiveStateName.Contains("Sprint")) fsm.SendEvent("SKID END");
         hero.umbrellaFSM.SendEvent("END");
-        
-        yield return new WaitUntil(() => !hero.controlReqlinquished && 
+
+        yield return new WaitUntil(() => !hero.controlReqlinquished &&
+                                         HeroController.instance.transitionState ==
+                                         HeroTransitionState.WAITING_TO_TRANSITION &&
                                          (condition == null || condition.Invoke(hero)));
     }
 

@@ -17,6 +17,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<ShakeCameraBlock>("Camera Shake", ConfigGroup.CameraShaker);
         ScriptManager.RegisterInputBlock<TimeSlowerBlock>("Time Slowdown", ConfigGroup.TimeSlower);
         ScriptManager.RegisterInputBlock<AnimatorBlock>("Animator Controller", ConfigGroup.AnimPlayer);
+        ScriptManager.RegisterInputBlock<BroadcastBlock>("Broadcast", ConfigGroup.Broadcast);
         ScriptManager.RegisterInputBlock<MultiplayerInBlock>("Multiplayer Event", ConfigGroup.MultiplayerIn);
     }
 }

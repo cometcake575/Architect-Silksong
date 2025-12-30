@@ -1019,7 +1019,8 @@ public static class VanillaObjects
                 o.transform.GetChild(1).gameObject.SetActive(false);
             },
             postSpawnAction: MiscFixers.FixBreakableWall)
-            .WithConfigGroup(ConfigGroup.BreakableWall));
+            .WithConfigGroup(ConfigGroup.BreakableWall)
+            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
 
         Categories.Misc.Add(new PreloadObject("Breakable Wall B", "breakable_wall",
                 ("Aqueduct_03", "Breakable Wall"),
@@ -1031,7 +1032,8 @@ public static class VanillaObjects
                     col2d.offset = Vector2.zero;
                     col2d.size = new Vector2(2.25f, 4.25f);
                 }, postSpawnAction: MiscFixers.FixBreakableWall)
-            .WithConfigGroup(ConfigGroup.BreakableWall));
+            .WithConfigGroup(ConfigGroup.BreakableWall)
+            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
         
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),

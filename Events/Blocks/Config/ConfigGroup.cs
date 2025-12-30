@@ -100,6 +100,24 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ];
     
+    public static readonly List<ConfigType> Broadcast =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<BroadcastBlock>("Event ID", "in_name", (o, value) =>
+            {
+                o.EventName = value.GetValue();
+            }))
+    ];
+    
+    public static readonly List<ConfigType> Receive =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ReceiveBlock>("Event ID", "out_name", (o, value) =>
+            {
+                o.EventName = value.GetValue();
+            }))
+    ];
+    
     public static readonly List<ConfigType> MultiplayerOut =
     [
         ConfigurationManager.RegisterConfigType(
