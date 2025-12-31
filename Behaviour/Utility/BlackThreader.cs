@@ -18,6 +18,8 @@ public class BlackThreader : MonoBehaviour
     private int _attackIndex;
     private bool _blackThreaded;
 
+    private CustomBlackThreadState _bts;
+
     private void Start()
     {
         var total = 0f;
@@ -46,17 +48,17 @@ public class BlackThreader : MonoBehaviour
         var hm = target.GetComponent<HealthManager>();
         if (!hm) return;
 
-        var bts = target.AddComponent<CustomBlackThreadState>();
+        _bts = target.AddComponent<CustomBlackThreadState>();
 
-        bts.customAttack = Effects.BlackThreadAttacksDefault[_attackIndex];
+        _bts.customAttack = Effects.BlackThreadAttacksDefault[_attackIndex];
         
-        bts.extraSpriteRenderers = target.GetComponentsInChildren<SpriteRenderer>(true);
-        bts.extraMeshRenderers = target.GetComponentsInChildren<MeshRenderer>(true);
+        _bts.extraSpriteRenderers = target.GetComponentsInChildren<SpriteRenderer>(true);
+        _bts.extraMeshRenderers = target.GetComponentsInChildren<MeshRenderer>(true);
 
-        bts.useCustomHPMultiplier = true;
-        bts.customHPMultiplier = hpMultiplier;
+        _bts.useCustomHPMultiplier = true;
+        _bts.customHPMultiplier = hpMultiplier;
         
-        hm.blackThreadState = bts;
+        hm.blackThreadState = _bts;
         hm.hasBlackThreadState = true;
     }
 

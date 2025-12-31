@@ -544,6 +544,21 @@ public static class ConfigGroup
                 }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> Water = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Maggoted", "water_maggot",
+                (o, value) =>
+                {
+                    o.GetComponent<MiscFixers.Water>().maggot = value.GetValue();
+                }).WithDefaultValue(false).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Voided", "water_void",
+                (o, value) =>
+                {
+                    o.GetComponent<MiscFixers.Water>().abyss = value.GetValue();
+                }).WithDefaultValue(false).WithPriority(-1))
+    ]);
+
     public static readonly List<ConfigType> DreamBlock = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Particles", "show_particles_dream",
@@ -1222,6 +1237,16 @@ public static class ConfigGroup
             {
                 o.GetComponent<EnemyFixers.PatrollerFix>().xOffset = value.GetValue();
             }).WithDefaultValue(5).WithPriority(-1))
+    ]);
+    
+    public static readonly List<ConfigType> HugeFlea = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Count as Flea", "huge_flea_count",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.LocateMyFSM("Control").GetState("Stun").DisableAction(0);
+                }).WithDefaultValue(true))
     ]);
     
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [

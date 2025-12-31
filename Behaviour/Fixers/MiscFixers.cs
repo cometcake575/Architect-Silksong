@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Architect.Behaviour.Custom;
 using Architect.Content.Preloads;
@@ -153,6 +154,21 @@ public static class MiscFixers
             if (EditManager.IsEditing && fsm.FsmName == "Detect Grab" && fsm.name == "Tendril") 
                 fsm.gameObject.SetActive(false);
         };
+
+        _ = new Hook(typeof(MaggotRegion).GetProperty(nameof(MaggotRegion.IsActive))!.GetGetMethod(),
+            (Func<MaggotRegion, bool> orig, MaggotRegion self) =>
+            {
+                var water = self.GetComponent<Water>();
+                return water ? water.maggot : orig(self);
+            });
+
+        _ = new Hook(typeof(AbyssWater).GetProperty(nameof(AbyssWater.IsActive),
+                BindingFlags.NonPublic | BindingFlags.Instance)!.GetGetMethod(true),
+            (Func<AbyssWater, bool> orig, AbyssWater self) =>
+            {
+                var water = self.GetComponent<Water>();
+                return water ? water.abyss : orig(self);
+            });
     }
 
     public class ColorLock : MonoBehaviour;
@@ -1101,5 +1117,55 @@ public static class MiscFixers
     {
         EnemyFixers.KeepActive(obj);
         obj.AddComponent<Gilly>();
+    }
+
+    public static void FixWater(GameObject obj)
+    {
+        obj.transform.parent = null;
+        
+        obj.transform.localScale = Vector3.one;
+        var bc1 = obj.GetComponent<BoxCollider2D>();
+        var bc2 = obj.transform.GetChild(0).GetComponent<BoxCollider2D>();
+        var bc3 = obj.transform.GetChild(0).GetChild(0).GetComponent<BoxCollider2D>();
+        bc1.size = Vector2.one * 5;
+        bc2.size = Vector2.one * 5;
+        bc3.size = Vector2.one * 5;
+        
+        bc1.offset = Vector2.zero;
+        bc2.offset = Vector2.zero;
+        bc3.offset = Vector2.zero;
+        
+        obj.AddComponent<Water>();
+    }
+
+    public class Water : MonoBehaviour
+    {
+        private SurfaceWaterRegion _swr;
+        private BoxCollider2D _col;
+        private Vector3 _lastPos;
+
+        public bool maggot;
+        public bool abyss;
+        
+        private void Start()
+        {
+            _swr = GetComponent<SurfaceWaterRegion>();
+            _col = GetComponent<BoxCollider2D>();
+            _lastPos = transform.position;
+
+            transform.GetChild(0).position = transform.position + new Vector3(0, 0.45f);
+        }
+
+        private void Update()
+        {
+            var sizeY = transform.GetScaleY() * _col.size.y;
+            _swr.heroSurfaceY = transform.GetPositionY() + sizeY / 2 + 0.45f * Mathf.Min(transform.GetScaleY() * _col.size.y, 1);
+            if (_swr.isHeroInside && _lastPos != transform.position)
+            {
+                HeroController.instance.transform.position += transform.position - _lastPos;
+            }
+
+            _lastPos = transform.position;
+        }
     }
 }

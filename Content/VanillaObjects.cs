@@ -258,6 +258,12 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
             ("Under_19", "lava_crumble_plat"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
+        
+        Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
+            ("Under_19", "Lava_Waterfall Set (4)"),
+            preloadAction: o => 
+                o.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>()))
+            .Offset -= new Vector3(0, 8, 0);
 
         AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"));
         AddEnemy("Cogwork Hauler", "understore_auto_ex", 
@@ -898,6 +904,13 @@ public static class VanillaObjects
             ("Shadow_02", "Black Thread States Thread Only Variant/Normal World/Swamp Goomba")).DoFlipX();
         AddEnemy("Swamp Squit", "swamp_mosquito",
             ("Shadow_04", "Swamp Mosquito (3)"));
+        
+        Categories.Platforming.Add(new PreloadObject("Water Area", "water_area",
+                ("Shadow_04", "GameObject/Surface Water Region"), 
+                sprite: ResourceUtils.LoadSpriteResource("water", FilterMode.Point, ppu:25.6f),
+                preloadAction: MiscFixers.FixWater)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.Water));
 
         AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
@@ -928,6 +941,17 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
                 ("Shadow_02", "moss_crumble_plat"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
+        
+        Categories.Effects.Add(new PreloadObject("Maggot Effect", "maggot_effect",
+                ("Shadow_02", "hero_maggoted_effect"), description:"Appears when the 'Burst' trigger is run.",
+                hideAndDontSave: true, preloadAction: o =>
+                {
+                    o.RemoveComponent<PlayParticleEffects>();
+                    o.RemoveComponent<ParticleSystemAutoDisable>();
+                    o.transform.GetChild(1).gameObject.SetActive(false);
+                    o.transform.GetChild(2).gameObject.SetActive(false);
+                }, sprite: ResourceUtils.LoadSpriteResource("maggot_burst", ppu:62.5f)
+                ).WithReceiverGroup(ReceiverGroup.Confetti));
 
         Categories.Hazards.Add(new PreloadObject("Stake Trap", "bilewater_trap",
                 ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
@@ -1222,7 +1246,8 @@ public static class VanillaObjects
 
         AddEnemy("Huge Flea", "huge_flea", ("Arborium_08", "Giant Flea Scene/Giant Flea"),
             postSpawnAction: EnemyFixers.FixGiantFlea)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.HugeFlea);
     }
     
     private static void AddCogworksObjects()

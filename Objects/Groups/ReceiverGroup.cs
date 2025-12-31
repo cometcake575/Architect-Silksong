@@ -228,7 +228,7 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Confetti = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("confetti_burst", "Burst", o =>
         {
-            o.GetComponent<ParticleSystem>().Emit(200);
+            o.GetComponentInChildren<ParticleSystem>().Emit(200);
         }))
     ]);
     
