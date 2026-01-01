@@ -14,6 +14,7 @@ public static class BroadcasterHooks
             (Action<HealthManager, HitInstance> orig, HealthManager self, HitInstance hitInstance) => 
             {
                 orig(self, hitInstance);
+                if (self.IsImmuneTo(hitInstance, true)) return;
                 EventManager.BroadcastEvent(self.gameObject, "OnDamage");
             }
         );

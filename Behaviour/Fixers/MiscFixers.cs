@@ -1141,6 +1141,7 @@ public static class MiscFixers
     public class Water : MonoBehaviour
     {
         private SurfaceWaterRegion _swr;
+        private MaggotRegion _mr;
         private BoxCollider2D _col;
         private Vector3 _lastPos;
 
@@ -1150,6 +1151,7 @@ public static class MiscFixers
         private void Start()
         {
             _swr = GetComponent<SurfaceWaterRegion>();
+            _mr = GetComponent<MaggotRegion>();
             _col = GetComponent<BoxCollider2D>();
             _lastPos = transform.position;
 
@@ -1159,7 +1161,15 @@ public static class MiscFixers
         private void Update()
         {
             var sizeY = transform.GetScaleY() * _col.size.y;
-            _swr.heroSurfaceY = transform.GetPositionY() + sizeY / 2 + 0.45f * Mathf.Min(transform.GetScaleY() * _col.size.y, 1);
+            var offset = sizeY / 2 + 0.6f * Mathf.Min(transform.GetScaleY() * _col.size.y, 1);
+            _swr.heroSurfaceY = transform.GetPositionY() + offset;
+            _mr.heroMaggotsYPos = HeroController.instance.transform.GetPositionY() - transform.GetPositionY() - 1;
+            var sm = _mr.spawnedHeroMaggots;
+            if (sm)
+            {
+                sm.transform.rotation = transform.rotation;
+                sm.transform.SetPositionY(transform.position.y + _mr.heroMaggotsYPos);
+            }
             if (_swr.isHeroInside && _lastPos != transform.position)
             {
                 HeroController.instance.transform.position += transform.position - _lastPos;

@@ -556,7 +556,13 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     o.GetComponent<MiscFixers.Water>().abyss = value.GetValue();
-                }).WithDefaultValue(false).WithPriority(-1))
+                }).WithDefaultValue(false).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Flow Speed", "water_flow_speed",
+                (o, value) =>
+                {
+                    o.GetComponent<SurfaceWaterRegion>().flowSpeed = value.GetValue();
+                }).WithDefaultValue(0).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> DreamBlock = GroupUtils.Merge(Visible, [

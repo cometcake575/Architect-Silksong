@@ -141,9 +141,10 @@ public static class SharerRequests
 
         request.SetRequestHeader("Content-Type", "application/json");
 
+        request.timeout = 60;
         var operation = request.SendWebRequest();
-        while (!operation.isDone) await Task.Yield();
-
+        await operation;
+        
         return request.downloadHandler.text;
     }
     
