@@ -253,8 +253,8 @@ public static class ScriptEditorUI
             BlocksParent.transform.SetParent(_blockTransformSource, true);
             LinesParent.transform.SetParent(_blockTransformSource, true);
             _blockTransformSource.localScale = new Vector2(
-                Mathf.Clamp(_blockTransformSource.localScale.x + Input.mouseScrollDelta.y / 40, 0.25f, 2), 
-                Mathf.Clamp(_blockTransformSource.localScale.y + Input.mouseScrollDelta.y / 40, 0.25f, 2));
+                Mathf.Clamp(_blockTransformSource.localScale.x + Input.mouseScrollDelta.y / 40, 0.1f, 2), 
+                Mathf.Clamp(_blockTransformSource.localScale.y + Input.mouseScrollDelta.y / 40, 0.1f, 2));
             BlocksParent.transform.SetParent(par, true);
             LinesParent.transform.SetParent(par, true);
         }

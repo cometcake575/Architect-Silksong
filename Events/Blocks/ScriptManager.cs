@@ -229,7 +229,7 @@ public static class ScriptManager
             
             var dir = t1.position - t2.position;
             transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
-            transform.localScale = new Vector3((dir.magnitude-t1.sizeDelta.x) / transform.parent.lossyScale.x, 1f, 1f);
+            transform.localScale = new Vector3(dir.magnitude / transform.parent.lossyScale.x - t1.sizeDelta.x / 2, 1f, 1f);
         }
 
         public override void Delete()

@@ -123,6 +123,7 @@ public static class UtilityObjects
                     var objects = o.scene.GetRootGameObjects().Where(obj =>
                         !obj.name.StartsWith("[Architect]")
                         && !obj.name.StartsWith("_SceneManager")
+                        && !obj.GetComponent<CustomTransitionPoint>()
                         && obj.name.Contains(filter)
                     );
             
