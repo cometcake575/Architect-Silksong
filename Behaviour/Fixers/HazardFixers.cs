@@ -11,6 +11,7 @@ public static class HazardFixers
     private static Transform _heroGrind;
     private static GameObject _cogDamager;
     private static GameObject _junkFall;
+    private static GameObject _lavaBox;
 
     private static float _lanternTime = 1;
         
@@ -30,6 +31,9 @@ public static class HazardFixers
         
         PreloadManager.RegisterPreload(new BasicPreload("Under_06", "junk_chute_ manual (1)", 
             o => _junkFall = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Bone_East_09", "Lava Box", 
+            o => _lavaBox = o));
 
         HookUtils.OnFsmAwake += fsm =>
         {
@@ -217,5 +221,18 @@ public static class HazardFixers
             launch.DisableAction(7);
             launch.DisableAction(8);
         }
+    }
+
+    public static void FixLava(GameObject obj)
+    {
+        var lb = Object.Instantiate(_lavaBox, obj.transform);
+        lb.SetActive(true);
+
+        lb.transform.localPosition = Vector3.zero;
+        lb.transform.localScale = Vector3.one;
+        
+        var bc2 = lb.GetComponent<BoxCollider2D>();
+        bc2.size = Vector2.one;
+        bc2.offset = Vector2.zero;
     }
 }

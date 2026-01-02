@@ -677,7 +677,7 @@ public static class ConfigGroup
             new IntConfigType("Render Layer", "obj_layer",
                 (o, value) =>
                 {
-                    foreach (var comp in o.GetComponentsInChildren<SpriteRenderer>())
+                    foreach (var comp in o.GetComponentsInChildren<Renderer>())
                         comp.sortingOrder = value.GetValue();
                 },
                 (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
@@ -1288,7 +1288,7 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> Moorwing = GroupUtils.Merge(Bosses, [DamagesEnemies]);
     
-    public static readonly List<ConfigType> Boran = GroupUtils.Merge(Bosses, [DamagesEnemies]);
+    public static readonly List<ConfigType> Boran = GroupUtils.Merge(Enemies, [DamagesEnemies]);
 
     public static readonly List<ConfigType> LeafRoller = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
@@ -1979,6 +1979,9 @@ public static class ConfigGroup
                 })
         )
     ]);
+    
+    public static readonly List<ConfigType> StretchableHazards = GroupUtils.Merge(Stretchable, 
+        GroupUtils.Merge(Hazards, []));
 
     public static readonly List<ConfigType> WhiteSpikes = GroupUtils.Merge(Mutable, GroupUtils.Merge(Hazards, [
         ConfigurationManager.RegisterConfigType(

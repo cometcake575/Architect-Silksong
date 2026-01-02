@@ -258,12 +258,6 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
             ("Under_19", "lava_crumble_plat"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
-        
-        Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
-            ("Under_19", "Lava_Waterfall Set (4)"),
-            preloadAction: o => 
-                o.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>()))
-            .Offset -= new Vector3(0, 8, 0);
 
         AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"));
         AddEnemy("Cogwork Hauler", "understore_auto_ex", 
@@ -1519,7 +1513,7 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.RemoveConstrainPosition,
             postSpawnAction: EnemyFixers.FixSavageBeastfly)
             .WithConfigGroup(ConfigGroup.SavageBeastfly)
-            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses).DoFlipX();
+            .WithBroadcasterGroup(BroadcasterGroup.SavageBeastfly).DoFlipX();
 
         AddEnemy("Mawling", "bone_roller", ("Arborium_03", "Bone Roller"));
 
@@ -1593,7 +1587,7 @@ public static class VanillaObjects
         AddEnemy("Deep Diver", "dock_charger", ("Dock_02b", "Dock Charger")).DoFlipX();
 
         Categories.Interactable.Add(new PreloadObject("Deep Docks Gate", "song_gate_small",
-                ("Bone_East_15", "Song_Gate_small (3)"), 
+                ("Bone_East_15", "Song_Gate_small (3)"),
                 preloadAction: o => o.RemoveComponent<PersistentBoolItem>())
             .WithReceiverGroup(ReceiverGroup.Gates)
             .WithRotationGroup(RotationGroup.Eight));
@@ -1607,8 +1601,28 @@ public static class VanillaObjects
         AddSolid("Docks Platform 2", "dock_plat_02", ("Bone_East_01", "dock_plat_float_01 (9)"));
 
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 1", "lava_crumble_plat",
-            ("Dock_02b", "lava_crumble_plat (5)"))
+                ("Dock_02b", "lava_crumble_plat (5)"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
+
+        Categories.Hazards.Add(new PreloadObject("Lava", "lava_area",
+            ("Bone_East_09", "lava_set/LavaBase (1)"),
+            preloadAction: o =>
+            {
+                o.transform.parent = null;
+                o.transform.localScale = new Vector3(20, 5, 0);
+                o.transform.SetPositionZ(-0.002f);
+            },
+            postSpawnAction: HazardFixers.FixLava,
+            sprite: ResourceUtils.LoadSpriteResource("lava", FilterMode.Point, ppu: 128))
+            .WithConfigGroup(ConfigGroup.StretchableHazards));
+
+        Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
+                ("Under_19", "Lava_Waterfall Set (4)"),
+                preloadAction: o =>
+                    o.transform.GetChild(0).GetChild(0).GetChild(0).gameObject
+                        .AddComponent<PlaceableObject.SpriteSource>())
+                .WithConfigGroup(ConfigGroup.Hazards))
+            .Offset -= new Vector3(0, 8, 0);
     }
 
     private static void AddFieldsObjects()
