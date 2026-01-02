@@ -301,6 +301,12 @@ public static class MiscFixers
     {
         obj.transform.GetChild(0).GetChild(2).SetAsFirstSibling();
     }
+    
+    public static void FixBigLamp(GameObject obj)
+    {
+        obj.transform.SetPositionZ(0.05f);
+        obj.transform.GetChild(0).GetChild(0).GetChild(2).SetAsFirstSibling();
+    }
 
     public static void FixRing(GameObject obj)
     {

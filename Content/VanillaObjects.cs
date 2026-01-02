@@ -74,6 +74,13 @@ public static class VanillaObjects
         Categories.Hazards.Add(new CustomObject("Voltring", "coral_lightning_orb", sphere,
             sprite: ResourceUtils.LoadSpriteResource("voltring", ppu:64))
             .WithReceiverGroup(ReceiverGroup.Voltring));
+
+        Categories.Hazards.Add(new PreloadObject("Voltbola", "voltvessel_ball",
+                ("Arborium_03", "Lightning Bola Ball Enemy"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                hideAndDontSave: true)
+            .WithConfigGroup(ConfigGroup.Velocity));
     }
 
     private static void AddSandsObjects()
@@ -423,6 +430,13 @@ public static class VanillaObjects
 
     private static void AddCradleObjects()
     {
+        Categories.Hazards.Add(new PreloadObject("Rubble Field", "rubble_field",
+                ("Cradle_03", "Boss Scene/Rubble Fields/Rubble Field M"),
+                postSpawnAction: o => o.transform.GetChild(5).gameObject.SetActive(false),
+                sprite: ResourceUtils.LoadSpriteResource("rubble", FilterMode.Point, ppu:10.24f))
+            .WithConfigGroup(ConfigGroup.Stretchable)
+            .WithReceiverGroup(ReceiverGroup.Trap)).Offset = new Vector3(0, -10);
+        
         Categories.Platforming.Add(new PreloadObject("Moving Cradle Platform", "cradle_plat",
                 ("Cradle_03", "cradle_plat (7)"))
             .WithConfigGroup(ConfigGroup.CradlePlat)
@@ -850,8 +864,29 @@ public static class VanillaObjects
                 ("Peak_05", "chair_lift_ring/Harpoon Ring Citadel"), postSpawnAction: MiscFixers.FixRing).DoFlipX()
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
-        Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp", "weaver_heat_lamp",
+        Categories.Misc.Add(new PreloadObject("Coldshard", "snow_chunk",
+                ("Bellway_Peak_02", "Snowflake Chunk (82)"), 
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
+                    o.RemoveComponent<RandomlyFlipScale>();
+                    o.LocateMyFSM("Control").enabled = true;
+                })
+            .WithRotationGroup(RotationGroup.All));
+        Categories.Misc.Add(new PreloadObject("Floating Coldshard", "float_crystal",
+                ("Peak_06", "Float Crystal (13)"),
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+                    o.RemoveComponent<RandomlyFlipScale>();
+                })
+            .WithRotationGroup(RotationGroup.All));
+
+        Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp S", "weaver_heat_lamp",
                 ("Peak_05", "weaver_heat_lamp (2)/Lamp"), preloadAction: MiscFixers.FixLamp)
+            .WithRotationGroup(RotationGroup.Four));
+        Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp L", "weaver_heat_lamp",
+                ("Bellway_Peak_02", "weaver lamp_roof heat large"), preloadAction: MiscFixers.FixBigLamp)
             .WithRotationGroup(RotationGroup.Four));
         Categories.Misc.Add(new PreloadObject("Coal Lamp", "coal_lamp",
             ("Peak_05", "coal_lantern_jail_wall_mount/string_cap")));
@@ -1603,6 +1638,15 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 1", "lava_crumble_plat",
                 ("Dock_02b", "lava_crumble_plat (5)"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
+
+        Categories.Hazards.Add(new PreloadObject("Hot Coals", "hot_coal",
+            ("Bone_East_03", "lava_rocks_top_glower"),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(0).Translate(-6.6806f, -0.9279f, 0);
+                o.transform.GetChild(1).Translate(-6.6806f, -0.9279f, 0);
+            },
+            postSpawnAction: HazardFixers.FixCoal));
 
         Categories.Hazards.Add(new PreloadObject("Lava", "lava_area",
             ("Bone_East_09", "lava_set/LavaBase (1)"),

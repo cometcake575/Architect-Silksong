@@ -556,6 +556,7 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     o.GetComponent<MiscFixers.Water>().abyss = value.GetValue();
+                    o.transform.GetChild(0).gameObject.LocateMyFSM("Volt Travel").enabled = false;
                 }).WithDefaultValue(false).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Flow Speed", "water_flow_speed",
@@ -902,12 +903,27 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
             (o, value) =>
             {
-                var body = o.GetOrAddComponent<Rigidbody2D>();
-                body.gravityScale = value.GetValue();
-                body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                o.AddComponent<GravityLock>().level = value.GetValue();
             }
         ))
     ]);
+
+    public class GravityLock : MonoBehaviour
+    {
+        public float level;
+        public Rigidbody2D rb2d;
+
+        private void Start()
+        {
+            rb2d = gameObject.GetOrAddComponent<Rigidbody2D>();
+        }
+
+        private void Update()
+        {
+            rb2d.gravityScale = level;
+            rb2d.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        }
+    }
 
     public static readonly List<ConfigType> TriggerActivator = GroupUtils.Merge(Gravity, [
         ConfigurationManager.RegisterConfigType(new IntConfigType("Trigger Layer", "activator_layer",
@@ -1770,11 +1786,19 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(new IntConfigType("Rosary Worth", "bead_worth",
             (o, value) =>
             {
+                var gc = o.GetComponent<GeoControl>();
+                if (!gc) return;
                 var costRef = ScriptableObject.CreateInstance<CostReference>();
                 costRef.value = value.GetValue();
-                o.GetComponent<GeoControl>().valueReference = costRef;
+                gc.valueReference = costRef;
             }
         )),
+        ConfigurationManager.RegisterConfigType(new BoolConfigType("Collectable", "bead_collectable",
+            (o, value) =>
+            {
+                if (!value.GetValue()) o.RemoveComponent<GeoControl>();
+            }
+        ).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "rosary_stay")
             .WithDefaultValue(0))
     ]));

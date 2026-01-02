@@ -12,6 +12,7 @@ public static class HazardFixers
     private static GameObject _cogDamager;
     private static GameObject _junkFall;
     private static GameObject _lavaBox;
+    private static GameObject _coalRegion;
 
     private static float _lanternTime = 1;
         
@@ -34,6 +35,9 @@ public static class HazardFixers
         
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_09", "Lava Box", 
             o => _lavaBox = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Bone_East_03", "Coal Region", 
+            o => _coalRegion = o));
 
         HookUtils.OnFsmAwake += fsm =>
         {
@@ -234,5 +238,16 @@ public static class HazardFixers
         var bc2 = lb.GetComponent<BoxCollider2D>();
         bc2.size = Vector2.one;
         bc2.offset = Vector2.zero;
+    }
+
+    public static void FixCoal(GameObject obj)
+    {
+        var cr = Object.Instantiate(_coalRegion, obj.transform);
+        cr.SetActive(true);
+        cr.transform.localPosition = Vector3.zero;
+
+        var bc2d = cr.GetComponent<BoxCollider2D>();
+        bc2d.size = new Vector2(2.75f, 1);
+        bc2d.offset = new Vector2(0, 0.25f);
     }
 }
