@@ -6,7 +6,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class AnimatorBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Start"];
+    protected override IEnumerable<string> Inputs => ["Start", "Stop"];
     protected override IEnumerable<string> Outputs => ["Stop"];
 
     private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
@@ -35,6 +35,7 @@ public class AnimatorBlock : ScriptBlock
 
     protected override void Trigger(string id)
     {
-        _player.Play();
+        if (id == "Start") _player.Play();
+        else _player.Stop();
     }
 }
