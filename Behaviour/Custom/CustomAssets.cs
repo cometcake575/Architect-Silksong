@@ -164,7 +164,7 @@ public class WavObject : SoundMaker, IPlayable
         get => _volume;
         set
         {
-            Source.volume = Source.volume / _volume * value;
+            Source.volume = value * GameManager.instance.GetImplicitCinematicVolume() * 5;
             _volume = value;
         }
     }
