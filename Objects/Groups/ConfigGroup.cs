@@ -1638,7 +1638,7 @@ public static class ConfigGroup
         WavUrl,
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Volume", "wav_volume",
-                (o, value) => { o.GetComponent<WavObject>().volume = value.GetValue(); })
+                (o, value) => { o.GetComponent<WavObject>().Volume = value.GetValue(); })
                 .WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Pitch", "wav_pitch",

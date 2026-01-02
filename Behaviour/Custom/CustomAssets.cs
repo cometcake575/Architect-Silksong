@@ -156,8 +156,19 @@ public class WavObject : SoundMaker, IPlayable
 {
     public string url;
     public AudioClip sound;
-    
-    public float volume = 1;
+
+    private float _volume = 1;
+
+    public float Volume
+    {
+        get => _volume;
+        set
+        {
+            Source.volume = Source.volume / _volume * value;
+            _volume = value;
+        }
+    }
+
     public float pitch = 1;
     public bool globalSound = true;
     public bool loop;
@@ -184,7 +195,7 @@ public class WavObject : SoundMaker, IPlayable
             return;
         }
         _started = true;
-        PlaySound(sound, volume, pitch, globalSound, loop);
+        PlaySound(sound, Volume, pitch, globalSound, loop);
         
         if (!syncId.IsNullOrWhiteSpace() && Syncs.TryGetValue(syncId, out var v))
         {

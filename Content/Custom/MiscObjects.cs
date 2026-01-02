@@ -26,7 +26,8 @@ public static class MiscObjects
         
         Categories.Effects.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
             .WithConfigGroup(ConfigGroup.Wav)
-            .WithReceiverGroup(ReceiverGroup.Playable));
+            .WithReceiverGroup(ReceiverGroup.Wav)
+            .WithInputGroup(InputGroup.Wav));
         
         Categories.Effects.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +

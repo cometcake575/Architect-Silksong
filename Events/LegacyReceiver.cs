@@ -29,7 +29,7 @@ public class LegacyReceiver : MonoBehaviour
 
         try
         {
-            ReceiverType.Trigger.Invoke(gameObject);
+            ReceiverType.Trigger.Invoke(gameObject, null);
         }
         catch (Exception exception)
         {

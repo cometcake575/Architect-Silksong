@@ -89,7 +89,7 @@ public abstract class ScriptBlock
         }
     }
 
-    protected T GetVariable<T>(string id)
+    public T GetVariable<T>(string id)
     {
         object val;
         if (!VarMap.TryGetValue(id, out var value))

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Architect.Behaviour.Utility;
 using Architect.Editor;
 using Architect.Objects.Placeable;
 using Architect.Placements;
@@ -20,7 +19,8 @@ public class ObjectBlock : ScriptBlock
     protected override IEnumerable<string> Outputs => ObjectType.BroadcasterGroup;
     protected override IEnumerable<(string, string)> OutputVars => 
         ObjectType.OutputGroup.Select(o => (o.Id, o.GetTypeId()));
-    
+    protected override IEnumerable<(string, string)> InputVars => ObjectType.InputGroup;
+
     protected override int InputCount => ObjectType.BroadcasterGroup.Count;
     protected override int OutputCount => ObjectType.ReceiverGroup.Count;
     
@@ -82,10 +82,10 @@ public class ObjectBlock : ScriptBlock
     {
         if (!_referencedObject) return;
         var receiver = EventManager.GetReceiverType(trigger);
-        if (_referencedObject.activeInHierarchy || receiver.RunWhenInactive) receiver.Trigger(_referencedObject);
+        if (_referencedObject.activeInHierarchy || receiver.RunWhenInactive) receiver.Trigger(_referencedObject, this);
         foreach (var spawn in _reference.Spawns.Where(spawn => spawn))
         {
-            receiver.Trigger(spawn);
+            receiver.Trigger(spawn, this);
         }
     }
 

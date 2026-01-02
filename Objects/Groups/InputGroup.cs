@@ -1,0 +1,10 @@
+using System.Collections.Generic;
+
+namespace Architect.Objects.Groups;
+
+public static class InputGroup
+{
+    public static readonly List<(string, string)> Generic = [];
+    
+    public static readonly List<(string, string)> Wav = [("New Volume", "Number")];
+}

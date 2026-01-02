@@ -273,6 +273,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Wav = GroupUtils.Merge(Playable, [
+        EventManager.RegisterReceiverType(new EventReceiverType("set_volume", "SetVolume", (o, b) =>
+        {
+            o.GetComponent<WavObject>().Volume = b.GetVariable<float>("New Volume");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> PlayerHooks = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("damage_player", "Damage", PlayerHook.DamagePlayer)),
         EventManager.RegisterReceiverType(new EventReceiverType("hazard_player", "HazardDamage", PlayerHook.HazardDamagePlayer)),

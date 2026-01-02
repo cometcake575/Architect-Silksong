@@ -50,6 +50,7 @@ public abstract class PlaceableObject : SelectableObject
     
     public List<EventReceiverType> ReceiverGroup = Groups.ReceiverGroup.Generic;
     public List<OutputType> OutputGroup = Groups.OutputGroup.Generic;
+    public List<(string, string)> InputGroup = Groups.InputGroup.Generic;
     public List<ConfigType> ConfigGroup = Groups.ConfigGroup.Visible;
     public List<string> BroadcasterGroup = [];
 
@@ -118,6 +119,12 @@ public abstract class PlaceableObject : SelectableObject
     public PlaceableObject WithOutputGroup(List<OutputType> group)
     {
         OutputGroup = group;
+        return this;
+    }
+
+    public PlaceableObject WithInputGroup(List<(string, string)> group)
+    {
+        InputGroup = group;
         return this;
     }
 
