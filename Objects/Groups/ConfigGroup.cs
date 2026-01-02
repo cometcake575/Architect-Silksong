@@ -1651,7 +1651,10 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Loop Sound", "wav_loop",
                 (o, value) => { o.GetComponent<WavObject>().loop = value.GetValue(); })
-                .WithDefaultValue(false))
+                .WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Sync ID", "wav_sync_id",
+                (o, value) => { o.GetComponent<WavObject>().syncId = value.GetValue(); }))
     ]);
 
     public static readonly List<ConfigType> Mp4 = GroupUtils.Merge(Decorations, [
@@ -1793,6 +1796,12 @@ public static class ConfigGroup
                 gc.valueReference = costRef;
             }
         )),
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Delete after Time", "delete_after_time",
+            (o, value) =>
+            {
+                o.AddComponent<DeleteAfterTime>().value = value.GetValue();
+            }
+        )),
         ConfigurationManager.RegisterConfigType(new BoolConfigType("Collectable", "bead_collectable",
             (o, value) =>
             {
@@ -1802,6 +1811,17 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "rosary_stay")
             .WithDefaultValue(0))
     ]));
+
+    public class DeleteAfterTime : MonoBehaviour
+    {
+        public float value;
+
+        private void Update()
+        {
+            value -= Time.deltaTime;
+            if (value <= 0) Destroy(gameObject);
+        }
+    }
 
     public static readonly List<ConfigType> HazardRespawn = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(

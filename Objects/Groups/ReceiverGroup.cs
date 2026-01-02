@@ -262,17 +262,14 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("start_play", "Play", o =>
         {
             o.GetComponent<IPlayable>().Play();
-        }))
-    ]);
-    
-    public static readonly List<EventReceiverType> Pausable = GroupUtils.Merge(Playable, [
-        EventManager.RegisterReceiverType(new EventReceiverType("reset_play", "Reset", o =>
-        {
-            o.GetComponent<IPausable>().Reset();
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("stop_play", "Pause", o =>
         {
-            o.GetComponent<IPausable>().Pause();
+            o.GetComponent<IPlayable>().Pause();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("reset_play", "Reset", o =>
+        {
+            o.GetComponent<IPlayable>().Reset();
         }))
     ]);
     

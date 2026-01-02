@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using Architect.Behaviour.Fixers;
 using Architect.Storage;
 using Architect.Utils;
+using BepInEx;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -9,15 +11,11 @@ namespace Architect.Behaviour.Custom;
 public interface IPlayable
 {
     public void Play();
-}
-
-public interface IPausable
-{
     public void Pause();
     public void Reset();
 }
 
-public class PngObject : MonoBehaviour, IPlayable, IPausable
+public class PngObject : MonoBehaviour, IPlayable
 {
     private SpriteRenderer _renderer;
     private Sprite[] _sprites;
@@ -91,7 +89,7 @@ public class PngObject : MonoBehaviour, IPlayable, IPausable
     }
 }
 
-public class Mp4Object : MonoBehaviour, IPlayable, IPausable
+public class Mp4Object : MonoBehaviour, IPlayable
 {
     public string url;
     public bool playOnStart = true;
@@ -163,7 +161,13 @@ public class WavObject : SoundMaker, IPlayable
     public float pitch = 1;
     public bool globalSound = true;
     public bool loop;
-    
+
+    private bool _started;
+    private bool _playing;
+    public string syncId;
+
+    private static readonly Dictionary<string, float> Syncs = []; 
+
     protected void Start()
     {
         if (string.IsNullOrEmpty(url)) return;
@@ -173,7 +177,45 @@ public class WavObject : SoundMaker, IPlayable
     public void Play()
     {
         if (!sound) return;
+        _playing = true;
+        if (_started && Source.time < sound.length)
+        {
+            Source.Play();
+            return;
+        }
+        _started = true;
         PlaySound(sound, volume, pitch, globalSound, loop);
+        
+        if (!syncId.IsNullOrWhiteSpace() && Syncs.TryGetValue(syncId, out var v))
+        {
+            Source.time = v;
+        }
+    }
+
+    public void Pause()
+    {
+        _playing = false;
+        Source.Pause();
+    }
+
+    public void Reset()
+    {
+        _started = false;
+        var play = _playing;
+        Source.Stop();
+        if (!syncId.IsNullOrWhiteSpace())
+        {
+            Syncs.Remove(syncId);
+        }
+        if (play) Play();
+    }
+
+    private void Update()
+    {
+        if (!syncId.IsNullOrWhiteSpace() && _started)
+        {
+            Syncs[syncId] = Source.time;
+        }
     }
 }
 

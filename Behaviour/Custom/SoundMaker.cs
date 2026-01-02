@@ -5,28 +5,28 @@ namespace Architect.Behaviour.Custom;
 
 public class SoundMaker : MonoBehaviour
 {
-    private AudioSource _source;
+    protected AudioSource Source;
     
     public bool muted;
     
     public virtual void Awake()
     {
         if (muted) return;
-        _source = gameObject.GetOrAddComponent<AudioSource>();
-        _source.minDistance = 10;
+        Source = gameObject.GetOrAddComponent<AudioSource>();
+        Source.minDistance = 10;
     }
 
     public void PlaySound(AudioClip clip, float volume = 1, float pitch = 1, bool global = false, bool loop = false)
     {
         if (muted) return;
 
-        _source.spatialBlend = global ? 0 : 1;
+        Source.spatialBlend = global ? 0 : 1;
         
-        _source.pitch = pitch;
-        _source.clip = clip;
-        _source.volume = volume * GameManager.instance.GetImplicitCinematicVolume() * 5;
-        _source.loop = loop;
+        Source.pitch = pitch;
+        Source.clip = clip;
+        Source.volume = volume * GameManager.instance.GetImplicitCinematicVolume() * 5;
+        Source.loop = loop;
         
-        _source.Play();
+        Source.Play();
     }
 }

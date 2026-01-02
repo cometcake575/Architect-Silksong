@@ -22,7 +22,7 @@ public static class MiscObjects
         
         Categories.Effects.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
             .WithConfigGroup(ConfigGroup.Mp4)
-            .WithReceiverGroup(ReceiverGroup.Pausable));
+            .WithReceiverGroup(ReceiverGroup.Playable));
         
         Categories.Effects.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
             .WithConfigGroup(ConfigGroup.Wav)
@@ -32,7 +32,7 @@ public static class MiscObjects
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
                 "Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.Png)
-            .WithReceiverGroup(ReceiverGroup.Pausable)
+            .WithReceiverGroup(ReceiverGroup.Playable)
             .WithBroadcasterGroup(BroadcasterGroup.Finishable));
         
         Categories.Misc.Add(CreateSilkSphere());

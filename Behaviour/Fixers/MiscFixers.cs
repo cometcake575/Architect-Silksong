@@ -480,7 +480,7 @@ public static class MiscFixers
 
     public static void FixGreenPrince(GameObject obj)
     {
-        obj.AddComponent<GreenPrince>();
+        obj.AddComponent<BasicNpcFix>();
     }
 
     public static void FixSeth(GameObject obj)
@@ -621,7 +621,7 @@ public static class MiscFixers
         }
     }
     
-    public class GreenPrince : Npc
+    public class BasicNpcFix : Npc
     {
         private void Start()
         {
@@ -631,6 +631,7 @@ public static class MiscFixers
             txt.Key = text;
             npc.talkText = [txt];
             npc.repeatText = txt;
+            npc.returnText = txt;
         }
     }
     
@@ -1183,5 +1184,12 @@ public static class MiscFixers
 
             _lastPos = transform.position;
         }
+    }
+
+    public static void FixPreacher(GameObject obj)
+    {
+        obj.LocateMyFSM("State Control").enabled = false;
+
+        obj.AddComponent<BasicNpcFix>();
     }
 }

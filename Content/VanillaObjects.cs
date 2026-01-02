@@ -1207,6 +1207,12 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixSecondSentinelBoss)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
 
+        Categories.Misc.Add(new PreloadObject("Pilgrim Preacher", "pilgrim_preacher",
+                ("Song_Enclave",
+                    "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Simple NPC Tall"),
+                postSpawnAction: MiscFixers.FixPreacher)
+            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+
         Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Caretaker"),
