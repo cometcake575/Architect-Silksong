@@ -23,6 +23,7 @@ public static class CustomAssetManager
     public static readonly Dictionary<string, AudioClip> Sounds = new();
 
     public static readonly HashSet<string> LoadingSounds = [];
+    public static readonly HashSet<string> LoadingSprites = [];
 
     public static async Task<bool> SaveFile(string url, string path)
     {
@@ -80,8 +81,15 @@ public static class CustomAssetManager
     private static IEnumerator LoadSprite(string url, bool point, float ppu, int hcount, int vcount, Action<Sprite[]> callback)
     {
         var id = $"{url}_{point}_{ppu}_{hcount}_{vcount}";
+        if (LoadingSprites.Contains(id))
+        {
+            yield return new WaitUntil(() => !LoadingSprites.Contains(id));
+            if (Sprites.TryGetValue(id, out var sprite)) callback(sprite);
+            yield break;
+        }
         if (!Sprites.ContainsKey(id))
         {
+            LoadingSprites.Add(id);
             var path = $"{GetPath(url)}.png";
             var tmp = ResourceUtils.LoadSprites(path, point, ppu, hcount, vcount);
             if (tmp == null)
@@ -91,6 +99,7 @@ public static class CustomAssetManager
                 tmp = ResourceUtils.LoadSprites(path, point, ppu, hcount, vcount);
             }
 
+            LoadingSprites.Remove(id);
             if (tmp == null) yield break;
             Sprites[id] = tmp;
         }

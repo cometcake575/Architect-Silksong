@@ -564,6 +564,7 @@ public static class MiscFixers
 
     public static void FixCaretaker(GameObject obj)
     {
+        EnemyFixers.KeepActive(obj);
         obj.AddComponent<Caretaker>();
     }
 
@@ -711,6 +712,7 @@ public static class MiscFixers
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Hail Hero?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
             fsm.GetState("Gone?").AddAction(() => fsm.SendEvent("FALSE"), 0);
             fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
             fsm.GetState("Will Offer Snare?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
