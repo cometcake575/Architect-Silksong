@@ -13,6 +13,8 @@ public static class HazardFixers
     private static GameObject _junkFall;
     private static GameObject _lavaBox;
     private static GameObject _coalRegion;
+    private static GameObject _tendrilDamager;
+    private static GameObject _voltHazard;
 
     private static float _lanternTime = 1;
         
@@ -36,8 +38,27 @@ public static class HazardFixers
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_09", "Lava Box", 
             o => _lavaBox = o));
         
+        PreloadManager.RegisterPreload(new BasicPreload("Abyss_07", "Abyss Tendril Hero Damager", 
+            o => _tendrilDamager = o));
+        
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_03", "Coal Region", 
             o => _coalRegion = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_29", "Zap Hazard Parent", 
+            o =>
+            {
+                var b = false;
+                foreach (var h in o.GetComponentsInChildren<PolygonCollider2D>())
+                {
+                    if (!b)
+                    {
+                        b = true;
+                        continue;
+                    }
+                    Object.Destroy(h.gameObject);
+                }
+                _voltHazard = o;
+            }));
 
         HookUtils.OnFsmAwake += fsm =>
         {
@@ -249,5 +270,33 @@ public static class HazardFixers
         var bc2d = cr.GetComponent<BoxCollider2D>();
         bc2d.size = new Vector2(2.75f, 1);
         bc2d.offset = new Vector2(0, 0.25f);
+    }
+
+    public static void FixVoltgrass(GameObject obj)
+    {
+        var vh = Object.Instantiate(_voltHazard, obj.transform);
+        vh.SetActive(true);
+        vh.transform.localPosition = Vector3.zero;
+        var pc = vh.GetComponentInChildren<PolygonCollider2D>();
+        pc.points =
+        [
+            new Vector2(-1, -3),
+            new Vector2(1, -4),
+            new Vector2(2.2f, -4),
+            new Vector2(3, 0.4f),
+            new Vector2(2, 1),
+            new Vector2(-0.6f, 1)
+        ];
+        pc.transform.GetChild(0).localPosition = new Vector3(0.6198f, -1.1504f, 0);
+        pc.transform.localPosition = Vector3.zero;
+    }
+
+    private static GameObject _currentTendrilDamager;
+
+    public static void FixTendrils(GameObject obj)
+    {
+        if (_currentTendrilDamager) return;
+        _currentTendrilDamager = Object.Instantiate(_tendrilDamager, obj.transform);
+        _currentTendrilDamager.SetActive(true);
     }
 }

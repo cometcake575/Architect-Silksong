@@ -74,6 +74,13 @@ public static class VanillaObjects
         Categories.Hazards.Add(new CustomObject("Voltring", "coral_lightning_orb", sphere,
             sprite: ResourceUtils.LoadSpriteResource("voltring", ppu:64))
             .WithReceiverGroup(ReceiverGroup.Voltring));
+        
+        Categories.Hazards.Add(new PreloadObject("Voltgrass", "voltgrass",
+            ("Coral_29", "coral_zap_mounds_shortest (10)"),
+            sprite: ResourceUtils.LoadSpriteResource("voltgrass", ppu:64),
+            postSpawnAction: HazardFixers.FixVoltgrass)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.Decorations)).Offset = new Vector3(0.5723f, 1);
 
         Categories.Hazards.Add(new PreloadObject("Voltbola", "voltvessel_ball",
                 ("Arborium_03", "Lightning Bola Ball Enemy"),
@@ -383,6 +390,14 @@ public static class VanillaObjects
         AddEnemy("Clawmaiden", "clawmaiden", ("Hang_04_boss", "Battle Scene/Wave 4/Song Handmaiden"),
             preloadAction: EnemyFixers.FixClawmaiden);
 
+        Categories.Interactable.Add(new PreloadObject("Dial Door", "dial_door",
+                ("Song_20b", "Dial Door Bridge"),
+                sprite: ResourceUtils.LoadSpriteResource("cog_door", ppu:64),
+                preloadAction: InteractableFixers.FixDialDoor)
+            .WithRotateAction(InteractableFixers.FixDialDoorRot)
+            .WithReceiverGroup(ReceiverGroup.DialDoor)
+            .WithRotationGroup(RotationGroup.Four));
+
         Categories.Interactable.Add(new PreloadObject("Citadel Button S", "citadel_button",
                 ("Song_09", "Hornet_pressure_plate_small_persistent"),
                 preloadAction: InteractableFixers.FixButtonPreload,
@@ -560,6 +575,11 @@ public static class VanillaObjects
         AddSolid("Abyss Platform 2", "abyss_plat_wide",
             ("Abyss_05", "abyss_plat_wide"), preloadAction: MiscFixers.FocusFirstChild);
 
+        Categories.Hazards.Add(new PreloadObject("Void Tendrils", "abyss_tendrils",
+            ("Abyss_07", "Abyss Tendrils (16)"),
+            preloadAction: o => o.transform.localScale = new Vector3(1.5f, 1.5f),
+            postSpawnAction: HazardFixers.FixTendrils));
+
         Categories.Platforming.Add(new PreloadObject("Abyss Pod", "abyss_pod",
             ("Abyss_05", "Abyss Bounce Pod")));
     }
@@ -669,6 +689,20 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixFlyin);
         AddEnemy("Verdanir", "verdanir", ("Clover_04b", "Battle Scene/Return Scene/Grasshopper Slasher"));
         AddEnemy("Escalion", "escalion", ("Clover_04b", "Grasshopper Fly")).DoFlipX();
+        
+        AddSolid("Verdania Platform 1", "verdania_plat_1", ("Clover_21", "Group/clover_gate_outer_0000_1 (53)"),
+            preloadAction: o =>
+            {
+                o.transform.parent = null;
+                o.transform.SetPositionZ(0.006f);
+            });
+        AddSolid("Verdania Platform 2", "verdania_plat_2", ("Clover_21", "Group/clover_gate_outer_0000_1 (54)"),
+            preloadAction: o =>
+            {
+                o.transform.parent = null;
+                o.transform.SetPositionZ(0.006f);
+            });
+        AddSolid("Verdania Platform 3", "verdania_plat_3", ("Clover_21", "clover___0019_roof2_plat (5)"));
         
         Categories.Interactable.Add(new PreloadObject("Verdania Button", "verdania_button",
                 ("Clover_05c", "Hornet_pressure_plate_small_persistent"),

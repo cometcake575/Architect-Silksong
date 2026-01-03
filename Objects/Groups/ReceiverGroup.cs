@@ -31,6 +31,21 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> DialDoor = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("dial_rotate_l", "RotateLeft", o =>
+        {
+            var ddb = o.GetComponent<DialDoorBridge>();
+            ddb.StartCoroutine(ddb.MoveRotate(-1));
+            ddb.isRotated = !ddb.isRotated;
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("dial_rotate_r", "RotateRight", o =>
+        {
+            var ddb = o.GetComponent<DialDoorBridge>();
+            ddb.StartCoroutine(ddb.MoveRotate(1));
+            ddb.isRotated = !ddb.isRotated;
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> RuneBomb = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("bomb_trigger", "Activate", o =>
         {

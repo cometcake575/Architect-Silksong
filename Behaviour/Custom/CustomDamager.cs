@@ -6,6 +6,7 @@ namespace Architect.Behaviour.Custom;
 public class CustomDamager : MonoBehaviour
 {
     public int damageAmount = 1;
+    public DamagePropertyFlags flags = DamagePropertyFlags.None;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -15,7 +16,8 @@ public class CustomDamager : MonoBehaviour
             gameObject,
             CollisionSide.other,
             damageAmount,
-            HazardType.SPIKES
+            HazardType.SPIKES,
+            flags
         );
     }
 }

@@ -141,4 +141,28 @@ public static class InteractableFixers
         obj.transform.SetRotation2D(4.8057f);
         obj.transform.GetChild(0).gameObject.SetActive(false);
     }
+
+    public static void FixDialDoor(GameObject obj)
+    {
+        for (var i = 4; i <= 8; i++) obj.transform.GetChild(i).gameObject.SetActive(false);
+        obj.RemoveComponentsInChildren<CameraLockArea>();
+    }
+
+    public static void FixDialDoorRot(GameObject obj, float rot)
+    {
+        obj.AddComponent<DialDoor>().rot = rot;
+    }
+
+    public class DialDoor : MonoBehaviour
+    {
+        public float rot;
+        private bool _started;
+        
+        private void Update()
+        {
+            if (_started) return;
+            _started = true;
+            GetComponent<DialDoorBridge>().SetInitialRotation(rot % 180 != 0);
+        }
+    }
 }
