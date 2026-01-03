@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Architect.Behaviour.Fixers;
 using Architect.Storage;
@@ -187,12 +188,18 @@ public class WavObject : SoundMaker, IPlayable
 
     public void Play()
     {
-        if (!sound) return;
+        StartCoroutine(PlayWhenReady());
+    }
+
+    private IEnumerator PlayWhenReady()
+    {
+        yield return new WaitUntil(() => !this || sound);
+        if (!this) yield break;
         _playing = true;
         if (_started && Source.time < sound.length)
         {
             Source.Play();
-            return;
+            yield break;
         }
         _started = true;
         PlaySound(sound, Volume, pitch, globalSound, loop);

@@ -105,7 +105,12 @@ public static class CustomAssetManager
 
     private static IEnumerator LoadSound(string url, [CanBeNull] GameObject obj = null)
     {
-        if (LoadingSounds.Contains(url)) yield break;
+        if (LoadingSounds.Contains(url))
+        {
+            yield return new WaitUntil(() => !LoadingSounds.Contains(url));
+            if (obj && Sounds.TryGetValue(url, out var sound)) obj.GetComponent<WavObject>().sound = sound;
+            yield break;
+        }
         
         if (!Sounds.ContainsKey(url))
         {
