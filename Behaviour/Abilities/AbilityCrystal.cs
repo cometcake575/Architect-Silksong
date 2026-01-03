@@ -64,7 +64,7 @@ public class AbilityCrystal : SoundMaker
                 _renderer.sprite = _activeSprite;
                 gameObject.BroadcastEvent("OnRegen");
                 _float.active = true;
-                PlaySound(_regen);
+                PlaySound(_regen, 5);
             }
         }
     }
@@ -86,7 +86,7 @@ public class AbilityCrystal : SoundMaker
         
         gameObject.BroadcastEvent("OnCollect");
         
-        PlaySound(_use);
+        PlaySound(_use, 5);
         
         AbilityObjects.RefreshCrystalUI();
     }

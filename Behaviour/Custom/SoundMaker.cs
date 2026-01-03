@@ -24,7 +24,7 @@ public class SoundMaker : MonoBehaviour
         
         Source.pitch = pitch;
         Source.clip = clip;
-        Source.volume = volume * GameManager.instance.GetImplicitCinematicVolume() * 5;
+        Source.volume = volume * GameManager.instance.GetImplicitCinematicVolume();
         Source.loop = loop;
         
         Source.Play();

@@ -1362,7 +1362,7 @@ public static class EnemyFixers
         {
             GetComponent<EnemyHitEffectsRegular>().ReceivedHitEffect += (_, _) =>
             {
-                PlaySound(Clips[Random.RandomRangeInt(0, 4)]);
+                PlaySound(Clips[Random.RandomRangeInt(0, 4)], 5);
             };
             var ctrl = gameObject.LocateMyFSM("Control");
             ctrl.GetState("Sing End").transitions[0].toFsmState = ctrl.GetState("Recover");

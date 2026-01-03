@@ -43,7 +43,7 @@ public class SilkSphere : SoundMaker, IHitResponder
         
         HeroController.instance.AddSilk(1, true);
         StartCoroutine(FlashWhite());
-        PlaySound(_use, 2, pitch:Random.Range(1, 1.2f));
+        PlaySound(_use, 10, pitch:Random.Range(1, 1.2f));
 
         return IHitResponder.Response.GenericHit;
     }

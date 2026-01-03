@@ -110,7 +110,7 @@ public class Bumper : SoundMaker, IHitResponder
 
     private void DoBounce(float direction)
     {
-        PlaySound(_evil ? _hitEvil : _hitNormal, pitch: Random.Range(0.8f, 1) - (_evil ? 0.2f : 0), volume: _evil ? 5 : 1);
+        PlaySound(_evil ? _hitEvil : _hitNormal, pitch: Random.Range(0.8f, 1) - (_evil ? 0.2f : 0), volume: _evil ? 25 : 5);
         
         _col2d.enabled = false;
         transform.GetChild(0).gameObject.SetActive(false);

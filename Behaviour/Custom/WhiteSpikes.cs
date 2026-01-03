@@ -67,14 +67,14 @@ public class WhiteSpikes : SoundMaker
                 if (up)
                 {
                     _bouncePoint = 180;
-                    PlaySound(_downSound);
+                    PlaySound(_downSound, 5);
                     _target = BOT_Y;
                     return;
                 }
 
                 _damageCollider.enabled = true;
                 _renderer.sprite = Moving;
-                PlaySound(_upSound);
+                PlaySound(_upSound, 5);
                 _target = TOP_Y;
             }
             else return;

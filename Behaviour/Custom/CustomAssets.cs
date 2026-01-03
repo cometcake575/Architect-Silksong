@@ -159,13 +159,15 @@ public class WavObject : SoundMaker, IPlayable
     public AudioClip sound;
 
     private float _volume = 1;
+    private float _gmVol = GameManager.instance.GetImplicitCinematicVolume();
 
     public float Volume
     {
         get => _volume;
         set
         {
-            Source.volume = value * GameManager.instance.GetImplicitCinematicVolume() * 5;
+            _gmVol = GameManager.instance.GetImplicitCinematicVolume();
+            Source.volume = value * _gmVol;
             _volume = value;
         }
     }
@@ -230,6 +232,7 @@ public class WavObject : SoundMaker, IPlayable
 
     private void Update()
     {
+        if (!Mathf.Approximately(_gmVol, GameManager.instance.GetImplicitCinematicVolume())) Volume = Volume;
         if (!syncId.IsNullOrWhiteSpace() && _started)
         {
             Syncs[syncId] = Source.time;
