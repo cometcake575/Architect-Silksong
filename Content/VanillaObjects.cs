@@ -919,7 +919,7 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp S", "weaver_heat_lamp",
                 ("Peak_05", "weaver_heat_lamp (2)/Lamp"), preloadAction: MiscFixers.FixLamp)
             .WithRotationGroup(RotationGroup.Four));
-        Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp L", "weaver_heat_lamp",
+        Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp L", "weaver_heat_lamp_l",
                 ("Bellway_Peak_02", "weaver lamp_roof heat large"), preloadAction: MiscFixers.FixBigLamp)
             .WithRotationGroup(RotationGroup.Four));
         Categories.Misc.Add(new PreloadObject("Coal Lamp", "coal_lamp",

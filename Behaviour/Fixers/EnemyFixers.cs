@@ -1951,6 +1951,15 @@ public static class EnemyFixers
     public static void FixFlintbeetle(GameObject obj)
     {
         obj.AddComponent<Flintbeetle>();
+
+        var fsm = obj.LocateMyFSM("Control");
+        
+        var emerge = fsm.GetState("Emerge");
+        emerge.DisableAction(13);
+        emerge.DisableAction(14);
+        var death = fsm.GetState("Death");
+        death.DisableAction(1);
+        death.DisableAction(2);
     }
 
     public abstract class Wakeable : MonoBehaviour
