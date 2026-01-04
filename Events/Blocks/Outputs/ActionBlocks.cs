@@ -7,6 +7,7 @@ public static class ActionBlocks
     public static void Init()
     {
         TimeSlowerBlock.Init();
+        PowerupGetBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);

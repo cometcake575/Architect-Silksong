@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.3.1")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.3.2")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin

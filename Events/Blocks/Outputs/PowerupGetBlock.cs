@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using Architect.Content.Preloads;
 using BepInEx;
 using TMProOld;
 using UnityEngine;
@@ -8,6 +8,17 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class PowerupGetBlock : ScriptBlock
 {
+    private static PowerUpGetMsg _pugm;
+    public static void Init()
+    {
+        PreloadManager.RegisterPreload(new BasicPreload("Shellwood_10", "Ancestral_Art_Get_Prompt",
+            o =>
+            {
+                o.SetActive(true);
+                _pugm = o.GetComponent<PowerUpGetMsg>();
+            }, hads:true));
+    }
+    
     protected override IEnumerable<string> Inputs => ["Display"];
     protected override IEnumerable<string> Outputs => ["Dismiss"];
     protected override IEnumerable<(string, string)> InputVars => [
@@ -33,8 +44,6 @@ public class PowerupGetBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Powerup Display";
 
-    private static PowerUpGetMsg _pugm;
-
     public string PrefixText = "";
     public string NameText = "";
     public string SuffixText = "";
@@ -44,9 +53,6 @@ public class PowerupGetBlock : ScriptBlock
     
     protected override void Trigger(string trigger)
     {
-        if (!_pugm) _pugm = Resources.FindObjectsOfTypeAll<PowerUpGetMsg>().FirstOrDefault();
-        if (!_pugm) return;
-
         PowerUpGetMsg msg = null;
         msg = PowerUpGetMsg.Spawn(PowerUpGetMsg.PowerUps.Sprint, _pugm, End) as PowerUpGetMsg;
         if (!msg) return;
