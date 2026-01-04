@@ -223,6 +223,7 @@ public static class EnemyFixers
         ede.PreInstantiate();
         
         var corpseFsm = ede.GetInstantiatedCorpse(AttackTypes.Nail).LocateMyFSM("Control");
+        corpseFsm.GetState("Death Start").DisableAction(3);
 
         var fall = (CheckYPosition)corpseFsm.GetState("Fall").Actions[2];
         var land = (SetPosition)corpseFsm.GetState("Land").Actions[0];

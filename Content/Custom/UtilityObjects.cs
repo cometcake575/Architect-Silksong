@@ -127,6 +127,8 @@ public static class UtilityObjects
                         && !obj.GetComponent<SceneAdditiveLoadConditional>()
                         && obj.name.Contains(filter)
                     );
+
+                    if (clearer.removeMusic) clearer.gameObject.AddComponent<MusicController>();
             
                     if (clearer.removeOther)
                     {
