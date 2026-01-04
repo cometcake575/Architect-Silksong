@@ -231,6 +231,14 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> Caretaker = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Call Out", "caretaker_call", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Caretaker>().hail = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
+
     public static readonly List<ConfigType> MapStateHook = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Memory", "msh_state", (o, value) =>
@@ -250,32 +258,6 @@ public static class ConfigGroup
             {
                 o.GetComponent<CameraBorder>().activeType = value.GetValue();
             }).WithOptions("Both", "Gameplay", "Binoculars").WithDefaultValue(0))
-    ]);
-
-    public static readonly List<ConfigType> Breakable = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Broken", "breakable_stay"))
-    ]);
-
-    public static readonly List<ConfigType> Unbreakable = GroupUtils.Merge(Breakable, [
-        ConfigurationManager.RegisterConfigType(new BoolConfigType("Breakable", "breakable_on", (o, value) =>
-        {
-            if (!value.GetValue()) o.RemoveComponentsInChildren<Breakable>();
-        }).WithDefaultValue(true))
-    ]);
-
-    public static readonly List<ConfigType> BreakableWall = GroupUtils.Merge(Breakable, [
-        ConfigurationManager.RegisterConfigType(new IntConfigType("Required Hits", "breakable_hits", (o, value) =>
-        {
-            o.LocateMyFSM("breakable_wall_v2").FsmVariables.FindFsmInt("Hits").Value = value.GetValue();
-        }).WithDefaultValue(4))
-    ]);
-
-    public static readonly List<ConfigType> LifebloodCocoons = GroupUtils.Merge(Breakable, [
-        ConfigurationManager.RegisterConfigType(new IntConfigType("Lifeseed Count", "lifeblood_count", (o, value) =>
-        {
-            var fling = o.GetComponent<HealthCocoon>().flingPrefabs[2];
-            fling.MinAmount = fling.MaxAmount = value.GetValue();
-        }).WithDefaultValue(2).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> Wisp = GroupUtils.Merge(Visible, [
@@ -684,6 +666,35 @@ public static class ConfigGroup
                 (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
                 .WithDefaultValue(0)),
         ZOffset
+    ]);
+
+    public static readonly List<ConfigType> PersistentBreakable = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Broken", "breakable_stay"))
+    ]);
+
+    private static readonly ConfigType IsBreakable = ConfigurationManager.RegisterConfigType(new BoolConfigType(
+        "Breakable", "breakable_on", (o, value) =>
+        {
+            if (!value.GetValue()) o.RemoveComponentsInChildren<Breakable>();
+        }).WithDefaultValue(true));
+    
+    public static readonly List<ConfigType> BreakableDecor = GroupUtils.Merge(Decorations, [IsBreakable]);
+
+    public static readonly List<ConfigType> WispLanterns = GroupUtils.Merge(PersistentBreakable, [IsBreakable]);
+
+    public static readonly List<ConfigType> BreakableWall = GroupUtils.Merge(PersistentBreakable, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Required Hits", "breakable_hits", (o, value) =>
+        {
+            o.LocateMyFSM("breakable_wall_v2").FsmVariables.FindFsmInt("Hits").Value = value.GetValue();
+        }).WithDefaultValue(4))
+    ]);
+
+    public static readonly List<ConfigType> LifebloodCocoons = GroupUtils.Merge(PersistentBreakable, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Lifeseed Count", "lifeblood_count", (o, value) =>
+        {
+            var fling = o.GetComponent<HealthCocoon>().flingPrefabs[2];
+            fling.MinAmount = fling.MaxAmount = value.GetValue();
+        }).WithDefaultValue(2).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> TrackPoint = [

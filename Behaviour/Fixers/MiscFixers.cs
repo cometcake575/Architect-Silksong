@@ -297,6 +297,11 @@ public static class MiscFixers
         public int layer;
     }
     
+    public static void FixBreakableLamp(GameObject obj)
+    {
+        obj.GetComponent<Breakable>().onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
+    }
+    
     public static void FixLamp(GameObject obj)
     {
         obj.transform.GetChild(0).GetChild(2).SetAsFirstSibling();
@@ -709,10 +714,12 @@ public static class MiscFixers
     
     public class Caretaker : Npc
     {
+        public bool hail;
+        
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Dialogue");
-            fsm.GetState("Hail Hero?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("Hail Hero?").AddAction(() => fsm.SendEvent(hail ? "HAIL" : "FINISHED"), 0);
             fsm.GetState("Gone?").AddAction(() => fsm.SendEvent("FALSE"), 0);
             fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
             fsm.GetState("Will Offer Snare?").AddAction(() => fsm.SendEvent("FINISHED"), 0);

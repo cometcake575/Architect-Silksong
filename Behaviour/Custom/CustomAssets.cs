@@ -159,7 +159,7 @@ public class WavObject : SoundMaker, IPlayable
     public AudioClip sound;
 
     private float _volume = 1;
-    private float _gmVol = GameManager.instance.GetImplicitCinematicVolume();
+    private float _gmVol = GameManager.instance ? GameManager.instance.GetImplicitCinematicVolume() : 1;
 
     public float Volume
     {

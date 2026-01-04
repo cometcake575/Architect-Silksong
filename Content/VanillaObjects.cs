@@ -260,7 +260,10 @@ public static class VanillaObjects
                             "Best used with the Object Spawner.",
                 hideAndDontSave: true, postSpawnAction: HazardFixers.FixMaggotBlob)
             .WithConfigGroup(ConfigGroup.Velocity));
-        
+
+        Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
+            ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1")));
+
         /*AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
             postSpawnAction: EnemyFixers.FixLugoli)
@@ -817,6 +820,13 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(f, f));
             })
             .WithConfigGroup(ConfigGroup.Decorations);
+        
+        AddSolid("Greymoor Platform 1", "moor_plat_1",
+            ("Greymoor_03", "Black Thread States Thread Only Variant/Normal World/Strut Structure/Tilt Plat"),
+            preloadAction: o =>
+            {
+                for (var i = 4; i <= 6; i++) o.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);
+            });
     }
 
     private static void AddWhitewardObjects()
@@ -1080,6 +1090,18 @@ public static class VanillaObjects
             ("Dust_Maze_01", "Mist Maze Controller/Trap Sets/Trap Set/Dust Trap Spike Dropper")).DoFlipX());
         Categories.Hazards.Add(new PreloadObject("Mite Trap", "mite_trap",
             ("Dust_Maze_01", "Mist Maze Controller/Trap Sets/Trap Set/Mite Trap")).DoFlipX());
+        
+        Categories.Hazards.Add(new PreloadObject("Organ Spikes", "organ_spikes",
+            ("Organ_01", "Spike (7)"))
+            .WithRotationGroup(RotationGroup.Four));
+        AddSolid("Organ Platform 1", "organ_plat_1", ("Organ_01", "Organ_outer__0012_balcony_side_plat"));
+        AddSolid("Organ Platform 2", "organ_plat_2", ("Organ_01", "GameObject (58)/metal_bridge (2)"),
+            preloadAction: o =>
+            {
+                for (var i = 1; i <= 4; i++) o.transform.GetChild(i).gameObject.SetActive(false);
+            });
+        AddSolid("Organ Platform 3", "organ_plat_3", ("Organ_01", "organ_lift_broken_drop/lift_bottom_broken"),
+            preloadAction: o => o.transform.GetChild(3).gameObject.SetActive(false));
     }
 
     private static void AddStepsObjects()
@@ -1257,7 +1279,7 @@ public static class VanillaObjects
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Caretaker"),
                 postSpawnAction: MiscFixers.FixCaretaker)
-            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+            .WithConfigGroup(ConfigGroup.Caretaker).DoFlipX());
 
         Categories.Misc.Add(new PreloadObject("Sherma NPC", "sherma_1",
                 ("Song_Enclave",
@@ -1304,10 +1326,18 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
         
-        AddSolid("Shellwood Platform 1", "wood_plat_1", 
-            ("Shellwood_01", "shellwood_plat_float_thin"));
-        AddSolid("Shellwood Platform 2", "wood_plat_2", 
-            ("Shellwood_01", "shellwood_plat_float_wide"));
+        Categories.Misc.Add(new PreloadObject("Greymoor Lamp", "greymoor_lamp",
+                ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakableLamp)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        Categories.Misc.Add(new PreloadObject("Vaults Lamp", "vault_lamp",
+                ("Library_04", "library_lamp_stand (1)"), postSpawnAction: MiscFixers.FixBreakableLamp)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        Categories.Misc.Add(new PreloadObject("Vaults Wall Lamp", "vault_w_lamp",
+                ("Library_04", "library_lamp_wall (2)"), postSpawnAction: MiscFixers.FixBreakableLamp)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
     private static void AddMemoriumObjects()
@@ -1410,7 +1440,7 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Wispfire Lantern", "wisp_flame_lantern",
                 ("Wisp_02", "Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
-            .WithConfigGroup(ConfigGroup.Unbreakable));
+            .WithConfigGroup(ConfigGroup.WispLanterns));
 
         Categories.Hazards.Add(new PreloadObject("Wisp", "wisp",
                 ("Wisp_02", "Wisp Fireball"), postSpawnAction: HazardFixers.FixWisp, hideAndDontSave: true)
@@ -1444,6 +1474,11 @@ public static class VanillaObjects
             new Vector2(-1.399f, -0.882f),
             new Vector2(-3.272f, -1.265f)
         ]));
+        
+        AddSolid("Shellwood Platform 1", "wood_plat_1", 
+            ("Shellwood_01", "shellwood_plat_float_thin"));
+        AddSolid("Shellwood Platform 2", "wood_plat_2", 
+            ("Shellwood_01", "shellwood_plat_float_wide"));
 
         Categories.Platforming.Add(new PreloadObject("Bouncebloom", "bounce_bloom",
             ("Arborium_05", "Shellwood Bounce Bloom")));
@@ -1476,6 +1511,15 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixSplinter);
         AddEnemy("Splinterbark", "splinterbark", 
             ("Shellwood_26", "Black Thread States/Normal World/Stick Insect Flyer (1)"));
+        
+        AddEnemy("Crawling Shellwood Gnat", "shellwood_gnat", 
+            ("Shellwood_01", "Shellwood Goomba")).DoFlipX();
+        
+        AddEnemy("Flying Shellwood Gnat", "shellwood_gnat_fly", 
+            ("Shellwood_01", "Shellwood Goomba Flyer (1)"));
+        
+        AddEnemy("Shellwood Gnat Core", "shellwood_gnat_core", 
+            ("Shellwood_01", "Shellwood Gnat"), hideAndDontSave: true);
 
         Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
                 ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
@@ -1901,7 +1945,7 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
             ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
             postSpawnAction: MiscFixers.FixStatue)
-            .WithConfigGroup(ConfigGroup.Breakable)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
