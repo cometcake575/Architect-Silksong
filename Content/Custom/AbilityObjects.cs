@@ -25,6 +25,7 @@ public static class AbilityObjects
     
     // Currently active ability objects
     internal static readonly Dictionary<string, List<Binding>> ActiveBindings = [];
+    internal static readonly Dictionary<string, List<Binding>> ActiveVisibleBindings = [];
     internal static readonly Dictionary<string, int> ActiveCrystals = [];
     
     // Registered ability objects
@@ -199,6 +200,15 @@ public static class AbilityObjects
 
         return list.Count(binding => binding.active && binding.gameObject.activeInHierarchy) == 0;
     }
+    
+    private static bool VisibleBindingCheck(string type)
+    {
+        if (!ActiveVisibleBindings.TryGetValue(type, out var list) || list.Count == 0) return true;
+
+        list.RemoveAll(binding => !binding);
+
+        return list.Count(binding => binding.active && binding.gameObject.activeInHierarchy) == 0;
+    }
 
     public static (string, Sprite)? GetActiveCrestBinding()
     {
@@ -260,7 +270,7 @@ public static class AbilityObjects
     {
         var i = 0;
         foreach (var bind in Bindings
-                     .Where(bind => !BindingCheck(true, bind.Item1)))
+                     .Where(bind => !VisibleBindingCheck(bind.Item1)))
         {
             BindingIcons[i].sprite = bind.Item2;
             i++;
@@ -269,8 +279,11 @@ public static class AbilityObjects
         var crestBinding = GetActiveCrestBinding();
         if (crestBinding.HasValue)
         {
-            BindingIcons[i].sprite = crestBinding.Value.Item2;
-            i++;
+            if (!VisibleBindingCheck(crestBinding.Value.Item1))
+            {
+                BindingIcons[i].sprite = crestBinding.Value.Item2;
+                i++;
+            }
         }
 
         for (; i <= Bindings.Count; i++) BindingIcons[i].sprite = ArchitectPlugin.BlankSprite;

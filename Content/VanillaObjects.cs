@@ -80,6 +80,12 @@ public static class VanillaObjects
             sprite: ResourceUtils.LoadSpriteResource("voltgrass", ppu:64),
             postSpawnAction: HazardFixers.FixVoltgrass)
             .WithRotationGroup(RotationGroup.All)
+            .WithFlipAction((o, f) =>
+            {
+                if (!f) return;
+                o.transform.SetScaleY(-o.transform.GetScaleY());
+                o.transform.SetRotation2D(180 - o.transform.GetRotation2D());
+            })
             .WithConfigGroup(ConfigGroup.Decorations)).Offset = new Vector3(0.5723f, 1);
 
         Categories.Hazards.Add(new PreloadObject("Voltbola", "voltvessel_ball",

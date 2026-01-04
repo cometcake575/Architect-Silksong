@@ -51,7 +51,6 @@ public static class RespawnMarkerManager
         
         private void Start()
         {
-            _marker.SetActive(true);
             _pd = PlayerData.instance;
         }
 

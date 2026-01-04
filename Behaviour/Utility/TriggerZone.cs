@@ -1,11 +1,17 @@
 using Architect.Behaviour.Fixers;
 using Architect.Events;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
 public class TriggerZone : MonoBehaviour
 {
+    public static readonly Sprite SquareZone =
+        ResourceUtils.LoadSpriteResource("trigger_zone", FilterMode.Point, ppu: 10);
+    public static readonly Sprite CircleZone =
+        ResourceUtils.LoadSpriteResource("trigger_zone_circle", FilterMode.Point, ppu: 10);
+    
     public int mode;
     public int layer;
     public bool usingLayer;

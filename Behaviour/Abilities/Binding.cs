@@ -13,6 +13,8 @@ public class Binding : SoundMaker
     public Sprite enabledSprite;
     public bool active;
     public bool reversible;
+    public bool uiVisible = true;
+    
     private SpriteRenderer _renderer;
     private bool _used;
 
@@ -26,13 +28,24 @@ public class Binding : SoundMaker
     private void Start()
     {
         _renderer = GetComponent<SpriteRenderer>();
+        
         if (!AbilityObjects.ActiveBindings.TryGetValue(bindingType, out var binders))
         {
             binders = [];
             AbilityObjects.ActiveBindings[bindingType] = binders;
         }
-
         binders.Add(this);
+
+        if (uiVisible)
+        {
+            if (!AbilityObjects.ActiveVisibleBindings.TryGetValue(bindingType, out var b2))
+            {
+                b2 = [];
+                AbilityObjects.ActiveVisibleBindings[bindingType] = b2;
+            }
+
+            b2.Add(this);
+        }
 
         _renderer.sprite = active ? enabledSprite : disabledSprite;
         

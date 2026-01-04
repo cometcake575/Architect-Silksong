@@ -1692,7 +1692,7 @@ public static class ConfigGroup
     private static readonly int ActiveRegion = LayerMask.NameToLayer("ActiveRegion");
     private static readonly int SoftTerrain = LayerMask.NameToLayer("Soft Terrain");
 
-    public static readonly List<ConfigType> TriggerZone = GroupUtils.Merge(Stretchable, [
+    public static readonly List<ConfigType> TriggerZones = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Trigger Type", "trigger_type",
                     (o, value) =>
@@ -1708,6 +1708,19 @@ public static class ConfigGroup
                         else o.layer = SoftTerrain;
                     })
                 .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Activator").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Shape", "trigger_shape",
+                    (o, value) =>
+                    {
+                        if (value.GetValue() == 0) return;
+                        o.GetComponent<PolygonCollider2D>().enabled = true;
+                        o.GetComponent<BoxCollider2D>().enabled = false;
+                    }, (o, value, _) =>
+                    {
+                        o.GetComponent<SpriteRenderer>().sprite =
+                            value.GetValue() == 0 ? TriggerZone.SquareZone : TriggerZone.CircleZone;
+                    })
+                .WithOptions("Square", "Circle").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Trigger Layer", "trigger_layer",
                 (o, value) =>
@@ -1932,7 +1945,10 @@ public static class ConfigGroup
                 (o, value) => { o.GetComponent<Binding>().active = value.GetValue(); }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Reversible", "binding_toggle",
-                (o, value) => { o.GetComponent<Binding>().reversible = value.GetValue(); }).WithDefaultValue(false))
+                (o, value) => { o.GetComponent<Binding>().reversible = value.GetValue(); }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Appear in UI", "binding_ui",
+                (o, value) => { o.GetComponent<Binding>().uiVisible = value.GetValue(); }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> KeyListener = GroupUtils.Merge(Generic, [

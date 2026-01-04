@@ -526,9 +526,25 @@ public static class UtilityObjects
     {
         var point = new GameObject("Trigger Zone");
 
-        var collider = point.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
-        collider.size = new Vector2(3.2f, 3.2f);
+        var bc = point.AddComponent<BoxCollider2D>();
+        bc.isTrigger = true;
+        bc.size = new Vector2(3.2f, 3.2f);
+
+        var cc = point.AddComponent<PolygonCollider2D>();
+        cc.isTrigger = true;
+
+        var points = new Vector2[24];
+        for (var i = 0; i < 24; i++)
+        {
+            var angle = 2 * Mathf.PI * i / 24;
+            var x = Mathf.Cos(angle) * 1.6f;
+            var y = Mathf.Sin(angle) * 1.6f;
+            points[i] = new Vector2(x, y);
+        }
+
+        cc.pathCount = 1;
+        cc.SetPath(0, points);
+        cc.enabled = false;
 
         point.AddComponent<TriggerZone>();
 
@@ -537,12 +553,12 @@ public static class UtilityObjects
 
         return new CustomObject("Trigger Zone", "trigger_zone",
                 point,
-                sprite: ResourceUtils.LoadSpriteResource("trigger_zone", FilterMode.Point, ppu:10),
+                sprite: TriggerZone.SquareZone,
                 description: "Can broadcast events when entered or exited.\n\n" +
                              "'Activator' mode detects Shakra Rings, Kratt and Beastlings,\n" +
                              "a trigger layer can be set to only detect specific objects.")
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
-            .WithConfigGroup(ConfigGroup.TriggerZone);
+            .WithConfigGroup(ConfigGroup.TriggerZones);
     }
 
     private static PlaceableObject CreateInteraction()
@@ -643,9 +659,6 @@ public static class UtilityObjects
         Object.DontDestroyOnLoad(point);
 
         point.AddComponent<HazardRespawnTrigger>().respawnMarker = point.AddComponent<CustomHazardRespawnMarker>();
-
-        var collider = point.AddComponent<CircleCollider2D>();
-        collider.isTrigger = true;
 
         return new CustomObject("Hazard Respawn Point", "hazard_respawn_point", point, 
             sprite:ResourceUtils.LoadSpriteResource("hazard_respawn_point"),
