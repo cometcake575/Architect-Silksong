@@ -7,6 +7,7 @@ using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using Architect.Utils;
+using BepInEx;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -40,7 +41,7 @@ public abstract class ScriptBlock
     
     protected virtual int InputCount => Inputs.Count();
     protected virtual int OutputCount => Outputs.Count();
-    protected int InputVarCount => InputVars.Count();
+    protected virtual int InputVarCount => InputVars.Count();
     protected int OutputVarCount => OutputVars.Count();
     protected int ConfigCount => Config?.Count ?? 0;
     
@@ -66,6 +67,7 @@ public abstract class ScriptBlock
         if (visual) SetupBlock(newBlock);
         else
         {
+            Reset();
             foreach (var cfg in CurrentConfig.Values) cfg.Setup(this);
             SetupReference();
         }
@@ -99,7 +101,7 @@ public abstract class ScriptBlock
         else
         {
             var (blockId, targetId) = value;
-            val = ScriptManager.Blocks[blockId].GetValue(targetId);
+            val = ScriptManager.Blocks[blockId].GetValue(targetId) ?? GetDefaultValue<T>();
         }
 
         if (typeof(T) == typeof(float) && val is int i)
@@ -122,7 +124,8 @@ public abstract class ScriptBlock
     protected void SetupBlock(bool newBlock)
     {
         var height = 50 * (1 + Math.Max(ConfigCount/2, Math.Max(InputCount, OutputCount)));
-        var width = 50 * Math.Max(5, 1 + OutputVarCount + InputVarCount);
+        var width = 50 * Math.Max(5, 1 + Math.Max(OutputVarCount, InputVarCount));
+        var cfgOffset = (width - 250) / 2;
 
         var img = UIUtils.MakeImage(
             "Script Block",
@@ -183,18 +186,18 @@ public abstract class ScriptBlock
                 uiImg.color = new Color(0, 0, 0, 0.5f);
                 uiImg.sprite = UIUtils.Square;
 
-                var cfgTxt = UIUtils.MakeLabel("Config Title", configArea, new Vector3(105, y),
+                var cfgTxt = UIUtils.MakeLabel("Config Title", configArea, new Vector3(105 + cfgOffset, y),
                     Vector2.zero, Vector2.zero).textComponent;
                 cfgTxt.text = type.Name;
                 cfgTxt.fontSize = 8;
                 cfgTxt.alignment = TextAnchor.MiddleLeft;
 
                 var (btn, _) = UIUtils.MakeTextButton("Config Apply", "Apply", configArea,
-                    new Vector3(175, y), Vector2.zero, Vector2.zero);
+                    new Vector3(175 + cfgOffset, y), Vector2.zero, Vector2.zero);
                 btn.interactable = false;
 
                 if (newBlock && type.GetDefaultValue() != null) CurrentConfig[type.Id] = type.GetDefaultValue();
-                var inp = type.CreateInput(configArea, btn, new Vector3(130, y),
+                var inp = type.CreateInput(configArea, btn, new Vector3(130 + cfgOffset, y),
                     CurrentConfig.GetValueOrDefault(type.Id)?.SerializeValue());
 
                 btn.onClick.AddListener(Apply);
@@ -289,6 +292,11 @@ public abstract class ScriptBlock
         i = InputVarCount;
         foreach (var (input, type) in InputVars)
         {
+            if (type.IsNullOrWhiteSpace())
+            {
+                i--;
+                continue;
+            }
             var inputImg = UIUtils.MakeImage(
                 "Input Var",
                 BlockObject,
@@ -433,6 +441,8 @@ public abstract class ScriptBlock
     protected virtual void DeserializeExtraData(Dictionary<string, string> data) { }
 
     protected virtual void SetupReference() { }
+    
+    protected virtual void Reset() { }
 
     public virtual void Event(string name)
     {

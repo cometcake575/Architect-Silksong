@@ -14,6 +14,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
         ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
+        ScriptManager.RegisterInputBlock<PowerupGetBlock>("Powerup Display", ConfigGroup.PowerupDisplay);
         ScriptManager.RegisterInputBlock<ShakeCameraBlock>("Camera Shake", ConfigGroup.CameraShaker);
         ScriptManager.RegisterInputBlock<TimeSlowerBlock>("Time Slowdown", ConfigGroup.TimeSlower);
         ScriptManager.RegisterInputBlock<AnimatorBlock>("Animator Controller", ConfigGroup.AnimPlayer);

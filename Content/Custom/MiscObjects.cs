@@ -299,7 +299,8 @@ public static class MiscObjects
                 $"Places a custom {name} in the game.\n\n" +
                 "URL should be a direct download anyone can access\n" +
                 "in order to work with the level sharer." + extDesc)
-            .WithRotationGroup(RotationGroup.All);
+            .WithRotationGroup(RotationGroup.All)
+            .WithOutputGroup(OutputGroup.Png);
     }
 
     private static PlaceableObject CreateSquare()

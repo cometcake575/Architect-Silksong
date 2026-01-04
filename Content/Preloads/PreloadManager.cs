@@ -157,10 +157,12 @@ public static class PreloadManager
             try
             {
                 GameObject foundObject;
+                var reEnable = false;
                 if (preload.Item2.IsHideAndDontSave)
                 {
                     foundObject = Resources.FindObjectsOfTypeAll<GameObject>()
                         .First(o => o.name == preload.Item2.Path);
+                    if (foundObject.activeSelf) reEnable = true;
                     foundObject.SetActive(false);
                 } else foundObject = ObjectUtils.GetGameObjectFromArray(rootObjects, preload.Item1);
             
@@ -172,6 +174,8 @@ public static class PreloadManager
                 Object.DontDestroyOnLoad(obj);
 
                 preload.Item2.AfterPreload(obj);
+                
+                if (reEnable) foundObject.SetActive(true);
             }
             catch (NullReferenceException)
             {

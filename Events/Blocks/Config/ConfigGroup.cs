@@ -240,6 +240,40 @@ public static class ConfigGroup
             }).WithOptions("Large", "Left", "Right").WithDefaultValue(0))
     ];
 
+    public static readonly List<ConfigType> PowerupDisplay =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PowerupGetBlock>("Prefix", "powerup_prefix", (o, value) =>
+            {
+                o.PrefixText = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PowerupGetBlock>("Name", "powerup_name", (o, value) =>
+            {
+                o.NameText = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PowerupGetBlock>("Suffix", "powerup_suffix", (o, value) =>
+            {
+                o.SuffixText = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PowerupGetBlock>("Desc 1", "powerup_desc_top", (o, value) =>
+            {
+                o.DescTopText = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PowerupGetBlock>("Desc 2", "powerup_desc_bot", (o, value) =>
+            {
+                o.DescBotText = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PowerupGetBlock>("Keybind", "powerup_keybind", (o, value) =>
+            {
+                o.ButtonText = value.GetValue();
+            }))
+    ];
+
     public static readonly List<ConfigType> ChoiceDisplay = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<ChoiceBlock>("Text", "choice_text", (o, value) =>

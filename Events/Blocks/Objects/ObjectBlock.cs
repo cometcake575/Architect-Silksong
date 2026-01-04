@@ -92,7 +92,7 @@ public class ObjectBlock : ScriptBlock
     protected override object GetValue(string id)
     {
         var output = EventManager.GetOutputType(id);
-        return _referencedObject ? output.GetValue(_referencedObject) : output.GetDefaultValue();
+        return _referencedObject ? output.GetValue(_referencedObject) : null;
     }
 
     public class ObjectBlockReference : MonoBehaviour

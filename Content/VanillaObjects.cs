@@ -1329,14 +1329,17 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Greymoor Lamp", "greymoor_lamp",
                 ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakableLamp)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Vaults Lamp", "vault_lamp",
                 ("Library_04", "library_lamp_stand (1)"), postSpawnAction: MiscFixers.FixBreakableLamp)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Vaults Wall Lamp", "vault_w_lamp",
                 ("Library_04", "library_lamp_wall (2)"), postSpawnAction: MiscFixers.FixBreakableLamp)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 

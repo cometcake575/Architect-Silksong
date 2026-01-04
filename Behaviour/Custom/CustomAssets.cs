@@ -50,6 +50,7 @@ public class PngObject : MonoBehaviour, IPlayable
 
     public void SaveSprites(Sprite[] newSprites)
     {
+        if (!_renderer) return;
         _sprites = newSprites;
         _renderer.sprite = _sprites[0];
 
