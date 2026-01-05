@@ -1837,7 +1837,11 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(new BoolConfigType("Collectable", "bead_collectable",
             (o, value) =>
             {
-                if (!value.GetValue()) o.RemoveComponent<GeoControl>();
+                if (!value.GetValue())
+                {
+                    o.RemoveComponent<EventRegister>();
+                    o.RemoveComponent<GeoControl>();
+                }
             }
         ).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "rosary_stay")
