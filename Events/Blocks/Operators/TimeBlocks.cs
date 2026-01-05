@@ -59,8 +59,8 @@ public class DayBlock : TimeBlockType
             "OfYear" => now.DayOfYear,
             "OfWeek" => (int)now.DayOfWeek,
             "Hour" => (int)now.TimeOfDay.TotalHours,
-            "Minute" => (int)now.TimeOfDay.TotalMinutes,
-            _ => (int)now.TimeOfDay.TotalSeconds
+            "Minute" => (int)now.TimeOfDay.TotalMinutes % 60,
+            _ => (int)now.TimeOfDay.TotalSeconds % 60
         };
     }
 }

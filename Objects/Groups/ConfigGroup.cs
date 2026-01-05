@@ -1624,6 +1624,14 @@ public static class ConfigGroup
                 .WithDefaultValue(0)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Start Frame", "png_sframe",
+                    (o, value) =>
+                    {
+                        o.GetComponentInChildren<PngObject>().frame = Math.Max(0, value.GetValue());
+                    })
+                .WithDefaultValue(0)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Frames per Second", "png_frametime",
                     (o, value) =>
                     {

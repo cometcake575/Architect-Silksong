@@ -22,8 +22,8 @@ public class PngObject : MonoBehaviour, IPlayable
     private Sprite[] _sprites;
     
     private float _remainingFrameTime;
-    private int _frame;
     
+    public int frame;
     public string url;
     public bool point;
     public bool glow = true;
@@ -65,28 +65,28 @@ public class PngObject : MonoBehaviour, IPlayable
         while (_remainingFrameTime < 0)
         {
             _remainingFrameTime += frameTime;
-            _frame++;
-            if (_frame >= _count)
+            frame++;
+            if (frame >= _count)
             {
                 gameObject.BroadcastEvent("OnFinish");
-                _frame %= _count;
+                frame %= _count;
             }
 
-            if (playing) _renderer.sprite = _sprites[_frame];
+            if (playing) _renderer.sprite = _sprites[frame];
         }
     }
 
     public void Play()
     {
         playing = true;
-        _renderer.sprite = _sprites[_frame];
+        _renderer.sprite = _sprites[frame];
     }
 
     public void Pause() => playing = false;
 
     public void Reset()
     {
-        _frame = 0;
+        frame = 0;
         _renderer.sprite = _sprites[0];
     }
 }
