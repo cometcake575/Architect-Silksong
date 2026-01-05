@@ -910,6 +910,9 @@ public static class EnemyFixers
         roarEnd.DisableAction(3);
         roarEnd.DisableAction(4);
         
+        // Disable death bool
+        fsm.GetState("End").DisableAction(4);
+        
         return;
 
         void Realign(Vector2 source)

@@ -93,17 +93,17 @@ public abstract class ScriptBlock
         }
     }
 
-    public T GetVariable<T>(string id)
+    public T GetVariable<T>(string id, object def = null)
     {
         object val;
         if (!VarMap.TryGetValue(id, out var value))
         {
-            val = GetDefaultValue<T>();
+            val = def ?? GetDefaultValue<T>();
         }
         else
         {
             var (blockId, targetId) = value;
-            val = ScriptManager.Blocks[blockId].GetValue(targetId) ?? GetDefaultValue<T>();
+            val = ScriptManager.Blocks[blockId].GetValue(targetId) ?? def ?? GetDefaultValue<T>();
         }
 
         if (typeof(T) == typeof(float) && val is int i)

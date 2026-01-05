@@ -199,7 +199,8 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Cost", "toll_cost", (o, value) =>
             {
-                o.LocateMyFSM("Behaviour (special)").FsmVariables.FindFsmInt("Cost").value = value.GetValue();
+                o.LocateMyFSM("Behaviour (special)").FsmVariables.FindFsmInt("Cost")
+                    .value = Math.Max(1, value.GetValue());
             }).WithDefaultValue(100)),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Text", "toll_text", (o, value) =>

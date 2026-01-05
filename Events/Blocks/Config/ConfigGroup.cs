@@ -26,6 +26,44 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Transition =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<TransitionBlock>("Scene ID", "trans_scene", 
+                (b, f) => b.Scene = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<TransitionBlock>("Door ID", "trans_door", 
+                (b, f) => b.Door = f.GetValue())
+        )
+    ];
+    
+    public static readonly List<ConfigType> TravelList =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<TravelBlock>("Title", "travel_list_name", 
+                (b, f) => b.Title = f.GetValue())
+                .WithDefaultValue("Sample Text")
+        )
+    ];
+    
+    public static readonly List<ConfigType> Travel =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<TravelLoc>("Name", "travel_name", 
+                (b, f) => b.ListName = f.GetValue())
+                .WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TravelLoc>("X Pos", "travel_x", 
+                (b, f) => b.XPos = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TravelLoc>("Y Pos", "travel_y", 
+                (b, f) => b.YPos = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> Time =
     [
         ConfigurationManager.RegisterConfigType(

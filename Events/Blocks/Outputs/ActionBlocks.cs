@@ -8,6 +8,7 @@ public static class ActionBlocks
     {
         TimeSlowerBlock.Init();
         PowerupGetBlock.Init();
+        TravelBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
@@ -21,5 +22,8 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<AnimatorBlock>("Animator Controller", ConfigGroup.AnimPlayer);
         ScriptManager.RegisterInputBlock<BroadcastBlock>("Broadcast", ConfigGroup.Broadcast);
         ScriptManager.RegisterInputBlock<MultiplayerInBlock>("Multiplayer Event", ConfigGroup.MultiplayerIn);
+        ScriptManager.RegisterInputBlock<TravelBlock>("Travel List", ConfigGroup.TravelList);
+        ScriptManager.RegisterInputBlock<TravelLoc>("Travel", ConfigGroup.Travel);
+        ScriptManager.RegisterInputBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
     }
 }

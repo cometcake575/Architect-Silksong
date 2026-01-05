@@ -304,8 +304,6 @@ public static class UtilityObjects
         col.size = new Vector2(3, 3);
         col.isTrigger = true;
 
-        customDoor.layer = LayerMask.NameToLayer("TransitionGates");
-        
         return new CustomObject("Transition Gate", "transition_gate", customDoor,
                 description:"Creates a custom doorway to another room. Requires a target scene and door id.\n\n" +
                             "Disable 'Collision Trigger' and use the 'Transition' trigger to transition when\n" +
