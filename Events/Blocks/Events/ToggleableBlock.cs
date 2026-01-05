@@ -6,16 +6,16 @@ public abstract class ToggleableBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Disable", "Enable"];
 
-    private bool _enabled = true;
+    protected bool Enabled = true;
     
     public override void Event(string name)
     {
-        if (!_enabled) return;
+        if (!Enabled) return;
         base.Event(name);
     }
 
     protected override void Trigger(string trigger)
     {
-        _enabled = trigger == "Enable";
+        Enabled = trigger == "Enable";
     }
 }

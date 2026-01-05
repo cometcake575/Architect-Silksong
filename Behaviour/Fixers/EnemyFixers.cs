@@ -224,6 +224,8 @@ public static class EnemyFixers
         
         var corpseFsm = ede.GetInstantiatedCorpse(AttackTypes.Nail).LocateMyFSM("Control");
         corpseFsm.GetState("Death Start").DisableAction(3);
+        
+        corpseFsm.GetState("Break 4").AddAction(() => fsm.SendEvent("CANCEL"), 5);
 
         var fall = (CheckYPosition)corpseFsm.GetState("Fall").Actions[2];
         var land = (SetPosition)corpseFsm.GetState("Land").Actions[0];
@@ -667,6 +669,16 @@ public static class EnemyFixers
         zoom.DisableAction(3);
         zoom.AddAction(() => fsm.SendEvent("FINISHED"));
         ((StartRoarEmitter)fsm.GetState("Quick Roar").actions[3]).stunHero = false;
+
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.setPlayerDataBool = "";
+        
+        ede.PreInstantiate();
+        var corpseFsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Death");
+        
+        corpseFsm.GetState("Stagger").DisableAction(2);
+        corpseFsm.GetState("Blow").DisableAction(1);
+        corpseFsm.GetState("Splash").DisableAction(0);
     }
 
     public static void FixGroal(GameObject obj)

@@ -16,7 +16,7 @@ public static class BroadcasterGroup
     
     public static readonly List<string> SkullTyrant = GroupUtils.Merge(Bosses, ["Stomp"]);
     
-    public static readonly List<string> MossMother = GroupUtils.Merge(Bosses, ["Slam"]);
+    public static readonly List<string> SlamBosses = GroupUtils.Merge(Bosses, ["Slam"]);
     
     public static readonly List<string> SummonerBosses = GroupUtils.Merge(Bosses, ["TrySummon"]);
 

@@ -22,8 +22,8 @@ public class PowerupGetBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Display"];
     protected override IEnumerable<string> Outputs => ["Dismiss"];
     protected override IEnumerable<(string, string)> InputVars => [
-        ("", ""),
-        ("", ""),
+        Space,
+        Space,
         ("Outline", "Sprite"),
         ("Solid", "Sprite"),
         ("Glow", "Sprite"),

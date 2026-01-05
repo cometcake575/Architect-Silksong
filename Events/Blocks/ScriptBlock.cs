@@ -20,6 +20,8 @@ namespace Architect.Events.Blocks;
 [JsonConverter(typeof(ScriptBlockConverter))]
 public abstract class ScriptBlock
 {
+    protected static readonly (string, string) Space = ("", "");
+
     private static readonly Sprite FlowchartBlock = ResourceUtils.LoadSpriteResource(
         "Flowcharts.flowchart_block",
         border: new Vector4(10, 10, 10, 10)
@@ -332,6 +334,11 @@ public abstract class ScriptBlock
         i = OutputVarCount;
         foreach (var (output, type) in OutputVars)
         {
+            if (type.IsNullOrWhiteSpace())
+            {
+                i--;
+                continue;
+            }
             var outputImg = UIUtils.MakeImage(
                 "Output Var",
                 BlockObject,

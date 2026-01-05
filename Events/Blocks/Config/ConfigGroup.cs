@@ -26,6 +26,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Time =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<TimeBlockType>("Mode", "time_block_mode", 
+                (b, f) => b.Mode = f.GetValue())
+                .WithOptions("Local", "Global").WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> BoolVar =
     [
         ConfigurationManager.RegisterConfigType(

@@ -1434,6 +1434,32 @@ public static class VanillaObjects
                 ("Belltown_04", "Drop Bell (1)"))
             .WithConfigGroup(ConfigGroup.FallingBell)
             .WithReceiverGroup(ReceiverGroup.Dropper));
+        
+        AddSolid("Bell Platform 1", "bell_plat_1", 
+            ("Belltown", "hanging_bell_house 2/plat_float_07"),
+            preloadAction: o =>
+            {
+                o.transform.parent = null;
+                o.transform.SetPositionZ(-0.1174f);
+            });
+        AddSolid("Bell Platform 2", "bell_plat_2", 
+            ("Belltown", "Hornet House States/Full/plat_float_07 (1)"),
+            preloadAction: o =>
+            {
+                o.transform.parent = null;
+                o.transform.SetPositionZ(-0.1174f);
+                o.transform.GetChild(0).SetLocalPositionZ(0.001f);
+            });
+        AddSolid("Bell Platform 3", "bell_plat_3",
+            ("Belltown", "Black Thread States Thread Only Variant/Normal World/shop_sign"),
+            preloadAction: o =>
+            {
+                o.transform.parent = null;
+                o.transform.SetPositionZ(-0.1174f);
+                for (var i = 2; i <= 5; i++) o.transform.GetChild(i).gameObject.SetActive(false);
+                o.transform.GetChild(1).GetChild(3).gameObject
+                    .AddComponent<PlaceableObject.SpriteSource>();
+            });
     }
 
     private static void AddWispObjects()
@@ -1865,7 +1891,7 @@ public static class VanillaObjects
             ("Tut_03", "Black Thread States/Normal World/Battle Scene/Wave 1/Mossbone Mother"), 
             postSpawnAction: EnemyFixers.FixMossMother)
             .WithConfigGroup(ConfigGroup.MossMother)
-            .WithBroadcasterGroup(BroadcasterGroup.MossMother).DoFlipX();
+            .WithBroadcasterGroup(BroadcasterGroup.SlamBosses).DoFlipX();
 
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
             ("Dust_11", "Aspid Hatchling"), hideAndDontSave: true);

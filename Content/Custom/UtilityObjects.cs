@@ -7,6 +7,7 @@ using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using BepInEx;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -128,7 +129,8 @@ public static class UtilityObjects
                         && obj.name.Contains(filter)
                     );
 
-                    if (clearer.removeMusic) clearer.gameObject.AddComponent<MusicController>();
+                    if (clearer.removeMusic && filter.IsNullOrWhiteSpace()) 
+                        clearer.gameObject.AddComponent<MusicController>();
             
                     if (clearer.removeOther)
                     {

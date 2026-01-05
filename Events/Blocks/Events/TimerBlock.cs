@@ -31,6 +31,8 @@ public class TimerBlock : ToggleableBlock
 
         private void Update()
         {
+            if (!Block.Enabled) return;
+            
             if (Block.StartDelay > 0)
             {
                 Block.StartDelay -= Time.deltaTime;
