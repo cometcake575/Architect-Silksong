@@ -44,7 +44,6 @@ public class DayBlock : TimeBlockType
 
     protected override IEnumerable<(string, string)> OutputVars =>
     [
-        
         ("OfYear", "Number"),
         ("OfWeek", "Number"),
         ("Hour", "Number"),
