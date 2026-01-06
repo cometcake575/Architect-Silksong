@@ -25,7 +25,11 @@ public class TextDisplay : NPCControlBase, IDisplayable
     public override void Awake()
     {
         base.Awake();
-        
+        Setup();
+    }
+
+    public void Setup()
+    {
         var alignment = (verticalAlignment, horizontalAlignment) switch
         {
             (0, 0) => TextAlignmentOptions.TopLeft,

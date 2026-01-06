@@ -80,7 +80,7 @@ public class Binding : SoundMaker
             EventManager.BroadcastEvent(gameObject, "OnUnbind");
         }
         
-        PlaySound(_use, 10);
+        PlaySound(_use, 2);
         OnToggle();
 
         if (reversible) return;

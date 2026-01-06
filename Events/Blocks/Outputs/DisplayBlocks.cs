@@ -62,6 +62,8 @@ public class TextBlock : ScriptBlock
         _display.verticalAlignment = VerticalAlignment;
         _display.horizontalAlignment = HorizontalAlignment;
         _display.decorators = Decorators;
+        
+        _display.Setup();
     }
 
     protected override void Trigger(string trigger)

@@ -137,7 +137,7 @@ public static class InteractableFixers
     public static void FixSilkLever(GameObject obj)
     {
         obj.transform.parent = null;
-        obj.transform.SetPositionZ(0.006f);
+        obj.transform.SetPositionZ(-0.15f);
         obj.transform.SetRotation2D(4.8057f);
         obj.transform.GetChild(0).gameObject.SetActive(false);
     }
