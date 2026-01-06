@@ -168,9 +168,6 @@ public static class PreloadManager
             
                 preload.Item2.BeforePreload(foundObject);
                 
-                var obj1 = Object.Instantiate(foundObject);
-                obj1.SetActive(true);
-                Object.DontDestroyOnLoad(obj1);
                 var obj = Object.Instantiate(foundObject);
                 obj.SetActive(false);
 
