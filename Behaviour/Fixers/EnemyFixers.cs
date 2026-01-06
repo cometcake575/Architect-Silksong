@@ -1108,6 +1108,8 @@ public static class EnemyFixers
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Init").DisableAction(3);
+        
+        fsm.GetState("Extract Kill").AddAction(() => obj.BroadcastEvent("OnDeath"), 0);
 
         var rest = fsm.GetState("Rest");
         rest.DisableAction(1);
@@ -2328,5 +2330,11 @@ public static class EnemyFixers
         fsm.FsmVariables.FindFsmFloat("Jump X Min").Value = obj.transform.GetPositionX() - 7.5f;
         fsm.FsmVariables.FindFsmFloat("Jump X Max").Value = obj.transform.GetPositionX() + 7.5f;
         fsm.FsmVariables.FindFsmFloat("Ground Y").Value = obj.transform.GetPositionY() - 1.9273f;
+    }
+
+    public static void FixPlasmified(GameObject obj)
+    {
+        obj.LocateMyFSM("Control").GetState("Extract Kill")
+            .AddAction(() => obj.BroadcastEvent("OnDeath"), 0);
     }
 }

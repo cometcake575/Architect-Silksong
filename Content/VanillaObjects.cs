@@ -1833,10 +1833,12 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixCraggler);
         
         AddEnemy("Plasmid", "plasmid",
-            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)")).DoFlipX();
+            ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),
+            postSpawnAction: EnemyFixers.FixPlasmified).DoFlipX();
         AddEnemy("Plasmidas", "plasmidas",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"),
-            preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false));
+            preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false),
+            postSpawnAction: EnemyFixers.FixPlasmified);
 
         AddEnemy("Plasmified Zango", "zango_boss", ("Crawl_10", "Area_States/Infected/Blue Assistant"),
                 postSpawnAction: EnemyFixers.FixZango)
