@@ -1532,13 +1532,7 @@ public static class VanillaObjects
         
         AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"))
             .WithRotationGroup(RotationGroup.Eight);
-
-        Categories.Enemies.Add(new PreloadObject("Wood Wasp Hive", "wasp_hive",
-            ("Shellwood_02", "Shellwood Hive (1)"), preloadAction: o =>
-            {
-                o.transform.GetChild(2).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>();
-                o.transform.GetChild(2).GetChild(1).gameObject.SetActive(false);
-            }));
+        
         AddEnemy("Wood Wasp", "wood_wasp", ("Shellwood_02", "Shellwood Wasp"));
         AddEnemy("Splinter", "splinter", ("Shellwood_02", "Stick Insect"),
             preloadAction: EnemyFixers.FixSplinter);
