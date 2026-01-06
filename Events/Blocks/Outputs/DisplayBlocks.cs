@@ -75,7 +75,7 @@ public class TextBlock : ScriptBlock
 public class ChoiceBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display"];
-    protected override IEnumerable<string> Outputs => ["Show", "No"];
+    protected override IEnumerable<string> Outputs => ["Yes", "No"];
 
     private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
     protected override Color Color => DefaultColor;

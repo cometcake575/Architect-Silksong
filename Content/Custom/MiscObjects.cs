@@ -34,7 +34,8 @@ public static class MiscObjects
                 "Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.Png)
             .WithReceiverGroup(ReceiverGroup.Playable)
-            .WithBroadcasterGroup(BroadcasterGroup.Finishable));
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable)
+            .WithOutputGroup(OutputGroup.Png));
         
         Categories.Misc.Add(CreateSilkSphere());
         
@@ -299,8 +300,7 @@ public static class MiscObjects
                 $"Places a custom {name} in the game.\n\n" +
                 "URL should be a direct download anyone can access\n" +
                 "in order to work with the level sharer." + extDesc)
-            .WithRotationGroup(RotationGroup.All)
-            .WithOutputGroup(OutputGroup.Png);
+            .WithRotationGroup(RotationGroup.All);
     }
 
     private static PlaceableObject CreateSquare()

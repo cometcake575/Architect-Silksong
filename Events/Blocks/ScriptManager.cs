@@ -216,6 +216,7 @@ public static class ScriptManager
 
         var img = obj.AddComponent<Image>();
         img.sprite = UIUtils.Square;
+        lr.img = img;
     }
 
     public static void DestroyLink(string sourceBlock, string sourceEvent, string block, string trigger,
@@ -232,10 +233,12 @@ public static class ScriptManager
         Object.Destroy(value);
     }
 
-    public class Connection : Deletable
+    public class Connection : Deletable, IPointerEnterHandler, IPointerExitHandler
     {
         public RectTransform t1;
         public RectTransform t2;
+
+        public Image img;
 
         public string sourceBlock;
         public string targetBlock;
@@ -265,6 +268,16 @@ public static class ScriptManager
         {
             Event,
             Var
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            img.color = Color.cyan;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            img.color = Color.white;
         }
     }
 

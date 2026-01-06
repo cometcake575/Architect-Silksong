@@ -1111,8 +1111,11 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
-                preloadAction: EnemyFixers.FixJudge)
+                preloadAction: EnemyFixers.FixJudge,
+                postSpawnAction: o => o.LocateMyFSM("Control").GetState("Shield Block")
+                    .AddAction(() => o.BroadcastEvent("OnBlock"), 0))
             .WithConfigGroup(ConfigGroup.Judge)
+            .WithBroadcasterGroup(BroadcasterGroup.Judge)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         Categories.Platforming.Add(new PreloadObject("Bell of Judgement", "hang_bell",
@@ -1165,6 +1168,11 @@ public static class VanillaObjects
         
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
                 ("Bone_East_15", "bell_bench/RestBench"),
+                preloadAction: MiscFixers.FixBench, preview: true)
+            .WithConfigGroup(ConfigGroup.Benches));
+        
+        Categories.Misc.AddStart(new PreloadObject("Bed", "bellhome_bed",
+                ("Belltown_Room_Spare", "furnishings/bed/RestBench"),
                 preloadAction: MiscFixers.FixBench, preview: true)
             .WithConfigGroup(ConfigGroup.Benches));
 
