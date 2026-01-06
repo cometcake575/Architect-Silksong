@@ -25,7 +25,8 @@ public static class ScriptManager
         BlockTypes["object"] = () => new ObjectBlock { Type = "object" };
     }
     
-    public static Start CurrentEventStart;
+    public static Start CurrentStart;
+    public static bool InSwapMode;
     
     public static readonly List<(Func<ScriptBlock>, string)> InputBlocks = [];
     
@@ -69,6 +70,8 @@ public static class ScriptManager
         public ScriptBlock Block;
         public string id;
     }
+
+    private static readonly Color Orange = new(0.9f, 0.7f, 0);
     
     public class EventStart : Start, IPointerDownHandler
     {
@@ -77,19 +80,41 @@ public static class ScriptManager
             if (eventData.button != PointerEventData.InputButton.Left) return;
             if (!Block.IsValid) return;
             
-            if (CurrentEventStart)
+            if (CurrentStart)
             {
-                CurrentEventStart.img.color = CurrentEventStart.color;
-                if (CurrentEventStart == this)
+                CurrentStart.img.color = CurrentStart.color;
+                if (CurrentStart == this)
                 {
-                    CurrentEventStart = null;
+                    CurrentStart = null;
                     return;
-                } 
-                CurrentEventStart = null;
+                }
+
+                if (InSwapMode)
+                {
+                    foreach (var link in CurrentStart.Block.EventMap)
+                    {
+                        foreach (var connection in link.Value.ToArray())
+                        {
+                            DestroyLink(CurrentStart.Block.BlockId, link.Key, connection.Item1, connection.Item2,
+                                Connection.LinkType.Event);
+
+                            var eMap = Block.EventMap;
+                            if (!eMap.ContainsKey(id)) eMap[id] = [];
+                            if (eMap[id].Contains((connection.Item1, connection.Item2))) continue;
+                            eMap[id].Add((connection.Item1, connection.Item2));
+                            MakeLink(Block, id, Blocks[connection.Item1], connection.Item2,
+                                Connection.LinkType.Event);
+                        }
+                    }
+                    CurrentStart = null;
+                    return;
+                }
+                CurrentStart = null;
             }
             
-            CurrentEventStart = this;
-            img.color = Color.cyan;
+            CurrentStart = this;
+            InSwapMode = Input.GetKey(KeyCode.LeftAlt);
+            img.color = InSwapMode ? Orange : Color.cyan;
         }
     }
     
@@ -100,19 +125,19 @@ public static class ScriptManager
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (CurrentEventStart is not EventStart) return;
-            CurrentEventStart.img.color = CurrentEventStart.color;
+            if (CurrentStart is not EventStart || InSwapMode) return;
+            CurrentStart.img.color = CurrentStart.color;
             
-            if (!Block.IsValid || !CurrentEventStart.Block.IsValid) return;
+            if (!Block.IsValid || !CurrentStart.Block.IsValid) return;
 
-            var eMap = CurrentEventStart.Block.EventMap;
-            if (!eMap.ContainsKey(CurrentEventStart.id)) eMap[CurrentEventStart.id] = [];
-            if (eMap[CurrentEventStart.id].Contains((Block.BlockId, id))) return;
-            eMap[CurrentEventStart.id].Add((Block.BlockId, id));
+            var eMap = CurrentStart.Block.EventMap;
+            if (!eMap.ContainsKey(CurrentStart.id)) eMap[CurrentStart.id] = [];
+            if (eMap[CurrentStart.id].Contains((Block.BlockId, id))) return;
+            eMap[CurrentStart.id].Add((Block.BlockId, id));
             
-            MakeLink(CurrentEventStart.Block, CurrentEventStart.id, Block, id, Connection.LinkType.Event);
+            MakeLink(CurrentStart.Block, CurrentStart.id, Block, id, Connection.LinkType.Event);
             
-            CurrentEventStart = null;
+            CurrentStart = null;
         }
     }
     
@@ -125,18 +150,19 @@ public static class ScriptManager
             if (eventData.button != PointerEventData.InputButton.Left) return;
             if (!Block.IsValid) return;
             
-            if (CurrentEventStart)
+            if (CurrentStart)
             {
-                CurrentEventStart.img.color = CurrentEventStart.color;
-                if (CurrentEventStart == this)
+                CurrentStart.img.color = CurrentStart.color;
+                if (CurrentStart == this)
                 {
-                    CurrentEventStart = null;
+                    CurrentStart = null;
                     return;
                 } 
-                CurrentEventStart = null;
+                CurrentStart = null;
             }
             
-            CurrentEventStart = this;
+            CurrentStart = this;
+            InSwapMode = false;
             img.color = Color.cyan;
         }
     }
@@ -150,20 +176,20 @@ public static class ScriptManager
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (CurrentEventStart is not VarStart start) return;
+            if (CurrentStart is not VarStart start) return;
             if (start.type != type) return;
             
-            if (!Block.IsValid || !CurrentEventStart.Block.IsValid) return;
+            if (!Block.IsValid || !CurrentStart.Block.IsValid) return;
 
             var vMap = Block.VarMap;
             if (vMap.ContainsKey(id)) return;
             
-            CurrentEventStart.img.color = CurrentEventStart.color;
-            vMap[id] = (CurrentEventStart.Block.BlockId, CurrentEventStart.id);
+            CurrentStart.img.color = CurrentStart.color;
+            vMap[id] = (CurrentStart.Block.BlockId, CurrentStart.id);
             
-            MakeLink(Block, id, CurrentEventStart.Block, CurrentEventStart.id, Connection.LinkType.Var);
+            MakeLink(Block, id, CurrentStart.Block, CurrentStart.id, Connection.LinkType.Var);
             
-            CurrentEventStart = null;
+            CurrentStart = null;
         }
     }
     
@@ -278,5 +304,15 @@ public static class ScriptManager
         };
         OutputBlocks.Add((func, name));
         BlockTypes[name] = func;
+    }
+
+    public static void RegisterHiddenBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
+    {
+        BlockTypes[name] = () => new T
+        {
+            Type = name, 
+            Config = configGroup,
+            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
+        };
     }
 }

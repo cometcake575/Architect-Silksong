@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using Architect.Content.Preloads;
+using Architect.Utils;
 using BepInEx;
 using TMProOld;
 using UnityEngine;
@@ -53,9 +55,16 @@ public class PowerupGetBlock : ScriptBlock
     
     protected override void Trigger(string trigger)
     {
+        ArchitectPlugin.Instance.StartCoroutine(Coroutine());
+    }
+
+    private IEnumerator Coroutine()
+    {
+        yield return HeroController.instance.FreeControl();
+        
         PowerUpGetMsg msg = null;
         msg = PowerUpGetMsg.Spawn(PowerUpGetMsg.PowerUps.Sprint, _pugm, End) as PowerUpGetMsg;
-        if (!msg) return;
+        if (!msg) yield break;
 
         msg.lineSprite.sprite = GetVariable<Sprite>("Outline");
         msg.solidSprite.sprite = GetVariable<Sprite>("Solid");
@@ -79,7 +88,7 @@ public class PowerupGetBlock : ScriptBlock
         GameCameras.instance.HUDOut();
         HeroController.instance.AddInputBlocker(msg);
 
-        return;
+        yield break;
 
         void End()
         {

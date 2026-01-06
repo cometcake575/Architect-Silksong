@@ -60,7 +60,7 @@ public class PngObject : MonoBehaviour, IPlayable
 
     private void Update()
     {
-        if (_count <= 1 || !playing) return;
+        if (_count <= 1 || !playing || !_renderer || _sprites == null) return;
         _remainingFrameTime -= Time.deltaTime;
         while (_remainingFrameTime < 0)
         {
@@ -72,7 +72,7 @@ public class PngObject : MonoBehaviour, IPlayable
                 frame %= _count;
             }
 
-            if (playing) _renderer.sprite = _sprites[frame];
+            _renderer.sprite = _sprites[frame];
         }
     }
 

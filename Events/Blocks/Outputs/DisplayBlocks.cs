@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using Architect.Behaviour.Utility;
 using Architect.Utils;
+using TeamCherry.Localization;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Outputs;
@@ -34,6 +36,12 @@ public class TextBlock : ScriptBlock
     protected override string Name => "Text Display";
 
     private TextDisplay _display;
+
+    protected override void Reset()
+    {
+        Text = "";
+        OffsetY = 0;
+    } 
     
     public string Text = "";
     
@@ -65,7 +73,7 @@ public class TextBlock : ScriptBlock
 public class ChoiceBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display"];
-    protected override IEnumerable<string> Outputs => ["Yes", "No"];
+    protected override IEnumerable<string> Outputs => ["Show", "No"];
 
     private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
     protected override Color Color => DefaultColor;
@@ -96,5 +104,42 @@ public class ChoiceBlock : ScriptBlock
     protected override void Trigger(string trigger)
     {
         _display.Display();
+    }
+}
+
+public class NeedolinBlock : ScriptBlock
+{
+    protected override IEnumerable<string> Inputs => ["Display"];
+
+    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Song Display";
+
+    public string Text = "";
+    public float Delay = 1;
+    private LocalisedTextCollection _collection;
+    
+    protected override void Reset()
+    {
+        Text = "";
+        Delay = 1;
+    }
+
+    protected override void SetupReference()
+    {
+        _collection = ScriptableObject.CreateInstance<LocalisedTextCollection>();
+        _collection.data = new LocalisedTextCollectionData(new LocalisedString("ArchitectMod", Text));
+    }
+
+    protected override void Trigger(string trigger)
+    {
+        NeedolinMsgBox.AddText(_collection, true, true);
+        ArchitectPlugin.Instance.StartCoroutine(RemoveText());
+    }
+
+    private IEnumerator RemoveText()
+    {
+        yield return new WaitForSeconds(Delay);
+        NeedolinMsgBox.RemoveText(_collection);
     }
 }

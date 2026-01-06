@@ -143,7 +143,8 @@ public class TravelBlock : ScriptBlock
             btn.Block = travelLoc;
             
             if (travelLoc is not { Unlocked: true }) continue;
-            
+
+            btn.piece.transform.localPosition = Vector3.zero;
             btn.piece.indicatorOffset = new Vector2(travelLoc.XPos, travelLoc.YPos);
             
             var set = obj.GetComponent<SetTextMeshProGameText>();

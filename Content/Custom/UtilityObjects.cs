@@ -43,7 +43,7 @@ public static class UtilityObjects
                 FindObjectsToDisable<HealthManager>, "Removes the nearest enemy.\n\n" +
                                                      "This should be placed at the enemy's spawn point, not its\n" +
                                                      "current position, or it will not work when exiting edit mode.")
-            .WithConfigGroup(ConfigGroup.Generic)
+            .WithConfigGroup(ConfigGroup.Disabler)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
         Categories.Utility.Add(CreateTeleportPoint());
@@ -51,7 +51,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateHazardRespawnPoint());
         Categories.Utility.Add(CreateObjectRemover("hrp_remover", "Disable Hazard Respawn Point",
                 FindObjectsToDisable<HazardRespawnTrigger>, "Removes the nearest Hazard Respawn Point.")
-            .WithConfigGroup(ConfigGroup.Generic)
+            .WithConfigGroup(ConfigGroup.Disabler)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
         Categories.Utility.Add(CreateTransitionPoint());
@@ -636,6 +636,12 @@ public static class UtilityObjects
             .SelectMany(root => root.GetComponentsInChildren<T>(true))
             .Select(obj => obj.gameObject);
 
+        var or = disabler.GetComponent<ObjectRemover>();
+        if (or && or.all)
+        {
+            return objects.Select(o => o.GetOrAddComponent<Disabler>()).ToArray();
+        }
+        
         var lowest = float.MaxValue;
         GameObject point = null;
         foreach (var obj in objects)

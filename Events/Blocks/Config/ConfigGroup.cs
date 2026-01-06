@@ -233,6 +233,24 @@ public static class ConfigGroup
                 }).WithDefaultValue(1)
         )
     ];
+    
+    public static readonly List<ConfigType> SongDisplay =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<NeedolinBlock>("Text", "song_text", 
+                (b, f) =>
+                {
+                    b.Text = f.GetValue();
+                }).WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<NeedolinBlock>("Duration", "song_duration", 
+                (b, f) =>
+                {
+                    b.Delay = f.GetValue();
+                }).WithDefaultValue(1)
+        )
+    ];
 
     public static readonly List<ConfigType> TextDisplay =
     [

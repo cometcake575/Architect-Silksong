@@ -30,6 +30,15 @@ public static class ConfigGroup
                 if (!value.GetValue()) o.SetActive(false);
             }))
     ];
+    
+    public static readonly List<ConfigType> Disabler = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Disable All", "disabler_all", (o, value) =>
+            {
+                if (value.GetValue()) o.GetComponent<ObjectRemover>().all = true;
+            }).WithDefaultValue(false))
+    ]);
 
     public static readonly List<ConfigType> Visible = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(

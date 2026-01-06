@@ -10,6 +10,7 @@ public class ObjectRemover : MonoBehaviour
 {
     public string triggerName;
     public string filter;
+    public bool all;
 
     private Disabler[] _toggle = [];
 

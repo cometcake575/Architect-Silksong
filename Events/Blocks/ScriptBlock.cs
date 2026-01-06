@@ -20,9 +20,11 @@ namespace Architect.Events.Blocks;
 [JsonConverter(typeof(ScriptBlockConverter))]
 public abstract class ScriptBlock
 {
+    protected static readonly ScriptBlockConverter Sbc = new();
+    
     protected static readonly (string, string) Space = ("", "");
 
-    private static readonly Sprite FlowchartBlock = ResourceUtils.LoadSpriteResource(
+    protected static readonly Sprite FlowchartBlock = ResourceUtils.LoadSpriteResource(
         "Flowcharts.flowchart_block",
         border: new Vector4(10, 10, 10, 10)
     );
@@ -43,7 +45,7 @@ public abstract class ScriptBlock
     
     protected virtual int InputCount => Inputs.Count();
     protected virtual int OutputCount => Outputs.Count();
-    protected virtual int InputVarCount => InputVars.Count();
+    protected int InputVarCount => InputVars.Count();
     protected int OutputVarCount => OutputVars.Count();
     protected int ConfigCount => Config?.Count ?? 0;
     
@@ -60,7 +62,7 @@ public abstract class ScriptBlock
     
     public Vector2 Position;
 
-    [CanBeNull] protected GameObject BlockObject;
+    [CanBeNull] public GameObject BlockObject;
     public ScriptBlockInstance BlockInstance;
 
     public void Setup(bool visual, bool newBlock = false)
@@ -123,10 +125,15 @@ public abstract class ScriptBlock
 
     [CanBeNull] protected virtual object GetValue(string id) => null;
 
-    protected void SetupBlock(bool newBlock)
+    public void SetupBlock(bool newBlock)
     {
         var height = 50 * (1 + Math.Max(ConfigCount/2, Math.Max(InputCount, OutputCount)));
         var width = 50 * Math.Max(5, 1 + Math.Max(OutputVarCount, InputVarCount));
+        SetupBlock(newBlock, width, height);
+    }
+    
+    protected virtual void SetupBlock(bool newBlock, int width, int height)
+    {
         var cfgOffset = (width - 250) / 2;
 
         var img = UIUtils.MakeImage(
@@ -142,19 +149,23 @@ public abstract class ScriptBlock
         img.color = Color;
 
         BlockInstance = BlockObject.AddComponent<ScriptBlockInstance>();
-        var txt = UIUtils.MakeLabel(
-            Name,
-            BlockObject,
-            new Vector2(10, height / 2f + 15),
-            new Vector2(0, 0.5f),
-            new Vector2(0, 0.5f));
-
-        BlockInstance.Block = this;
-        ((RectTransform)txt.transform).pivot = new Vector2(0, 0.5f);
-        txt.textComponent.fontSize = 20;
-        txt.textComponent.alignment = TextAnchor.MiddleLeft;
-        BlockInstance.text = txt.textComponent;
         BlockInstance.img = img;
+        BlockInstance.Block = this;
+
+        if (Name != null)
+        {
+            var txt = UIUtils.MakeLabel(
+                Name,
+                BlockObject,
+                new Vector2(10, height / 2f + 15),
+                new Vector2(0, 0.5f),
+                new Vector2(0, 0.5f));
+            
+            ((RectTransform)txt.transform).pivot = new Vector2(0, 0.5f);
+            txt.textComponent.fontSize = 20;
+            txt.textComponent.alignment = TextAnchor.MiddleLeft;
+            BlockInstance.text = txt.textComponent;
+        }
 
         // Config
         if (Config != null)
@@ -387,7 +398,7 @@ public abstract class ScriptBlock
 
         private void Update()
         {
-            text.text = Block.Name;
+            if (text) text.text = Block.Name;
             img.color = Block.Color;
         }
 
@@ -405,41 +416,7 @@ public abstract class ScriptBlock
 
         public override void Delete()
         {
-            foreach (var (sourceEvent, target) in Block.EventMap)
-            {
-                foreach (var (targetBlock, targetEvent) in target.ToArray())
-                {
-                    ScriptManager.DestroyLink(Block.BlockId, sourceEvent, targetBlock, targetEvent, ScriptManager.Connection.LinkType.Event);
-                }
-            }
-
-            foreach (var (sourceEvent, (targetBlock, targetEvent)) in Block.VarMap.ToArray())
-            {
-                ScriptManager.DestroyLink(Block.BlockId, sourceEvent, targetBlock, targetEvent,
-                    ScriptManager.Connection.LinkType.Var);
-            }
-
-            foreach (var block in ScriptManager.Blocks.Values)
-            {
-                foreach (var (sourceEvent, target) in block.EventMap)
-                {
-                    foreach (var (_, targetEvent) in target
-                                 .Where(o => o.Item1 == Block.BlockId).ToArray())
-                    {
-                        ScriptManager.DestroyLink(block.BlockId, sourceEvent, Block.BlockId, targetEvent, ScriptManager.Connection.LinkType.Event);
-                    }
-                }
-
-                foreach (var (sourceEvent, (id, targetEvent)) in block.VarMap.ToArray())
-                {
-                    if (id != Block.BlockId) continue;
-                    ScriptManager.DestroyLink(block.BlockId, sourceEvent, Block.BlockId, targetEvent,
-                        ScriptManager.Connection.LinkType.Var);
-                }
-            }
-            ScriptManager.Blocks.Remove(Block.BlockId);
-            PlacementManager.GetLevelData().ScriptBlocks.Remove(Block);
-            Destroy(gameObject);
+            Block.Delete();
         }
     }
 
@@ -469,10 +446,45 @@ public abstract class ScriptBlock
         if (BlockObject) Object.Destroy(BlockObject);
     }
 
-    public void Delete()
+    public virtual void Delete()
     {
         if (!BlockObject) return;
-        BlockObject.GetComponent<ScriptBlockInstance>().Delete();
+        
+        foreach (var (sourceEvent, target) in EventMap)
+        {
+            foreach (var (targetBlock, targetEvent) in target.ToArray())
+            {
+                ScriptManager.DestroyLink(BlockId, sourceEvent, targetBlock, targetEvent, ScriptManager.Connection.LinkType.Event);
+            }
+        }
+
+        foreach (var (sourceEvent, (targetBlock, targetEvent)) in VarMap.ToArray())
+        {
+            ScriptManager.DestroyLink(BlockId, sourceEvent, targetBlock, targetEvent,
+                ScriptManager.Connection.LinkType.Var);
+        }
+
+        foreach (var block in ScriptManager.Blocks.Values)
+        {
+            foreach (var (sourceEvent, target) in block.EventMap)
+            {
+                foreach (var (_, targetEvent) in target
+                             .Where(o => o.Item1 == BlockId).ToArray())
+                {
+                    ScriptManager.DestroyLink(block.BlockId, sourceEvent, BlockId, targetEvent, ScriptManager.Connection.LinkType.Event);
+                }
+            }
+
+            foreach (var (sourceEvent, (id, targetEvent)) in block.VarMap.ToArray())
+            {
+                if (id != BlockId) continue;
+                ScriptManager.DestroyLink(block.BlockId, sourceEvent, BlockId, targetEvent,
+                    ScriptManager.Connection.LinkType.Var);
+            }
+        }
+        ScriptManager.Blocks.Remove(BlockId);
+        PlacementManager.GetLevelData().ScriptBlocks.Remove(this);
+        Object.Destroy(BlockObject);
     }
     
     public class ScriptBlockConverter : JsonConverter<ScriptBlock>

@@ -10,12 +10,15 @@ public static class ActionBlocks
         PowerupGetBlock.Init();
         TravelBlock.Init();
         
+        // ScriptManager.RegisterInputBlock<RandomEventBlock>("Random Event");
+        // ScriptManager.RegisterHiddenBlock<RandomEventBlock.TriggerBlock>("Random Trigger");
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
         ScriptManager.RegisterInputBlock<StatusBlock>("Status Control");
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
         ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
+        ScriptManager.RegisterInputBlock<NeedolinBlock>("Song Display", ConfigGroup.SongDisplay);
         ScriptManager.RegisterInputBlock<PowerupGetBlock>("Powerup Display", ConfigGroup.PowerupDisplay);
         ScriptManager.RegisterInputBlock<ShakeCameraBlock>("Camera Shake", ConfigGroup.CameraShaker);
         ScriptManager.RegisterInputBlock<TimeSlowerBlock>("Time Slowdown", ConfigGroup.TimeSlower);
