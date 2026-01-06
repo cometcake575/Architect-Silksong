@@ -91,24 +91,22 @@ public static class ScriptManager
 
                 if (InSwapMode)
                 {
-                    foreach (var link in CurrentStart.Block.EventMap)
+                    foreach (var connection in CurrentStart.Block.EventMap[CurrentStart.id].ToArray())
                     {
-                        foreach (var connection in link.Value.ToArray())
-                        {
-                            DestroyLink(CurrentStart.Block.BlockId, link.Key, connection.Item1, connection.Item2,
-                                Connection.LinkType.Event);
+                        DestroyLink(CurrentStart.Block.BlockId, CurrentStart.id, connection.Item1, connection.Item2,
+                            Connection.LinkType.Event);
 
-                            var eMap = Block.EventMap;
-                            if (!eMap.ContainsKey(id)) eMap[id] = [];
-                            if (eMap[id].Contains((connection.Item1, connection.Item2))) continue;
-                            eMap[id].Add((connection.Item1, connection.Item2));
-                            MakeLink(Block, id, Blocks[connection.Item1], connection.Item2,
-                                Connection.LinkType.Event);
-                        }
+                        var eMap = Block.EventMap;
+                        if (!eMap.ContainsKey(id)) eMap[id] = [];
+                        if (eMap[id].Contains((connection.Item1, connection.Item2))) continue;
+                        eMap[id].Add((connection.Item1, connection.Item2));
+                        MakeLink(Block, id, Blocks[connection.Item1], connection.Item2, Connection.LinkType.Event);
                     }
+
                     CurrentStart = null;
                     return;
                 }
+
                 CurrentStart = null;
             }
             
