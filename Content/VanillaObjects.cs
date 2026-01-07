@@ -844,6 +844,16 @@ public static class VanillaObjects
             .DoFlipX();
         Categories.Misc.Add(new PreloadObject("Coal Bucket", "barrel_03_opencoal",
             ("Ward_03", "brk_barrel_03_opencoal")));
+        Categories.Interactable.Add(new PreloadObject("Silk Heart", "silk_heart",
+            ("Ward_02", "Boss Scene Parent/Silk Heart"),
+            sprite: ResourceUtils.LoadSpriteResource("silk_heart", ppu:64),
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Memory?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            })
+            .WithConfigGroup(ConfigGroup.SilkHeart)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
     }
 
     private static void AddSlabObjects()
@@ -1349,6 +1359,14 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        
+        /*
+        Categories.Interactable.Add(new PreloadObject("Bind Source", "bind_source",
+                ("Greymoor_20c", "Crest Get Shrine"), postSpawnAction: o =>
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Check Unlocked").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                }, sprite: ResourceUtils.LoadSpriteResource("bind_source", ppu:33)));*/
     }
 
     private static void AddMemoriumObjects()

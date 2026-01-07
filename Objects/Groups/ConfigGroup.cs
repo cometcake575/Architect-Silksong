@@ -638,6 +638,16 @@ public static class ConfigGroup
                 .WithDefaultValue(false))
     ]);
 
+    public static readonly List<ConfigType> SilkHeart = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Give Silk Heart", "heart_get",
+                    (o, value) =>
+                    {
+                        if (value.GetValue()) return;
+                        o.LocateMyFSM("Control").GetState("Set Data").DisableAction(0);
+                    }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> SilkLever = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Pulled", "silk_lever_stay", (o, item) =>
         {

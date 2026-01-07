@@ -40,12 +40,14 @@ public abstract class CollectionBlock<T>(int maxChildren = -1) : ScriptBlock
         img.type = Image.Type.Sliced;
         img.color = Color;
 
+        #region Test
         var o = new T
         {
             Type = "Random Trigger",
             Position = Position
         };
         Children.Add(o);
+        #endregion
 
         foreach (var child in Children)
         {

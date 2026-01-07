@@ -9,6 +9,7 @@ using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using GlobalEnums;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -54,6 +55,8 @@ public static class AbilityObjects
         Categories.Abilities.Add(MakeAbilityBinding("Double Jump", "double_jump"));
         Categories.Abilities.Add(MakeAbilityBinding("Silk Heart", "silk_heart"));
         Categories.Abilities.Add(MakeAbilityBinding("Frost", "frost"));
+        Categories.Abilities.Add(MakeAbilityBinding("Needle", "needle", "Locks the needle damage to 5"));
+        Categories.Abilities.Add(MakeAbilityBinding("Attack", "attack"));
         // Categories.Abilities.Add(MakeAbilityBinding("Tool", "tools"));
         SetupBindingHooks();
         
@@ -126,7 +129,7 @@ public static class AbilityObjects
 
     #region Make Bindings
 
-    private static PlaceableObject MakeAbilityBinding(string name, string id)
+    private static PlaceableObject MakeAbilityBinding(string name, string id, string overrideDesc = null)
     {
         var obj = new GameObject($"{name} Binding");
         Object.DontDestroyOnLoad(obj);
@@ -149,7 +152,7 @@ public static class AbilityObjects
         collider.radius = 0.65f;
 
         return new CustomObject($"{name} Binding", $"{id}_binding", obj,
-                description: "Temporarily disables a skill. Touching the binding will toggle it.\n\n" +
+                description: (overrideDesc ?? "Temporarily disables a skill. Touching the binding will toggle it.\n\n") +
                              "Bindings are active by default, set 'Binding Active' to false\n" +
                              "for a binding the player must touch to enable.\n\n" +
                              "Set 'Reversible' to true to allow the player to toggle the binding multiple times.")
@@ -326,7 +329,27 @@ public static class AbilityObjects
         
         typeof(HeroController).Hook(nameof(HeroController.CanSuperJump),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "super_jump"));
+        
+        typeof(HeroController).Hook(nameof(HeroController.CanAttack),
+            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "attack"));
+        
+        typeof(HeroController).Hook(nameof(HeroController.CanDownAttack),
+            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "attack"));
+        
+        typeof(HeroController).Hook(nameof(HeroController.CanNailCharge),
+            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "attack"));
+        
+        typeof(HeroController).Hook(nameof(HeroController.Attack),
+            (Action<HeroController, AttackDirection> orig, HeroController self, AttackDirection dir) =>
+            {
+                if (!BindingCheck(true, "attack")) return;
+                orig(self, dir);
+            });
 
+        _ = new Hook(typeof(PlayerData).GetProperty(nameof(PlayerData.nailDamage))!.GetGetMethod(),
+            (Func<PlayerData, int> orig, PlayerData self) => 
+                BindingCheck(true, "needle") ? orig(self) : 5);
+        
         _ = new Hook(typeof(PlayerData).GetProperty(nameof(PlayerData.CurrentSilkRegenMax))!.GetGetMethod(),
             (Func<PlayerData, int> orig, PlayerData self) => 
                 BindingCheck(true, "silk_heart") ? orig(self) : 0);
@@ -423,18 +446,28 @@ public static class AbilityObjects
 
         HookUtils.OnFsmAwake += fsm =>
         {
-            if (fsm.FsmName == "Harpoon Dash")
+            switch (fsm.FsmName)
             {
-                var silk = fsm.FsmVariables.FindFsmInt("Current Silk");
-                fsm.GetState("Can Do?").AddAction(() =>
+                case "Harpoon Dash":
                 {
-                    if (ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0)
+                    var silk = fsm.FsmVariables.FindFsmInt("Current Silk");
+                    fsm.GetState("Can Do?").AddAction(() =>
                     {
-                        ActiveCrystals["harpoon"] -= 1;
-                        silk.Value = 1;
-                        RefreshCrystalUI();
-                    }
-                }, 2);
+                        if (ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0)
+                        {
+                            ActiveCrystals["harpoon"] -= 1;
+                            silk.Value = 1;
+                            RefreshCrystalUI();
+                        }
+                    }, 2);
+                    break;
+                }
+                case "Sprint":
+                    fsm.GetState("Dash Stab Dir").AddAction(() =>
+                    {
+                        if (!BindingCheck(true, "attack")) fsm.SendEvent("DO SPRINT SKID");
+                    }, 0);
+                    break;
             }
         };
     }

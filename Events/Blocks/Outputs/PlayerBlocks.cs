@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using GlobalEnums;
+using Unity.Mathematics.Geometry;
 using UnityEngine;
+using Math = System.Math;
 
 namespace Architect.Events.Blocks.Outputs;
 
@@ -15,6 +17,11 @@ public class HpBlock : ScriptBlock
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
     protected override Color Color => DefaultColor;
     protected override string Name => "Health Control";
+
+    protected override void Reset()
+    {
+        Amount = 0;
+    }
 
     public int Amount;
     
@@ -52,6 +59,11 @@ public class SilkBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Silk Control";
 
+    protected override void Reset()
+    {
+        Amount = 0;
+    }
+
     public int Amount;
     
     protected override void Trigger(string trigger)
@@ -63,6 +75,40 @@ public class SilkBlock : ScriptBlock
     protected override object GetValue(string id)
     {
         return PlayerData.instance.silk;
+    }
+}
+
+public class CurrencyBlock : ScriptBlock
+{
+    protected override IEnumerable<string> Inputs => ["Give", "Take"];
+    protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
+
+    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Silk Control";
+
+    protected override void Reset()
+    {
+        Amount = 0;
+    }
+
+    public int Amount;
+    public CurrencyType CurrencyType = CurrencyType.Money;
+    public bool ShowCounter = true;
+    
+    protected override void Trigger(string trigger)
+    {
+        if (trigger == "Give") HeroController.instance.AddCurrency(Amount, CurrencyType, ShowCounter);
+        else
+        {
+            var a = Math.Min(HeroController.instance.GetCurrencyAmount(CurrencyType), Amount);
+            HeroController.instance.TakeCurrency(a, CurrencyType, ShowCounter);
+        }
+    }
+
+    protected override object GetValue(string id)
+    {
+        return HeroController.instance.GetCurrencyAmount(CurrencyType);
     }
 }
 

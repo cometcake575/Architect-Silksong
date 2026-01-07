@@ -188,7 +188,7 @@ public static class MiscFixers
     public static void FixBench(GameObject obj)
     {
         obj.transform.parent = null;
-        obj.transform.SetPositionZ(0.006f);
+        obj.transform.SetPositionZ(0.009f);
         Object.DestroyImmediate(obj.transform.GetChild(2).gameObject);
         obj.AddComponent<CustomBench>();
     }

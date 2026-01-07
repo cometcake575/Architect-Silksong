@@ -234,6 +234,31 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> CurrencyHook =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CurrencyBlock>("Amount", "currency_amount", 
+                (b, f) =>
+                {
+                    b.Amount = f.GetValue();
+                }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CurrencyBlock>("Type", "currency_type", 
+                (b, f) =>
+                {
+                    b.CurrencyType = f.GetValue() == 0 ? CurrencyType.Money : CurrencyType.Shard;
+                }).WithOptions("Rosaries", "Shell Shards").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CurrencyBlock>("Show Counter", "currency_counter", 
+                (b, f) =>
+                {
+                    b.ShowCounter = f.GetValue();
+                }).WithDefaultValue(true)
+        )
+    ];
+    
     public static readonly List<ConfigType> SongDisplay =
     [
         ConfigurationManager.RegisterConfigType(

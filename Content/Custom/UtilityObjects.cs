@@ -669,6 +669,9 @@ public static class UtilityObjects
 
         point.AddComponent<HazardRespawnTrigger>().respawnMarker = point.AddComponent<CustomHazardRespawnMarker>();
 
+        var collider = point.AddComponent<CircleCollider2D>();
+        collider.isTrigger = true;
+        
         return new CustomObject("Hazard Respawn Point", "hazard_respawn_point", point, 
             sprite:ResourceUtils.LoadSpriteResource("hazard_respawn_point"),
             description:"A point that the player can respawn at after taking hazard damage.\n\n" +
