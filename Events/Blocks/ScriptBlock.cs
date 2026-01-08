@@ -520,15 +520,6 @@ public abstract class ScriptBlock
             writer.WritePropertyName("ext");
             serializer.Serialize(writer, value.SerializeExtraData());
 
-            if (value is ObjectBlock ob)
-            {
-                writer.WritePropertyName("object");
-                writer.WriteValue(ob.TargetId);
-                
-                writer.WritePropertyName("object_type");
-                writer.WriteValue(ob.TypeId);
-            }
-
             writer.WriteEndObject();
         }
 

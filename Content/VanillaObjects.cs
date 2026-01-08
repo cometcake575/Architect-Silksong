@@ -844,15 +844,44 @@ public static class VanillaObjects
             .DoFlipX();
         Categories.Misc.Add(new PreloadObject("Coal Bucket", "barrel_03_opencoal",
             ("Ward_03", "brk_barrel_03_opencoal")));
-        Categories.Interactable.Add(new PreloadObject("Silk Heart", "silk_heart",
+        
+        Categories.Abilities.Add(new PreloadObject("Silk Heart", "silk_heart",
             ("Ward_02", "Boss Scene Parent/Silk Heart"),
             sprite: ResourceUtils.LoadSpriteResource("silk_heart", ppu:64),
             postSpawnAction: o =>
             {
                 var fsm = o.LocateMyFSM("Control");
-                fsm.GetState("Memory?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                fsm.GetState("Memory?").AddAction(() =>
+                {
+                    o.BroadcastEvent("OnActivate");
+                    fsm.SendEvent("FINISHED");
+                }, 0);
             })
             .WithConfigGroup(ConfigGroup.SilkHeart)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+        
+        Categories.Abilities.Add(new PreloadObject("Mask Shard", "mask_shard",
+            ("Bone_East_LavaChallenge", "Heart Piece (1)"),
+            postSpawnAction: o =>
+            {
+                iTween.Init(o);
+                o.LocateMyFSM("Heart Container Control").GetState("Save Collected")
+                    .AddAction(() => o.BroadcastEvent("OnActivate"));
+            })
+            .WithConfigGroup(ConfigGroup.MaskAndSpool)
+            .WithReceiverGroup(ReceiverGroup.MaskAndSpool)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+        
+        Categories.Abilities.Add(new PreloadObject("Spool Fragment", "spool_fragment",
+            ("Bone_11b", "Silk Spool"),
+            postSpawnAction: o =>
+            {
+                iTween.Init(o);
+                o.LocateMyFSM("Control").GetState("Save")
+                    .AddAction(() => o.BroadcastEvent("OnActivate"));
+            })
+            .WithConfigGroup(ConfigGroup.MaskAndSpool)
+            .WithReceiverGroup(ReceiverGroup.MaskAndSpool)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
     }
 
@@ -1366,6 +1395,8 @@ public static class VanillaObjects
                 {
                     var fsm = o.LocateMyFSM("Control");
                     fsm.GetState("Check Unlocked").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                    fsm.GetState("Crest Msg").DisableAction(2);
+                    fsm.GetState("Reload Scene").DisableAction(3);
                 }, sprite: ResourceUtils.LoadSpriteResource("bind_source", ppu:33)));*/
     }
 

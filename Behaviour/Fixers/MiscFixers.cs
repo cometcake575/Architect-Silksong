@@ -24,17 +24,15 @@ public static class MiscFixers
     
     public static void Init()
     {
-        // Custom bench fix - if the bench was determined to be invalid, override it and use the saved data anyway
-        // Fallback to first hazard respawn point
-        
         PreloadManager.RegisterPreload(new BasicPreload(
             "Tut_02", "bone_plat_01", o =>
             {
                 SpriteMaterial = o.GetComponent<SpriteRenderer>().material;
             }));
 
+        // Custom bench fix - if the bench was determined to be invalid, override it and use the saved data anyway
+        // Fallback to first hazard respawn point
         #region Bench fixes
-
         typeof(GameManager).Hook("GetRespawnInfo",
             (GetRespawnInfo orig, GameManager self, out string scene, out string marker) =>
             {
@@ -54,7 +52,7 @@ public static class MiscFixers
                     marker = savedRespawnMarker;
                 }
             });
-
+        
         typeof(GameManager).Hook("FindEntryPoint",
             (Func<GameManager, string, Scene, Vector2?> orig, GameManager self, string name, Scene scene) =>
             {
@@ -86,6 +84,43 @@ public static class MiscFixers
                 return point;
             });
 
+        #endregion
+        
+        #region Mask fix
+        typeof(GameCameras).Hook(nameof(GameCameras.Start), 
+            (Action<GameCameras> orig, GameCameras self) =>
+            {
+                orig(self);
+                
+                var health1Go = self.hudCamera.transform
+                    .Find("In-game")
+                    .Find("Anchor TL")
+                    .Find("Hud Canvas Offset")
+                    .Find("Hud Canvas")
+                    .Find("Health")
+                    .Find("Health 2+").gameObject;
+                
+                // Adds 90 extra masks for 100 total
+                for (var i = 0; i < 90; i++)
+                {
+                    // 10 masks already exist with numbers 1 - 10, so we add 11 to i for our custom number
+                    var num = 11 + i;
+                    if (health1Go.transform.parent.Find($"Health {num}"))
+                    {
+                        // Masks are already added
+                        continue;
+                    }
+                    
+                    var healthGo = Object.Instantiate(health1Go, health1Go.transform.parent);
+                    // Set health number
+                    healthGo.LocateMyFSM("health_display").FsmVariables.FindFsmInt("Health Number").Value = num;
+                    
+                    // Set position
+                    var indexInRow = num - 1;
+                    var xPos = -10.32f + 0.94f * indexInRow;
+                    healthGo.transform.localPosition = new Vector3(xPos, 7.7f, -2);
+                }
+            });
         #endregion
         
         typeof(MatchHeroFacing).Hook(nameof(MatchHeroFacing.DoMatch),

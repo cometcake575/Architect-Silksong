@@ -29,7 +29,9 @@ public class PlayerBlock : ToggleableBlock
         ("X", "Number"),
         ("Y", "Number"),
         ("Left", "Boolean"),
-        ("Right", "Boolean")
+        ("Right", "Boolean"),
+        ("Up", "Boolean"),
+        ("Down", "Boolean")
     ];
     protected override Color Color => Color.green;
     protected override string Name => "Player Listener";
@@ -45,7 +47,9 @@ public class PlayerBlock : ToggleableBlock
         return id switch
         {
             "Left" => !HeroController.instance.cState.facingRight,
-            "Right" => !HeroController.instance.cState.facingRight,
+            "Right" => HeroController.instance.cState.facingRight,
+            "Up" => HeroController.instance.cState.lookingUp,
+            "Down" => HeroController.instance.cState.lookingDown,
             "X" => HeroController.instance.transform.GetPositionX(),
             "Y" => HeroController.instance.transform.GetPositionY(),
             _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Architect.Events.Blocks;
-using Architect.Events.Blocks.Events;
-using Architect.Events.Blocks.Operators;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
@@ -202,6 +200,11 @@ public static class ScriptEditorUI
                 BlocksParent.transform.localPosition = Vector3.zero;
                 LinesParent.transform.localPosition = Vector3.zero;
             });
+        
+        ap.SetAsLastSibling();
+        topBtn.transform.SetAsLastSibling();
+        midBtn.transform.SetAsLastSibling();
+        botBtn.transform.SetAsLastSibling();
         
         DoRefresh();
         return;

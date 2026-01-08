@@ -2298,6 +2298,10 @@ public static class EnemyFixers
             if (Mathf.Abs(rb2d.linearVelocityY) < 0.05f) fsm.SendEvent("LAND");
         }, everyFrame: true);
 
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpseFsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Death");
+        corpseFsm.GetState("Stagger").DisableAction(5);
         
         AdjustFlapY();
         return;

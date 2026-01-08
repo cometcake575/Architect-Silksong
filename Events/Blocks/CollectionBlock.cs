@@ -39,7 +39,7 @@ public abstract class CollectionBlock<T>(int maxChildren = -1) : ScriptBlock
         img.sprite = FlowchartBlock;
         img.type = Image.Type.Sliced;
         img.color = Color;
-
+        
         #region Test
         var o = new T
         {

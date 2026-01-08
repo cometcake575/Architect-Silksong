@@ -94,7 +94,6 @@ public static class EditorUI
         _canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         _canvasObj.AddComponent<GraphicRaycaster>();
 
-        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-200, 15));
         _mapUI = new GameObject("Map Editor UI")
         {
             transform = { parent = _canvasObj.transform }
@@ -107,7 +106,6 @@ public static class EditorUI
         _mapTransform.offsetMin = Vector2.zero;
         if (!Settings.LegacyEventSystem.Value) _mapTransform.anchoredPosition = new Vector2(0, 20);
         
-        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(200, 15));
         _scriptUI = new GameObject("Script Editor UI")
         {
             transform = { parent = _canvasObj.transform }
@@ -121,6 +119,9 @@ public static class EditorUI
         st.anchoredPosition = new Vector2(0, 20);
         
         ScriptEditorUI.Init(_scriptUI);
+        
+        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-200, 15));
+        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(200, 15));
     }
     
     private static (Button, UIUtils.Label) SetupModeButton(EditorType type, string name, Vector3 pos)

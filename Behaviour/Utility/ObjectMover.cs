@@ -11,6 +11,9 @@ public class ObjectMover : MonoBehaviour
     public float yOffset;
     public float rotation;
 
+    public bool moveX = true;
+    public bool moveY = true;
+
     public int moveMode;
     public string moveTarget = "";
     public bool clearVelocity;
@@ -49,16 +52,11 @@ public class ObjectMover : MonoBehaviour
 
         if (clearVelocity) _rb2d.linearVelocity = Vector2.zero;
 
-        var sourcePos = _source.position;
         var sourceRot = _source.eulerAngles;
-
-        sourcePos.x += xOffset;
-        sourcePos.y += yOffset;
-        sourcePos.z = _target.transform.position.z;
-
         sourceRot.z += rotation;
 
-        _target.transform.position = sourcePos;
+        if (moveX) _target.transform.SetPositionX(_source.position.x + xOffset);
+        if (moveY) _target.transform.SetPositionY(_source.position.y + yOffset);
         _target.transform.eulerAngles = sourceRot;
     }
 }

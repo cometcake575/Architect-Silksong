@@ -31,6 +31,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> MaskAndSpool = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("collect_mask", "Collect", o =>
+        {
+            o.GetComponent<PlayMakerFSM>().SendEvent("GET");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> DialDoor = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("dial_rotate_l", "RotateLeft", o =>
         {

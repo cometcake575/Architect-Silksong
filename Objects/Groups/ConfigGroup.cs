@@ -648,6 +648,11 @@ public static class ConfigGroup
                     }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> MaskAndSpool = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "mask_stay")
+            .WithDefaultValue(2))
+    ]);
+
     public static readonly List<ConfigType> SilkLever = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Pulled", "silk_lever_stay", (o, item) =>
         {
@@ -1012,7 +1017,31 @@ public static class ConfigGroup
                 burst.DisableAction(10);
                 burst.DisableAction(11);
             }
-        ).WithDefaultValue(true))
+        ).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Sit Offset X", "bench_offset_x",
+            (o, value) =>
+            {
+                var pos = o.GetComponentsInChildren<PlayMakerFSM>()
+                    .First(fsm => fsm.FsmName == "Bench Control").FsmVariables.FindFsmVector3("Adjust Vector");
+                pos.Value += new Vector3(value.GetValue(), 0, 0);
+            }
+        ).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Sit Offset Y", "bench_offset_y",
+            (o, value) =>
+            {
+                var pos = o.GetComponentsInChildren<PlayMakerFSM>()
+                    .First(fsm => fsm.FsmName == "Bench Control").FsmVariables.FindFsmVector3("Adjust Vector");
+                pos.Value += new Vector3(0, value.GetValue(), 0);
+            }
+        ).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Sit Offset Z", "bench_offset_z",
+            (o, value) =>
+            {
+                var pos = o.GetComponentsInChildren<PlayMakerFSM>()
+                    .First(fsm => fsm.FsmName == "Bench Control").FsmVariables.FindFsmVector3("Adjust Vector");
+                pos.Value += new Vector3(0, 0, value.GetValue());
+            }
+        ).WithDefaultValue(0))
     ]);
 
     public static readonly List<ConfigType> WalkTarget = GroupUtils.Merge(Generic, [
@@ -1151,6 +1180,18 @@ public static class ConfigGroup
                 (o, value) => 
                 {
                     o.GetComponent<ObjectMover>().clearVelocity = value.GetValue();
+                }
+            ).WithDefaultValue(true)),
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Move X", "mover_do_x", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().moveX = value.GetValue();
+                }
+            ).WithDefaultValue(true)),
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Move Y", "mover_do_y", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectMover>().moveY = value.GetValue();
                 }
             ).WithDefaultValue(true)),
             ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Position Source", "mover_mode", 
@@ -1624,7 +1665,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Light Reflection", "png_glow",
                     (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
-                .WithDefaultValue(true)
+                .WithDefaultValue(false)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Vertical Frame Count", "png_framecount",
