@@ -26,6 +26,30 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> UIControl =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<UIBlock>("Fade R", "ui_fade_r", 
+                (b, f) => b.R = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<UIBlock>("Fade G", "ui_fade_g", 
+                (b, f) => b.G = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<UIBlock>("Fade B", "ui_fade_b", 
+                (b, f) => b.B = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<UIBlock>("Fade A", "ui_fade_a", 
+                (b, f) => b.A = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<UIBlock>("Fade Time", "ui_fade_duration", 
+                (b, f) => b.Duration = f.GetValue()).WithDefaultValue(1)
+        )
+    ];
+    
     public static readonly List<ConfigType> Transition =
     [
         ConfigurationManager.RegisterConfigType(

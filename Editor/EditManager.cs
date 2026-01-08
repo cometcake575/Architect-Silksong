@@ -461,6 +461,11 @@ public static class EditManager
         _lastEditToggle = Time.time;
         IsEditing = !IsEditing;
         if (!IsEditing) PlayerData.instance.isInvincible = false;
+        else
+        {
+            ScreenFaderUtils.SetColour(Color.clear);
+            GameCameras.instance.HUDIn();
+        }
         ReloadScene();
         
         StorageManager.SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());
