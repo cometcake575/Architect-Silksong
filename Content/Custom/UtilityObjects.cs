@@ -125,6 +125,7 @@ public static class UtilityObjects
                         !obj.name.StartsWith("[Architect]")
                         && !obj.name.StartsWith("_SceneManager")
                         && !obj.GetComponent<CustomTransitionPoint>()
+                        && !obj.GetComponent<WorldRumblePreventWhileActive>()
                         && !obj.GetComponentInChildren<SceneAdditiveLoadConditional>()
                         && obj.name.Contains(filter)
                     );
