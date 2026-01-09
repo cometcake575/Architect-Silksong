@@ -26,7 +26,7 @@ public class Fallthrough : MonoBehaviour
 
         _time += Time.deltaTime;
         if (_time < fallthroughTime) return;
-
+        
         _time = 0;
         Physics2D.IgnoreCollision(collision.collider, collision.otherCollider);
         StartCoroutine(ReEnableCollision(collision.collider, collision.otherCollider));

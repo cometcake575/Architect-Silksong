@@ -865,8 +865,12 @@ public static class VanillaObjects
             postSpawnAction: o =>
             {
                 iTween.Init(o);
-                o.LocateMyFSM("Heart Container Control").GetState("Save Collected")
-                    .AddAction(() => o.BroadcastEvent("OnActivate"));
+                var fsm = o.LocateMyFSM("Heart Container Control");
+                fsm.GetState("Pickup Disabled?").AddAction(() =>
+                {
+                    PlayerData.instance.heartPieces = Math.Clamp(PlayerData.instance.heartPieces, 0, 3);
+                }, 0);
+                fsm.GetState("Save Collected").AddAction(() => o.BroadcastEvent("OnActivate"));
             })
             .WithConfigGroup(ConfigGroup.MaskAndSpool)
             .WithReceiverGroup(ReceiverGroup.MaskAndSpool)
@@ -877,7 +881,12 @@ public static class VanillaObjects
             postSpawnAction: o =>
             {
                 iTween.Init(o);
-                o.LocateMyFSM("Control").GetState("Save")
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Pickup Disabled?").AddAction(() =>
+                {
+                    PlayerData.instance.silkSpoolParts = Math.Clamp(PlayerData.instance.silkSpoolParts, 0, 1);
+                }, 0);
+                fsm.GetState("Save")
                     .AddAction(() => o.BroadcastEvent("OnActivate"));
             })
             .WithConfigGroup(ConfigGroup.MaskAndSpool)
@@ -1516,7 +1525,7 @@ public static class VanillaObjects
                 for (var i = 2; i <= 5; i++) o.transform.GetChild(i).gameObject.SetActive(false);
                 o.transform.GetChild(1).GetChild(3).gameObject
                     .AddComponent<PlaceableObject.SpriteSource>();
-            });
+            }).WithConfigGroup(ConfigGroup.BellPlat3);
     }
 
     private static void AddWispObjects()
@@ -2030,6 +2039,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithReceiverGroup(ReceiverGroup.Pilby);
 
+        Categories.Misc.Add(new PreloadObject("Flick NPC", "flick_npc",
+            ("Bonetown", 
+                "Black Thread States/Normal World/RestBench Control/Bench Getting Repaired/Fixer Pilgrim Bench Repair"),
+            postSpawnAction: MiscFixers.FixFlick))
+            .WithConfigGroup(ConfigGroup.Npcs);
+
         Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
             ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
             postSpawnAction: MiscFixers.FixStatue)
@@ -2056,10 +2071,10 @@ public static class VanillaObjects
             .WithOutputGroup(OutputGroup.Enemies));
     }
 
-    private static void AddSolid(string name, string id, (string, string) path,
+    private static PlaceableObject AddSolid(string name, string id, (string, string) path,
         [CanBeNull] Action<GameObject> preloadAction = null)
     {
-        Categories.Solids.Add(new PreloadObject(name, id, path, preloadAction: preloadAction))
+        return Categories.Solids.Add(new PreloadObject(name, id, path, preloadAction: preloadAction))
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Colliders);
     }

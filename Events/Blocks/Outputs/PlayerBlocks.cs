@@ -85,7 +85,7 @@ public class CurrencyBlock : ScriptBlock
 
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
     protected override Color Color => DefaultColor;
-    protected override string Name => "Silk Control";
+    protected override string Name => "Currency Control";
 
     protected override void Reset()
     {

@@ -502,8 +502,17 @@ public static class ConfigGroup
             new StringConfigType<KeyBlock>("Key", "key_listener_key", 
                 (o, value) =>
                 {
-                    if (!Enum.TryParse<KeyCode>(value.GetValue(), true, out var key)) return;
-                    o.Key = key;
+                    var val = value.GetValue();
+                    if (Enum.TryParse<KeyCode>(val, true, out var key))
+                    {
+                        o.Key = key;
+                        return;
+                    }
+
+                    if (InputHandler.Instance.inputActions.actionsByName.TryGetValue(val, out var a))
+                    {
+                        o.PlayerAction = a;
+                    }
                 })
         )
     ];

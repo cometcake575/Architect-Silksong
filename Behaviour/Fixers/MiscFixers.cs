@@ -729,6 +729,20 @@ public static class MiscFixers
         }
     }
     
+    public class Flick : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Talked?").AddAction(() => fsm.SendEvent("TRUE"), 0);
+            fsm.GetState("Delivery?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[2];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+        }
+    }
+    
     public class ArchitectNpc : Npc
     {
         private void Start()
@@ -1237,5 +1251,10 @@ public static class MiscFixers
         obj.LocateMyFSM("State Control").enabled = false;
 
         obj.AddComponent<BasicNpcFix>();
+    }
+
+    public static void FixFlick(GameObject obj)
+    {
+        obj.AddComponent<Flick>();
     }
 }

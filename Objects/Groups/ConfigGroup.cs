@@ -805,6 +805,16 @@ public static class ConfigGroup
             ))
     ]);
 
+    public static readonly List<ConfigType> BellPlat3 = GroupUtils.Merge(Colliders, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Signs", "collider_fallthrough",
+                (o, value) =>
+                {
+                    for (var i = 0; i < 3; i++) if (!value.GetValue()) o.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);
+                }
+            ).WithDefaultValue(true))
+    ]);
+
     private static readonly ConfigType AlphaColour = ConfigurationManager.RegisterConfigType(
         new FloatConfigType("Colour A", "colour_alpha", (o, value) =>
         {
