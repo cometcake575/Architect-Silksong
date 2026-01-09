@@ -96,7 +96,7 @@ public class ArchitectClientAddon : ClientAddon
                 StorageManager.SaveScene(packet.SceneName, levelData);
             }
 
-            if (packet.SceneName == GameManager.instance.sceneName)
+            if (packet.SceneName == GameManager.instance.sceneName || packet.SceneName == StorageManager.GLOBAL)
             {
                 PlacementManager.InvalidateScene();
                 EditManager.ReloadRequired = true;

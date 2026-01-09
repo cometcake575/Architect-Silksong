@@ -37,6 +37,9 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     {
         var obj = PlacementManager.FindObject(mousePosition);
         if (obj == null) return;
+        var wasLocal = ScriptManager.IsLocal;
+        if (!wasLocal) ScriptManager.IsLocal = true;
+        
         EditorUI.ObjectIdLabel.textComponent.text = $"{obj.GetPlacementType().GetName()} added";
         ArchitectPlugin.Instance.StartCoroutine(ClearCursorInfoLabel());
 
@@ -48,6 +51,8 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
         };
         block.Setup(true);
         PlacementManager.GetLevelData().ScriptBlocks.Add(block);
+
+        if (!wasLocal) ScriptManager.IsLocal = false;
     }
 
     private static IEnumerator ClearCursorInfoLabel()

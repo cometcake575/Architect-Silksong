@@ -20,6 +20,8 @@ namespace Architect.Storage;
 
 public static class StorageManager
 {
+    public const string GLOBAL = "Global";
+    
     internal static readonly LevelData.LevelDataConverter Ldc = new();
     internal static readonly ObjectPlacement.ObjectPlacementConverter Opc = new();
     
@@ -44,6 +46,7 @@ public static class StorageManager
                 if (EditManager.IsEditing)
                 {
                     SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());
+                    SaveScene(GLOBAL, PlacementManager.GetGlobalData());
                 }
 
                 foreach (var (scene, edits) in ScheduledEdits)

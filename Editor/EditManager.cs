@@ -8,7 +8,6 @@ using System.Linq;
 using Architect.Config;
 using Architect.Config.Types;
 using Architect.Content.Preloads;
-using Architect.Events.Blocks;
 using Architect.Multiplayer;
 using Architect.Objects;
 using Architect.Objects.Categories;
@@ -469,6 +468,7 @@ public static class EditManager
         ReloadScene();
         
         StorageManager.SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());
+        StorageManager.SaveScene(StorageManager.GLOBAL, PlacementManager.GetGlobalData());
     }
     
     #region Scene Reloading

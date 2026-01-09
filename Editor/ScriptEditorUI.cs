@@ -13,12 +13,26 @@ namespace Architect.Editor;
 
 public static class ScriptEditorUI
 {
-    public static GameObject BlocksParent;
-    public static GameObject LinesParent;
+    public static GameObject Blocks => ScriptManager.IsLocal ? _localBlocks : _globalBlocks;
+    public static GameObject Lines => ScriptManager.IsLocal ? _localLines : _globalLines;
+    public static GameObject ScriptParent => ScriptManager.IsLocal ? LocalParent : GlobalParent;
+    
+    public static GameObject GlobalParent;
+    public static GameObject LocalParent;
+    
+    private static GameObject _localBlocks;
+    private static GameObject _localLines;
+    
+    private static GameObject _globalBlocks;
+    private static GameObject _globalLines;
+    
     private static Transform _blockTransformSource;
     
     private static Image _bgImg;
     private static Text _bgTxt;
+
+    private static Text _localBtnText;
+    private static Text _globalBtnText;
 
     public static void Init(GameObject scriptUI)
     {
@@ -52,28 +66,17 @@ public static class ScriptEditorUI
         {
             transform = { parent = scriptUI.transform }
         }.transform;
+
+        var scripts = CreateBlankParent("Scripts", scriptUI, 0);
         
-        BlocksParent = new GameObject("Blocks Parent")
-        {
-            transform = { parent = scriptUI.transform }
-        };
-        var bp = BlocksParent.AddComponent<RectTransform>();
-        bp.anchorMax = Vector2.one;
-        bp.anchorMin = Vector2.zero;
-        bp.offsetMax = Vector2.zero;
-        bp.offsetMin = Vector2.zero;
-        bp.anchoredPosition = new Vector2(0, 20);
+        GlobalParent = CreateBlankParent("Global Script", scripts, 0);
+        LocalParent = CreateBlankParent("Local Script", scripts, 0);
         
-        LinesParent = new GameObject("Lines Parent")
-        {
-            transform = { parent = scriptUI.transform }
-        };
-        var lp = LinesParent.AddComponent<RectTransform>();
-        lp.anchorMax = Vector2.one;
-        lp.anchorMin = Vector2.zero;
-        lp.offsetMax = Vector2.zero;
-        lp.offsetMin = Vector2.zero;
-        lp.anchoredPosition = new Vector2(0, 20);
+        _localBlocks = CreateBlankParent("Local Blocks", LocalParent, 20);
+        _localLines = CreateBlankParent("Local Lines", LocalParent, 20);
+        
+        _globalBlocks = CreateBlankParent("Global Blocks", GlobalParent, 20);
+        _globalLines = CreateBlankParent("Global Lines", GlobalParent, 20);
         
         Deletable.Init(scriptUI);
         
@@ -124,7 +127,9 @@ public static class ScriptEditorUI
                 if (index + i1 >= ScriptManager.CurrentBlocks.Count) return;
                 var block = ScriptManager.CurrentBlocks[index + i1].Item1();
                 block.Setup(true, true);
-                PlacementManager.GetLevelData().ScriptBlocks.Add(block);
+
+                (ScriptManager.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData())
+                    .ScriptBlocks.Add(block);
             });
             labels.Add(txt.textComponent);
         }
@@ -192,20 +197,21 @@ public static class ScriptEditorUI
             index = 0;
             DoRefresh();
         });
+
+        var toggleParent = CreateBlankParent("Mode Toggles", scriptUI, 0);
+        _localBtnText = SetupSwitchButton(toggleParent, true, "Local Script", new Vector3(-200, 20));
+        _localBtnText.color = Color.yellow;
+        _globalBtnText = SetupSwitchButton(toggleParent, false, "Global Script", new Vector3(200, 20));
         
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
-                BlocksParent.transform.localPosition = Vector3.zero;
-                LinesParent.transform.localPosition = Vector3.zero;
+                GlobalParent.transform.localPosition = Vector3.zero;
+                LocalParent.transform.localPosition = Vector3.zero;
             });
-        
-        ap.SetAsLastSibling();
-        topBtn.transform.SetAsLastSibling();
-        midBtn.transform.SetAsLastSibling();
-        botBtn.transform.SetAsLastSibling();
-        
+
+        ScriptManager.IsLocal = true;
         DoRefresh();
         return;
 
@@ -217,6 +223,39 @@ public static class ScriptEditorUI
                     ScriptManager.CurrentBlocks[index + i].Item2;
             }
         }
+    }
+    
+    private static Text SetupSwitchButton(GameObject parent, bool local, string name, Vector3 pos)
+    {
+        var size = new Vector2(750, 40);
+        var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, parent, pos, 
+            new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
+        
+        btn.onClick.AddListener(() =>
+        {
+            _localBtnText.color = local ? Color.yellow : Color.white;
+            _globalBtnText.color = local ? Color.white : Color.yellow;
+            ScriptManager.IsLocal = local;
+            Deletable.DeleteButton.SetActive(false);
+        });
+        label.textComponent.fontSize = 8;
+        return label.textComponent;
+    }
+
+    private static GameObject CreateBlankParent(string name, GameObject parent, int yOffset)
+    {
+        var obj = new GameObject(name)
+        {
+            transform = { parent = parent.transform }
+        };
+        var rt = obj.AddComponent<RectTransform>();
+        rt.anchorMax = Vector2.one;
+        rt.anchorMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        rt.offsetMin = Vector2.zero;
+        rt.anchoredPosition = new Vector2(0, yOffset);
+
+        return obj;
     }
 
     public static void UpdateColour()
@@ -236,13 +275,12 @@ public static class ScriptEditorUI
         
         public void OnDrag(PointerEventData eventData)
         {
-            BlocksParent.transform.position = eventData.position + _offset;
-            LinesParent.transform.position = BlocksParent.transform.position;
+            ScriptParent.transform.position = eventData.position + _offset;
         }
         
         public void OnBeginDrag(PointerEventData eventData)
         {
-            _offset = (Vector2)BlocksParent.transform.position - eventData.position;
+            _offset = (Vector2)ScriptParent.transform.position - eventData.position;
         }
 
         private void Update()
@@ -250,16 +288,16 @@ public static class ScriptEditorUI
             if (Input.mouseScrollDelta.y == 0) return;
             
             Deletable.DeleteButton.SetActive(false);
-            var par = BlocksParent.transform.parent;
+            var par = ScriptParent.transform.parent;
             _blockTransformSource.transform.position = Input.mousePosition;
+
+            _blockTransformSource.localScale = ScriptParent.transform.localScale;
             
-            BlocksParent.transform.SetParent(_blockTransformSource, true);
-            LinesParent.transform.SetParent(_blockTransformSource, true);
+            ScriptParent.transform.SetParent(_blockTransformSource, true);
             _blockTransformSource.localScale = new Vector2(
                 Mathf.Clamp(_blockTransformSource.localScale.x + Input.mouseScrollDelta.y / 40, 0.1f, 2), 
                 Mathf.Clamp(_blockTransformSource.localScale.y + Input.mouseScrollDelta.y / 40, 0.1f, 2));
-            BlocksParent.transform.SetParent(par, true);
-            LinesParent.transform.SetParent(par, true);
+            ScriptParent.transform.SetParent(par, true);
         }
     }
 }

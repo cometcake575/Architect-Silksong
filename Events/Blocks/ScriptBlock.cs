@@ -138,7 +138,7 @@ public abstract class ScriptBlock
 
         var img = UIUtils.MakeImage(
             "Script Block",
-            ScriptEditorUI.BlocksParent,
+            ScriptEditorUI.Blocks,
             Position,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),

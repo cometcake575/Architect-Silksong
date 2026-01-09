@@ -16,6 +16,26 @@ namespace Architect.Events.Blocks;
 
 public static class ScriptManager
 {
+    private static bool _local;
+
+    public static bool IsLocal
+    {
+        get => _local;
+        set
+        {
+            _local = value;
+            ScriptEditorUI.LocalParent.SetActive(value);
+            ScriptEditorUI.GlobalParent.SetActive(!value);
+
+            if (CurrentStart)
+            {
+                CurrentStart.img.color = CurrentStart.color;
+                CurrentStart = null;
+                InSwapMode = false;
+            }
+        }
+    }
+    
     public static void Init()
     {
         EventBlocks.Init();
@@ -200,7 +220,7 @@ public static class ScriptManager
 
         var obj = Links[(sourceBlock.BlockId, sourceEvent, block.BlockId, trigger)] = new GameObject("Link")
         {
-            transform = { parent = ScriptEditorUI.LinesParent.transform }
+            transform = { parent = ScriptEditorUI.Lines.transform }
         };
         
         obj.AddComponent<RectTransform>().sizeDelta = new Vector2(1, 4);
@@ -287,7 +307,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
+            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
         };
         InputBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -299,7 +319,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
+            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
         };
         ProcessBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -311,7 +331,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
+            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
         };
         OutputBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -323,7 +343,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.BlocksParent.transform.localPosition
+            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
         };
     }
 }

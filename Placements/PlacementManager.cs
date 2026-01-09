@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Api;
@@ -21,6 +20,7 @@ public static class PlacementManager
 {
     private static string _sceneName;
     private static LevelData _levelData;
+    private static LevelData _globalData;
 
     private static tk2dTileMap _tileMap;
 
@@ -31,14 +31,29 @@ public static class PlacementManager
 
     public static LevelData GetLevelData()
     {
-        var sceneName = GameManager.instance.sceneName;
-        if (_sceneName == sceneName) return _levelData;
+        VerifyLevelData();
+        return _levelData;
+    }
 
-        if (EditManager.IsEditing) StorageManager.SaveScene(_sceneName, _levelData);
+    public static LevelData GetGlobalData()
+    {
+        VerifyLevelData();
+        return _globalData;
+    }
+
+    private static void VerifyLevelData()
+    {
+        var sceneName = GameManager.instance.sceneName;
+        if (_sceneName == sceneName) return;
+
+        if (EditManager.IsEditing)
+        {
+            StorageManager.SaveScene(_sceneName, _levelData);
+            StorageManager.SaveScene(StorageManager.GLOBAL, _globalData);
+        }
         _sceneName = sceneName;
         _levelData = StorageManager.LoadScene(sceneName);
-
-        return _levelData;
+        _globalData = StorageManager.LoadScene(StorageManager.GLOBAL);
     }
 
     public static tk2dTileMap GetTilemap()
@@ -57,8 +72,11 @@ public static class PlacementManager
         _sceneName = "Invalid";
     }
 
-    private static void LoadLevel(LevelData data, string sceneName)
+    private static void LoadLevel(string sceneName)
     {
+        VerifyLevelData();
+        
+        var extGlobal = MapLoader.GetModData(StorageManager.GLOBAL);
         var ext = MapLoader.GetModData(sceneName);
         
         EventManager.ResetReceivers();
@@ -81,7 +99,7 @@ public static class PlacementManager
             }
         }
 
-        foreach (var placement in data.Placements)
+        foreach (var placement in _levelData.Placements)
         {
             if (EditManager.IsEditing) placement.PlaceGhost();
             else
@@ -107,9 +125,9 @@ public static class PlacementManager
                 }
             }
 
-            if (!data.TilemapChanges.IsNullOrEmpty())
+            if (!_levelData.TilemapChanges.IsNullOrEmpty())
             {
-                foreach (var (x, y) in data.TilemapChanges)
+                foreach (var (x, y) in _levelData.TilemapChanges)
                 {
                     if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
                     else map.ClearTile(x, y, 0);
@@ -130,13 +148,21 @@ public static class PlacementManager
         
         ScriptManager.Blocks.Clear();
 
-        if (ext != null)
-        {
-            foreach (var block in ext.ScriptBlocks) block.Setup(false);
-        }
+        var wasLocal = ScriptManager.IsLocal;
+
+        ScriptManager.IsLocal = true;
+        if (ext != null) foreach (var block in ext.ScriptBlocks) block.Setup(false);
         
-        foreach (var block in data.ScriptBlocks) block.Setup(EditManager.IsEditing);
-        foreach (var block in data.ScriptBlocks) block.LateSetup();
+        foreach (var block in _levelData.ScriptBlocks) block.Setup(EditManager.IsEditing);
+        foreach (var block in _levelData.ScriptBlocks) block.LateSetup();
+
+        ScriptManager.IsLocal = false;
+        if (extGlobal != null) foreach (var block in extGlobal.ScriptBlocks) block.Setup(false);
+        
+        foreach (var block in _globalData.ScriptBlocks) block.Setup(EditManager.IsEditing);
+        foreach (var block in _globalData.ScriptBlocks) block.LateSetup();
+
+        ScriptManager.IsLocal = wasLocal;
     }
 
     public static void Init()
@@ -147,7 +173,7 @@ public static class PlacementManager
                 orig(self);
                 
                 if (!PreloadManager.HasPreloaded) return;
-                LoadLevel(GetLevelData(), GameManager.instance.sceneName);
+                LoadLevel(GameManager.instance.sceneName);
             });
     }
 

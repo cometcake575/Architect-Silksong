@@ -268,7 +268,8 @@ public static class EditorUI
         shareScriptBtn.Item1.onClick.AddListener(() =>
         {
             if (!CoopManager.Instance.IsActive()) return;
-            CoopManager.Instance.ShareScene(GameManager.instance.sceneName, true);
+            CoopManager.Instance.ShareScene(ScriptManager.IsLocal ? 
+                GameManager.instance.sceneName : StorageManager.GLOBAL, true);
         });
 
         var middle = new Vector2(0.5f, 0.5f);
