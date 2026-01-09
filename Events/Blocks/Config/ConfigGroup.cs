@@ -26,6 +26,30 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Png =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PngBlock>("PNG URL", "png_url",
+                (o, value) =>
+                {
+                    o.Url = value.GetValue();
+                })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<PngBlock>("Anti Aliasing", "png_antialias",
+                    (o, value) =>
+                    {
+                        o.Point = !value.GetValue();
+                    })
+                .WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<PngBlock>("Pixels Per Unit", "png_ppu",
+                    (o, value) =>
+                    {
+                        o.Ppu = value.GetValue();
+                    })
+                .WithDefaultValue(100))
+    ];
+    
     public static readonly List<ConfigType> UIControl =
     [
         ConfigurationManager.RegisterConfigType(

@@ -20,6 +20,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
         ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
         ScriptManager.RegisterInputBlock<NeedolinBlock>("Song Display", ConfigGroup.SongDisplay);
+        ScriptManager.RegisterProcessBlock<PngBlock>("Custom PNG", ConfigGroup.Png);
         ScriptManager.RegisterInputBlock<PowerupGetBlock>("Powerup Display", ConfigGroup.PowerupDisplay);
         ScriptManager.RegisterInputBlock<ShakeCameraBlock>("Camera Shake", ConfigGroup.CameraShaker);
         ScriptManager.RegisterInputBlock<UIBlock>("UI Control", ConfigGroup.UIControl);

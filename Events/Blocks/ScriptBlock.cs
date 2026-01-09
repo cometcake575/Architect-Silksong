@@ -484,6 +484,7 @@ public abstract class ScriptBlock
         }
         ScriptManager.Blocks.Remove(BlockId);
         PlacementManager.GetLevelData().ScriptBlocks.Remove(this);
+        PlacementManager.GetGlobalData().ScriptBlocks.Remove(this);
         Object.Destroy(BlockObject);
     }
     

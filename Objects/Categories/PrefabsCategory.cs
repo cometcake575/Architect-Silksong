@@ -20,7 +20,7 @@ public class PrefabsCategory : AbstractCategory
     [CanBeNull]
     public override string GetName()
     { 
-        return "Prefabs";
+        return "Saved";
     }
 
     public static void RemovePrefab(PrefabObject prefab)
