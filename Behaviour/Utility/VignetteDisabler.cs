@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Prefabs;
 using Architect.Utils;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ public class VignetteDisabler : MonoBehaviour
     {
         HookUtils.OnHeroUpdate += _ =>
         {
-            if (Disablers.Count > 0 != _vignetteOff)
+            if ((PrefabManager.InPrefabScene || Disablers.Count > 0) != _vignetteOff)
             {
                 HeroController.instance.vignette.gameObject.SetActive(_vignetteOff);
                 _vignetteOff = !_vignetteOff;

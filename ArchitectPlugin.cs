@@ -7,6 +7,7 @@ using Architect.Events;
 using Architect.Multiplayer;
 using Architect.Objects.Categories;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Storage.Sharer;
 using Architect.Utils;
@@ -16,7 +17,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.8.1")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.8.2")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin
@@ -33,6 +34,8 @@ public class ArchitectPlugin : BaseUnityPlugin
         
         Logger = base.Logger;
         Logger.LogInfo("Architect has loaded!");
+        
+        PrefabManager.Init();
         
         HookUtils.Init();
         TitleUtils.Init();

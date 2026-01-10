@@ -156,6 +156,59 @@ public static class ConfigGroup
             }).WithDefaultValue(5))
     ]);
 
+    public static readonly List<ConfigType> Shielder = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Object ID", "shielder_id", (o, value) =>
+            {
+                o.GetComponent<Shielder>().id = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Water", "shielder_water", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToWater = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Lava", "shielder_lava", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToLava = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Coal", "shielder_coal", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToCoal = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Explosions", "shielder_explosions", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToExplosions = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Needle", "shielder_nail", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToNailAttacks = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Spikes", "shielder_spikes", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToSpikes = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Traps", "shielder_traps", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToTraps = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Beams", "shielder_beams", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToBeams = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Hunter Weapons", "shielder_hunter", (o, value) =>
+            {
+                o.GetComponent<Shielder>().immuneToHunterWeapon = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
+
     public static readonly List<ConfigType> AnimPlayer = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Clip Name", "anim_clip", (o, value) =>

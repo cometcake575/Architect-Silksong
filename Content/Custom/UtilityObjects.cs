@@ -23,6 +23,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateItem());
         Categories.Utility.Add(CreateVoider());
         Categories.Utility.Add(CreatePlasmifier());
+        Categories.Utility.Add(CreateShielder());
         
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectSpinner());
@@ -229,6 +230,20 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource("plasmifier", ppu:64))
             .WithConfigGroup(ConfigGroup.Plasmifier)
             .WithReceiverGroup(ReceiverGroup.Plasmifier);
+    }
+
+    private static PlaceableObject CreateShielder()
+    {
+        var shielder = new GameObject("Shielder");
+        Object.DontDestroyOnLoad(shielder);
+        shielder.SetActive(false);
+
+        shielder.AddComponent<Shielder>();
+        
+        return new CustomObject("Resistance Changer", "shielder", shielder, 
+                "Toggles whether enemies take damage from certain sources.",
+                sprite:ResourceUtils.LoadSpriteResource("shielder", ppu:64))
+            .WithConfigGroup(ConfigGroup.Shielder);
     }
 
     private static PlaceableObject CreateWalkTarget()

@@ -1,11 +1,12 @@
 using System;
+using Architect.Prefabs;
 using Architect.Utils;
 using GlobalEnums;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class CustomTransitionPoint : MonoBehaviour
+public class CustomTransitionPoint : PreviewableBehaviour
 {
     public int pointType;
 
@@ -21,6 +22,12 @@ public class CustomTransitionPoint : MonoBehaviour
 
     private void Start()
     {
+        if (isAPreview && PrefabManager.InPrefabScene)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+        
         var tp = GetComponent<TransitionPoint>();
         SceneTeleportMap.AddTransitionGate(tp.targetScene, tp.entryPoint);
 

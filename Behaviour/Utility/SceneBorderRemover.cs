@@ -1,4 +1,5 @@
 using System;
+using Architect.Prefabs;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -13,7 +14,8 @@ public class SceneBorderRemover : MonoBehaviour
     public static void Init()
     {
         _ = new Hook(typeof(CameraController).GetProperty("AllowExitingSceneBounds")!.GetGetMethod(),
-            (Func<CameraController, bool> orig, CameraController self) => orig(self) || _count > 0);
+            (Func<CameraController, bool> orig, CameraController self) => 
+                orig(self) || _count > 0 || PrefabManager.InPrefabScene);
         
         _ = new ILHook(typeof(CameraTarget).GetMethod(nameof(CameraTarget.Update)), il =>
         {

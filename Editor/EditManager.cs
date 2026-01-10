@@ -15,6 +15,7 @@ using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Objects.Tools;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
 using UnityEngine.SceneManagement;
@@ -97,7 +98,7 @@ public static class EditManager
 
     private static string _lockArea;
     
-    private static Vector3 _noclipPos;
+    public static Vector3 NoclipPos;
     
     private static float _lastX;
     private static float _lastY;
@@ -448,11 +449,12 @@ public static class EditManager
     private static void ToggleEditor()
     {
         if (!PreloadManager.HasPreloaded) return;
+        if (PrefabManager.InPrefabScene) return;
         if (Time.time - _lastEditToggle < 1) return;
 
         IgnoreControlRelinquished = false;
         
-        _noclipPos = HeroController.instance.transform.position;
+        NoclipPos = HeroController.instance.transform.position;
         
         if (IsEditing && _dragging) StopIfDragging(true);
         if (IsEditing && Input.GetMouseButton(0)) CurrentObject.Release();
@@ -479,7 +481,7 @@ public static class EditManager
             self.entryGateName = null;
             HeroController.instance.transform.position = _posToLoad;
             _loadPos = false;
-            _noclipPos = _posToLoad;
+            NoclipPos = _posToLoad;
 
             if (CoopManager.Instance.IsActive()) CoopManager.Instance.RefreshRoom();
         }
@@ -533,13 +535,13 @@ public static class EditManager
         var speed = actions.Dash.IsPressed ? 35 : 20;
         if (!_loadPos)
         {
-            if (!paused && up != down) _noclipPos += (up ? Vector3.up : Vector3.down) * (Time.deltaTime * speed);
-            if (!paused && left != right) _noclipPos += (left ? Vector3.left : Vector3.right) * (Time.deltaTime * speed);
+            if (!paused && up != down) NoclipPos += (up ? Vector3.up : Vector3.down) * (Time.deltaTime * speed);
+            if (!paused && left != right) NoclipPos += (left ? Vector3.left : Vector3.right) * (Time.deltaTime * speed);
         }
 
         if (HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION)
-            HeroController.instance.transform.position = _noclipPos;
-        else _noclipPos = HeroController.instance.transform.position;
+            HeroController.instance.transform.position = NoclipPos;
+        else NoclipPos = HeroController.instance.transform.position;
     }
 
     public static void RegisterLastPos(Vector2 pos)

@@ -11,6 +11,11 @@ namespace Architect.Behaviour.Utility;
 public class ObjectDuplicator : MonoBehaviour
 {
     public string id;
+
+    public BlackThreader blackThreader;
+    public Plasmifier plasmifier;
+    public Shielder shielder;
+    
     private ObjectPlacement _placement;
 
     public void Duplicate()
@@ -36,5 +41,9 @@ public class ObjectDuplicator : MonoBehaviour
             obr.Spawns.Add(obj);
             obj.AddComponent<ObjectBlock.ObjectBlockReference>().Block = obr.Block;
         }
+        
+        if (blackThreader) blackThreader.BlackThread(obj);
+        if (plasmifier) plasmifier.Plasmify(obj);
+        if (shielder) shielder.Shield(obj);
     }
 }

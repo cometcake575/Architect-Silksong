@@ -45,6 +45,14 @@ public class BlackThreader : MonoBehaviour
         _blackThreaded = true;
         
         if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
+
+        var dupe = target.GetComponent<ObjectDuplicator>();
+        if (dupe) dupe.blackThreader = this;
+        else BlackThread(target);
+    }
+
+    public void BlackThread(GameObject target)
+    {
         var hm = target.GetComponent<HealthManager>();
         if (!hm) return;
 

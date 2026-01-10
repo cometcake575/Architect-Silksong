@@ -42,6 +42,7 @@ public static class UIUtils
         
         var c = btn.colors;
         c.pressedColor = LightGrey;
+        c.disabledColor = Color.grey;
         c.fadeDuration = 0.1f;
         btn.colors = c;
 

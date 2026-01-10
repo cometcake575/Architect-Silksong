@@ -18,6 +18,14 @@ public class Plasmifier : MonoBehaviour
         _plasmified = true;
         
         if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
+        
+        var dupe = target.GetComponent<ObjectDuplicator>();
+        if (dupe) dupe.plasmifier = this;
+        else Plasmify(target);
+    }
+
+    public void Plasmify(GameObject target)
+    {
         var hm = target.GetComponent<HealthManager>();
         if (!hm) return;
 

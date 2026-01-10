@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using Architect.Behaviour.Utility;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Outputs;
@@ -40,6 +42,12 @@ public class TransitionBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
+        ArchitectPlugin.Instance.StartCoroutine(Coroutine());
+    }
+
+    private IEnumerator Coroutine()
+    {
+        yield return HeroController.instance.FreeControl();
         _point.OnTriggerEnter2D(HeroController.instance.GetComponent<Collider2D>());
     }
 }

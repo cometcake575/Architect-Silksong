@@ -10,6 +10,8 @@ using Architect.Objects;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Objects.Tools;
+using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
 using UnityEngine;
@@ -234,6 +236,12 @@ public static class EditorUI
         MakeToolButton(LockObject.Instance, 210, 0);
         MakeToolButton(TileChangerObject.Instance, 170, 0);
         MakeToolButton(ResetObject.Instance, 130, 0);
+        
+        /*var (prefabBtn, prefabImg, _) = UIUtils.MakeButtonWithImage("Prefab Editor", _mapUI,
+            new Vector3(-25, -45), new Vector2(1, 1), new Vector2(1, 1), 96, 48);
+        
+        prefabBtn.onClick.AddListener(PrefabManager.Toggle);
+        prefabImg.sprite = ResourceUtils.LoadSpriteResource("prefab");*/
 
         var shareBtn = UIUtils.MakeTextButton(
             "Share Level", 
@@ -284,13 +292,14 @@ public static class EditorUI
         ResetRocketTime.fontSize = 60;
     }
 
-    private static void MakeToolButton(ToolObject obj, int xShift, int yShift)
+    private static Button MakeToolButton(ToolObject obj, int xShift, int yShift)
     {
         var anchor = new Vector2(1, 0);
         var (toolBtn, toolImg, _) = UIUtils.MakeButtonWithImage(obj.GetName(), _mapUI,
             new Vector3(-25 - xShift, 25 + yShift), anchor, anchor, 96, 48);
         toolBtn.onClick.AddListener(() => SetItem(obj.Index));
         toolImg.sprite = obj.GetUISprite();
+        return toolBtn;
     }
 
     public static void RefreshVisibility(bool editing, bool paused)
