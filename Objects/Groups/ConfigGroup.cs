@@ -2224,6 +2224,8 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     o.RemoveComponentsInChildren<DamageHero>();
                     o.RemoveComponentsInChildren<CogMultiHitter>();
+                    var dmg = o.transform.Find("damager");
+                    if (dmg) dmg.gameObject.RemoveComponent<PlayMakerFSM>();
                 })
         )
     ]);
