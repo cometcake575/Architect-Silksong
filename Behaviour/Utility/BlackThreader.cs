@@ -46,6 +46,7 @@ public class BlackThreader : MonoBehaviour
         
         if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
 
+        if (!target) return;
         var dupe = target.GetComponent<ObjectDuplicator>();
         if (dupe) dupe.blackThreader = this;
         else BlackThread(target);
