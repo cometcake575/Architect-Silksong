@@ -788,7 +788,7 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> TrackPoint = [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Track ID", "track_id", (o, value) =>
+            new IdConfigType("Track ID", "track_id", (o, value) =>
             {
                 o.GetComponent<SplineObjects.SplinePoint>().id = value.GetValue();
             }).WithDefaultValue("1").WithPriority(-1))
@@ -938,7 +938,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Line = GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Point Set ID", "point_id", (o, value) =>
+            new IdConfigType("Point Set ID", "point_id", (o, value) =>
             {
                 o.GetComponent<LineObject>().id = value.GetValue();
             }).WithDefaultValue("1").WithPriority(-1)),
@@ -1776,6 +1776,12 @@ public static class ConfigGroup
                     })
                 .WithDefaultValue(10)
                 .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Loop", "png_loop",
+                (o, value) =>
+                {
+                    o.GetComponentInChildren<PngObject>().loop = value.GetValue();
+                }).WithDefaultValue(true).WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Play on Start", "png_start_playing",
                 (o, value) =>

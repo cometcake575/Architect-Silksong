@@ -141,6 +141,7 @@ public static class UtilityObjects
                         if (!clearer.removeTransitions)
                             objects = objects.Where(obj => !obj.GetComponentInChildren<TransitionPoint>());
                         if (!clearer.removeMusic) objects = objects.Where(obj => !obj.GetComponent<MusicRegion>());
+                        if (!clearer.removeTilemap) objects = objects.Where(obj => !obj.name.Contains("TileMap"));
                     }
                     else
                     {
@@ -148,7 +149,8 @@ public static class UtilityObjects
                             (obj.GetComponent<RestBench>() && clearer.removeBenches) ||
                             (obj.GetComponentInChildren<BlurPlane>() && clearer.removeBlur) ||
                             (obj.GetComponentInChildren<TransitionPoint>() && clearer.removeTransitions) ||
-                            (obj.GetComponent<MusicRegion>() && clearer.removeMusic)
+                            (obj.GetComponent<MusicRegion>() && clearer.removeMusic) ||
+                            (obj.name.Contains("TileMap") && clearer.removeTilemap)
                         );
                     }
 

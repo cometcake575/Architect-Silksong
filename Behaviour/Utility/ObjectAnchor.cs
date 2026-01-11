@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Architect.Content.Custom;
 using Architect.Events.Blocks.Objects;
 using Architect.Placements;
@@ -45,6 +47,8 @@ public class ObjectAnchor : PreviewableBehaviour
 
     private Vector3 _startPos;
     private PositionConstraint _constraint;
+    private ConstraintSource _constraintSource;
+    private AnchorReference _anchorRef;
     private RigidbodyConstraints2D _rigidbodyConstraints;
     [CanBeNull] private Rigidbody2D _rb2d;
 
@@ -80,22 +84,26 @@ public class ObjectAnchor : PreviewableBehaviour
             var prefab = target.GetComponent<Prefab>();
             if (prefab)
             {
+                gameObject.SetActive(false);
                 foreach (var spawn in prefab.spawns)
                 {
-                    gameObject.SetActive(false);
                     var go = Instantiate(gameObject);
-                    go.transform.position = transform.position - target.transform.position + spawn.transform.position;
+                    go.RemoveComponentsInChildren<ObjectBlock.ObjectBlockReference>();
+                    go.transform.position = (transform.position - target.transform.position + spawn.transform.position)
+                        .Where(z: 0);
                     go.GetComponent<ObjectAnchor>().overrideTarget = spawn;
                     
                     var obrs = GetComponents<ObjectBlock.ObjectBlockReference>();
                     foreach (var obr in obrs)
                     {
                         obr.Spawns.Add(go);
-                        go.AddComponent<ObjectBlock.ObjectBlockReference>().Block = obr.Block;
+                        var nObr = go.AddComponent<ObjectBlock.ObjectBlockReference>();
+                        nObr.canEvent = false;
+                        nObr.Block = obr.Block;
                     }
                     go.SetActive(true);
                 }
-                return;
+                gameObject.SetActive(true);
             }
             
             if (PlacementManager.Objects.TryGetValue(parentId, out var parent))
@@ -156,17 +164,21 @@ public class ObjectAnchor : PreviewableBehaviour
         }
         
         _constraint = target.GetOrAddComponent<PositionConstraint>();
+        _anchorRef = target.GetOrAddComponent<AnchorReference>();
         
         // Gets AmbientSway if present to disable it
         _disableWhenMoving = target.GetComponent<AmbientSway>();
         
         _rb2d = target.GetComponentInChildren<Rigidbody2D>();
-        
-        _constraint.AddSource(new ConstraintSource
+
+        _constraintSource = new ConstraintSource
         {
             sourceTransform = transform,
             weight = 1
-        });
+        };
+        _constraint.AddSource(_constraintSource);
+
+        transform.localPosition = _startPos;
         
         if (isAPreview)
         {
@@ -181,6 +193,7 @@ public class ObjectAnchor : PreviewableBehaviour
         else
         {
             _constraint.constraintActive = true;
+            _anchorRef.activeAnchors++;
             if (_disableWhenMoving) _disableWhenMoving.enabled = false;
             if (_rb2d)
             {
@@ -211,6 +224,13 @@ public class ObjectAnchor : PreviewableBehaviour
     private void OnDisable()
     {
         if (!_constraint) return;
+        _anchorRef.activeAnchors--;
+        
+        List<ConstraintSource> sources = [];
+        _constraint.GetSources(sources);
+        _constraint.SetSources(sources.Where(o => o.sourceTransform != transform).ToList());
+        
+        if (_anchorRef.activeAnchors > 0) return;
         _constraint.constraintActive = false;
         if (_disableWhenMoving) _disableWhenMoving.enabled = true;
         if (_rb2d) _rb2d.constraints = _rigidbodyConstraints;
@@ -221,6 +241,10 @@ public class ObjectAnchor : PreviewableBehaviour
     private void OnEnable()
     {
         if (!_constraint) return;
+        _anchorRef.activeAnchors++;
+
+        _constraint.AddSource(_constraintSource);
+        
         _constraint.constraintActive = true;
         if (_disableWhenMoving) _disableWhenMoving.enabled = false;
         if (_rb2d) _rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -444,5 +468,10 @@ public class ObjectAnchor : PreviewableBehaviour
             if (collisionObject.layer != 9) return;
             LeavePlayer(collisionObject);
         }
+    }
+
+    public class AnchorReference : MonoBehaviour
+    {
+        public int activeAnchors;
     }
 }

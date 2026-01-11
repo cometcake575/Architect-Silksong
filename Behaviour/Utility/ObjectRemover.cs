@@ -187,6 +187,8 @@ public class RoomClearerConfig : MonoBehaviour
 
     public bool removeMusic;
 
+    public bool removeTilemap;
+    
     public bool removeOther;
 }
 

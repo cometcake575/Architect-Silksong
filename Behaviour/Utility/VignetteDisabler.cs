@@ -7,7 +7,7 @@ namespace Architect.Behaviour.Utility;
 
 public class VignetteDisabler : MonoBehaviour
 {
-    private static readonly List<VignetteDisabler> Disablers = [];
+    public static readonly List<VignetteDisabler> Disablers = [];
 
     private static bool _vignetteOff;
     

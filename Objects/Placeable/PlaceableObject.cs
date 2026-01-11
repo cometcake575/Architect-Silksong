@@ -76,8 +76,6 @@ public abstract class PlaceableObject : SelectableObject
         RegisteredObjects[id] = this;
     }
 
-    public bool HideUISprite;
-
     public override Sprite GetUISprite()
     {
         return _uiSprite ?? Sprite;

@@ -62,6 +62,11 @@ public static class PrefabManager
         }
         else
         {
+            foreach (var obj in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                foreach (var gate in obj.GetComponentsInChildren<TransitionPoint>()) 
+                    gate.gameObject.SetActive(false);
+            }
             ScriptManager.IsLocal = true;
             ScriptEditorUI.ToggleParent.SetActive(false);
             _oldScene = GameManager.instance.sceneName;

@@ -23,8 +23,10 @@ public class ObjectBlock : ScriptBlock
 
     protected override int InputCount => ObjectType?.BroadcasterGroup.Count ?? 1;
     protected override int OutputCount => ObjectType?.ReceiverGroup.Count ?? 1;
-    
-    protected override Color Color => IsValid ? new Color(0.7f, 0.3f, 0.9f) : new Color(0.6f, 0, 0);
+
+    internal static readonly Color ValidColor = new(0.7f, 0.3f, 0.9f);
+    private static readonly Color InvalidColor = new(0.6f, 0, 0);
+    protected override Color Color => IsValid ? ValidColor : InvalidColor;
     
     protected override string Name => IsValid ? $"{ObjectType?.GetName() ?? "Deleted"} ({TargetId})" :
         $"{ObjectType?.GetName() ?? "Deleted"} (Invalid)";
@@ -89,7 +91,11 @@ public class ObjectBlock : ScriptBlock
     {
         public ObjectBlock Block;
         public readonly List<GameObject> Spawns = [];
+        public bool canEvent = true;
 
-        public void OnEvent(string eName) => Block.Event(eName);
+        public void OnEvent(string eName)
+        {
+            if (canEvent) Block.Event(eName);
+        }
     }
 }

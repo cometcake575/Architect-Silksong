@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
 using UnityEngine;
@@ -23,6 +24,50 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new IntConfigType<CounterBlock>("Target", "counter_target", 
                 (b, f) => b.Count = f.GetValue())
+        )
+    ];
+    
+    public static readonly List<ConfigType> Prefab =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SpawnPrefabBlock>("Prefab", "prefab_name", 
+                (b, f) => b.Prefab = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SpawnPrefabBlock>("Offset X", "prefab_x", 
+                (b, f) => b.OffsetX = f.GetValue()).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SpawnPrefabBlock>("Offset Y", "prefab_y", 
+                (b, f) => b.OffsetY = f.GetValue()).WithDefaultValue(0)
+        )
+    ];
+    
+    public static readonly List<ConfigType> Lighting =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SetLightingBlock>("Light R", "lighting_r", 
+                (b, f) => b.R = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SetLightingBlock>("Light G", "lighting_g", 
+                (b, f) => b.G = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SetLightingBlock>("Light B", "lighting_b", 
+                (b, f) => b.B = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SetLightingBlock>("Intensity", "lighting_intense", 
+                (b, f) => b.Intensity = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SetLightingBlock>("Saturation", "lighting_sat", 
+                (b, f) => b.Saturation = f.GetValue()).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SetLightingBlock>("Lock", "lighting_lock", 
+                (b, f) => b.Lock = f.GetValue()).WithDefaultValue(true)
         )
     ];
     

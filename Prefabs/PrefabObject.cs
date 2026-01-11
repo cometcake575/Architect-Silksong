@@ -42,7 +42,6 @@ public class PrefabObject : PlaceableObject
         ConfigGroup = Objects.Groups.ConfigGroup.Generic;
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
         DisableTransformations = true;
-        HideUISprite = true;
     }
 
     public override void Click(Vector3 mousePosition, bool first)
@@ -122,7 +121,8 @@ public class Prefab : PreviewableBehaviour
             {
                 placement.PlaceGhost(
                     placement.GetPos() + transform.position - new Vector3(100, 100),
-                    false
+                    false,
+                    name
                 ).transform.SetParent(transform, true);
             }
             else

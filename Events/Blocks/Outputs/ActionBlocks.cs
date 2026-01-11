@@ -1,4 +1,5 @@
 using Architect.Events.Blocks.Config;
+using Architect.Events.Blocks.Objects;
 
 namespace Architect.Events.Blocks.Outputs;
 
@@ -9,6 +10,7 @@ public static class ActionBlocks
         TimeSlowerBlock.Init();
         PowerupGetBlock.Init();
         TravelBlock.Init();
+        SetLightingBlock.Init();
         
         // ScriptManager.RegisterInputBlock<RandomEventBlock>("Random Event");
         // ScriptManager.RegisterHiddenBlock<RandomEventBlock.TriggerBlock>("Random Trigger");
@@ -31,5 +33,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<TravelBlock>("Travel List", ConfigGroup.TravelList);
         ScriptManager.RegisterInputBlock<TravelLoc>("Travel", ConfigGroup.Travel);
         ScriptManager.RegisterInputBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
+        ScriptManager.RegisterInputBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting);
+        ScriptManager.RegisterInputBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
     }
 }

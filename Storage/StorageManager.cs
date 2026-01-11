@@ -174,10 +174,11 @@ public static class StorageManager
         List<PrefabObject> prefabs = [];
         foreach (var file in Directory.GetFiles(path))
         {
+            if (!file.EndsWith(".architect.json")) continue;
             prefabs.Add(new PrefabObject(Path.GetFileNameWithoutExtension(file)
                 .Replace("Prefab_", "").Replace(".architect", "")));
         }
-
+        
         return prefabs;
     }
 
@@ -245,6 +246,7 @@ public static class StorageManager
 
         LevelSharerUI.CurrentlyDownloading = false;
         LevelSharerUI.RefreshActiveOptions();
+        PrefabsCategory.Prefabs = LoadPrefabs();
 
         var plural = CustomAssetManager.Failed == 1 ? "" : "s";
         status.text = "Download Complete" + (CustomAssetManager.Failed == 0 ? "" : 

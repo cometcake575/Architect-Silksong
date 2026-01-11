@@ -135,7 +135,7 @@ public class ObjectPlacement(
             .Where(z: _previewObject.transform.position.z);
     }
 
-    public GameObject PlaceGhost(Vector3 pos = default, bool store = true)
+    public GameObject PlaceGhost(Vector3 pos = default, bool store = true, string extraId = null)
     {
         var rot = rotation + type.Rotation;
         
@@ -155,7 +155,7 @@ public class ObjectPlacement(
 
         if (type.Preview)
         {
-            var preview = SpawnObject();
+            var preview = SpawnObject(extraId: extraId);
             if (preview)
             {
                 preview.transform.SetParent(_previewObject.transform);

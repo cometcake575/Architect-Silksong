@@ -34,6 +34,7 @@ public class PngObject : MonoBehaviour, IPlayable
     public int dummy;
     public float frameTime = 1;
     public bool playing;
+    public bool loop;
 
     private void Awake()
     {
@@ -70,6 +71,7 @@ public class PngObject : MonoBehaviour, IPlayable
             {
                 gameObject.BroadcastEvent("OnFinish");
                 frame %= _count;
+                if (!loop) playing = false;
             }
 
             _renderer.sprite = _sprites[frame];

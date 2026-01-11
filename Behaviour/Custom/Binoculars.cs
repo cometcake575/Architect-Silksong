@@ -35,7 +35,11 @@ public class Binoculars : MonoBehaviour
             BinocularsActive = false;
             _active = false;
             HeroController.instance.damageMode = DamageMode.FULL_DAMAGE;
-            HeroController.instance.vignette.gameObject.SetActive(true);
+            if (VignetteDisabler.Disablers.IsNullOrEmpty())
+            {
+                HeroController.instance.vignette.gameObject.SetActive(true);
+            }
+
             HeroController.instance.RegainControl();
             StartCoroutine(ReturnZoom());
             gameObject.BroadcastEvent("OnStop");

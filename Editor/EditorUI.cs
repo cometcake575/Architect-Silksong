@@ -917,19 +917,25 @@ public static class EditorUI
                         return;
                 }
                 
-                icon.Item1.gameObject.SetActive(!placeable.HideUISprite);
+                icon.Item1.gameObject.SetActive(placeable is not PrefabObject);
                 icon.Item1.sprite = placeable.GetUISprite();
 
                 var text = "";
-                if (placeable.HideUISprite)
+                if (placeable is PrefabObject)
                 {
-                    var name = placeable.GetName().ToArray();
+                    icon.Item1.gameObject.SetActive(false);
+                    icon.Item2.textComponent.fontSize = 32;
+
+                    var name = placeable.GetName()[..^9].ToArray();
                     name[0] = char.ToUpper(name[0]);
                     text = string.Concat(name.Where(c => c is >= 'A' and <= 'Z' or >= '0' and <= '9'));
-                    icon.Item2.textComponent.fontSize = 32;
                     if (text.Length > 4) text = text[..4];
                 }
-                else icon.Item2.textComponent.fontSize = 14;
+                else
+                {
+                    icon.Item1.gameObject.SetActive(true);
+                    icon.Item2.textComponent.fontSize = 14;
+                }
                 icon.Item2.textComponent.text = text;
                 
                 icon.Item1.transform.SetScaleX(1);
