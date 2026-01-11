@@ -20,7 +20,7 @@ public abstract class PlaceableObject : SelectableObject
     public static readonly Dictionary<string, PlaceableObject> RegisteredObjects = [];
     
     public readonly bool Preview;
-    public readonly Action<GameObject> PostSpawnAction;
+    public Action<GameObject> PostSpawnAction;
 
     public GameObject Prefab;
     
@@ -75,6 +75,8 @@ public abstract class PlaceableObject : SelectableObject
 
         RegisteredObjects[id] = this;
     }
+
+    public bool HideUISprite;
 
     public override Sprite GetUISprite()
     {

@@ -12,22 +12,22 @@ public class ObjectBlock : ScriptBlock
     public string TargetId;
     public string TypeId;
 
-    private PlaceableObject ObjectType => PlaceableObject.RegisteredObjects[TypeId];
+    private PlaceableObject ObjectType => PlaceableObject.RegisteredObjects.GetValueOrDefault(TypeId);
 
     protected override IEnumerable<string> Inputs => 
-        ObjectType.ReceiverGroup.Select(o => o.Id);
-    protected override IEnumerable<string> Outputs => ObjectType.BroadcasterGroup;
+        ObjectType?.ReceiverGroup.Select(o => o.Id) ?? [];
+    protected override IEnumerable<string> Outputs => ObjectType?.BroadcasterGroup ?? [];
     protected override IEnumerable<(string, string)> OutputVars => 
-        ObjectType.OutputGroup.Select(o => (o.Id, o.GetTypeId()));
-    protected override IEnumerable<(string, string)> InputVars => ObjectType.InputGroup;
+        ObjectType?.OutputGroup.Select(o => (o.Id, o.GetTypeId())) ?? [];
+    protected override IEnumerable<(string, string)> InputVars => ObjectType?.InputGroup ?? [];
 
-    protected override int InputCount => ObjectType.BroadcasterGroup.Count;
-    protected override int OutputCount => ObjectType.ReceiverGroup.Count;
+    protected override int InputCount => ObjectType?.BroadcasterGroup.Count ?? 1;
+    protected override int OutputCount => ObjectType?.ReceiverGroup.Count ?? 1;
     
     protected override Color Color => IsValid ? new Color(0.7f, 0.3f, 0.9f) : new Color(0.6f, 0, 0);
     
-    protected override string Name => IsValid ? $"{ObjectType.GetName()} ({TargetId})" :
-        $"{ObjectType.GetName()} (Invalid)";
+    protected override string Name => IsValid ? $"{ObjectType?.GetName() ?? "Deleted"} ({TargetId})" :
+        $"{ObjectType?.GetName() ?? "Deleted"} (Invalid)";
     
     private GameObject _referencedObject;
     private ObjectBlockReference _reference;
@@ -63,17 +63,7 @@ public class ObjectBlock : ScriptBlock
 
     protected override void SetupReference()
     {
-        SetupObject();
-    }
-
-    protected void SetupObject()
-    {
-        var placement = PlacementManager.GetPlacement(TargetId);
-        if (placement == null) return;
-        if (placement.GetPlacementType().GetId() != TypeId) return;
-
-        _referencedObject = PlacementManager.Objects[TargetId];
-        if (!_referencedObject) return;
+        if (!PlacementManager.Objects.TryGetValue(TargetId, out _referencedObject)) return;
         _reference = _referencedObject.AddComponent<ObjectBlockReference>();
         _reference.Block = this;
     }

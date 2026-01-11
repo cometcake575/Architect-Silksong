@@ -17,6 +17,8 @@ public static class ScriptEditorUI
     public static GameObject Lines => ScriptManager.IsLocal ? _localLines : _globalLines;
     public static GameObject ScriptParent => ScriptManager.IsLocal ? LocalParent : GlobalParent;
     
+    public static GameObject ToggleParent;
+    
     public static GameObject GlobalParent;
     public static GameObject LocalParent;
     
@@ -198,10 +200,10 @@ public static class ScriptEditorUI
             DoRefresh();
         });
 
-        var toggleParent = CreateBlankParent("Mode Toggles", scriptUI, 0);
-        _localBtnText = SetupSwitchButton(toggleParent, true, "Local Script", new Vector3(-200, 20));
+        ToggleParent = CreateBlankParent("Mode Toggles", scriptUI, 0);
+        _localBtnText = SetupSwitchButton(ToggleParent, true, "Local Script", new Vector3(-200, 20));
         _localBtnText.color = Color.yellow;
-        _globalBtnText = SetupSwitchButton(toggleParent, false, "Global Script", new Vector3(200, 20));
+        _globalBtnText = SetupSwitchButton(ToggleParent, false, "Global Script", new Vector3(200, 20));
         
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>

@@ -71,6 +71,8 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
                 }
             }
 
+            placements.RemoveAll(o => o == null);
+
             return new LevelData(placements, tiles, scriptBlocks);
         }
     }

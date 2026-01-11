@@ -39,14 +39,22 @@ public class IdConfigType(
 
 public class IdConfigValue(IdConfigType type, string value) : ConfigValue<IdConfigType>(type)
 {
+    private string _extraId;
+    
     public string GetValue()
     {
-        return value;
+        return value + (_extraId ?? "");
     }
 
     public override string SerializeValue()
     {
         return value;
+    }
+    
+    public override void Setup(GameObject obj, string extraId)
+    {
+        _extraId = extraId;
+        base.Setup(obj, extraId);
     }
 }
 

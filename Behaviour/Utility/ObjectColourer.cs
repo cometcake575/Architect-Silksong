@@ -1,5 +1,7 @@
 using Architect.Behaviour.Fixers;
+using Architect.Events.Blocks.Objects;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Utils;
 using UnityEngine;
 
@@ -19,7 +21,7 @@ public class ObjectColourer : MonoBehaviour
 
     public bool startApplied;
     
-    private GameObject _target;
+    public GameObject target;
 
     private Color _color;
     private bool _setup;
@@ -30,20 +32,44 @@ public class ObjectColourer : MonoBehaviour
         {
             _setup = true;
             _color = new Color(r, g, b, a);
+
+            GameObject t;
+            if (target) t = target;
+            else if (!PlacementManager.Objects.TryGetValue(targetId, out t)) return;
             
-            PlacementManager.Objects.TryGetValue(targetId, out _target);
+            var prefab = t.GetComponent<Prefab>();
+            if (prefab)
+            {
+                foreach (var spawn in prefab.spawns)
+                {
+                    var go = Instantiate(gameObject);
+                    go.transform.position = transform.position - t.transform.position + spawn.transform.position;
+                    go.GetComponent<ObjectColourer>().target = spawn;
+                    
+                    var obrs = GetComponents<ObjectBlock.ObjectBlockReference>();
+                    foreach (var obr in obrs)
+                    {
+                        obr.Spawns.Add(go);
+                        go.AddComponent<ObjectBlock.ObjectBlockReference>().Block = obr.Block;
+                    }
+                }
+                return;
+            }
+
+            target = t;
+            
             if (startApplied) Apply();
         }
     }
 
     public void Apply()
     {
-        if (!_target) return;
+        if (!target) return;
         
-        var lk = _target.GetOrAddComponent<MiscFixers.ColorLock>();
+        var lk = target.GetOrAddComponent<MiscFixers.ColorLock>();
         lk.enabled = false;
 
-        foreach (var sr in _target.GetComponentsInChildren<SpriteRenderer>(true))
+        foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
         {
             var col = _color;
             if (!useAlpha) col.a = sr.color.a;
@@ -51,7 +77,7 @@ public class ObjectColourer : MonoBehaviour
             else sr.color *= col;
         }
 
-        foreach (var sr in _target.GetComponentsInChildren<tk2dSprite>(true))
+        foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
         {
             var col = _color;
             if (!useAlpha) col.a = sr.color.a;

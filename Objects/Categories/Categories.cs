@@ -32,7 +32,7 @@ public static class Categories
     public static void Init()
     {
         RegisterCategory(BlankCategory.Instance);
-        RegisterCategory(PrefabsCategory.Instance);
+        RegisterCategory(SavedCategory.Instance);
         RegisterCategory(FavouritesCategory.Instance);
         
         RegisterCategory(BlankCategory.Instance);

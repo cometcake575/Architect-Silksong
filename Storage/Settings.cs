@@ -11,7 +11,7 @@ public static class Settings
     public static Keybind Flip;
     public static Keybind ScaleUp;
     public static Keybind ScaleDown;
-    public static Keybind SavePrefab;
+    public static Keybind SaveObject;
     public static Keybind LockAxis;
     public static Keybind Undo;
     public static Keybind Redo;
@@ -84,11 +84,11 @@ public static class Settings
             "Decreases the scale of the object on the cursor"
         ));
         
-        SavePrefab = new Keybind(config.Bind(
+        SaveObject = new Keybind(config.Bind(
             "Keybinds",
-            "SavePrefab",
+            "SaveObject",
             KeyCode.Return,
-            "Saves the object on the cursor as a prefab"
+            "Saves the object on the cursor as a saved object"
         ));
         
         LockAxis = new Keybind(config.Bind(

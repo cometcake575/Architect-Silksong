@@ -17,4 +17,6 @@ public abstract class SelectableObject
     public virtual void Release() { }
 
     public abstract Sprite GetUISprite();
+    
+    public bool DisableTransformations;
 }

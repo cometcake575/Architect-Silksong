@@ -65,6 +65,38 @@ public abstract class ScriptBlock
     [CanBeNull] public GameObject BlockObject;
     public ScriptBlockInstance BlockInstance;
 
+    // Creates a copy for prefabs
+    public ScriptBlock Clone(string idAddition)
+    {
+        var clone = ScriptManager.BlockTypes[Type]();
+        
+        clone.Type = Type;
+        clone.BlockId = BlockId + idAddition;
+        clone.Position = Position;
+        
+        clone.EventMap = [];
+        foreach (var (ev, blocks) in EventMap)
+        {
+            List<(string, string)> newBlocks = [];
+            foreach (var (blockId, trigger) in blocks) newBlocks.Add((blockId + idAddition, trigger));
+            clone.EventMap[ev] = newBlocks;
+        }
+        
+        clone.VarMap = [];
+        foreach (var (ev, (blockId, var)) in VarMap)
+        {
+            clone.VarMap[ev] = (blockId + idAddition, var);
+        }
+        
+        clone.CurrentConfig = CurrentConfig;
+        
+        var ext = SerializeExtraData();
+        if (ext.ContainsKey("object")) ext["object"] += idAddition;
+        clone.DeserializeExtraData(ext);
+        
+        return clone;
+    }
+
     public void Setup(bool visual, bool newBlock = false)
     {
         ScriptManager.Blocks[BlockId] = this;

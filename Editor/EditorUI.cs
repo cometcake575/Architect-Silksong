@@ -10,7 +10,6 @@ using Architect.Objects;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Objects.Tools;
-using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
@@ -44,7 +43,7 @@ public static class EditorUI
     private static GameObject _scriptUI;
     
     public static AbstractCategory CurrentCategory = Categories.All;
-    private static int _pageIndex;
+    public static int PageIndex;
     private static List<SelectableObject> _categoryContents;
 
     private static UIUtils.Label _currentlySelected;
@@ -199,7 +198,7 @@ public static class EditorUI
             if (category is Category { Priority: < 0 }) _legacyCategory = (btn, label); 
             btn.onClick.AddListener(() =>
             {
-                _pageIndex = 0;
+                PageIndex = 0;
                 CurrentCategory = category;
                 RefreshCurrentPage();
             });
@@ -236,12 +235,8 @@ public static class EditorUI
         MakeToolButton(LockObject.Instance, 210, 0);
         MakeToolButton(TileChangerObject.Instance, 170, 0);
         MakeToolButton(ResetObject.Instance, 130, 0);
-        
-        /*var (prefabBtn, prefabImg, _) = UIUtils.MakeButtonWithImage("Prefab Editor", _mapUI,
-            new Vector3(-25, -45), new Vector2(1, 1), new Vector2(1, 1), 96, 48);
-        
-        prefabBtn.onClick.AddListener(PrefabManager.Toggle);
-        prefabImg.sprite = ResourceUtils.LoadSpriteResource("prefab");*/
+
+        SetupPrefabButton();
 
         var shareBtn = UIUtils.MakeTextButton(
             "Share Level", 
@@ -292,14 +287,87 @@ public static class EditorUI
         ResetRocketTime.fontSize = 60;
     }
 
-    private static Button MakeToolButton(ToolObject obj, int xShift, int yShift)
+    private static void SetupPrefabButton()
+    {
+        var (prefabBtn, prefabImg, _) = UIUtils.MakeButtonWithImage("Prefab Editor", _mapUI,
+            new Vector3(-25, -45), new Vector2(1, 1), new Vector2(1, 1), 96, 48);
+
+        
+        var openPrefab = new GameObject("Open Prefab")
+        {
+            transform = { parent = _mapUI.transform }
+        };
+        var rt = openPrefab.AddComponent<RectTransform>();
+        rt.anchorMax = Vector2.one;
+        rt.anchorMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        rt.offsetMin = Vector2.zero;
+        openPrefab.SetActive(false);
+
+        var textbox = UIUtils.MakeTextbox("Name", openPrefab, new Vector2(0, 0),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 300, 30).Item1;
+
+        var prompt = UIUtils.MakeLabel("Prompt", openPrefab, new Vector2(0, 20),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
+        prompt.textComponent.fontSize = 12;
+        prompt.textComponent.text = "Enter Prefab Name:";
+        prompt.textComponent.alignment = TextAnchor.MiddleCenter;
+            
+        UIUtils.MakeTextButton("Cancel", "Cancel", openPrefab, new Vector2(-25, -20),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            size: new Vector2(100, 30)).Item1.onClick.AddListener(() => openPrefab.SetActive(false));
+        UIUtils.MakeTextButton("Confirm", "Confirm", openPrefab, new Vector2(25, -20), 
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            size: new Vector2(100, 30)).Item1.onClick.AddListener(() =>
+        {
+            openPrefab.SetActive(false);
+            PrefabManager.Toggle(textbox.text);
+        });
+
+        var img = UIUtils.MakeImage("Background", openPrefab, Vector2.zero,
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(400, 300));
+        img.sprite = UIUtils.Square;
+        img.color = new Color(0.2f, 0.2f, 0.2f);
+        img.transform.SetAsFirstSibling();
+        
+        prefabBtn.onClick.AddListener(() =>
+        {
+            if ((Input.GetKey(KeyCode.LeftAlt) && PrefabManager.Last != null) || PrefabManager.InPrefabScene)
+            {
+                openPrefab.SetActive(false);
+                PrefabManager.Toggle(PrefabManager.Last);
+            }
+            else
+            {
+                textbox.text = "";
+                openPrefab.SetActive(true);
+            }
+        });
+        
+        prefabImg.sprite = PrefabManager.PrefabIcon;
+        var (btn, _) = UIUtils.MakeTextButton(
+            "Prefabs",
+            "Prefabs",
+            _mapUI,
+            new Vector2(-25, -70),
+            new Vector2(1, 1),
+            new Vector2(1, 1)
+        );
+        btn.onClick.AddListener(() =>
+        {
+            PageIndex = 0;
+            CurrentCategory = PrefabsCategory.Instance;
+            RefreshCurrentPage();
+        });
+    }
+
+    private static void MakeToolButton(ToolObject obj, int xShift, int yShift)
     {
         var anchor = new Vector2(1, 0);
         var (toolBtn, toolImg, _) = UIUtils.MakeButtonWithImage(obj.GetName(), _mapUI,
             new Vector3(-25 - xShift, 25 + yShift), anchor, anchor, 96, 48);
         toolBtn.onClick.AddListener(() => SetItem(obj.Index));
         toolImg.sprite = obj.GetUISprite();
-        return toolBtn;
     }
 
     public static void RefreshVisibility(bool editing, bool paused)
@@ -363,7 +431,7 @@ public static class EditorUI
             _currentOption = AttributeType.Config;
             if (CurrentCategory == Categories.Legacy)
             {
-                _pageIndex = 0;
+                PageIndex = 0;
                 CurrentCategory = Categories.All;
                 RefreshCurrentPage();
             }
@@ -382,7 +450,7 @@ public static class EditorUI
 
     public static void SetItem(int i)
     {
-        var index = _pageIndex * ITEMS_PER_PAGE + i;
+        var index = PageIndex * ITEMS_PER_PAGE + i;
         if (_categoryContents.Count <= index) i = -99;
 
         EditManager.TryFindEmptySlot();
@@ -414,7 +482,7 @@ public static class EditorUI
         else
         {
             var obj = _categoryContents[index];
-            if (obj is PrefabObject prefab)
+            if (obj is SavedObject prefab)
             {
                 obj = prefab.PlaceableObject;
 
@@ -737,10 +805,12 @@ public static class EditorUI
 
     private static void ToggleFavourite(int i, UIUtils.Label label)
     {
-        var index = _pageIndex * ITEMS_PER_PAGE + i;
+        var index = PageIndex * ITEMS_PER_PAGE + i;
         if (_categoryContents.Count <= index) return;
         switch (_categoryContents[index])
         {
+            case PrefabObject:
+                break;
             case PlaceableObject placeable when FavouritesCategory.ToggleFavourite(placeable):
                 label.textComponent.text = FILLED_STAR;
                 label.textComponent.color = Color.yellow;
@@ -749,8 +819,8 @@ public static class EditorUI
                 label.textComponent.text = EMPTY_STAR;
                 label.textComponent.color = Color.white;
                 break;
-            case PrefabObject prefab:
-                PrefabsCategory.RemovePrefab(prefab);
+            case SavedObject prefab:
+                SavedCategory.RemovePrefab(prefab);
                 RefreshCurrentPage();
                 break;
         }
@@ -790,13 +860,17 @@ public static class EditorUI
         
         _currentlySelected.textComponent.text = EditManager.CurrentObject.GetName();
         _currentlySelectedDesc.textComponent.text = EditManager.CurrentObject.GetDescription();
+
+        ScaleText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
+        RotationText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
     }
 
     public static void CompleteSetup()
     {
         FavouritesCategory.Favourites = StorageManager.LoadFavourites();
+        SavedCategory.Objects = StorageManager.LoadSavedObjects();
         PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
-
+        
         RefreshCurrentPage();
     }
 
@@ -807,12 +881,13 @@ public static class EditorUI
 
         for (var i = 0; i < ITEMS_PER_PAGE; i++)
         {
-            var index = _pageIndex * ITEMS_PER_PAGE + i;
+            var index = PageIndex * ITEMS_PER_PAGE + i;
             var icon = GridIcons[i];
             if (_categoryContents.Count <= index)
             {
                 icon.Item1.sprite = ArchitectPlugin.BlankSprite;
                 icon.Item2.textComponent.text = "Unset";
+                icon.Item2.textComponent.fontSize = 14;
                 icon.Item3.textComponent.text = NOTHING;
             }
             else
@@ -822,13 +897,17 @@ public static class EditorUI
                 PlaceableObject placeable;
                 switch (_categoryContents[index])
                 {
+                    case PrefabObject obj:
+                        placeable = obj;
+                        icon.Item3.textComponent.text = "";
+                        break;
                     case PlaceableObject obj:
                         placeable = obj;
                         var favourite = FavouritesCategory.IsFavourite(placeable);
                         icon.Item3.textComponent.text = favourite ? FILLED_STAR : EMPTY_STAR;
                         icon.Item3.textComponent.color = favourite ? Color.yellow : Color.white;
                         break;
-                    case PrefabObject prefab:
+                    case SavedObject prefab:
                         placeable = prefab.PlaceableObject;
                         icon.Item3.textComponent.text = BIN;
                         icon.Item3.textComponent.color = Color.red;
@@ -837,8 +916,21 @@ public static class EditorUI
                     default:
                         return;
                 }
+                
+                icon.Item1.gameObject.SetActive(!placeable.HideUISprite);
                 icon.Item1.sprite = placeable.GetUISprite();
-                icon.Item2.textComponent.text = "";
+
+                var text = "";
+                if (placeable.HideUISprite)
+                {
+                    var name = placeable.GetName().ToArray();
+                    name[0] = char.ToUpper(name[0]);
+                    text = string.Concat(name.Where(c => c is >= 'A' and <= 'Z' or >= '0' and <= '9'));
+                    icon.Item2.textComponent.fontSize = 32;
+                    if (text.Length > 4) text = text[..4];
+                }
+                else icon.Item2.textComponent.fontSize = 14;
+                icon.Item2.textComponent.text = text;
                 
                 icon.Item1.transform.SetScaleX(1);
                 icon.Item1.transform.SetScaleY(1);
@@ -863,11 +955,11 @@ public static class EditorUI
     
     public static void Shift(int amount)
     {
-        _pageIndex += amount;
+        PageIndex += amount;
 
         var num = (_categoryContents.Count - 1) / 9;
-        if (_pageIndex > num) _pageIndex = 0;
-        else if (_pageIndex < 0) _pageIndex = num;
+        if (PageIndex > num) PageIndex = 0;
+        else if (PageIndex < 0) PageIndex = num;
 
         RefreshCurrentPage();
     }
@@ -880,7 +972,7 @@ public static class EditorUI
             300, 32).Item1;
         txt.onValueChanged.AddListener(s =>
         {
-            _pageIndex = 0;
+            PageIndex = 0;
             _currentSearch = s;
             RefreshCurrentPage();
         });

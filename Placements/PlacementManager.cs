@@ -8,6 +8,7 @@ using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events;
 using Architect.Events.Blocks;
+using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
 using JetBrains.Annotations;
@@ -76,6 +77,8 @@ public static class PlacementManager
     {
         VerifyLevelData();
         
+        PrefabManager.Prefabs.Clear();
+        
         var extGlobal = MapLoader.GetModData(StorageManager.GLOBAL);
         var ext = MapLoader.GetModData(sceneName);
         
@@ -85,6 +88,16 @@ public static class PlacementManager
         AbilityObjects.RefreshCrystalUI();
         
         Objects.Clear();
+
+        foreach (var block in ScriptManager.Blocks.Values)
+        {
+            block.DestroyObject();
+        }
+        foreach (var link in ScriptManager.Links.Values)
+        {
+            Object.Destroy(link);
+        }
+        ScriptManager.Blocks.Clear();
 
         if (ext != null)
         {
@@ -136,17 +149,6 @@ public static class PlacementManager
 
             map.Build();
         }
-
-        foreach (var block in ScriptManager.Blocks.Values)
-        {
-            block.DestroyObject();
-        }
-        foreach (var link in ScriptManager.Links.Values)
-        {
-            Object.Destroy(link);
-        }
-        
-        ScriptManager.Blocks.Clear();
 
         var wasLocal = ScriptManager.IsLocal;
 

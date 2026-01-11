@@ -9,6 +9,7 @@ using Architect.Editor;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Storage.Sharer;
 using Architect.Utils;
 using JetBrains.Annotations;
@@ -34,6 +35,7 @@ public static class StorageManager
     {
         DataPath = Path.GetFullPath(Application.persistentDataPath + "/Architect/");
         Directory.CreateDirectory(DataPath + "Scenes/");
+        Directory.CreateDirectory(DataPath + "Prefabs/");
         Directory.CreateDirectory(DataPath + "Assets/");
         Directory.CreateDirectory(DataPath + "ModAssets/");
         
@@ -41,7 +43,7 @@ public static class StorageManager
             (Action<GameManager, Action<bool>> orig, GameManager self, Action<bool> callback) => 
             { 
                 SaveFavourites(FavouritesCategory.Favourites);
-                SavePrefabs(PrefabsCategory.Prefabs);
+                SavePrefabs(SavedCategory.Objects);
 
                 if (EditManager.IsEditing)
                 {
@@ -58,15 +60,25 @@ public static class StorageManager
                 orig(self, callback);
             }, typeof(Action<bool>));
     }
+
+    private static string GetScenePath(string scene)
+    {
+        return DataPath + (scene.StartsWith("Prefab_") ? "Prefabs/" : "Scenes/") + scene + ".architect.json";
+    }
     
     public static void SaveScene(string scene, LevelData level)
     {
-        var path = DataPath + "Scenes/" + scene + ".architect.json";
+        var path = GetScenePath(scene);
         if (File.Exists(path)) File.Delete(path);
 
-        if (level.Placements.IsNullOrEmpty() && 
+        if (level.Placements.IsNullOrEmpty() &&
             level.TilemapChanges.IsNullOrEmpty() &&
-            level.ScriptBlocks.IsNullOrEmpty()) return;
+            level.ScriptBlocks.IsNullOrEmpty())
+        {
+            if (scene.StartsWith("Prefab_")) PrefabsCategory.Remove(scene.Replace("Prefab_", ""));
+            return;
+        }
+        if (scene.StartsWith("Prefab_")) PrefabsCategory.Add(scene.Replace("Prefab_", ""));
         
         var data = SerializeLevel(level, Formatting.Indented);
         
@@ -80,7 +92,7 @@ public static class StorageManager
     {
         if (ScheduledEdits.Remove(scene, out var edits)) return ApplyScheduledEdits(scene, edits);
         
-        var path = DataPath + "Scenes/" + scene + ".architect.json";
+        var path = GetScenePath(scene);
 
         return File.Exists(path) ? DeserializeLevel(File.ReadAllText(path)) : 
             new LevelData([], [], []);
@@ -131,7 +143,7 @@ public static class StorageManager
         return [];
     }
 
-    public static void SavePrefabs(List<PrefabObject> prefabs)
+    public static void SavePrefabs(List<SavedObject> prefabs)
     {
         var path = DataPath + "prefabs.json";
         if (File.Exists(path)) File.Delete(path);
@@ -144,28 +156,44 @@ public static class StorageManager
         writer.Write(data);
     }
 
-    public static List<PrefabObject> LoadPrefabs()
+    public static List<SavedObject> LoadSavedObjects()
     {
         var path = DataPath + "prefabs.json";
         if (File.Exists(path))
         {
             var deserialized = DeserializePlacements(File.ReadAllText(path));
-            if (deserialized != null) return deserialized.Select(obj => new PrefabObject(obj)).ToList();
+            if (deserialized != null) return deserialized.Select(obj => new SavedObject(obj)).ToList();
         }
 
         return [];
     }
 
+    public static List<PrefabObject> LoadPrefabs()
+    {
+        var path = DataPath + "/Prefabs";
+        List<PrefabObject> prefabs = [];
+        foreach (var file in Directory.GetFiles(path))
+        {
+            prefabs.Add(new PrefabObject(Path.GetFileNameWithoutExtension(file)
+                .Replace("Prefab_", "").Replace(".architect", "")));
+        }
+
+        return prefabs;
+    }
+
     public static string SerializeAllScenes()
     {
         Dictionary<string, LevelData> data = [];
-        foreach (var file in Directory.GetFiles(DataPath + "Scenes/"))
+        foreach (var s in new[] { "Scenes/", "Prefabs/" })
         {
-            var name = Path.GetFileName(file);
-            if (!name.EndsWith(".architect.json")) continue;
+            foreach (var file in Directory.GetFiles(DataPath + s))
+            {
+                var name = Path.GetFileName(file);
+                if (!name.EndsWith(".architect.json")) continue;
 
-            var n = name.Replace(".architect.json", "");
-            data[n] = LoadScene(n);
+                var n = name.Replace(".architect.json", "");
+                data[n] = LoadScene(n);
+            }
         }
 
         return JsonConvert.SerializeObject(data, Formatting.None, Ldc, Opc);
@@ -174,6 +202,7 @@ public static class StorageManager
     public static void WipeLevelData()
     {
         foreach (var file in Directory.GetFiles(DataPath + "Scenes/")) File.Delete(file);
+        foreach (var file in Directory.GetFiles(DataPath + "Prefabs/")) File.Delete(file);
         foreach (var file in Directory.GetFiles(DataPath + "Assets/")) File.Delete(file);
 
         CustomAssetManager.WipeAssets();

@@ -20,6 +20,13 @@ public static class ReceiverGroup
         }, true))
     ];
     
+    public static readonly List<EventReceiverType> Prefab = [
+        EventManager.RegisterReceiverType(new EventReceiverType("prefab_start", "Activate", o =>
+        {
+            o.SetActive(true);
+        }, true))
+    ];
+    
     public static readonly List<EventReceiverType> Activatable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("grow_pod", "Grow", o =>
         {

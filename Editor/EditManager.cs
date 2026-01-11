@@ -242,10 +242,10 @@ public static class EditManager
         {
             if (!paused) ApplyEditChanges(placeable);
             
-            if (Settings.SavePrefab.WasPressed)
+            if (Settings.SaveObject.WasPressed && placeable is not PrefabObject)
             {
-                PrefabsCategory.AddPrefab(new PrefabObject(placeable.PreparePlacement(Vector3.zero)));
-                if (EditorUI.CurrentCategory == PrefabsCategory.Instance) EditorUI.RefreshCurrentPage();
+                SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(Vector3.zero)));
+                if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.RefreshCurrentPage();
             }
 
             if (!paused && (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed))
@@ -416,11 +416,13 @@ public static class EditManager
 
     private static void ApplyEditChanges(PlaceableObject placeable)
     {
+        if (CurrentObject?.DisableTransformations ?? true) return;
         if (Settings.Flip.WasPressed)
         {
             CurrentlyFlipped = !CurrentlyFlipped;
             CursorManager.NeedsRefresh = true;
         }
+
         if (Settings.ScaleUp.IsPressed) SetScale(CurrentScale + Time.deltaTime);
         if (Settings.ScaleDown.IsPressed) SetScale(CurrentScale - Time.deltaTime);
 

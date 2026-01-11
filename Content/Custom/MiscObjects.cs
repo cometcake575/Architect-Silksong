@@ -176,7 +176,7 @@ public static class MiscObjects
 
         return new CustomObject(name, id, obj)
             .WithRotationGroup(RotationGroup.All)
-            .WithConfigGroup(ConfigGroup.Decorations);
+            .WithConfigGroup(ConfigGroup.Vines);
     }
 
     private static PlaceableObject CreateWind()

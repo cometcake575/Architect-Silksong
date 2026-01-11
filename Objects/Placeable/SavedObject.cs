@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Architect.Objects.Placeable;
 
-public class PrefabObject(ObjectPlacement placement) : SelectableObject
+public class SavedObject(ObjectPlacement placement) : SelectableObject
 {
     public readonly ObjectPlacement Placement = placement;
     public readonly PlaceableObject PlaceableObject = placement.GetPlacementType();

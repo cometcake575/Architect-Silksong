@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Architect.Objects.Placeable;
-using Architect.Placements;
+using Architect.Editor;
+using Architect.Prefabs;
 using JetBrains.Annotations;
 
 namespace Architect.Objects.Categories;
@@ -9,9 +9,9 @@ namespace Architect.Objects.Categories;
 public class PrefabsCategory : AbstractCategory
 {
     public static readonly PrefabsCategory Instance = new();
-
-    public static List<PrefabObject> Prefabs;
     
+    public static List<PrefabObject> Prefabs;
+
     public override List<SelectableObject> GetObjects()
     {
         return Prefabs.Cast<SelectableObject>().ToList();
@@ -19,17 +19,25 @@ public class PrefabsCategory : AbstractCategory
 
     [CanBeNull]
     public override string GetName()
-    { 
-        return "Saved";
+    {
+        return "Prefabs";
     }
 
-    public static void RemovePrefab(PrefabObject prefab)
+    public static void Remove(string name)
     {
-        Prefabs.Remove(prefab);
+        Prefabs.RemoveAll(o => o.Name == name);
+        if (EditorUI.CurrentCategory == Instance)
+        {
+            EditorUI.PageIndex = 0;
+            EditorUI.RefreshCurrentPage();
+        }
     }
 
-    public static void AddPrefab(PrefabObject prefab)
+    public static void Add(string name)
     {
-        Prefabs.Add(prefab);
+        if (Prefabs.FirstOrDefault(o => o.Name == name) == null)
+        {
+            Prefabs.Add(new PrefabObject(name));
+        }
     }
 }

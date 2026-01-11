@@ -745,6 +745,17 @@ public static class ConfigGroup
                 .WithDefaultValue(0)),
         ZOffset
     ]);
+    
+    public static readonly List<ConfigType> Vines = GroupUtils.Merge(Decorations, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Damage Player", "vines_hurt_player",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.RemoveComponent<CustomDamager>();
+                })
+                .WithDefaultValue(true))
+    ]);
 
     public static readonly List<ConfigType> PersistentBreakable = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Broken", "breakable_stay"))

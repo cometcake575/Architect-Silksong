@@ -1,4 +1,5 @@
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Storage;
 using UnityEngine;
 
@@ -31,6 +32,7 @@ public class ObjectSpinner : PreviewableBehaviour
 
         if (isAPreview)
         {
+            if (_target.GetComponentInChildren<Prefab>()) return;
             if (Settings.Preview.IsPressed) _previewing = true;
             else if (_previewing)
             {

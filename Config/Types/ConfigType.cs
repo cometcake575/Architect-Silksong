@@ -56,7 +56,7 @@ public abstract class ConfigValue
 
     public abstract int GetPriority();
 
-    public abstract void Setup(GameObject obj);
+    public abstract void Setup(GameObject obj, string extraId);
     
     public abstract void SetupPreview(GameObject obj, ConfigurationManager.PreviewContext context);
 }
@@ -74,7 +74,7 @@ public abstract class ConfigValue<TType>(TType type) : ConfigValue
         return type.Name;
     }
 
-    public override void Setup(GameObject obj)
+    public override void Setup(GameObject obj, string extraId)
     {
         type.RunAction(obj, this);
     }

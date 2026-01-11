@@ -6,8 +6,6 @@ using Architect.Config;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events;
-using Architect.Events.Blocks;
-using Architect.Events.Blocks.Objects;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using Newtonsoft.Json;
@@ -135,10 +133,13 @@ public class ObjectPlacement(
             .Where(z: _previewObject.transform.position.z);
     }
 
-    public void PlaceGhost()
+    public GameObject PlaceGhost(Vector3 pos = default, bool store = true)
     {
         var rot = rotation + type.Rotation;
         
+        if (pos == default) pos = _position;
+        else pos.z = _position.z;
+
         _previewObject = new GameObject($"[Architect] {type.GetName()} ({id}) Preview")
             { transform = { localScale = type.LossyScale } };
 
@@ -174,7 +175,7 @@ public class ObjectPlacement(
         }
 
         _offset = PreviewUtils.FixPreview(_previewRenderer, type, flipped, rot, scale);
-        _previewObject.transform.position = _position + _offset;
+        _previewObject.transform.position = pos + _offset;
 
         _previewObject.AddComponent<PreviewObject>().offset = _offset;
         
@@ -185,7 +186,9 @@ public class ObjectPlacement(
 
         if (Locked) _previewRenderer.color = _previewRenderer.color.Where(a: 0.2f);
 
-        PlacementManager.Objects[id] = _previewObject; 
+        if (store) PlacementManager.Objects[id] = _previewObject; 
+        
+        return _previewObject;
     }
 
     public class PreviewObject : MonoBehaviour
@@ -193,7 +196,7 @@ public class ObjectPlacement(
         public Vector3 offset;
     }
 
-    public GameObject SpawnObject(Vector3 pos = default)
+    public GameObject SpawnObject(Vector3 pos = default, string extraId = null)
     {
         if (!type.Prefab)
         {
@@ -201,13 +204,16 @@ public class ObjectPlacement(
             return null;
         }
 
+        var cId = id;
+        if (extraId != null) cId += extraId;
+
         if (pos == default) pos = _position;
         else pos.z = _position.z;
         var obj = Object.Instantiate(type.Prefab, pos, type.Prefab.transform.rotation);
-        obj.name = $"[Architect] {type.GetName()} ({id})";
+        obj.name = $"[Architect] {type.GetName()} ({cId})";
 
-        FixId<int>(obj);
-        FixId<bool>(obj);
+        FixId<int>(obj, cId);
+        FixId<bool>(obj, cId);
         
         type.PostSpawnAction?.Invoke(obj);
         
@@ -221,7 +227,7 @@ public class ObjectPlacement(
         else obj.transform.localScale *= scale;
 
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() < 0)
-                     .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj);
+                     .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj, extraId);
 
         obj.SetActive(true);
         
@@ -243,14 +249,14 @@ public class ObjectPlacement(
         }
 
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() >= 0)
-                     .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj);
+                     .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj, extraId);
         return obj;
     }
 
-    public void FixId<T>(GameObject obj) where T : IEquatable<T>
+    public void FixId<T>(GameObject obj, string cId) where T : IEquatable<T>
     {
         var comp = obj.GetComponent<PersistentItem<T>>();
-        if (comp) comp.ItemData.ID = id;
+        if (comp) comp.ItemData.ID = cId;
     }
 
     public class ObjectPlacementConverter : JsonConverter<ObjectPlacement>
@@ -393,7 +399,8 @@ public class ObjectPlacement(
             }
 
             pid ??= Guid.NewGuid().ToString()[..8];
-            var placement = new ObjectPlacement(PlaceableObject.RegisteredObjects[id],
+            if (!PlaceableObject.RegisteredObjects.TryGetValue(id, out var obj)) return null;
+            var placement = new ObjectPlacement(obj,
                 pos, pid, flipped, rotation, scale, locked, broadcasters, receivers, config);
 
             return placement;

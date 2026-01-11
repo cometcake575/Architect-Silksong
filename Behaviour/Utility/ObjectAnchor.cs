@@ -1,6 +1,8 @@
 using System;
 using Architect.Content.Custom;
+using Architect.Events.Blocks.Objects;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
@@ -15,6 +17,7 @@ public class ObjectAnchor : PreviewableBehaviour
     private static readonly Material TrailMaterial = new(Shader.Find("Sprites/Default"));
     
     public string targetId = "";
+    public GameObject overrideTarget;
     public string parentId = "";
     
     public float trackDistance;
@@ -63,18 +66,44 @@ public class ObjectAnchor : PreviewableBehaviour
     private void Setup()
     {
         _setup = true;
-        
-        if (!PlacementManager.Objects.TryGetValue(targetId, out var target))
+
+        GameObject target;
+        if (overrideTarget) target = overrideTarget;
+        else if (!PlacementManager.Objects.TryGetValue(targetId, out target))
         {
             if (isAPreview) _setup = false;
             return;
         }
 
-        if (!isAPreview && PlacementManager.Objects.TryGetValue(parentId, out var parent))
+        if (!isAPreview)
         {
-            var sp = parent.GetComponent<SplineObjects.SplinePoint>();
-            if (sp && sp.spline) SetupSpline(sp);
-            else transform.parent.SetParent(parent.transform, true);
+            var prefab = target.GetComponent<Prefab>();
+            if (prefab)
+            {
+                foreach (var spawn in prefab.spawns)
+                {
+                    gameObject.SetActive(false);
+                    var go = Instantiate(gameObject);
+                    go.transform.position = transform.position - target.transform.position + spawn.transform.position;
+                    go.GetComponent<ObjectAnchor>().overrideTarget = spawn;
+                    
+                    var obrs = GetComponents<ObjectBlock.ObjectBlockReference>();
+                    foreach (var obr in obrs)
+                    {
+                        obr.Spawns.Add(go);
+                        go.AddComponent<ObjectBlock.ObjectBlockReference>().Block = obr.Block;
+                    }
+                    go.SetActive(true);
+                }
+                return;
+            }
+            
+            if (PlacementManager.Objects.TryGetValue(parentId, out var parent))
+            {
+                var sp = parent.GetComponent<SplineObjects.SplinePoint>();
+                if (sp && sp.spline) SetupSpline(sp);
+                else transform.parent.SetParent(parent.transform, true);
+            }
         }
 
         Reset();
