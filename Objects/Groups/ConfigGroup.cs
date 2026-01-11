@@ -17,6 +17,7 @@ using HutongGames.PlayMaker.Actions;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
+using Object = UnityEngine.Object;
 
 namespace Architect.Objects.Groups;
 
@@ -75,6 +76,24 @@ public static class ConfigGroup
                 o.GetComponent<CustomPickup>().ignoreObtained = value.GetValue();
             }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "item_stay"))
+    ]);
+
+    public static readonly List<ConfigType> CoralNut = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Hide Break", "coral_nut_hide", (o, value) =>
+            {
+                if (value.GetValue())
+                {
+                    foreach (var psr in o.GetComponentsInChildren<ParticleSystemRenderer>())
+                    {
+                        psr.enabled = false;
+                    }
+
+                    Object.Destroy(o.transform.GetChild(1).gameObject);
+                    o.GetComponent<HitResponse>().spawnFling = [];
+                    o.RemoveComponent<AudioSource>();
+                }
+            }).WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> LoreTablets = GroupUtils.Merge(Generic, [

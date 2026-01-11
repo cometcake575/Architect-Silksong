@@ -21,6 +21,7 @@ public static class Settings
     public static Keybind Preview;
     public static Keybind Overwrite;
     public static Keybind GrabId;
+    public static Keybind StartLocked;
     
     public static Keybind Blank;
     public static Keybind Cursor;
@@ -152,6 +153,13 @@ public static class Settings
             "GrabId",
             KeyCode.I,
             "Sets the ID option of the object on the cursor to the selected object's ID"
+        ));
+        
+        StartLocked = new Keybind(config.Bind(
+            "Keybinds",
+            "StartLocked",
+            KeyCode.None,
+            "Makes the placed object be locked instantly upon placing it"
         ));
         
         Blank = new Keybind(config.Bind(

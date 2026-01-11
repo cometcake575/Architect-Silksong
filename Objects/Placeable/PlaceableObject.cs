@@ -176,6 +176,7 @@ public abstract class PlaceableObject : SelectableObject
         var pos = EditManager.GetWorldPos(mousePosition, true);
         pos.z = ZPosition;
         var obj = PreparePlacement(pos);
+        if (Settings.StartLocked.IsPressed) obj.ToggleLocked();
         
         EditManager.RegisterLastPos(pos);
         

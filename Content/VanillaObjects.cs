@@ -176,6 +176,7 @@ public static class VanillaObjects
                 preloadAction: InteractableFixers.FixCoralNut,
                 postSpawnAction: InteractableFixers.FixActivator)
             .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable)
+            .WithConfigGroup(ConfigGroup.CoralNut)
             .WithRotationGroup(RotationGroup.Eight));
 
         Categories.Hazards.Add(new PreloadObject("Coral Spike S", "stomp_spire",
