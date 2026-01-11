@@ -2170,6 +2170,11 @@ public static class ConfigGroup
                 .WithDefaultValue(true).WithPriority(-1)
         ),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Remove Tilemap", "remove_tilemap",
+                    (o, value) => { o.GetOrAddComponent<RoomClearerConfig>().removeTilemap = value.GetValue(); })
+                .WithDefaultValue(true).WithPriority(-1)
+        ),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Remove Other", "remove_other",
                     (o, value) => { o.GetOrAddComponent<RoomClearerConfig>().removeOther = value.GetValue(); })
                 .WithDefaultValue(true).WithPriority(-1)
