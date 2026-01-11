@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using Architect.Behaviour.Utility;
+using Architect.Config.Types;
+using Architect.Editor;
+using Architect.Events.Blocks;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Storage;
+using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -38,6 +43,55 @@ public class PrefabObject : PlaceableObject
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
         DisableTransformations = true;
         HideUISprite = true;
+    }
+
+    public override void Click(Vector3 mousePosition, bool first)
+    {
+        if (Input.GetKey(KeyCode.LeftAlt) && first)
+        {
+            var id = $"-{Guid.NewGuid().ToString()[..8]}";
+            
+            if (!PrefabManager.Prefabs.TryGetValue(Name, out var o)) 
+                o = PrefabManager.Prefabs[Name] = StorageManager.LoadScene($"Prefab_{Name}");
+
+            List<ObjectPlacement> placements = [];
+            
+            var pos = EditManager.GetWorldPos(mousePosition, true);
+            pos.z = 0;
+            
+            foreach (var placement in o.Placements)
+            {
+                var rePlacement = JsonConvert.DeserializeObject<ObjectPlacement>(JsonConvert.SerializeObject(placement), 
+                    StorageManager.Opc);
+                rePlacement.ID += id;
+                
+                placements.Add(rePlacement);
+                foreach (var cfg in rePlacement.Config)
+                {
+                    if (cfg is IdConfigValue icv)
+                    {
+                        icv.Value += id;
+                    }
+                }
+                
+                rePlacement.Move(placement.GetPos() + pos - new Vector3(100, 100));
+            }
+            EditManager.RegisterLastPos(pos);
+            ActionManager.PerformAction(new PlaceObjects(placements));
+            
+            foreach (var block in o.ScriptBlocks)
+            {
+                var clone = block.Clone(id);
+                var wasLocal = ScriptManager.IsLocal;
+                
+                if (!wasLocal) ScriptManager.IsLocal = true;
+                
+                PlacementManager.GetLevelData().ScriptBlocks.Add(clone);
+                clone.Setup(true);
+                
+                if (!wasLocal) ScriptManager.IsLocal = false;
+            } 
+        } else base.Click(mousePosition, first);
     }
 
     private void Setup(GameObject self)

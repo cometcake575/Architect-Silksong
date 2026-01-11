@@ -30,6 +30,8 @@ public class ObjectPlacement(
     private static readonly Color DefaultColour = new (1, 1, 1, 0.5f);
     private static readonly Color DraggedColour = new (0.2f, 1, 0.2f, 0.5f);
     private static readonly Color HoverColour = new (0.2f, 0.2f, 1, 0.5f);
+
+    public string ID = id;
     
     private Color? _previewColour;
     
@@ -63,7 +65,7 @@ public class ObjectPlacement(
         return withinX && withinY;
     }
 
-    public string GetId() => id;
+    public string GetId() => ID;
     public PlaceableObject GetPlacementType() => type;
     public Vector3 GetPos() => _position;
     public bool IsFlipped() => flipped;
@@ -140,7 +142,7 @@ public class ObjectPlacement(
         if (pos == default) pos = _position;
         else pos.z = _position.z;
 
-        _previewObject = new GameObject($"[Architect] {type.GetName()} ({id}) Preview")
+        _previewObject = new GameObject($"[Architect] {type.GetName()} ({ID}) Preview")
             { transform = { localScale = type.LossyScale } };
 
         _previewRenderer = _previewObject.AddComponent<SpriteRenderer>();
@@ -186,7 +188,7 @@ public class ObjectPlacement(
 
         if (Locked) _previewRenderer.color = _previewRenderer.color.Where(a: 0.2f);
 
-        if (store) PlacementManager.Objects[id] = _previewObject; 
+        if (store) PlacementManager.Objects[ID] = _previewObject; 
         
         return _previewObject;
     }
@@ -204,7 +206,7 @@ public class ObjectPlacement(
             return null;
         }
 
-        var cId = id;
+        var cId = ID;
         if (extraId != null) cId += extraId;
 
         if (pos == default) pos = _position;
@@ -425,6 +427,6 @@ public class ObjectPlacement(
     {
         if (_previewObject) Object.Destroy(_previewObject);
         PlacementManager.GetLevelData().Placements.Remove(this);
-        PlacementManager.Objects.Remove(id);
+        PlacementManager.Objects.Remove(ID);
     }
 }
