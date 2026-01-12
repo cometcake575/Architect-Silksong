@@ -1203,6 +1203,14 @@ public static class EnemyFixers
         dash.DisableAction(2);
         
         fsm.GetState("Dash To").DisableAction(0);
+
+        var rf = (RandomFloat)fsm.GetState("Set Dash Pos").actions[1];
+        
+        fsm.GetState("Set Dash Pos").AddAction(() =>
+        {
+            rf.min = HeroController.instance.transform.GetPositionY() - 2.5f;
+            rf.max = HeroController.instance.transform.GetPositionY() + 2.5f;
+        }, 0);
     }
 
     public static void FixBroodmother(GameObject obj)

@@ -1324,6 +1324,9 @@ public static class ConfigGroup
             new IntConfigType("Large Rosary Drops", "large_money",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).SetGeoLarge(value.GetValue()); })),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Fling Drops", "fling_money",
+                (o, value) => { o.GetComponentInChildren<HealthManager>(true).megaFlingGeo = value.GetValue(); })),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Give Silk", "give_silk",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).doNotGiveSilk = !value.GetValue(); })),
         Invincible

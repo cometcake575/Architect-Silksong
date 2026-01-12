@@ -320,6 +320,7 @@ public static class EditorUI
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             size: new Vector2(100, 30)).Item1.onClick.AddListener(() =>
         {
+            if (textbox.text.Length == 0) return;
             openPrefab.SetActive(false);
             PrefabManager.Toggle(textbox.text);
         });

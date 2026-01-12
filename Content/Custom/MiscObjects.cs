@@ -183,16 +183,26 @@ public static class MiscObjects
     {
         Wind.Init();
 
-        var windObj = new GameObject("Wind")
+        var windObj = new GameObject("Wind");
+        var projCollider = new GameObject("Projectile Collider")
         {
-            layer = LayerMask.NameToLayer("Terrain")
+            transform =
+            {
+                parent = windObj.transform,
+                localPosition = Vector3.zero
+            },
+            layer = 6
         };
 
         var collider = windObj.AddComponent<BoxCollider2D>();
         collider.size = new Vector2(10, 10);
         collider.isTrigger = true;
 
-        windObj.AddComponent<Wind>();
+        var pcollider = projCollider.AddComponent<BoxCollider2D>();
+        pcollider.size = new Vector2(10, 10);
+        pcollider.isTrigger = true;
+        
+        projCollider.AddComponent<WindChild>().wind = windObj.AddComponent<Wind>();
 
         windObj.SetActive(false);
         Object.DontDestroyOnLoad(windObj);

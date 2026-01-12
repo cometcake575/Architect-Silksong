@@ -61,7 +61,7 @@ public class Wind : MonoBehaviour
         _wallForce = new Vector3(0, _force.y, 0);
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void OnTriggerExit2D(Collider2D other)
     {
         if (other.GetComponent<HeroController>())
         {
@@ -69,7 +69,7 @@ public class Wind : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    public void OnTriggerStay2D(Collider2D other)
     {
         if (!affectsEnemies && other.gameObject.layer == EnemyLayer) return;
         if (!affectsProjectiles &&
@@ -188,5 +188,20 @@ public class Wind : MonoBehaviour
         triggers.outside = ParticleSystemOverlapAction.Kill;
 
         ps.GetComponent<ParticleSystemRenderer>().material = WindMaterial;
+    }
+}
+
+public class WindChild : MonoBehaviour
+{
+    public Wind wind;
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        wind.OnTriggerStay2D(other);
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        wind.OnTriggerExit2D(other);
     }
 }

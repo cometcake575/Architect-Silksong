@@ -478,6 +478,7 @@ public static class EditManager
     #region Scene Reloading
     private static void OnSceneLoad(Action<GameManager> orig, GameManager self)
     {
+        if (self.sceneName == "Temp") return;
         if (_loadPos)
         {
             self.entryGateName = null;
