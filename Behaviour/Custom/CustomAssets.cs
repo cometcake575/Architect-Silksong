@@ -71,7 +71,11 @@ public class PngObject : MonoBehaviour, IPlayable
             {
                 gameObject.BroadcastEvent("OnFinish");
                 frame %= _count;
-                if (!loop) playing = false;
+                if (!loop)
+                {
+                    playing = false;
+                    return;
+                }
             }
 
             _renderer.sprite = _sprites[frame];
