@@ -34,7 +34,7 @@ public class PngObject : MonoBehaviour, IPlayable
     public int dummy;
     public float frameTime = 1;
     public bool playing;
-    public bool loop;
+    public bool loop = true;
 
     private void Awake()
     {

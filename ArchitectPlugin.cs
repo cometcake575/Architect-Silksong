@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.9.7")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.9.8")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("io.github.hk-speedrunning.debugmod", BepInDependency.DependencyFlags.SoftDependency)]
