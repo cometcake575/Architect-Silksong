@@ -2341,4 +2341,17 @@ public static class EnemyFixers
         obj.LocateMyFSM("Control").GetState("Extract Kill")
             .AddAction(() => obj.BroadcastEvent("OnDeath"), 0);
     }
+
+    public static void FixChoristor(GameObject obj)
+    {
+        obj.AddComponent<FakePersistentMarker>();
+    }
+
+    public class FakePersistentMarker : MonoBehaviour;
+
+    public static void FixUndercrank(GameObject obj)
+    {
+        FixUnderworksArenaEnemy(obj);
+        obj.AddComponent<FakePersistentMarker>();
+    }
 }

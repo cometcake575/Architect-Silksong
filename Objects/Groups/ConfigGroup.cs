@@ -309,7 +309,7 @@ public static class ConfigGroup
             new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>
             {
                 if (value.GetValue()) return;
-                UnityEngine.Object.Destroy(o.LocateMyFSM("Attack Enemies"));
+                Object.Destroy(o.LocateMyFSM("Attack Enemies"));
             }).WithDefaultValue(true))
     ]);
 
@@ -2338,7 +2338,13 @@ public static class ConfigGroup
             {
                 var item1 = o.GetComponentInChildren<PersistentBoolItem>();
                 var item2 = o.GetComponentInChildren<PersistentIntItem>();
-                if (!item1 && !item2)
+                var b = o.GetComponent<EnemyFixers.FakePersistentMarker>();
+                if (b)
+                {
+                    Object.Destroy(item1);
+                    Object.Destroy(item2);
+                }
+                if ((!item1 && !item2) || b)
                 {
                     var it = o.AddComponent<PersistentBoolItem>();
                     it.itemData = new PersistentBoolItem.PersistentBoolData

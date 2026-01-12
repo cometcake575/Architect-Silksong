@@ -296,7 +296,7 @@ public static class VanillaObjects
         AddEnemy("Underpoke", "underpoke", ("Under_10", "Battle Scene/Wave 2/Understore Poker"),
             preloadAction: EnemyFixers.FixUnderworksArenaEnemy).DoFlipX();
         AddEnemy("Undercrank", "understore_heavy", ("Under_10", "Battle Scene/Wave 6/Understore Heavy (1)"),
-            preloadAction: EnemyFixers.FixUnderworksArenaEnemy).DoFlipX();
+            preloadAction: EnemyFixers.FixUndercrank).DoFlipX();
 
         AddEnemy("Drapemite", "drapemite", ("Slab_15", "Mite Heavy (1)"));
         AddEnemy("Giant Drapemite", "giant_drapemite", ("Hang_10", "Understore Mite Giant"),
@@ -340,7 +340,8 @@ public static class VanillaObjects
         AddEnemy("Choir Pouncer", "pilgrim_01_song",
             ("Song_11", "Black Thread States Thread Only Variant/Normal World/Pilgrim 01 Song"));
         AddEnemy("Choir Hornhead", "pilgrim_02_song", ("Song_11", "Pilgrim 02 Song"));
-        AddEnemy("Choristor", "choristor", ("Hang_04_boss", "Battle Scene/Wave 1/Song Pilgrim 03"));
+        AddEnemy("Choristor", "choristor", ("Hang_04_boss", "Battle Scene/Wave 1/Song Pilgrim 03"),
+            preloadAction: EnemyFixers.FixChoristor);
 
         AddEnemy("Envoy", "envoy", ("Song_17", "March Group Control/March Group R/Song Pilgrim 01"));
         AddEnemy("Choir Flyer", "choir_flyer", ("Song_11", "Pilgrim 04 Song (2)"),
