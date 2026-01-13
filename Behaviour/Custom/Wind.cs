@@ -190,18 +190,3 @@ public class Wind : MonoBehaviour
         ps.GetComponent<ParticleSystemRenderer>().material = WindMaterial;
     }
 }
-
-public class WindChild : MonoBehaviour
-{
-    public Wind wind;
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        wind.OnTriggerStay2D(other);
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        wind.OnTriggerExit2D(other);
-    }
-}
