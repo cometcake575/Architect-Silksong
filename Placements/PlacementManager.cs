@@ -27,6 +27,8 @@ public static class PlacementManager
 
     public static readonly Dictionary<string, GameObject> Objects = [];
     
+    public static readonly Dictionary<string, ObjectPlacement> PrefabPlacements = [];
+    
     // ReSharper disable once UnassignedField.Global
     public static Action<string, string, GameObject> OnPlace;
 
@@ -65,7 +67,12 @@ public static class PlacementManager
 
     public static ObjectPlacement GetPlacement(string id)
     {
-        return _levelData.Placements.FirstOrDefault(o => o.GetId() == id);
+        var placement =  _levelData.Placements.FirstOrDefault(o => o.GetId() == id);
+        if (placement == null)
+        {
+            if (PrefabPlacements.TryGetValue(id, out var b)) return b;
+        }
+        return placement;
     }
 
     public static void InvalidateScene()
@@ -78,6 +85,7 @@ public static class PlacementManager
         VerifyLevelData();
         
         PrefabManager.Prefabs.Clear();
+        PrefabPlacements.Clear();
         
         var extGlobal = MapLoader.GetModData(StorageManager.GLOBAL);
         var ext = MapLoader.GetModData(sceneName);

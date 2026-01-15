@@ -8,6 +8,7 @@ using Architect.Multiplayer;
 using Architect.Objects.Categories;
 using Architect.Placements;
 using Architect.Prefabs;
+using Architect.Sharer;
 using Architect.Storage;
 using Architect.Storage.Sharer;
 using Architect.Utils;
@@ -17,8 +18,9 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.9.12")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.10.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
+[BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin
 {
@@ -49,7 +51,6 @@ public class ArchitectPlugin : BaseUnityPlugin
         HazardFixers.Init();
         
         Categories.Init();
-        PreloadManager.Init();
         
         ActionManager.Init();
         CoopManager.Init();
@@ -70,8 +71,11 @@ public class ArchitectPlugin : BaseUnityPlugin
         PlacementManager.Init();
         
         BroadcasterHooks.Init();
-        
+
+        // SharerManager.Init();
         LevelSharerUI.Init();
+        
+        PreloadManager.Init();
     }
     
     private void Update()
@@ -82,6 +86,7 @@ public class ArchitectPlugin : BaseUnityPlugin
             HazardFixers.UpdateLanterns();
         }
         CursorManager.Update();
+        // SharerManager.Update();
         LevelSharerUI.Update();
         AbilityObjects.Update();
     }

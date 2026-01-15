@@ -305,6 +305,7 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Wav = GroupUtils.Merge(Playable, [
         EventManager.RegisterReceiverType(new EventReceiverType("set_volume", "SetVolume", (o, b) =>
         {
+            if (b == null) return;
             o.GetComponent<WavObject>().Volume = b.GetVariable<float>("New Volume");
         }))
     ]);
@@ -377,9 +378,11 @@ public static class ReceiverGroup
     ]);
     
     public static readonly List<EventReceiverType> ObjectMover = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("mover_move", "Move", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("mover_move", "Move", (o, b) =>
         {
-            o.GetComponent<ObjectMover>().Move();
+            o.GetComponent<ObjectMover>().Move(
+                b?.GetVariable<float>("Extra X") ?? 0,
+                b?.GetVariable<float>("Extra Y") ?? 0);
         }))
     ]);
     

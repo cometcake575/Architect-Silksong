@@ -8,7 +8,6 @@ using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Utils;
-using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -89,10 +88,11 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Decorations)).Offset = new Vector3(0.5723f, 1);
 
         Categories.Hazards.Add(new PreloadObject("Voltbola", "voltvessel_ball",
-                ("Arborium_03", "Lightning Bola Ball Enemy"),
+                ("localpoolprefabs_assets_areaarborium.bundle", 
+                    "Assets/Prefabs/Hornet Enemies/Lightning Bola Ball Enemy.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
-                hideAndDontSave: true)
+                notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity));
     }
 
@@ -247,7 +247,8 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four));
 
         Categories.Interactable.Add(new PreloadObject("Gong", "gong",
-                ("Dust_Chef", "kitchen_string"), postSpawnAction: InteractableFixers.FixGong)
+                ("Dust_Chef", "Battle Parent/Kitchen Pipe Gong/kitchen_string_offset/kitchen_string"), 
+                postSpawnAction: InteractableFixers.FixGong)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
         
         AddEnemy("Roachserver", "roachserver",
@@ -256,10 +257,10 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixRoachserver);
 
         Categories.Hazards.Add(new PreloadObject("Maggot Blob", "chef_blob",
-                ("Dust_Chef", "Chef Maggot Blob"),
+                ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Chef Maggot Blob.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
-                hideAndDontSave: true, postSpawnAction: HazardFixers.FixMaggotBlob)
+                notSceneBundle: true, postSpawnAction: HazardFixers.FixMaggotBlob)
             .WithConfigGroup(ConfigGroup.Velocity));
 
         Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
@@ -276,7 +277,7 @@ public static class VanillaObjects
     {
         Categories.Misc.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
                 ("Under_17", "Architect Scene/Chair/pillar E/pillar D/pillar C/pillar B/pillar A/seat/Architect NPC"),
-                preloadAction: MiscFixers.PreFixArchitect, postSpawnAction: MiscFixers.FixArchitect)
+                preloadAction: MiscFixers.FixArchitect, postSpawnAction: MiscFixers.FixArchitect)
             .WithConfigGroup(ConfigGroup.Npcs));
         
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
@@ -322,13 +323,12 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Junk Pipe", "junk_pipe",
             ("Under_06", "understore_junk_pipe"),
-            preloadAction: HazardFixers.FixJunkPipe)
+            postSpawnAction: HazardFixers.FixJunkPipe)
             .WithRotationGroup(RotationGroup.All));
 
         Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
             ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
-            preloadAction: MiscFixers.PreFixLoam,
-            postSpawnAction: MiscFixers.FixLoam)
+            preloadAction: MiscFixers.FixLoam)
             .WithConfigGroup(ConfigGroup.Npcs));
         
         AddSolid("Underworks Platform 1", "under_plat_1", ("Under_05", "dock_metal_grate_floor_set (1)"),
@@ -371,16 +371,20 @@ public static class VanillaObjects
             sprite: ResourceUtils.LoadSpriteResource("rune_slam_large", ppu:50))
             .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
         
-        PreloadManager.RegisterPreload(new BasicPreload("Hang_04_boss", "rune bomb small", o =>
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_areahang.bundle", 
+            "Assets/Prefabs/Hornet Enemies/rune bomb small.prefab", o =>
         {
             o.transform.parent = choirBombS.transform;
             bombS.Offset = o.transform.GetChild(1).transform.localPosition;
-        }, hads: true));
-        PreloadManager.RegisterPreload(new BasicPreload("Hang_04_boss", "rune slam", o =>
+        }, notSceneBundle: true));
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_areahang.bundle", 
+            "Assets/Prefabs/Hornet Enemies/rune slam.prefab", o =>
         {
             o.transform.parent = choirBombL.transform;
             bombL.Offset = o.transform.GetChild(1).transform.localPosition;
-        }, hads: true));
+        }, notSceneBundle: true));
 
         AddEnemy("Minister", "song_admin", 
             ("Hang_04_boss", "Battle Scene/Wave 5 - Song Admins/Song Administrator"), 
@@ -476,15 +480,7 @@ public static class VanillaObjects
         
         Categories.Hazards.Add(new PreloadObject("Cradle Spikes", "cradle_spikes",
             ("Cradle_03", "cradle_spike_plat (10)/art/Cradle__0004_moving_plat (9)"),
-            preloadAction: o =>
-            {
-                Object.Instantiate(
-                    o.transform.GetRoot().GetChild(8).gameObject, 
-                    o.transform.position, 
-                    default,
-                    o.transform
-                ).GetComponent<TinkEffect>().overrideCamShake = true;
-            }));
+            postSpawnAction: HazardFixers.FixCradleSpikes));
 
         /*
         AddEnemy("Grand Mother Silk", "gms_boss", ("Cradle_03", "Boss Scene/Silk Boss"),
@@ -537,10 +533,11 @@ public static class VanillaObjects
     {
         AddEnemy("Spit Squit", "swamp_mosquito_skinny", ("Aqueduct_03", "Swamp Mosquito Skinny"));
         Categories.Hazards.Add(new PreloadObject("Squit Bullet", "muck_bullet",
-            ("Aqueduct_03", "Skinny Mosquito Bullet"),
+            ("localpoolprefabs_assets_areaaqueduct.bundle", 
+                "Assets/Prefabs/Hornet Enemies/Skinny Mosquito Bullet.prefab"),
             description:"Usually already landed by the time the room finishes loading.\n" +
                         "Best used with the Object Spawner.",
-            hideAndDontSave: true)
+            notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity));
         
         AddEnemy("Barnak", "swamp_barnacle", ("Aqueduct_03", "Swamp Barnacle (1)")).DoFlipX();
@@ -574,11 +571,12 @@ public static class VanillaObjects
         AddEnemy("Shadow Charger", "shadow_charger", ("Abyss_05", "Abyss Crawler Large (1)")).DoFlipX()
             .WithRotationGroup(RotationGroup.Four);
         
-        AddEnemy("Gloomsac", "gloomsac", ("Abyss_02b", "Gloomfly"), hideAndDontSave: true,
+        AddEnemy("Gloomsac", "gloomsac", 
+            ("localpoolprefabs_assets_areaabyss.bundle", "Assets/Prefabs/Hornet Enemies/Gloomfly.prefab"), 
+            notSceneBundle: true,
             postSpawnAction: EnemyFixers.FixGloomsac);
         
         AddEnemy("Gargant Gloom", "gargant_gloom", ("Abyss_02b", "Gloom Beast"),
-            preloadAction: EnemyFixers.FixGargantGloomPreload,
             postSpawnAction: EnemyFixers.FixGargantGloom);
 
         AddSolid("Abyss Platform 1", "abyss_plat_mid",
@@ -704,13 +702,11 @@ public static class VanillaObjects
         AddSolid("Verdania Platform 1", "verdania_plat_1", ("Clover_21", "Group/clover_gate_outer_0000_1 (53)"),
             preloadAction: o =>
             {
-                o.transform.parent = null;
                 o.transform.SetPositionZ(0.006f);
             });
         AddSolid("Verdania Platform 2", "verdania_plat_2", ("Clover_21", "Group/clover_gate_outer_0000_1 (54)"),
             preloadAction: o =>
             {
-                o.transform.parent = null;
                 o.transform.SetPositionZ(0.006f);
             });
         AddSolid("Verdania Platform 3", "verdania_plat_3", ("Clover_21", "clover___0019_roof2_plat (5)"));
@@ -1072,8 +1068,9 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.CrumblePlat));
         
         Categories.Effects.Add(new PreloadObject("Maggot Effect", "maggot_effect",
-                ("Shadow_02", "hero_maggoted_effect"), description:"Appears when the 'Burst' trigger is run.",
-                hideAndDontSave: true, preloadAction: o =>
+                ("localpoolprefabs_assets_shared.bundle", "Assets/Prefabs/Effects/hero_maggoted_effect.prefab"), 
+                description:"Appears when the 'Burst' trigger is run.",
+                notSceneBundle: true, preloadAction: o =>
                 {
                     o.RemoveComponent<PlayParticleEffects>();
                     o.RemoveComponent<ParticleSystemAutoDisable>();
@@ -1113,7 +1110,8 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.SpikeBall));
 
         Categories.Hazards.Add(new PreloadObject("Groal's Vengeful Spirit", "groal_fireball",
-            ("Shadow_18", "Swamp Shaman Fireball"), hideAndDontSave: true,
+            ("localpoolprefabs_assets_areaswamp.bundle", "Assets/Prefabs/Hornet Enemies/Swamp Shaman Fireball.prefab"),
+            notSceneBundle: true,
             postSpawnAction: o =>
             {
                 o.transform.SetScaleX(-o.transform.GetScaleX());
@@ -1213,18 +1211,26 @@ public static class VanillaObjects
 
         Categories.Misc.AddStart(new PreloadObject("Toll Bench", "toll_bench",
                 ("Under_08", "Understore Toll Bench (2)"),
-                preloadAction: MiscFixers.FixTollBench, preview: true)
-            .WithConfigGroup(ConfigGroup.Benches));
+                preloadAction: MiscFixers.FixTollBench,
+                postSpawnAction: MiscFixers.AddBenchEvent, preview: true)
+            .WithConfigGroup(ConfigGroup.Benches)
+            .WithBroadcasterGroup(BroadcasterGroup.Benches));
         
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
                 ("Bone_East_15", "bell_bench/RestBench"),
-                preloadAction: MiscFixers.FixBench, preview: true)
-            .WithConfigGroup(ConfigGroup.Benches));
+                preloadAction: MiscFixers.FixBench,
+                postSpawnAction: MiscFixers.AddBenchEvent,
+                preview: true)
+            .WithConfigGroup(ConfigGroup.Benches)
+            .WithBroadcasterGroup(BroadcasterGroup.Benches));
         
         Categories.Misc.AddStart(new PreloadObject("Bed", "bellhome_bed",
                 ("Belltown_Room_Spare", "furnishings/bed/RestBench"),
-                preloadAction: MiscFixers.FixBench, preview: true)
-            .WithConfigGroup(ConfigGroup.Benches));
+                preloadAction: MiscFixers.FixBench,
+                postSpawnAction: MiscFixers.AddBenchEvent,
+                preview: true)
+            .WithConfigGroup(ConfigGroup.Benches)
+            .WithBroadcasterGroup(BroadcasterGroup.Benches));
 
         Categories.Interactable.Add(new PreloadObject("Toll Machine", "rosary_toll",
                 ("Hang_06_bank", "rosary_cannon/Art/Rosary Cannon Scene/rosary_string_machine"),
@@ -1284,9 +1290,35 @@ public static class VanillaObjects
         
         AddEnemy("Servitor Ignim", "servitor_small", ("Weave_04", "Weaver Servitor (2)"),
             preloadAction: EnemyFixers.FixServitorIgnim);
-        
+
         AddEnemy("Servitor Boran", "servitor_large", ("Peak_04d", "Weaver Servitor Large"),
-            preloadAction: EnemyFixers.FixServitorBoran)
+            preloadAction: EnemyFixers.FixServitorBoran,
+            postSpawnAction: o =>
+            {
+                var valid = false;
+                var rb2d = o.GetComponent<Rigidbody2D>();
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Roll Away").AddAction(Mark); 
+                fsm.GetState("Roll Away").AddAction(Correct, everyFrame:true); 
+                fsm.GetState("Roll Toward").AddAction(Mark);
+                fsm.GetState("Roll Toward").AddAction(Correct, everyFrame:true);
+                return;
+
+                void Mark()
+                {
+                    valid = true;
+                }
+
+                void Correct()
+                {
+                    if (valid)
+                    {
+                        valid = false;
+                        return;
+                    }
+                    if (rb2d.linearVelocityX == 0) fsm.SendEvent("END");
+                }
+            })
             .WithConfigGroup(ConfigGroup.Boran);
 
         Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
@@ -1336,31 +1368,28 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Caretaker"),
-                postSpawnAction: MiscFixers.FixCaretaker)
+                preloadAction: MiscFixers.FixCaretaker)
             .WithConfigGroup(ConfigGroup.Caretaker).DoFlipX());
 
         Categories.Misc.Add(new PreloadObject("Sherma NPC", "sherma_1",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 2/Sherma Enclave NPC"),
-                postSpawnAction: MiscFixers.FixSherma)
+                preloadAction: MiscFixers.FixSherma)
             .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Caretaker Sherma NPC", "sherma_2",
                 ("Song_Enclave",
                     "Black Thread States/Black Thread World/Enclave Act 3/Sherma Caretaker"),
-                postSpawnAction: MiscFixers.FixShermaCaretaker)
+                preloadAction: MiscFixers.FixShermaCaretaker)
             .WithConfigGroup(ConfigGroup.Npcs));
 
-        PreloadManager.RegisterPreload(new BasicPreload("Bellway_01_boss", "Bellbeast Children",
-            o =>
-            {
-                var obj = ((CreateObject)o.LocateMyFSM("bellbeast_children_control").GetState("Do Spawn")
-                    .Actions[1]).gameObject.Value;
-                Categories.Misc.Add(new CustomObject("Beastling", "bellbeast_child", obj,
-                        postSpawnAction: MiscFixers.FixBellBaby)
-                    .WithConfigGroup(ConfigGroup.TriggerActivator)
-                    .WithBroadcasterGroup(BroadcasterGroup.Hittable));
-            }));
+        Categories.Misc.Add(new PreloadObject("Beastling", "bellbeast_child",
+                ("localpoolprefabs_assets_shared",
+                    "Assets/Prefabs/Hornet NPCs/Bellbeast Child.prefab"),
+                notSceneBundle: true,
+                postSpawnAction: MiscFixers.FixBellBaby)
+            .WithConfigGroup(ConfigGroup.TriggerActivator)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
 
         Categories.Platforming.Add(new PreloadObject("Updraft", "updraft_region",
                 ("Ant_19", "Updraft Region (1)"),
@@ -1507,14 +1536,12 @@ public static class VanillaObjects
             ("Belltown", "hanging_bell_house 2/plat_float_07"),
             preloadAction: o =>
             {
-                o.transform.parent = null;
                 o.transform.SetPositionZ(-0.1174f);
             });
         AddSolid("Bell Platform 2", "bell_plat_2", 
             ("Belltown", "Hornet House States/Full/plat_float_07 (1)"),
             preloadAction: o =>
             {
-                o.transform.parent = null;
                 o.transform.SetPositionZ(-0.1174f);
                 o.transform.GetChild(0).SetLocalPositionZ(0.001f);
             });
@@ -1522,8 +1549,8 @@ public static class VanillaObjects
             ("Belltown", "Black Thread States Thread Only Variant/Normal World/shop_sign"),
             preloadAction: o =>
             {
-                o.transform.parent = null;
                 o.transform.SetPositionZ(-0.1174f);
+                o.transform.SetRotation2D(0);
                 for (var i = 2; i <= 5; i++) o.transform.GetChild(i).gameObject.SetActive(false);
                 o.transform.GetChild(1).GetChild(3).gameObject
                     .AddComponent<PlaceableObject.SpriteSource>();
@@ -1536,13 +1563,14 @@ public static class VanillaObjects
             ("Wisp_02", "Wisp Bounce Pod")));
 
         Categories.Hazards.Add(new PreloadObject("Wispfire Lantern", "wisp_flame_lantern",
-                ("Wisp_02", "Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
+                ("Wisp_02", "Wisp Farmers/Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
             .WithConfigGroup(ConfigGroup.WispLanterns));
-
+        
         Categories.Hazards.Add(new PreloadObject("Wisp", "wisp",
-                ("Wisp_02", "Wisp Fireball"), postSpawnAction: HazardFixers.FixWisp, hideAndDontSave: true)
+                ("localpoolprefabs_assets_areawisp.bundle", "Assets/Prefabs/Hornet Enemies/Wisp Fireball.prefab"), 
+                postSpawnAction: HazardFixers.FixWisp, notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Wisp));
-
+        
         AddEnemy("Burning Bug", "farmer_wisp", 
             ("Wisp_02", "Wisp Farmers/Farmer Wisp"), preloadAction: o =>
             {
@@ -1616,7 +1644,8 @@ public static class VanillaObjects
             ("Shellwood_01", "Shellwood Goomba Flyer (1)"));
         
         AddEnemy("Shellwood Gnat Core", "shellwood_gnat_core", 
-            ("Shellwood_01", "Shellwood Gnat"), hideAndDontSave: true);
+            ("localpoolprefabs_assets_areashellwood.bundle", "Assets/Prefabs/Hornet Enemies/Shellwood Gnat.prefab"), 
+            notSceneBundle: true);
 
         Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
                 ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
@@ -1648,10 +1677,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Skarrwing);
 
         AddEnemy("Skarr Scout", "bone_hunter_child",
-            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Child"));
+            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Child"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Skarr Stalker", "bone_hunter",
-            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter"));
+            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Spear Skarr", "bone_hunter_fly",
                 ("Ant_21", "Enemy Control/Ant Merchant Killed/Big Guard Dead/Bone Hunter Fly"),
@@ -1700,16 +1731,19 @@ public static class VanillaObjects
     private static void AddMarrowObjects()
     {
         AddEnemy("Skull Scuttler", "bone_goomba",
-            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba"));
+            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba"),
+            preloadAction: MiscFixers.FixRotation);
 
         Categories.Misc.Add(new PreloadObject("Skull", "bone_goomba_skull",
             ("Bone_East_03", "bone_goomba_skull_break")));
 
         AddEnemy("Skullwing", "bone_goomba_bounce_fly",
-            ("Weave_05b", "Bone Goomba Bounce Fly (11)"));
+            ("Weave_05b", "Bone Goomba Bounce Fly (11)"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Skull Brute", "bone_goomba_l",
-            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba Large"));
+            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba Large"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Skull Tyrant", "skull_tyrant", ("Bonetown_boss", "Boss Scene/Skull King"),
             postSpawnAction: EnemyFixers.FixSkullTyrant)
@@ -1723,7 +1757,8 @@ public static class VanillaObjects
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Hunting PreScene/Bone Circler"));
 
         AddEnemy("Vicious Caranid", "bone_circler_v",
-            ("Bone_East_03", "Black Thread States Thread Only Variant/Black Thread World/Bone Circler Vicious (1)"));
+            ("Bone_East_03", "Black Thread States Thread Only Variant/Black Thread World/Bone Circler Vicious (1)"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Kilik", "bone_crawler", ("Ant_19", "Bone Crawler (2)"),
             preloadAction: EnemyFixers.RemoveConstrainPosition).WithRotationGroup(RotationGroup.Four);
@@ -1753,10 +1788,10 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         Categories.Hazards.Add(new PreloadObject("Flintbomb", "flint_bomb",
-            ("Bone_06", "Rock Roller Bomb"),
+            ("localpoolprefabs_assets_areabone.bundle", "Assets/Prefabs/Enemies/Projectiles/Rock Roller Bomb.prefab"),
             description:"Usually already landed by the time the room finishes loading.\n" +
                         "Best used with the Object Spawner.",
-            hideAndDontSave: true)
+            notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity));
 
         AddEnemy("Shardillard", "shardillard", ("Bone_06", "Shell Fossil Mimic AppearVariant"),
@@ -1776,7 +1811,8 @@ public static class VanillaObjects
             ("Bone_East_LavaChallenge", "bone_plat_crumble_tall (4)")));
 
         Categories.Hazards.Add(new PreloadObject("Bone Boulder", "bone_boulder",
-            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder"))
+            ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder"),
+            preloadAction: MiscFixers.FixRotation)
             .WithConfigGroup(ConfigGroup.Hazards)
             .WithReceiverGroup(ReceiverGroup.Dropper));
 
@@ -1839,7 +1875,6 @@ public static class VanillaObjects
             ("Bone_East_09", "lava_set/LavaBase (1)"),
             preloadAction: o =>
             {
-                o.transform.parent = null;
                 o.transform.localScale = new Vector3(20, 5, 0);
                 o.transform.SetPositionZ(-0.002f);
             },
@@ -1882,7 +1917,8 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Sleeping Flea", "flea_1",
             ("Bone_East_10_Church", "Black Thread States Thread Only Variant/Normal World/Flea Rescue Sleeping"),
             description:"Fluffy.\nDoes not add to collected fleas.",
-            postSpawnAction:MiscFixers.FixFlea)
+            postSpawnAction:MiscFixers.FixFlea,
+            preloadAction: MiscFixers.FixRotation)
             .WithConfigGroup(ConfigGroup.Fleas)
             .WithBroadcasterGroup(BroadcasterGroup.Fleas));
     }
@@ -1964,16 +2000,19 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.SlamBosses).DoFlipX();
 
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
-            ("Dust_11", "Aspid Hatchling"), hideAndDontSave: true);
+            ("localpoolprefabs_assets_areaclover.bundle", "Assets/Prefabs/Hornet Enemies/Aspid Hatchling.prefab"),
+            notSceneBundle: true);
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),
             postSpawnAction: EnemyFixers.FixAknid);
         AddEnemy("Aknid Mother", "grove_pilgrim",
-            ("Dust_11", "Grove Pilgrim Fly"), hideAndDontSave: true,
+            ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Grove Pilgrim Fly.prefab"),
+            notSceneBundle: true,
             preloadAction: EnemyFixers.FixAknidMother).DoFlipX();
 
         AddEnemy("Overgrown Pilgrim", "pilgrim_moss_spitter",
-            ("Mosstown_01", "Black Thread States Thread Only Variant/Normal World/Pilgrim Moss Spitter"));
+            ("Mosstown_01", "Black Thread States Thread Only Variant/Normal World/Pilgrim Moss Spitter"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Pilgrim Groveller", "pilgrim_03",
             ("Mosstown_01", "Pilgrim 03 (1)")).DoFlipX();
@@ -2013,9 +2052,11 @@ public static class VanillaObjects
             ("Coral_32", "Black Thread States/Black Thread World/Black_Thread_Core/Enemy Group/Pilgrim Hiker"));
 
         AddEnemy("Pilgrim Bellbearer", "pilgrim_bell",
-            ("Greymoor_13", "Black Thread States Thread Only Variant/Normal World/Pilgrim BellThrower"));
+            ("Greymoor_13", "Black Thread States Thread Only Variant/Normal World/Pilgrim BellThrower"),
+            preloadAction: MiscFixers.FixRotation);
         AddEnemy("Winged Pilgrim Bellbearer", "pilgrim_wingbell",
-            ("Greymoor_13", "Black Thread States Thread Only Variant/Black Thread World/Pilgrim Bellthrower Fly"))
+            ("Greymoor_13", "Black Thread States Thread Only Variant/Black Thread World/Pilgrim Bellthrower Fly"),
+            preloadAction: MiscFixers.FixRotation)
             .DoFlipX();
 
         AddSolid("Moss Grotto Platform 1", "bone_plat_01",
@@ -2058,13 +2099,13 @@ public static class VanillaObjects
         string name,
         string id,
         (string, string) path, 
-        bool hideAndDontSave = false,
+        bool notSceneBundle = false,
         [CanBeNull] Action<GameObject> preloadAction = null,
         [CanBeNull] Action<GameObject> postSpawnAction = null)
     {
         return Categories.Enemies.Add(new PreloadObject(name, id,
                 path,
-                hideAndDontSave: hideAndDontSave,
+                notSceneBundle: notSceneBundle,
                 preloadAction: preloadAction,
                 postSpawnAction: postSpawnAction)
             .WithReceiverGroup(ReceiverGroup.Enemies)

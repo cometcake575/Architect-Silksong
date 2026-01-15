@@ -222,10 +222,15 @@ public static class MiscFixers
     
     public static void FixBench(GameObject obj)
     {
-        obj.transform.parent = null;
         obj.transform.SetPositionZ(0.009f);
         Object.DestroyImmediate(obj.transform.GetChild(2).gameObject);
         obj.AddComponent<CustomBench>();
+    }
+    
+    public static void AddBenchEvent(GameObject obj)
+    {
+        var fsm = obj.GetComponentsInChildren<PlayMakerFSM>().First(o => o.FsmName == "Bench Control");
+        fsm.GetState("Start Rest Anim").AddAction(() => obj.BroadcastEvent("OnSit"), 0);
     }
 
     public class CustomBench : MonoBehaviour
@@ -579,28 +584,20 @@ public static class MiscFixers
         obj.AddComponent<Sherma>();
     }
 
-    public static void PreFixLoam(GameObject obj)
-    {
-        obj.transform.parent.DetachChildren();
-        obj.transform.SetPositionZ(0.006f);
-    }
-
     public static void FixLoam(GameObject obj)
     {
+        obj.transform.SetPositionZ(0.006f);
         obj.AddComponent<Loam>();
     }
 
-    public static void PreFixArchitect(GameObject obj)
+    public static void FixArchitect(GameObject obj)
     {
         obj.transform.parent.DetachChildren();
         obj.transform.SetPositionZ(0.006f);
         
         obj.GetComponentInChildren<BoxCollider2D>().size = new Vector2(7, 2);
         obj.GetComponent<InteractableBase>().interactLabel = InteractableBase.PromptLabels.Speak;
-    }
-
-    public static void FixArchitect(GameObject obj)
-    {
+        
         obj.AddComponent<ArchitectNpc>();
     }
 
@@ -1036,7 +1033,6 @@ public static class MiscFixers
 
     public static void FixCoral(GameObject obj)
     {
-        obj.transform.parent = null;
         obj.SetActive(true);
         obj.GetComponent<ActivatingBase>().SetActive(true, true);
         obj.RemoveComponent<RandomlyFlipScale>();
@@ -1053,7 +1049,6 @@ public static class MiscFixers
     public static void FixMirror(GameObject obj)
     {
         obj.AddComponent<PngObject>();
-        obj.transform.parent = null;
         obj.transform.SetScale2D(new Vector2(2, 2));
         obj.transform.SetPositionZ(-0.1f);
     }
@@ -1106,7 +1101,6 @@ public static class MiscFixers
     public static void FixShamanShell(GameObject obj)
     {
         obj.GetComponentInChildren<BoxCollider2D>().enabled = true;
-        obj.transform.parent = null;
         obj.transform.SetRotation2D(0);
         obj.transform.SetPositionZ(0.006f);
     }
@@ -1188,8 +1182,6 @@ public static class MiscFixers
 
     public static void FixWater(GameObject obj)
     {
-        obj.transform.parent = null;
-        
         obj.transform.localScale = Vector3.one;
         var bc1 = obj.GetComponent<BoxCollider2D>();
         var bc2 = obj.transform.GetChild(0).GetComponent<BoxCollider2D>();
@@ -1256,5 +1248,10 @@ public static class MiscFixers
     public static void FixFlick(GameObject obj)
     {
         obj.AddComponent<Flick>();
+    }
+
+    public static void FixRotation(GameObject obj)
+    {
+        obj.transform.SetRotation2D(0);
     }
 }

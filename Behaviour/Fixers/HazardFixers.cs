@@ -8,26 +8,22 @@ namespace Architect.Behaviour.Fixers;
 
 public static class HazardFixers
 {
-    private static Transform _heroGrind;
     private static GameObject _cogDamager;
     private static GameObject _junkFall;
     private static GameObject _lavaBox;
     private static GameObject _coalRegion;
     private static GameObject _tendrilDamager;
+    private static GameObject _cradleSpikes;
     private static GameObject _voltHazard;
 
     private static float _lanternTime = 1;
         
     public static void Init()
     {
-        PreloadManager.RegisterPreload(new BasicPreload("Cog_04", "Pt Hero Grind", 
-            o => _heroGrind = o.transform));
-        
         PreloadManager.RegisterPreload(new BasicPreload("Cog_04", "Spike Cog collider Round/Cog Damager", 
             o =>
             {
                 var cmh = o.GetComponentInChildren<CogMultiHitter>();
-                cmh.heroGrindEffect = _heroGrind;
                 cmh.useSelfForAngle = true;
                 _cogDamager = o;
             }));
@@ -43,6 +39,9 @@ public static class HazardFixers
         
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_03", "Coal Region", 
             o => _coalRegion = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Cradle_03", "cradle_spike_plat (10)", 
+            o => _cradleSpikes = o.transform.GetChild(8).gameObject));
         
         PreloadManager.RegisterPreload(new BasicPreload("Coral_29", "Zap Hazard Parent", 
             o =>
@@ -62,12 +61,14 @@ public static class HazardFixers
 
         HookUtils.OnFsmAwake += fsm =>
         {
-            if (fsm.FsmName == "Control" && fsm.gameObject.name == "Wisp Fireball(Clone)")
+            if (fsm.FsmName == "Control" && fsm.gameObject.name.Contains("Wisp Fireball"))
             {
-                var obj = fsm.FsmVariables.FindFsmGameObject("Wisp Fireball Master");
+                var o = fsm.FsmVariables.FindFsmGameObject("Wisp Fireball Master");
+                if (o == null) return;
+                o.Value = null;
                 fsm.GetState("Request Attack").AddAction(() =>
                 {
-                    if (!obj.Value && _lanternTime <= 0)
+                    if (_lanternTime <= 0)
                     {
                         _lanternTime = 1;
                         fsm.SendEvent("APPROVED");
@@ -90,22 +91,20 @@ public static class HazardFixers
 
     public static void FixLargeCog(GameObject cog)
     {
-        cog.transform.SetParent(null);
         cog.transform.SetPositionZ(0.01f);
-        Object.Instantiate(_cogDamager, cog.transform).SetActive(true);
+        var dmg = Object.Instantiate(_cogDamager, null);
+        dmg.transform.parent = cog.transform;
+        dmg.SetActive(true);
     }
-
+    
     public static void FixUnderworksCog(GameObject cog)
     {
-        cog.transform.SetParent(null);
         cog.transform.SetPositionZ(0.01f);
-        cog.GetComponentInChildren<CogMultiHitter>().heroGrindEffect = _heroGrind;
     }
 
     public static void FixCog(GameObject cog)
     {
         cog.RemoveComponent<CurveOffsetAnimation>();
-        cog.GetComponentInChildren<CogMultiHitter>().heroGrindEffect = _heroGrind;
         cog.transform.GetChild(3).SetAsFirstSibling();
     }
 
@@ -298,5 +297,15 @@ public static class HazardFixers
         if (_currentTendrilDamager) return;
         _currentTendrilDamager = Object.Instantiate(_tendrilDamager, obj.transform);
         _currentTendrilDamager.SetActive(true);
+    }
+
+    public static void FixCradleSpikes(GameObject obj)
+    {
+        Object.Instantiate(
+            _cradleSpikes,
+            obj.transform.position,
+            default,
+            obj.transform
+        ).GetComponent<TinkEffect>().overrideCamShake = true;
     }
 }

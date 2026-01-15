@@ -19,7 +19,8 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     public override string GetDescription()
     {
         return "Click a placed object to see its ID.\n\n" +
-               "Right click a placed object to add its block to the Script Editor.";
+               "Right click a placed object to add its block to the Script Editor.\n\n" +
+               "Click a spot to see its position.";
     }
 
     private static int _lastNum;
@@ -27,9 +28,14 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     public override void Click(Vector3 mousePosition, bool first)
     {
         var obj = PlacementManager.FindObject(mousePosition);
-        if (obj == null) return;
-        var id = obj.GetId();
-        EditorUI.ObjectIdLabel.textComponent.text = $"{obj.GetPlacementType().GetName()} ID: {id}";
+        string info;
+        if (obj == null)
+        {
+            var pos = EditManager.GetWorldPos(mousePosition);
+            info = $"X: {pos.x}, Y: {pos.y}";
+        }
+        else info = $"{obj.GetPlacementType().GetName()} ID: {obj.GetId()}";
+        EditorUI.ObjectIdLabel.textComponent.text = info;
         ArchitectPlugin.Instance.StartCoroutine(ClearCursorInfoLabel());
     }
 

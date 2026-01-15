@@ -519,7 +519,8 @@ public static class UtilityObjects
                              "To move an object as if on a track, use the Object Anchor.\n" +
                              "To rotate an object over time, use the Object Spinner.")
             .WithConfigGroup(ConfigGroup.ObjectMover)
-            .WithReceiverGroup(ReceiverGroup.ObjectMover);
+            .WithReceiverGroup(ReceiverGroup.ObjectMover)
+            .WithInputGroup(InputGroup.ObjectMover);
     }
 
     private static PlaceableObject CreateObjectSpinner()

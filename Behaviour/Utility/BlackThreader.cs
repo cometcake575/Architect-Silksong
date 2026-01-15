@@ -65,7 +65,9 @@ public class BlackThreader : MonoBehaviour
         _bts.extraMeshRenderers = target.GetComponentsInChildren<MeshRenderer>(true);
 
         _bts.useCustomHPMultiplier = true;
-        _bts.customHPMultiplier = hpMultiplier;
+        _bts.customHPMultiplier = 1;
+        
+        hm.hp = Mathf.FloorToInt(hm.hp * hpMultiplier);
         
         hm.blackThreadState = _bts;
         hm.hasBlackThreadState = true;
@@ -141,8 +143,6 @@ public class BlackThreader : MonoBehaviour
             FirstThreadedSetUp();
             
             BecomeThreadedNoSing();
-
-            healthManager.hp = Mathf.FloorToInt(healthManager.hp * customHPMultiplier);
 
             return true;
         }

@@ -21,27 +21,32 @@ public class TravelBlock : ScriptBlock
     
     public static void Init()
     {
-        PreloadManager.RegisterPreload(new BasicPreload("Bellway_01_boss", "Fast Travel Map",
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_areabellway.bundle", 
+            "Assets/Prefabs/UI/Fast Travel Map.prefab",
             o =>
             {
                 o.transform.position = Vector3.zero;
                 o.SetActive(true);
                 _ftm = o.GetComponent<FastTravelMap>();
 
-                _map = Object.Instantiate(o.transform.Find("backing").gameObject, o.transform)
+                _map = Object.Instantiate(o.transform.Find("backing").gameObject)
                     .GetComponent<SpriteRenderer>();
+                _map.transform.parent = o.transform;
                 _map.name = "Map";
                 _map.transform.localScale = Vector3.one;
                 _map.transform.position = new Vector3(-6, 0, 2);
 
-                _top = Object.Instantiate(o.transform.Find("backing").gameObject, o.transform)
+                _top = Object.Instantiate(o.transform.Find("backing").gameObject)
                     .GetComponent<SpriteRenderer>();
+                _top.transform.parent = o.transform;
                 _top.name = "Top";
                 _top.transform.localScale = Vector3.one;
                 _top.transform.position = new Vector3(0, 6.9173f, 2);
 
-                _bot = Object.Instantiate(o.transform.Find("backing").gameObject, o.transform)
+                _bot = Object.Instantiate(o.transform.Find("backing").gameObject)
                     .GetComponent<SpriteRenderer>();
+                _bot.transform.parent = o.transform;
                 _bot.name = "Bottom";
                 _bot.transform.localScale = Vector3.one;
                 _bot.transform.position = new Vector3(0, -6.7024f, 2);
@@ -56,7 +61,7 @@ public class TravelBlock : ScriptBlock
                         .First(piece => piece.pairedButton == btn);
                     tb.piece = piece;
                 }
-            }, hads:true));
+            }, notSceneBundle:true));
         
         typeof(FastTravelMapButtonBase<FastTravelLocations>)
             .Hook(nameof(FastTravelMapButtonBase<FastTravelLocations>.IsUnlocked),

@@ -67,11 +67,13 @@ public static class MiscObjects
         obj.AddComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 
         var je = obj.AddComponent<Behaviour.Custom.JellyEgg>();
-        PreloadManager.RegisterPreload(new BasicPreload("Bone_East_14", "Gas Explosion Recycle M",
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_shared.bundle", 
+            "Assets/Prefabs/Enemies/Generic Attacks/Gas Explosion Recycle M.prefab",
             o =>
             {
                 je.explosion = o;
-            }, true));
+            }, notSceneBundle: true));
 
         var sr = obj.AddComponent<SpriteRenderer>();
         sr.sprite = ResourceUtils.LoadSpriteResource("jelly_egg_bomb", ppu:64);

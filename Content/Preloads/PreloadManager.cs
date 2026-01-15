@@ -1,58 +1,33 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Architect.Editor;
-using Architect.Storage;
 using Architect.Utils;
-using MonoMod.RuntimeDetour;
+using Silksong.AssetHelper.ManagedAssets;
+using Silksong.AssetHelper.Plugin;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Architect.Content.Preloads;
 
 public static class PreloadManager
 {
-    private static GameObject _canvasObj;
     public static bool HasPreloaded;
 
-    private static RectTransform _preloadBar;
-    private static float _preloadBarPoint;
-    
-    private static int _activePreloads;
-    private static int _finishedPreloads;
-    private static float _secondsSinceLastSet;
+    private static GameObject _canvasObj;
+
+    private static int _count;
 
     private static readonly Dictionary<string, List<(string, IPreload)>> ToPreload = [];
+    private static readonly List<(IPreload, ManagedAsset<GameObject>)> Preloaded = [];
     
     public static void Init()
     {
         AudioListener.pause = true;
         
-        // Waits for the GameManager to be ready before preloading
-        typeof(GameManager).Hook("Awake", DoPreload);
-        
         SetupCanvas();
-    }
-
-    private static void DoPreload(Action<GameManager> orig, GameManager self)
-    {
-        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("Patchwork"))
-        {
-            ArchitectPlugin.Logger.LogInfo("Patchwork fix...");
-            PatchworkFix.Init();
-        }
         
-        orig(self);
-        if (HasPreloaded) return;
-        self.StartCoroutine(Preload(self));
-        self.StartCoroutine(PreloadBar());
+        RegisterPreloads();
+        AssetRequestAPI.InvokeAfterBundleCreation(FinishPreloading);
     }
 
     private static void SetupCanvas()
@@ -68,136 +43,61 @@ public static class PreloadManager
         _canvasObj.AddComponent<GraphicRaycaster>();
 
         UIUtils.MakeImage("Preload BG", _canvasObj, Vector2.zero,
-            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3000, 3000))
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3000, 3000))
             .sprite = ResourceUtils.LoadSpriteResource("preloader_bg");
-        
-        UIUtils.MakeImage("Preload Frame", _canvasObj, Vector2.zero,
-            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(1030, 100))
-            .sprite = ResourceUtils.LoadSpriteResource("preloader_frame");
-        
-        var bar = UIUtils.MakeImage("Preload Bar", _canvasObj, Vector2.zero,
-            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 70));
-        bar.sprite = ResourceUtils.LoadSpriteResource("preloader_bar");
-
-        _preloadBar = bar.GetComponent<RectTransform>();
+    }
+    
+    private static void RegisterPreloads()
+    {
+        foreach (var (source, pair) in ToPreload)
+        {
+            foreach (var (path, preload) in pair)
+            {
+                var asset = preload.IsNotSceneBundle ?
+                    ManagedAsset<GameObject>.FromNonSceneAsset(path, source) : 
+                    ManagedAsset<GameObject>.FromSceneAsset(source, path);
+                
+                Preloaded.Add((preload, asset));
+            }
+        }
     }
 
-    private static IEnumerator PreloadBar()
+    private static void FinishPreloading()
     {
-        while (_preloadBarPoint < 995)
+        if (HasPreloaded) return;
+        _canvasObj.SetActive(true);
+        ArchitectPlugin.Instance.StartCoroutine(Preload());
+    }
+
+    private static IEnumerator Preload()
+    {
+        yield return new WaitForSeconds(1);
+        foreach (var (preload, asset) in Preloaded)
         {
-            _secondsSinceLastSet += Time.deltaTime;
-            _preloadBarPoint = Mathf.Lerp(_preloadBarPoint, 1000f * _finishedPreloads / ToPreload.Count, 
-                _secondsSinceLastSet / 10);
-            _preloadBar.sizeDelta = new Vector2(_preloadBarPoint, 70);
-            yield return null;
+            ArchitectPlugin.Instance.StartCoroutine(Prepare(preload, asset));
         }
 
-        yield return GameManager.instance.ReturnToMainMenu(false);
-        Object.Destroy(_canvasObj);
-
+        while (_count < Preloaded.Count) yield return null;
+        
+        EditorUI.CompleteSetup();
         HasPreloaded = true;
+        Object.Destroy(_canvasObj);
         AudioListener.pause = false;
     }
 
-    private static IEnumerator Preload(GameManager manager)
+    private static IEnumerator Prepare(IPreload preload, ManagedAsset<GameObject> asset)
     {
-        var preloadCount = Settings.PreloadCount.Value;
-        _canvasObj.SetActive(true);
-        
-        // Prevents errors where objects would try to find Hornet and she isn't present
-        var hornetPrefab = GameManager.instance.LoadHeroPrefab();
-        yield return hornetPrefab;
-        var hornet = Object.Instantiate(hornetPrefab.Result);
-        Object.DontDestroyOnLoad(hornet);
-        
-        // Prevents assets from being unloaded
-        var keepObjects = new Hook(typeof(AssetBundle).GetMethod(nameof(AssetBundle.UnloadAsync)),
-            (Func<AssetBundle, bool, AssetBundleUnloadOperation> orig, AssetBundle self, bool _) => orig(self, false));
-        // Prevents enemies from dying during preload
-        var stopDeath = new Hook(typeof(HealthManager).GetMethod("TakeDamage", 
-            BindingFlags.NonPublic | BindingFlags.Instance),
-            (Action<HealthManager, HitInstance> _, HealthManager _, HitInstance _) => {});
-        HookUtils.OnFsmAwake += BlockControllers;
-        
-        foreach (var pair in ToPreload)
-        {
-            while (_activePreloads >= preloadCount) yield return null;
-            
-            var process = Addressables.LoadSceneAsync("Scenes/" + pair.Key, 
-                LoadSceneMode.Additive);
-            _activePreloads++;
-            manager.StartCoroutine(PreloadScene(process, pair.Value));
-        }
-        
-        while (_activePreloads > 0) yield return null;
-        
-        EditorUI.CompleteSetup();
-        
-        keepObjects.Dispose();
-        stopDeath.Dispose();
-        HookUtils.OnFsmAwake -= BlockControllers;
-        
-        Resources.UnloadUnusedAssets();
-        
-        Object.Destroy(hornet);
-        GameManager.instance.UnloadHeroPrefab();
+        asset.Load();
+        yield return asset.Handle;
+
+        if (asset.Handle.OperationException != null) yield break;
+
+        var foundObject = asset.Handle.Result;
+        preload.BeforePreload(foundObject);
+        preload.AfterPreload(foundObject);
+        _count++;
     }
     
-    private static IEnumerator PreloadScene(AsyncOperationHandle<SceneInstance> process, 
-        List<(string, IPreload)> objects)
-    {
-        yield return process;
-        
-        var rootObjects = process.Result.Scene.GetRootGameObjects();
-        foreach (var obj in rootObjects) obj.SetActive(false);
-
-        foreach (var preload in objects)
-        {
-            try
-            {
-                GameObject foundObject;
-                var reEnable = false;
-                if (preload.Item2.IsHideAndDontSave)
-                {
-                    foundObject = Resources.FindObjectsOfTypeAll<GameObject>()
-                        .First(o => o.name == preload.Item2.Path);
-                    if (foundObject.activeSelf) reEnable = true;
-                    foundObject.SetActive(false);
-                } else foundObject = ObjectUtils.GetGameObjectFromArray(rootObjects, preload.Item1);
-            
-                preload.Item2.BeforePreload(foundObject);
-                
-                var obj = Object.Instantiate(foundObject);
-                obj.SetActive(false);
-
-                Object.DontDestroyOnLoad(obj);
-
-                preload.Item2.AfterPreload(obj);
-                
-                if (reEnable) foundObject.SetActive(true);
-            }
-            catch (NullReferenceException)
-            {
-                ArchitectPlugin.Logger.LogError($"Could not find object {preload.Item1} for preload");
-            }
-            catch (ArgumentException)
-            {
-                ArchitectPlugin.Logger.LogError($"Invalid path {preload.Item1} for preload");
-            }
-        }
-        
-        yield return Addressables.UnloadSceneAsync(process);
-        _finishedPreloads++;
-        _activePreloads--;
-        _secondsSinceLastSet = 0;
-    }
-
-    private static void BlockControllers(PlayMakerFSM fsm)
-    {
-        if (fsm.FsmName == "mist_maze_controller" || fsm.name == "Acolyte Control") fsm.enabled = false;
-    }
-
     public static void RegisterPreload(IPreload obj)
     {
         if (!ToPreload.ContainsKey(obj.Scene)) ToPreload[obj.Scene] = [];

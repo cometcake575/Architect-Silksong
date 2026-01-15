@@ -41,7 +41,7 @@ public static class LevelSharerUI
         }
     }
     
-    [CanBeNull] private static string _apiKey = StorageManager.LoadApiKey();
+    [CanBeNull] private static string _apiKey = StorageManager.LoadSharerKey();
     
     private static GameObject _canvasObj;
     private static GameObject _levelSharerObj;
@@ -113,7 +113,7 @@ public static class LevelSharerUI
     {
         var bg = UIUtils.MakeImage("Background", _canvasObj, Vector3.zero,
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3000, 3000));
-        bg.sprite = ResourceUtils.LoadSpriteResource("level_sharer_bg");
+        bg.sprite = ResourceUtils.LoadSpriteResource("Sharer.bg");
         _backgroundObj = bg.gameObject;
         _backgroundObj.SetActive(false);
         _backgroundObj.transform.SetAsFirstSibling();
@@ -121,8 +121,8 @@ public static class LevelSharerUI
     
     private static void SetupSwitchArea()
     {
-        var openEditor = ResourceUtils.LoadSpriteResource("level_sharer_open");
-        var closeEditor = ResourceUtils.LoadSpriteResource("level_sharer_close");
+        var openEditor = ResourceUtils.LoadSpriteResource("Sharer.open");
+        var closeEditor = ResourceUtils.LoadSpriteResource("Sharer.close");
 
         var (btn, img, _) = UIUtils.MakeButtonWithImage("Toggle Sharer UI", _canvasObj,
             new Vector3(-50, -50), new Vector2(1, 1), new Vector2(1, 1),
@@ -159,9 +159,9 @@ public static class LevelSharerUI
             new Vector3(-50, -140), new Vector2(1, 1), new Vector2(1, 1),
             220, 220);
         var eraseAll = ResourceUtils.LoadSpriteResource("erase_all");
-        var eraseAll3 = ResourceUtils.LoadSpriteResource("erase_all_3");
-        var eraseAll2 = ResourceUtils.LoadSpriteResource("erase_all_2");
-        var eraseAll1 = ResourceUtils.LoadSpriteResource("erase_all_1");
+        var eraseAll3 = ResourceUtils.LoadSpriteResource("erase_all");
+        var eraseAll2 = ResourceUtils.LoadSpriteResource("erase_all");
+        var eraseAll1 = ResourceUtils.LoadSpriteResource("erase_all");
 
         eraseImg.sprite = eraseAll;
 

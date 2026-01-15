@@ -262,4 +262,13 @@ public static class UIUtils
         
         return img;
     }
+
+    public static void RemoveOffset(this GameObject obj)
+    {
+        var rt = obj.GetOrAddComponent<RectTransform>();
+        rt.anchorMax = Vector2.one;
+        rt.anchorMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        rt.offsetMin = Vector2.zero;
+    }
 }

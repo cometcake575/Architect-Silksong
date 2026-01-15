@@ -45,7 +45,7 @@ public class ObjectMover : MonoBehaviour
         }
     }
 
-    public void Move()
+    public void Move(float eX, float eY)
     {
         if (!_target) return;
         if (!_source) return;
@@ -55,8 +55,8 @@ public class ObjectMover : MonoBehaviour
         var sourceRot = _source.eulerAngles;
         sourceRot.z += rotation;
 
-        if (moveX) _target.transform.SetPositionX(_source.position.x + xOffset);
-        if (moveY) _target.transform.SetPositionY(_source.position.y + yOffset);
+        if (moveX) _target.transform.SetPositionX(_source.position.x + xOffset + eX);
+        if (moveY) _target.transform.SetPositionY(_source.position.y + yOffset + eY);
         _target.transform.eulerAngles = sourceRot;
     }
 }

@@ -131,6 +131,7 @@ public class Prefab : PreviewableBehaviour
                     placement.GetPos() + transform.position - new Vector3(100, 100),
                     name
                 );
+                PlacementManager.PrefabPlacements[placement.GetId() + name] = placement;
                 if (obj)
                 {
                     PlacementManager.Objects[placement.GetId() + name] = obj;

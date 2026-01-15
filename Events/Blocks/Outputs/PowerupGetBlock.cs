@@ -13,12 +13,13 @@ public class PowerupGetBlock : ScriptBlock
     private static PowerUpGetMsg _pugm;
     public static void Init()
     {
-        PreloadManager.RegisterPreload(new BasicPreload("Shellwood_10", "Ancestral_Art_Get_Prompt",
+        PreloadManager.RegisterPreload(new BasicPreload("prompts_assets_all.bundle", 
+            "Assets/Prefabs/UI/Hornet UI/Ancestral_Art_Get_Prompt.prefab",
             o =>
             {
                 o.SetActive(true);
                 _pugm = o.GetComponent<PowerUpGetMsg>();
-            }, hads:true));
+            }, notSceneBundle:true));
     }
     
     protected override IEnumerable<string> Inputs => ["Display"];

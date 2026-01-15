@@ -1832,7 +1832,9 @@ public static class EnemyFixers
     {
         RemoveConstrainPosition(obj);
 
-        obj.transform.Find("Legs Container").GetChild(0).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+        var head = obj.transform.Find("Legs Container").GetChild(0).GetChild(0);
+        head.gameObject.AddComponent<PlaceableObject.SpriteSource>();
+        head.GetChild(0).Find("Roll Collider").gameObject.layer = LayerMask.NameToLayer("Enemies");
     }
 
     public static void FixServitorIgnim(GameObject obj)
@@ -1960,7 +1962,7 @@ public static class EnemyFixers
             };
         }
     }
-
+    
     public static void FixCogworkSpine(GameObject obj)
     {
         FixPatroller(obj);
@@ -2128,20 +2130,6 @@ public static class EnemyFixers
         obj.AddComponent<Driznit>();
     }
 
-    private static Material _gloomCorpseMaterial;
-    
-    public static void FixGargantGloomPreload(GameObject obj)
-    {
-        var psr = obj.transform.Find("Pt Spit").GetChild(0).GetComponent<ParticleSystemRenderer>();
-        psr.material = psr.material;
-        
-        var ede = obj.GetComponent<EnemyDeathEffects>();
-        ede.PreInstantiate();
-        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
-        _gloomCorpseMaterial = corpse.transform.GetChild(0).GetChild(0).GetChild(1)
-            .GetComponent<ParticleSystemRenderer>().material;
-    }
-
     public static void FixGargantGloom(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
@@ -2151,12 +2139,6 @@ public static class EnemyFixers
         fsm.GetState("Start R").DisableAction(0);
 
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("WAKE"));
-        
-        var ede = obj.GetComponent<EnemyDeathEffects>();
-        ede.PreInstantiate();
-        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
-        corpse.transform.GetChild(0).GetChild(0).GetChild(1)
-            .GetComponent<ParticleSystemRenderer>().material = _gloomCorpseMaterial;
     }
 
     public static void FixGloomsac(GameObject obj)
