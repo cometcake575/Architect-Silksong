@@ -27,7 +27,8 @@ public class LevelInfo
         Multiplayer,
         Gauntlets,
         Areas,
-        Troll
+        Troll,
+        Boss
     }
 
     // Determined by votes

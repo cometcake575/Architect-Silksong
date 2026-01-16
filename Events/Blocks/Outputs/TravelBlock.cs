@@ -6,6 +6,7 @@ using Architect.Content.Preloads;
 using Architect.Utils;
 using GlobalEnums;
 using TeamCherry.Localization;
+using TeamCherry.NestedFadeGroup;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -26,8 +27,10 @@ public class TravelBlock : ScriptBlock
             "Assets/Prefabs/UI/Fast Travel Map.prefab",
             o =>
             {
+                o = Object.Instantiate(o);
+                Object.DontDestroyOnLoad(o);
                 o.transform.position = Vector3.zero;
-                o.SetActive(true);
+                Object.Destroy(o.transform.GetChild(3).GetChild(0).gameObject);
                 _ftm = o.GetComponent<FastTravelMap>();
 
                 _map = Object.Instantiate(o.transform.Find("backing").gameObject)

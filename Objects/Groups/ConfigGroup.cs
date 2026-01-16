@@ -1744,7 +1744,7 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
-    public static readonly List<ConfigType> Png = GroupUtils.Merge(Decorations, [
+    public static readonly List<ConfigType> Png = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("PNG URL", "png_url",
                 (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
@@ -1823,7 +1823,7 @@ public static class ConfigGroup
                 {
                     o.GetComponentInChildren<PngObject>().playing = value.GetValue();
                 }).WithDefaultValue(true).WithPriority(-2))
-    ]);
+    ]));
 
     private static readonly ConfigType WavUrl = ConfigurationManager.RegisterConfigType(
         new StringConfigType("WAV URL", "wav_url",

@@ -18,6 +18,9 @@ public static class VanillaObjects
 {
     public static void Init()
     {
+        PreloadManager.RegisterPreload(new BasicPreload("shopui_assets_all.bundle", "Assets/Prefabs/UI/Shop/Shop Menu.prefab",
+            _ => { }, notSceneBundle: true));
+        
         AddMossObjects();
         AddMarrowObjects();
         AddDocksObjects();

@@ -230,6 +230,7 @@ public static class MiscFixers
     public static void AddBenchEvent(GameObject obj)
     {
         var fsm = obj.GetComponentsInChildren<PlayMakerFSM>().First(o => o.FsmName == "Bench Control");
+        fsm.fsmTemplate = null;
         fsm.GetState("Start Rest Anim").AddAction(() => obj.BroadcastEvent("OnSit"), 0);
     }
 

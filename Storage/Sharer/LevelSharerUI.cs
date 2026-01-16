@@ -159,9 +159,9 @@ public static class LevelSharerUI
             new Vector3(-50, -140), new Vector2(1, 1), new Vector2(1, 1),
             220, 220);
         var eraseAll = ResourceUtils.LoadSpriteResource("erase_all");
-        var eraseAll3 = ResourceUtils.LoadSpriteResource("erase_all");
-        var eraseAll2 = ResourceUtils.LoadSpriteResource("erase_all");
-        var eraseAll1 = ResourceUtils.LoadSpriteResource("erase_all");
+        var eraseAll3 = ResourceUtils.LoadSpriteResource("erase_all_3");
+        var eraseAll2 = ResourceUtils.LoadSpriteResource("erase_all_2");
+        var eraseAll1 = ResourceUtils.LoadSpriteResource("erase_all_1");
 
         eraseImg.sprite = eraseAll;
 
