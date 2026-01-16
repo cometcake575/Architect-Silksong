@@ -213,8 +213,8 @@ public class ObjectPlacement(
         else pos.z = _position.z;
         var wasPrefabActive = type.Prefab.activeSelf;
         type.Prefab.SetActive(false);
-        if (wasPrefabActive) type.Prefab.SetActive(true);
         var obj = Object.Instantiate(type.Prefab, pos, type.Prefab.transform.rotation);
+        if (wasPrefabActive) type.Prefab.SetActive(true);
         obj.name = $"[Architect] {type.GetName()} ({cId})";
 
         FixId<int>(obj, cId);

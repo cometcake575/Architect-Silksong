@@ -1403,6 +1403,13 @@ public static class EnemyFixers
         anim.defaultClipId = anim.GetClipIdByName("Branch 01 Idle");
     }
 
+    public static void FinishSplinterFix(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Behaviour Base");
+        fsm.fsmTemplate = null;
+        fsm.GetState("Initial Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
     public static void FixSisterSplinter(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");

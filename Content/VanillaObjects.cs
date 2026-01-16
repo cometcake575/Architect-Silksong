@@ -1405,6 +1405,7 @@ public static class VanillaObjects
                 ("Bonetown", "Black Thread States/Black Thread World/Thief Scene/Rosary Thief Group/Rosary Thief"),
                 postSpawnAction: o =>
                 {
+                    o.LocateMyFSM("Rummage Voice").enabled = false;
                     o.LocateMyFSM("Control").GetState("Left").AddAction(() => o.BroadcastEvent("OnFlee"), 0);
                 }).WithBroadcasterGroup(BroadcasterGroup.Snitchfly)
             .DoFlipX();
@@ -1634,9 +1635,11 @@ public static class VanillaObjects
         
         AddEnemy("Wood Wasp", "wood_wasp", ("Shellwood_02", "Shellwood Wasp"));
         AddEnemy("Splinter", "splinter", ("Shellwood_02", "Stick Insect"),
-            preloadAction: EnemyFixers.FixSplinter);
+            preloadAction: EnemyFixers.FixSplinter,
+            postSpawnAction: EnemyFixers.FinishSplinterFix);
         AddEnemy("Splinterhorn", "splinterhorn", ("Shellwood_02", "Stick Insect Charger"),
-            preloadAction: EnemyFixers.FixSplinter);
+            preloadAction: EnemyFixers.FixSplinter,
+            postSpawnAction: EnemyFixers.FinishSplinterFix);
         AddEnemy("Splinterbark", "splinterbark", 
             ("Shellwood_26", "Black Thread States/Normal World/Stick Insect Flyer (1)"));
         
