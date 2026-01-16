@@ -10,6 +10,7 @@ using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Prefabs;
+using Architect.Storage.Sharer;
 using Architect.Utils;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -244,6 +245,8 @@ public static class StorageManager
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
 
+        LevelSharerUI.CurrentlyDownloading = false;
+        LevelSharerUI.RefreshActiveOptions();
         PrefabsCategory.Prefabs = LoadPrefabs();
 
         var plural = CustomAssetManager.Failed == 1 ? "" : "s";

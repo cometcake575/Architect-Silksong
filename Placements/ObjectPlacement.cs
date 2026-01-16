@@ -211,6 +211,9 @@ public class ObjectPlacement(
 
         if (pos == default) pos = _position;
         else pos.z = _position.z;
+        var wasPrefabActive = type.Prefab.activeSelf;
+        type.Prefab.SetActive(false);
+        if (wasPrefabActive) type.Prefab.SetActive(true);
         var obj = Object.Instantiate(type.Prefab, pos, type.Prefab.transform.rotation);
         obj.name = $"[Architect] {type.GetName()} ({cId})";
 
