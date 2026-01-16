@@ -607,15 +607,17 @@ public static class EnemyFixers
         anim.defaultClipId = anim.GetClipIdByName("Idle");
 
         obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.AddComponent<Teleplane>();
     }
 
     public class Teleplane : MonoBehaviour
     {
-        public float width;
+        public float width = 5;
+        public float height = 1;
 
         private void Start()
         {
-            var fsm = gameObject.LocateMyFSM("Attack");
+            var fsm = gameObject.GetComponent<PlayMakerFSM>();
             var teleplane = new GameObject(name + " Teleplane")
             {
                 transform = { position = transform.position },
@@ -623,8 +625,12 @@ public static class EnemyFixers
             };
             var col = teleplane.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
-            col.size = new Vector2(width, 1);
-            ((FindClosest)fsm.GetState("Get Teleplane").actions[0]).name = teleplane.name;
+            col.size = new Vector2(width, height);
+
+            var st = fsm.GetState("Get Teleplane");
+            if (st != null) ((FindClosest)st.actions[0]).name = teleplane.name;
+
+            fsm.FsmVariables.FindFsmGameObject("Teleplane").Value = teleplane;
         }
     }
 
@@ -1160,12 +1166,7 @@ public static class EnemyFixers
 
     public static void FixClawmaiden(GameObject obj)
     {
-        var anim = obj.GetComponent<tk2dSpriteAnimator>();
-        anim.defaultClipId = anim.GetClipIdByName("Rest");
-
-        obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Off Plane").value = false;
-
-        obj.transform.SetPositionZ(0.006f);
+        obj.AddComponent<Teleplane>();
     }
 
     public static void FixVaultborn(GameObject obj)

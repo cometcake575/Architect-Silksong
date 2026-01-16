@@ -1599,13 +1599,26 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Dig Range", "surgeon_range", (o, value) =>
             {
-                o.AddComponent<EnemyFixers.Teleplane>().width = value.GetValue();
+                o.GetComponent<EnemyFixers.Teleplane>().width = value.GetValue();
             }).WithDefaultValue(5)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Invisible Body", "surgeon_no_body", (o, value) =>
             {
                 if (value.GetValue()) o.GetComponent<tk2dSprite>().scale = Vector3.zero;
             }).WithDefaultValue(false))
+    ]);
+
+    public static readonly List<ConfigType> Teleplane = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Teleplane Width", "teleplane_width", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.Teleplane>().width = value.GetValue();
+            }).WithDefaultValue(5)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Teleplane Height", "teleplane_height", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.Teleplane>().height = value.GetValue();
+            }).WithDefaultValue(5))
     ]);
 
     public static readonly List<ConfigType> Jailer = GroupUtils.Merge(Enemies, [

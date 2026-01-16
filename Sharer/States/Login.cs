@@ -54,8 +54,8 @@ public class Login : MenuState
             size: new Vector2(420, 80));
         signupLabel.textComponent.fontSize = 20;
         
-        var result = UIUtils.MakeLabel("Username Title", gameObject,
-            new Vector2(0, -100), 
+        var result = UIUtils.MakeLabel("Status", gameObject,
+            new Vector2(0, -140), 
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f)).textComponent;
         result.fontSize = 16;
         result.alignment = TextAnchor.MiddleCenter;

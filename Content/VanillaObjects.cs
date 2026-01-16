@@ -67,8 +67,7 @@ public static class VanillaObjects
         PreloadManager.RegisterPreload(new BasicPreload("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap",
             o =>
             {
-                o.transform.parent = sphere.transform;
-                o.transform.localPosition = Vector3.zero;
+                Object.Instantiate(o, sphere.transform).transform.localPosition = Vector3.zero;
             }));
         Categories.Hazards.Add(new CustomObject("Voltring", "coral_lightning_orb", sphere,
             sprite: ResourceUtils.LoadSpriteResource("voltring", ppu:64))
@@ -236,6 +235,23 @@ public static class VanillaObjects
     private static void AddRoadObjects()
     {
         AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
+        
+        Categories.Hazards.Add(new PreloadObject("Caltrop", "caltrop",
+                ("localpoolprefabs_assets_areadust.bundle", 
+                    "Assets/Prefabs/Hornet Enemies/Caltrop.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity));
+        
+        Categories.Hazards.Add(new PreloadObject("Caltrop Pair", "caltrop_ball",
+                ("localpoolprefabs_assets_areadust.bundle", 
+                    "Assets/Prefabs/Hornet Enemies/Caltrop Ball.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity));
+        
         AddEnemy("Roachcatcher", "roachcatcher", ("Dust_02", "Roachfeeder Short"));
         AddEnemy("Roachfeeder", "roachfeeder",
             ("Dust_02", "Black Thread States Thread Only Variant/Normal World/Roachfeeder Tall")).DoFlipX();
@@ -376,15 +392,15 @@ public static class VanillaObjects
         PreloadManager.RegisterPreload(new BasicPreload(
             "localpoolprefabs_assets_areahang.bundle", 
             "Assets/Prefabs/Hornet Enemies/rune bomb small.prefab", o =>
-        {
-            o.transform.parent = choirBombS.transform;
-            bombS.Offset = o.transform.GetChild(1).transform.localPosition;
+            {
+                o = Object.Instantiate(o, choirBombS.transform);
+                bombS.Offset = o.transform.GetChild(1).transform.localPosition;
         }, notSceneBundle: true));
         PreloadManager.RegisterPreload(new BasicPreload(
             "localpoolprefabs_assets_areahang.bundle", 
             "Assets/Prefabs/Hornet Enemies/rune slam.prefab", o =>
         {
-            o.transform.parent = choirBombL.transform;
+            o = Object.Instantiate(o, choirBombL.transform);
             bombL.Offset = o.transform.GetChild(1).transform.localPosition;
         }, notSceneBundle: true));
 
@@ -404,8 +420,11 @@ public static class VanillaObjects
         AddEnemy("Grand Reed", "song_reed_grand",
             ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)")).DoFlipX();
 
-        AddEnemy("Clawmaiden", "clawmaiden", ("Hang_04_boss", "Battle Scene/Wave 4/Song Handmaiden"),
-            preloadAction: EnemyFixers.FixClawmaiden);
+        AddEnemy("Clawmaiden", "clawmaiden",
+            ("localpoolprefabs_assets_areahangareasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Handmaiden.prefab"),
+            postSpawnAction: EnemyFixers.FixClawmaiden,
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Teleplane);
 
         Categories.Interactable.Add(new PreloadObject("Dial Door", "dial_door",
                 ("Song_20b", "Dial Door Bridge"),
@@ -598,7 +617,9 @@ public static class VanillaObjects
     private static void AddMemoryObjects()
     {
         Categories.Enemies.Add(new PreloadObject("Wingmould", "white_palace_fly",
-            ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)")).DoFlipX())
+            ("Memory_Red", "Scenery Groups/End Scenery/White Palace Fly Red Memory (1)"),
+            preloadAction: o => o.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll)
+                .DoFlipX())
             .WithConfigGroup(ConfigGroup.SimpleEnemies)
             .WithBroadcasterGroup(BroadcasterGroup.Damageable);
 
@@ -748,9 +769,9 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixPatroller)
             .WithConfigGroup(ConfigGroup.YPatroller);
         
-        AddEnemy("Craw", "crow", ("Greymoor_15b",
-                "Crow Court Objects (Children activated on start)/crowcourt - not in session/Crow (3)"),
-            preloadAction: o => o.transform.SetPositionZ(0.006f));
+        AddEnemy("Craw", "crow", ("localpoolprefabs_assets_areagreymoor",
+                "Assets/Prefabs/Hornet Enemies/Crow.prefab"),
+            notSceneBundle: true);
         AddEnemy("Tallcraw", "crowman", ("Greymoor_15b", "Crowman"),
             preloadAction:EnemyFixers.KeepActive);
         AddEnemy("Squatcraw", "crowman_dagger", ("Greymoor_15b", "Crowman Dagger (1)"),

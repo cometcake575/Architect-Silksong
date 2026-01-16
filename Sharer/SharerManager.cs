@@ -39,7 +39,9 @@ public static class SharerManager
         Object.DontDestroyOnLoad(_sharer);
 
         _sharer.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-        _sharer.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        var scaler = _sharer.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         _sharer.AddComponent<GraphicRaycaster>();
 
         _states = new GameObject("States");
@@ -92,7 +94,7 @@ public static class SharerManager
         var (btn, img, _) = UIUtils.MakeButtonWithImage("Toggle Sharer UI", _sharer,
             new Vector3(-50, -50), new Vector2(1, 1), new Vector2(1, 1),
             220, 220);
-        OpenSharerBtn = btn.gameObject; // TODO Find out why this is bigger
+        OpenSharerBtn = btn.gameObject;
         img.sprite = openEditor;
 
         btn.onClick.AddListener(ToggleSharer);

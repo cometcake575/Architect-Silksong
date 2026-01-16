@@ -593,7 +593,6 @@ public static class MiscFixers
 
     public static void FixArchitect(GameObject obj)
     {
-        obj.transform.parent.DetachChildren();
         obj.transform.SetPositionZ(0.006f);
         
         obj.GetComponentInChildren<BoxCollider2D>().size = new Vector2(7, 2);
