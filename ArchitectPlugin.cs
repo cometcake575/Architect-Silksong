@@ -8,7 +8,6 @@ using Architect.Multiplayer;
 using Architect.Objects.Categories;
 using Architect.Placements;
 using Architect.Prefabs;
-using Architect.Sharer;
 using Architect.Storage;
 using Architect.Storage.Sharer;
 using Architect.Utils;
@@ -18,7 +17,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.10.0")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.10.1")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]

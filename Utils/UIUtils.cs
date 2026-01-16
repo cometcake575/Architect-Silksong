@@ -211,9 +211,9 @@ public static class UIUtils
 
         public Text textComponent;
 
-        private void Start()
+        private void Update()
         {
-            textComponent.font = GetFont(font);
+            textComponent.font ??= GetFont(font);
         }
     }
 

@@ -12,7 +12,7 @@ public class BasicPreload(
     public string Scene { get; } = scene;
     public string Path { get; } = path;
 
-    public void AfterPreload(GameObject preload) => callback(preload);
+    public void OnPreload(GameObject preload) => callback(preload);
     
     public bool IsNotSceneBundle => notSceneBundle;
 }

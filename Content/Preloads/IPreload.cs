@@ -7,8 +7,7 @@ public interface IPreload
     public string Scene { get; }
     public string Path { get; }
 
-    public void BeforePreload(GameObject original) {}
-    public void AfterPreload(GameObject preload) {}
+    public void OnPreload(GameObject preload) {}
 
     public bool IsNotSceneBundle { get; }
 }

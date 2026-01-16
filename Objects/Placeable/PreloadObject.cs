@@ -34,7 +34,9 @@ public class PreloadObject : PlaceableObject, IPreload
         PreloadManager.RegisterPreload(this);
     }
 
-    public void BeforePreload(GameObject original) => _preloadAction?.Invoke(original);
-
-    public void AfterPreload(GameObject preload) => FinishSetup(preload);
+    public void OnPreload(GameObject preload)
+    {
+        _preloadAction?.Invoke(preload);
+        FinishSetup(preload);
+    }
 }

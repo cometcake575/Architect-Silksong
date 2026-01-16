@@ -27,6 +27,13 @@ public static class ReceiverGroup
         }, true))
     ];
     
+    public static readonly List<EventReceiverType> Wisp = [
+        EventManager.RegisterReceiverType(new EventReceiverType("wisp_go", "Fire", o =>
+        {
+            o.LocateMyFSM("Control").SetState("Fire Antic");
+        }))
+    ];
+    
     public static readonly List<EventReceiverType> Activatable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("grow_pod", "Grow", o =>
         {

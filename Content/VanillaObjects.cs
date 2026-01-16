@@ -340,7 +340,9 @@ public static class VanillaObjects
         AddEnemy("Choir Pouncer", "pilgrim_01_song",
             ("Song_11", "Black Thread States Thread Only Variant/Normal World/Pilgrim 01 Song"));
         AddEnemy("Choir Hornhead", "pilgrim_02_song", ("Song_11", "Pilgrim 02 Song"));
-        AddEnemy("Choristor", "choristor", ("Hang_04_boss", "Battle Scene/Wave 1/Song Pilgrim 03"),
+        AddEnemy("Choristor", "choristor", 
+            ("localpoolprefabs_assets_areasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Pilgrim 03.prefab"),
+            notSceneBundle: true,
             preloadAction: EnemyFixers.FixChoristor);
 
         AddEnemy("Envoy", "envoy", ("Song_17", "March Group Control/March Group R/Song Pilgrim 01"));
@@ -354,7 +356,7 @@ public static class VanillaObjects
         AddEnemy("Choir Clapper", "heavy_sentry", 
             ("Hang_04_boss", "Battle Scene/Wave 8 - Heavy Sentry/Song Heavy Sentry"),
             postSpawnAction: MiscFixers.FixChoirClapper).DoFlipX();
-
+        
         var choirBombS = new GameObject("[Architect] Choir Bomb S");
         choirBombS.SetActive(false);
         Object.DontDestroyOnLoad(choirBombS);
@@ -1569,7 +1571,8 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Wisp", "wisp",
                 ("localpoolprefabs_assets_areawisp.bundle", "Assets/Prefabs/Hornet Enemies/Wisp Fireball.prefab"), 
                 postSpawnAction: HazardFixers.FixWisp, notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Wisp));
+            .WithConfigGroup(ConfigGroup.Wisp)
+            .WithReceiverGroup(ReceiverGroup.Wisp));
         
         AddEnemy("Burning Bug", "farmer_wisp", 
             ("Wisp_02", "Wisp Farmers/Farmer Wisp"), preloadAction: o =>

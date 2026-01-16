@@ -14,8 +14,10 @@ public static class PreloadManager
     public static bool HasPreloaded;
 
     private static GameObject _canvasObj;
+    private static Text _status;
 
     private static int _count;
+    private static int _totalCount;
 
     private static readonly Dictionary<string, List<(string, IPreload)>> ToPreload = [];
     private static readonly List<(IPreload, ManagedAsset<GameObject>)> Preloaded = [];
@@ -24,8 +26,6 @@ public static class PreloadManager
     {
         AudioListener.pause = true;
         
-        SetupCanvas();
-        
         RegisterPreloads();
         AssetRequestAPI.InvokeAfterBundleCreation(FinishPreloading);
     }
@@ -33,7 +33,6 @@ public static class PreloadManager
     private static void SetupCanvas()
     {
         _canvasObj = new GameObject("[Architect] Preload Status");
-        _canvasObj.SetActive(false);
         Object.DontDestroyOnLoad(_canvasObj);
 
         _canvasObj.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -45,6 +44,14 @@ public static class PreloadManager
         UIUtils.MakeImage("Preload BG", _canvasObj, Vector2.zero,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3000, 3000))
             .sprite = ResourceUtils.LoadSpriteResource("preloader_bg");
+
+        var label = UIUtils.MakeLabel("Progress", _canvasObj, Vector2.zero, new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f));
+        label.font = "TrajanPro-Bold";
+        label.transform.SetAsLastSibling();
+        _status = label.textComponent;
+        _status.alignment = TextAnchor.UpperCenter;
+        _status.fontSize = 32;
     }
     
     private static void RegisterPreloads()
@@ -65,13 +72,14 @@ public static class PreloadManager
     private static void FinishPreloading()
     {
         if (HasPreloaded) return;
-        _canvasObj.SetActive(true);
+        SetupCanvas();
         ArchitectPlugin.Instance.StartCoroutine(Preload());
     }
 
     private static IEnumerator Preload()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
+        _totalCount = Preloaded.Count;
         foreach (var (preload, asset) in Preloaded)
         {
             ArchitectPlugin.Instance.StartCoroutine(Prepare(preload, asset));
@@ -93,9 +101,9 @@ public static class PreloadManager
         if (asset.Handle.OperationException != null) yield break;
 
         var foundObject = asset.Handle.Result;
-        preload.BeforePreload(foundObject);
-        preload.AfterPreload(foundObject);
+        preload.OnPreload(foundObject);
         _count++;
+        _status.text = $"{_count} / {_totalCount}";
     }
     
     public static void RegisterPreload(IPreload obj)

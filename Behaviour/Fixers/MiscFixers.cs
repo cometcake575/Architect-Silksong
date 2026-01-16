@@ -455,6 +455,7 @@ public static class MiscFixers
 
     public static void FixUpdraft(GameObject obj)
     {
+        obj.transform.GetChild(0).gameObject.SetActive(false);
         obj.transform.SetScale2D(new Vector2(1, 1));
     }
 
