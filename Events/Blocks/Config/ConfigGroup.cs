@@ -565,6 +565,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Normalise =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<NormaliseBlock>("Angle", "normalise_angle", 
+                (b, f) => b.Angle = f.GetValue())
+                .WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> KeyListener =
     [
         ConfigurationManager.RegisterConfigType(

@@ -39,12 +39,19 @@ public class NormaliseBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Normalise";
 
+    protected override void Reset()
+    {
+        Angle = 0;
+    }
+    
+    public float Angle;
+
     protected override object GetValue(string id)
     {
         var v1 = GetVariable<float>("X");
         var v2 = GetVariable<float>("Y");
 
-        var normal = new Vector2(v1, v2).normalized;
+        var normal = Quaternion.Euler(0, 0, Angle) * new Vector2(v1, v2).normalized;
         return id == "X" ? normal.x : normal.y;
     }
 }

@@ -19,7 +19,7 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<RandomNumBlock>("Random Number", ConfigGroup.RandomNumber);
         ScriptManager.RegisterProcessBlock<RandomBoolBlock>("Random Bool");
         ScriptManager.RegisterProcessBlock<MathsBlock>("Operation", ConfigGroup.Maths);
-        ScriptManager.RegisterProcessBlock<NormaliseBlock>("Normalise");
+        ScriptManager.RegisterProcessBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);
         ScriptManager.RegisterProcessBlock<AndBlock>("And");
         ScriptManager.RegisterProcessBlock<OrBlock>("Or");
         ScriptManager.RegisterProcessBlock<NotBlock>("Not");
