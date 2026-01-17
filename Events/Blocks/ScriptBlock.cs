@@ -115,14 +115,28 @@ public abstract class ScriptBlock
         if (!IsValid) return;
         foreach (var (source, links) in EventMap)
         {
-            foreach (var (block, trigger) in links) 
-                ScriptManager.MakeLink(this, source, ScriptManager.Blocks[block], trigger, 
+            foreach (var (block, trigger) in links.ToArray())
+            {
+                if (!ScriptManager.Blocks.TryGetValue(block, out var targetBlock)
+                    || !targetBlock.IsValid)
+                {
+                    links.Remove((block, trigger));
+                    continue;
+                }
+                ScriptManager.MakeLink(this, source, targetBlock, trigger,
                     ScriptManager.Connection.LinkType.Event);
+            }
         }
 
-        foreach (var (source, (block, trigger)) in VarMap)
+        foreach (var (source, (block, trigger)) in VarMap.ToArray())
         {
-            ScriptManager.MakeLink(this, source, ScriptManager.Blocks[block], trigger,
+            if (!ScriptManager.Blocks.TryGetValue(block, out var targetBlock)
+                || !targetBlock.IsValid)
+            {
+                VarMap.Remove(source);
+                continue;
+            }
+            ScriptManager.MakeLink(this, source, targetBlock, trigger,
                 ScriptManager.Connection.LinkType.Var);
         }
     }

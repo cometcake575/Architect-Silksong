@@ -29,3 +29,22 @@ public class MathsBlock : ScriptBlock
         };
     }
 }
+
+public class NormaliseBlock : ScriptBlock
+{
+    protected override IEnumerable<(string, string)> OutputVars => [("X", "Number"), ("Y", "Number")];
+    protected override IEnumerable<(string, string)> InputVars => [("X", "Number"), ("Y", "Number")];
+    
+    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Normalise";
+
+    protected override object GetValue(string id)
+    {
+        var v1 = GetVariable<float>("X");
+        var v2 = GetVariable<float>("Y");
+
+        var normal = new Vector2(v1, v2).normalized;
+        return id == "X" ? normal.x : normal.y;
+    }
+}

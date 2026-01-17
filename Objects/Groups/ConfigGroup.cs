@@ -47,17 +47,24 @@ public static class ConfigGroup
             {
                 if (value.GetValue()) return;
                 
-                foreach (var renderer in o.GetComponentsInChildren<tk2dSprite>())
+                foreach (var renderer in o.GetComponentsInChildren<tk2dSprite>(true))
                 {
                     var col = renderer.color;
                     col.a = 0;
                     renderer.color = col;
                 }
-                foreach (var renderer in o.GetComponentsInChildren<SpriteRenderer>())
+                foreach (var renderer in o.GetComponentsInChildren<SpriteRenderer>(true))
                 {
                     var col = renderer.color;
                     col.a = 0;
                     renderer.color = col;
+                }
+                foreach (var renderer in o.GetComponentsInChildren<ParticleSystem>(true))
+                {
+                    var main = renderer.main;
+                    var col = main.startColor.color;
+                    col.a = 0;
+                    main.startColor = col;
                 }
 
                 o.AddComponent<MiscFixers.ColorLock>();
@@ -1458,6 +1465,16 @@ public static class ConfigGroup
             })
     );
 
+    public static readonly List<ConfigType> Damager = GroupUtils.Merge(Generic, [
+        DamagesEnemies,
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Damage Amount", "damager_amount", (o, value) =>
+            {
+                foreach (var c in o.GetComponentsInChildren<DamageHero>(true))
+                    c.SetDamageAmount(value.GetValue());
+            }))
+    ]);
+
     public static readonly List<ConfigType> GarmondBoss = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Lethal Damage", "garmond_lethal",
@@ -1561,7 +1578,7 @@ public static class ConfigGroup
             new FloatConfigType("X Velocity", "velocity_apply_x", (o, value) =>
             {
                 o.GetOrAddComponent<VelocityApplier>().x = value.GetValue();
-            }).WithDefaultValue(10)),
+            }).WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Y Velocity", "velocity_apply_y", (o, value) =>
             {

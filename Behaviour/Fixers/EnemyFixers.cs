@@ -1906,6 +1906,8 @@ public static class EnemyFixers
         {
             fsm.SetState("Recover");
         }, 3);
+        fsm.GetState("Charge").DisableAction(12);
+        fsm.GetState("Terrain Effects").AddAction(() => obj.BroadcastEvent("OnBounce"), 0);
     }
 
     public static void FixWingedFurm(GameObject obj)

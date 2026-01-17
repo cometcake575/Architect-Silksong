@@ -84,6 +84,15 @@ public class ObjectColourer : MonoBehaviour
             if (directSet) sr.color = col;
             else sr.color *= col;
         }
+        
+        foreach (var renderer in target.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            var main = renderer.main;
+            var col = _color;
+            if (!useAlpha) col.a = main.startColor.color.a;
+            if (directSet) main.startColor = col;
+            else main.startColor = col * main.startColor.color;
+        }
 
         lk.enabled = true;
     }

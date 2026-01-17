@@ -92,8 +92,17 @@ public static class HazardFixers
     public static void FixLargeCog(GameObject cog)
     {
         cog.transform.SetPositionZ(0.01f);
+    }
+
+    public static void FixLargeCogAfterSpawn(GameObject cog)
+    {
         var dmg = Object.Instantiate(_cogDamager, null);
         dmg.transform.parent = cog.transform;
+        var cmh = dmg.GetComponent<CogMultiHitter>();
+        cmh.heroGrindEffect = Object.Instantiate(cmh.heroGrindEffect.gameObject, dmg.transform).transform;
+        cmh.heroGrindEffect.parent = null;
+        cmh.heroGrindEffect.localScale = Vector3.one;
+        dmg.transform.localPosition = Vector3.zero;
         dmg.SetActive(true);
     }
     
@@ -163,6 +172,7 @@ public static class HazardFixers
                 fsm.SendEvent("APPROVED");
             }
         }, 2);
+        fsm.GetState("Follow Start").DisableAction(1);
     }
 
     public static void FixSpikeBall(GameObject obj)
@@ -187,7 +197,8 @@ public static class HazardFixers
     public static void FixJunkPipe(GameObject obj)
     {
         obj.transform.GetChild(2).SetAsFirstSibling();
-        var junkFall = Object.Instantiate(_junkFall, obj.transform);
+        var junkFall = Object.Instantiate(_junkFall, null);
+        junkFall.transform.parent = obj.transform;
         junkFall.transform.SetLocalPosition2D(new Vector2(2.5f, -6.5f));
         junkFall.SetActive(true);
         junkFall.transform.Find("Spike Collider").gameObject.LocateMyFSM("Shift Hero").enabled = false;

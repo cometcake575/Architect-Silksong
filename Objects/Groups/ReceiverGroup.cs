@@ -3,6 +3,8 @@ using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Events;
+using Architect.Utils;
+using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 
 namespace Architect.Objects.Groups;
@@ -31,6 +33,17 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("wisp_go", "Fire", o =>
         {
             o.LocateMyFSM("Control").SetState("Fire Antic");
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> Velocity = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("set_velocity", "SetVelocity", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(
+                b.GetVariable<float>("New X"),
+                b.GetVariable<float>("New Y")
+            );
         }))
     ]);
     
@@ -80,6 +93,27 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> VoidBullet = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("vb_trigger", "Activate", o =>
+        {
+            var obj = Object.Instantiate(o.transform.GetChild(0).gameObject, o.transform.position,
+                o.transform.localRotation);
+            ((FlingObjectsFromGlobalPool)obj.LocateMyFSM("Control").GetState("Fire").actions[0]).gameObject = 
+                o.transform.GetChild(1).gameObject;
+            obj.SetActive(true);
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> SilkAcid = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("silk_acid_trigger", "Activate", o =>
+        {
+            var obj = Object.Instantiate(o.transform.GetChild(0).gameObject, o.transform.position,
+                o.transform.localRotation);
+            obj.LocateMyFSM("Control").GetState("Idle").DisableAction(5);
+            obj.SetActive(true);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> BlackThreader = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_black_thread", "Activate", o =>
         {
@@ -108,8 +142,8 @@ public static class ReceiverGroup
         }))
     ]);
     
-    public static readonly List<EventReceiverType> Voltring = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("do_zap", "Zap", o =>
+    public static readonly List<EventReceiverType> Burst = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_zap", "Activate", o =>
         {
             o.transform.GetChild(0).gameObject.SetActive(true);
         }))

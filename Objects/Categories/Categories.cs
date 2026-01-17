@@ -7,10 +7,12 @@ public static class Categories
     public static readonly List<AbstractCategory> AllCategories = [];
     
     /** Miscellaneous objects like benches or items that give free silk */
-    public static readonly Category Misc = RegisterCategory("Miscellaneous", 7);
+    public static readonly Category Misc = RegisterCategory("Miscellaneous", 8);
     /** Effects such as particles */
-    public static readonly Category Effects = RegisterCategory("Effects", 6);
-    /** Things that do damage (except for enemies) */
+    public static readonly Category Effects = RegisterCategory("Effects", 7);
+    /** Hazards taken from enemy attacks */
+    public static readonly Category Attacks = RegisterCategory("Attacks", 6);
+    /** Things that do damage */
     public static readonly Category Hazards = RegisterCategory("Hazards", 5);
     /** Usable objects like levers, doors etc. */
     public static readonly Category Interactable = RegisterCategory("Interactable", 4);
@@ -21,11 +23,11 @@ public static class Categories
     /** Enemies and bosses */
     public static readonly Category Enemies = RegisterCategory("Enemies", 1);
     /** Utility objects for things like trigger zones and object removers */
-    public static readonly Category Utility = RegisterCategory("Utility", 9);
+    public static readonly Category Utility = RegisterCategory("Utility", 10);
     /** Legacy objects that must be enabled in the configuration */
     public static readonly Category Legacy = new("Legacy", -1);
     /** Objects relating to giving or limiting abilities */
-    public static readonly Category Abilities = RegisterCategory("Abilities", 8);
+    public static readonly Category Abilities = RegisterCategory("Abilities", 9);
     /** Every object in a single category */
     public static readonly AbstractCategory All = RegisterCategory(AllCategory.Instance);
     

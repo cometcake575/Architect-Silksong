@@ -74,7 +74,7 @@ public static class VanillaObjects
             }));
         Categories.Hazards.Add(new CustomObject("Voltring", "coral_lightning_orb", sphere,
             sprite: ResourceUtils.LoadSpriteResource("voltring", ppu:64))
-            .WithReceiverGroup(ReceiverGroup.Voltring));
+            .WithReceiverGroup(ReceiverGroup.Burst));
         
         Categories.Hazards.Add(new PreloadObject("Voltgrass", "voltgrass",
             ("Coral_29", "coral_zap_mounds_shortest (10)"),
@@ -89,13 +89,15 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.Decorations)).Offset = new Vector3(0.5723f, 1);
 
-        Categories.Hazards.Add(new PreloadObject("Voltbola", "voltvessel_ball",
+        Categories.Attacks.Add(new PreloadObject("Voltbola", "voltvessel_ball",
                 ("localpoolprefabs_assets_areaarborium.bundle", 
                     "Assets/Prefabs/Hornet Enemies/Lightning Bola Ball Enemy.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
                 notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Velocity));
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
     }
 
     private static void AddSandsObjects()
@@ -239,21 +241,25 @@ public static class VanillaObjects
     {
         AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
         
-        Categories.Hazards.Add(new PreloadObject("Caltrop", "caltrop",
+        Categories.Attacks.Add(new PreloadObject("Caltrop", "caltrop",
                 ("localpoolprefabs_assets_areadust.bundle", 
                     "Assets/Prefabs/Hornet Enemies/Caltrop.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
                 notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Velocity));
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
         
-        Categories.Hazards.Add(new PreloadObject("Caltrop Pair", "caltrop_ball",
+        Categories.Attacks.Add(new PreloadObject("Caltrop Bola", "caltrop_ball",
                 ("localpoolprefabs_assets_areadust.bundle", 
                     "Assets/Prefabs/Hornet Enemies/Caltrop Ball.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
                 notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Velocity));
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
         
         AddEnemy("Roachcatcher", "roachcatcher", ("Dust_02", "Roachfeeder Short"));
         AddEnemy("Roachfeeder", "roachfeeder",
@@ -275,12 +281,14 @@ public static class VanillaObjects
             preloadAction: o => o.transform.SetPositionZ(0.006f),
             postSpawnAction: EnemyFixers.FixRoachserver);
 
-        Categories.Hazards.Add(new PreloadObject("Maggot Blob", "chef_blob",
+        Categories.Attacks.Add(new PreloadObject("Maggot Blob", "chef_blob",
                 ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Chef Maggot Blob.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
                 notSceneBundle: true, postSpawnAction: HazardFixers.FixMaggotBlob)
-            .WithConfigGroup(ConfigGroup.Velocity));
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
 
         Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
             ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1")));
@@ -342,7 +350,7 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Junk Pipe", "junk_pipe",
             ("Under_06", "understore_junk_pipe"),
-            postSpawnAction: HazardFixers.FixJunkPipe)
+            preloadAction: HazardFixers.FixJunkPipe)
             .WithRotationGroup(RotationGroup.All));
 
         Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
@@ -363,7 +371,7 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Pilgrim 03.prefab"),
             notSceneBundle: true,
             preloadAction: EnemyFixers.FixChoristor);
-
+        
         AddEnemy("Envoy", "envoy", ("Song_17", "March Group Control/March Group R/Song Pilgrim 01"));
         AddEnemy("Choir Flyer", "choir_flyer", ("Song_11", "Pilgrim 04 Song (2)"),
                 preloadAction:EnemyFixers.FixPatroller)
@@ -379,7 +387,7 @@ public static class VanillaObjects
         var choirBombS = new GameObject("[Architect] Choir Bomb S");
         choirBombS.SetActive(false);
         Object.DontDestroyOnLoad(choirBombS);
-        var bombS = Categories.Hazards.Add(new CustomObject("Rune Bomb S", "choir_bomb_s", choirBombS,
+        var bombS = Categories.Attacks.Add(new CustomObject("Rune Bomb S", "choir_bomb_s", choirBombS,
                 description:"Appears when the 'Activate' trigger is run.",
             sprite: ResourceUtils.LoadSpriteResource("rune_bomb_small", ppu:64))
             .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
@@ -387,7 +395,7 @@ public static class VanillaObjects
         var choirBombL = new GameObject("[Architect] Choir Bomb L");
         choirBombL.SetActive(false);
         Object.DontDestroyOnLoad(choirBombL);
-        var bombL = Categories.Hazards.Add(new CustomObject("Rune Bomb L", "choir_bomb_l", choirBombL,
+        var bombL = Categories.Attacks.Add(new CustomObject("Rune Bomb L", "choir_bomb_l", choirBombL,
                 description:"Appears when the 'Activate' trigger is run.",
             sprite: ResourceUtils.LoadSpriteResource("rune_slam_large", ppu:50))
             .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
@@ -427,7 +435,9 @@ public static class VanillaObjects
             ("Hang_04_boss", "Battle Scene/Wave 1/Song Reed"),
             postSpawnAction: EnemyFixers.FixForumEnemy).DoFlipX();
         AddEnemy("Grand Reed", "song_reed_grand",
-            ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)")).DoFlipX();
+            ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)"),
+            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(3))
+            .DoFlipX();
 
         AddEnemy("Clawmaiden", "clawmaiden",
             ("localpoolprefabs_assets_areahangareasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Handmaiden.prefab"),
@@ -562,13 +572,15 @@ public static class VanillaObjects
     private static void AddDuctObjects()
     {
         AddEnemy("Spit Squit", "swamp_mosquito_skinny", ("Aqueduct_03", "Swamp Mosquito Skinny"));
-        Categories.Hazards.Add(new PreloadObject("Squit Bullet", "muck_bullet",
+        Categories.Attacks.Add(new PreloadObject("Squit Bullet", "muck_bullet",
             ("localpoolprefabs_assets_areaaqueduct.bundle", 
                 "Assets/Prefabs/Hornet Enemies/Skinny Mosquito Bullet.prefab"),
             description:"Usually already landed by the time the room finishes loading.\n" +
                         "Best used with the Object Spawner.",
             notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Velocity));
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
         
         AddEnemy("Barnak", "swamp_barnacle", ("Aqueduct_03", "Swamp Barnacle (1)")).DoFlipX();
         AddEnemy("Ductsucker", "swamp_ductsucker", ("Aqueduct_03", "Swamp Ductsucker"),
@@ -621,6 +633,47 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Abyss Pod", "abyss_pod",
             ("Abyss_05", "Abyss Bounce Pod")));
+
+        GameObject abyssBullet = null;
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_areaabyss", 
+            "Assets/Prefabs/Enemies/Abyss Attacks/Abyss Bullet.prefab", o =>
+            {
+                abyssBullet = o;
+            }, notSceneBundle: true));
+        
+        var voidBullet = new GameObject("[Architect] Void Shot");
+        voidBullet.SetActive(false);
+        Object.DontDestroyOnLoad(voidBullet);
+        Categories.Attacks.Add(new CustomObject("Void Shot", "void_bullet", voidBullet,
+                description:"Appears when the 'Activate' trigger is run.",
+                sprite: ResourceUtils.LoadSpriteResource("void_bullet", ppu:64))
+            .WithScaleAction((o, s) =>
+            {
+                var bullet = Object.Instantiate(abyssBullet, o.transform);
+                bullet.SetActive(false);
+                var eb = bullet.GetComponent<EnemyBullet>();
+                eb.scaleMin *= s;
+                eb.scaleMax *= s;
+                bullet.transform.localScale *= s;
+            })
+            .WithReceiverGroup(ReceiverGroup.VoidBullet));
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_laceboss", 
+            "Assets/Prefabs/Hornet Bosses/Lost Lace/Lost Lace Summon Bullet.prefab", o =>
+            {
+                var was = o.activeSelf;
+                o.SetActive(false);
+                Object.Instantiate(o, voidBullet.transform);
+                if (was) o.SetActive(true);
+            }, notSceneBundle: true));
+
+        Categories.Attacks.Add(new PreloadObject("Void Glob", "void_glob",
+            ("localpoolprefabs_assets_areaabyss", "Assets/Prefabs/Enemies/Abyss Attacks/Abyss Vomit Glob.prefab"),
+            description:"Usually already landed by the time the room finishes loading.\n" +
+                        "Best used with the Object Spawner.",
+            notSceneBundle: true));
     }
 
     private static void AddMemoryObjects()
@@ -635,7 +688,7 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Reusable Lever", "reusable_lever",
                 ("Memory_Red", "Scenery Groups/Deepnest Scenery/Control Lever"),
                 description:"Can be pulled multiple times and does not stay pulled.",
-                preloadAction:o => o.transform.SetRotation2D(180),
+                preloadAction: o => o.transform.SetRotation2D(180),
                 postSpawnAction: InteractableFixers.FixReusableLever)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)
             .WithRotationGroup(RotationGroup.Eight));
@@ -764,7 +817,15 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.KeepActive);
         AddEnemy("Thread Raker", "thread_raker",
             ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"),
-            preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
+            preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos,
+            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(2));
+
+        Categories.Attacks.Add(new PreloadObject("Pitchfork", "pitchfork",
+            ("localpoolprefabs_assets_areagreymoor", "Assets/Prefabs/Hornet Enemies/Centipede Farmer Projectile.prefab"), 
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity));
         
         AddEnemy("Mite", "mite", ("Greymoor_06", "Mite"))
             .WithRotationGroup(RotationGroup.Three)
@@ -1141,7 +1202,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Hazards)
             .WithReceiverGroup(ReceiverGroup.SpikeBall));
 
-        Categories.Hazards.Add(new PreloadObject("Groal's Vengeful Spirit", "groal_fireball",
+        Categories.Attacks.Add(new PreloadObject("Groal's Vengeful Spirit", "groal_fireball",
             ("localpoolprefabs_assets_areaswamp.bundle", "Assets/Prefabs/Hornet Enemies/Swamp Shaman Fireball.prefab"),
             notSceneBundle: true,
             postSpawnAction: o =>
@@ -1462,6 +1523,26 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
+        var explosion = new GameObject("[Architect] Explosion");
+        explosion.SetActive(false);
+        Object.DontDestroyOnLoad(explosion);
+        Categories.Attacks.Add(new CustomObject("Explosion", "explosion", explosion,
+                description:"Appears when the 'Activate' trigger is run.",
+                sprite: ResourceUtils.LoadSpriteResource("explosion", ppu:64))
+            .WithReceiverGroup(ReceiverGroup.RuneBomb)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.Damager));
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_shared.bundle", 
+            "Assets/Prefabs/Enemies/Generic Attacks/Gas Explosion Recycle M.prefab", o =>
+            {
+                var was = o.activeSelf;
+                o.SetActive(false);
+                Object.Instantiate(o, explosion.transform);
+                if (was) o.SetActive(true);
+            }, notSceneBundle: true));
+        
         /*
         Categories.Interactable.Add(new PreloadObject("Bind Source", "bind_source",
                 ("Greymoor_20c", "Crest Get Shrine"), postSpawnAction: o =>
@@ -1502,11 +1583,15 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Cogs));
 
         Categories.Hazards.Add(new PreloadObject("Large Grey Cog", "spike_cog_2",
-                ("Cog_04", "Spike_cog_set_core (5)/Spike Cog 2"), preloadAction: HazardFixers.FixLargeCog)
+                ("Cog_04", "Spike_cog_set_core (5)/Spike Cog 2"), 
+                preloadAction: HazardFixers.FixLargeCog,
+                postSpawnAction: HazardFixers.FixLargeCogAfterSpawn)
             .WithConfigGroup(ConfigGroup.Cogs));
-
+        
         Categories.Hazards.Add(new PreloadObject("Large Gold Cog", "spike_cog_3",
-                ("Cog_04", "Spike_cog_set_core (5)/Spike Cog 3 (1)"), preloadAction: HazardFixers.FixLargeCog)
+                ("Cog_04", "Spike_cog_set_core (5)/Spike Cog 3 (1)"), 
+                preloadAction: HazardFixers.FixLargeCog,
+                postSpawnAction: HazardFixers.FixLargeCogAfterSpawn)
             .WithConfigGroup(ConfigGroup.Cogs));
 
         Categories.Interactable.Add(new PreloadObject("Cog Lever", "harpoon_ring_citadel",
@@ -1588,6 +1673,10 @@ public static class VanillaObjects
                 o.transform.GetChild(1).GetChild(3).gameObject
                     .AddComponent<PlaceableObject.SpriteSource>();
             }).WithConfigGroup(ConfigGroup.BellPlat3);
+
+        Categories.Attacks.Add(new PreloadObject("Throwing Bell", "throwing_bell",
+            ("localpoolprefabs_assets_areasong", "Assets/Prefabs/Enemies/Fungus 1 + 2/Throwing Bell.prefab"),
+            notSceneBundle: true));
     }
 
     private static void AddWispObjects()
@@ -1599,7 +1688,7 @@ public static class VanillaObjects
                 ("Wisp_02", "Wisp Farmers/Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
             .WithConfigGroup(ConfigGroup.WispLanterns));
         
-        Categories.Hazards.Add(new PreloadObject("Wisp", "wisp",
+        Categories.Attacks.Add(new PreloadObject("Wisp", "wisp",
                 ("localpoolprefabs_assets_areawisp.bundle", "Assets/Prefabs/Hornet Enemies/Wisp Fireball.prefab"), 
                 postSpawnAction: HazardFixers.FixWisp, notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Wisp)
@@ -1659,6 +1748,18 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four);
         AddEnemy("Phacia", "flower_drifter", ("Shellwood_10", "Flower Drifter"));
         AddEnemy("Disguised Phacia", "flower_drifter_hidden", ("Arborium_03", "Flower Drifter (3)"));
+        
+        var sphere = new GameObject("Pollen Flare");
+        sphere.SetActive(false);
+        Object.DontDestroyOnLoad(sphere);
+        PreloadManager.RegisterPreload(new BasicPreload("Arborium_03", "Flower Drifter (4)/pollen_flare_attack",
+            o =>
+            {
+                Object.Instantiate(o, sphere.transform).transform.localPosition = Vector3.zero;
+            }));
+        Categories.Attacks.Add(new CustomObject("Pollen Flare", "pollen_flare", sphere,
+                sprite: ResourceUtils.LoadSpriteResource("pollen_ring", ppu:24))
+            .WithReceiverGroup(ReceiverGroup.Burst));
         
         AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"))
             .WithRotationGroup(RotationGroup.Eight);
@@ -1823,16 +1924,19 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Wakeable)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
-        Categories.Hazards.Add(new PreloadObject("Flintbomb", "flint_bomb",
+        Categories.Attacks.Add(new PreloadObject("Flintrock", "flint_bomb",
             ("localpoolprefabs_assets_areabone.bundle", "Assets/Prefabs/Enemies/Projectiles/Rock Roller Bomb.prefab"),
             description:"Usually already landed by the time the room finishes loading.\n" +
                         "Best used with the Object Spawner.",
             notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Velocity));
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
 
         AddEnemy("Shardillard", "shardillard", ("Bone_06", "Shell Fossil Mimic AppearVariant"),
             preloadAction: o => o.transform.SetRotation2D(0),
-            postSpawnAction: EnemyFixers.FixShardillard).DoFlipX();
+            postSpawnAction: EnemyFixers.FixShardillard)
+            .WithBroadcasterGroup(BroadcasterGroup.Shardillard).DoFlipX();
 
         Categories.Platforming.Add(new PreloadObject("Magnetite Platform 1", "bone_plat_crumble_1",
             ("Bone_East_LavaChallenge", "bone_plat_01_crumble_small (2)")));
@@ -1874,8 +1978,20 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four).DoFlipX();
         AddEnemy("Lavalarga", "tar_slug_huge", ("Dock_11", "Tar Slug Huge (1)"))
             .WithRotationGroup(RotationGroup.Four);
+        
         AddEnemy("Flintflame Flyer", "dock_bomber", ("Dock_02", "Dock Bomber"),
             postSpawnAction: EnemyFixers.FixFlintFlyer);
+        
+        Categories.Attacks.Add(new PreloadObject("Flintbomb", "flintflame_bomb",
+                ("localpoolprefabs_assets_areadocks", 
+                    "Assets/Prefabs/Enemies/Projectiles/DF Bomb Rock.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
         AddEnemy("Smokerock Sifter", "shield_dockworker",
             ("Dock_02", "Shield Dockworker Spawn/Shield Dockworker (2)"));
         AddEnemy("Deep Diver", "dock_charger", ("Dock_02b", "Dock Charger")).DoFlipX();
@@ -2022,7 +2138,6 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX()
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Wakeable);
-
         AddEnemy("Massive Mossgrub", "mossbone_crawler_fat",
             ("Arborium_09", "MossBone Crawler Fat"));
 
@@ -2045,7 +2160,32 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Grove Pilgrim Fly.prefab"),
             notSceneBundle: true,
             preloadAction: EnemyFixers.FixAknidMother).DoFlipX();
-
+        
+        var silkAcidCloud = new GameObject("[Architect] Silk Acid Cloud");
+        silkAcidCloud.SetActive(false);
+        Object.DontDestroyOnLoad(silkAcidCloud);
+        var silkAcid = Categories.Attacks.Add(new CustomObject("Silk Acid Cloud", "silk_acid", 
+                silkAcidCloud,
+                description:"Appears when the 'Activate' trigger is run.",
+                sprite: ResourceUtils.LoadSpriteResource("silk_acid", ppu:128))
+            .WithReceiverGroup(ReceiverGroup.SilkAcid)
+            .WithRotationGroup(RotationGroup.All)
+            .WithScaleAction((o, s) =>
+            {
+                o.transform.GetChild(0).localScale *= s;
+            }));
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_areacloverareamoss", 
+            "Assets/Prefabs/Hornet Enemies/SilkAcid BurstCloud.prefab", o =>
+            {
+                var was = o.activeSelf;
+                o.SetActive(false);
+                var o2 = Object.Instantiate(o, silkAcidCloud.transform);
+                if (was) o.SetActive(true);
+                silkAcid.Offset = o2.transform.GetChild(1).transform.localPosition;
+            }, notSceneBundle: true));
+        
         AddEnemy("Overgrown Pilgrim", "pilgrim_moss_spitter",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Normal World/Pilgrim Moss Spitter"),
             preloadAction: MiscFixers.FixRotation);

@@ -9,6 +9,7 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using JetBrains.Annotations;
+using TeamCherry.Splines;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -143,6 +144,11 @@ public class ObjectAnchor : PreviewableBehaviour
             
             stickTarget.AddComponent<StickPlayer>().target = target.transform.parent;
             target = target.transform.parent.gameObject;
+        }
+        
+        foreach (var spl in target.GetComponentsInChildren<SplineBase>())
+        {
+            spl.preventCulling = true;
         }
 
         if (target.GetComponent<ObjectAnchor>())

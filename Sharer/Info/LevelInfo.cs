@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Architect.Sharer;
+namespace Architect.Sharer.Info;
 
 public class LevelInfo
 {
