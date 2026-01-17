@@ -675,6 +675,13 @@ public static class EnemyFixers
         zoom.DisableAction(3);
         zoom.AddAction(() => fsm.SendEvent("FINISHED"));
         ((StartRoarEmitter)fsm.GetState("Quick Roar").actions[3]).stunHero = false;
+        
+        fsm.GetState("Do Roar?").AddAction(() => fsm.SendEvent("SKIP"), 0);
+        fsm.GetState("Quick Roar").DisableAction(5);
+        var qre = fsm.GetState("Quick Roar End");
+        qre.DisableAction(1);
+        qre.DisableAction(2);
+        qre.DisableAction(3);
 
         var ede = obj.GetComponent<EnemyDeathEffects>();
         ede.setPlayerDataBool = "";

@@ -396,15 +396,21 @@ public static class VanillaObjects
             "localpoolprefabs_assets_areahang.bundle", 
             "Assets/Prefabs/Hornet Enemies/rune bomb small.prefab", o =>
             {
-                o = Object.Instantiate(o, choirBombS.transform);
-                bombS.Offset = o.transform.GetChild(1).transform.localPosition;
+                var was = o.activeSelf;
+                o.SetActive(false);
+                var o2 = Object.Instantiate(o, choirBombS.transform);
+                if (was) o.SetActive(true);
+                bombS.Offset = o2.transform.GetChild(1).transform.localPosition;
         }, notSceneBundle: true));
         PreloadManager.RegisterPreload(new BasicPreload(
             "localpoolprefabs_assets_areahang.bundle", 
             "Assets/Prefabs/Hornet Enemies/rune slam.prefab", o =>
         {
-            o = Object.Instantiate(o, choirBombL.transform);
-            bombL.Offset = o.transform.GetChild(1).transform.localPosition;
+            var was = o.activeSelf;
+            o.SetActive(false);
+            var o2 = Object.Instantiate(o, choirBombL.transform);
+            if (was) o.SetActive(true);
+            bombL.Offset = o2.transform.GetChild(1).transform.localPosition;
         }, notSceneBundle: true));
 
         AddEnemy("Minister", "song_admin", 
