@@ -673,7 +673,10 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areaabyss", "Assets/Prefabs/Enemies/Abyss Attacks/Abyss Vomit Glob.prefab"),
             description:"Usually already landed by the time the room finishes loading.\n" +
                         "Best used with the Object Spawner.",
-            notSceneBundle: true));
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
     }
 
     private static void AddMemoryObjects()
