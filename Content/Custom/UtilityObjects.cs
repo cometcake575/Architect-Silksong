@@ -499,6 +499,7 @@ public static class UtilityObjects
                 preview: true)
             .WithConfigGroup(ConfigGroup.ObjectAnchor)
             .WithReceiverGroup(ReceiverGroup.ObjectAnchor)
+            .WithOutputGroup(OutputGroup.ObjectAnchor)
             .WithBroadcasterGroup(BroadcasterGroup.ObjectAnchor);
     }
 

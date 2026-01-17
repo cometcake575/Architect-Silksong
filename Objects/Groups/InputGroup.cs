@@ -11,4 +11,6 @@ public static class InputGroup
     public static readonly List<(string, string)> ObjectMover = [("Extra X", "Number"), ("Extra Y", "Number")];
     
     public static readonly List<(string, string)> Velocity = [("New X", "Number"), ("New Y", "Number")];
+    
+    public static readonly List<(string, string)> FleaCounter = [("New Value", "Number")];
 }

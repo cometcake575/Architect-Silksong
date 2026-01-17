@@ -325,6 +325,11 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("reset_score", "Reset", o =>
         {
             o.GetComponent<MiscFixers.CustomFleaCounter>().Reset();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("set_score", "Set", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<MiscFixers.CustomFleaCounter>().SetValue(b.GetVariable<float>("New Value"));
         }))
     ]);
     

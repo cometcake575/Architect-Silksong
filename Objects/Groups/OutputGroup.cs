@@ -23,4 +23,16 @@ public static class OutputGroup
                 o => o.GetComponent<SpriteRenderer>().sprite)
         )
     ];
+
+    public static readonly List<OutputType> ObjectAnchor =
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("anchor_x", "X", "Number", 
+                o => o.transform.GetPositionX()
+        )),
+        EventManager.RegisterOutputType(
+            new OutputType("anchor_y", "Y", "Number", 
+                o => o.transform.GetPositionY()
+        ))
+    ];
 }

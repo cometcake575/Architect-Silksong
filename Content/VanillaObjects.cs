@@ -2119,6 +2119,7 @@ public static class VanillaObjects
             sprite: ResourceUtils.LoadSpriteResource("flea_counter", ppu:64))
             .WithConfigGroup(ConfigGroup.FleaCounter)
             .WithReceiverGroup(ReceiverGroup.FleaCounter)
+            .WithInputGroup(InputGroup.FleaCounter)
             .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
         
         Categories.Misc.Add(new PreloadObject("Fleamaster NPC", "fleamaster_npc",

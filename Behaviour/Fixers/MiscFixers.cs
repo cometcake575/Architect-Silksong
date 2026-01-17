@@ -894,6 +894,14 @@ public static class MiscFixers
             RefreshGold(true);
         }
 
+        public void SetValue(float value)
+        {
+            currentCount = Mathf.RoundToInt(value);
+            _counter.counterText.text = currentCount.ToString();
+            
+            RefreshGold(true);
+        }
+
         public void Reset()
         {
             currentCount = 0;
