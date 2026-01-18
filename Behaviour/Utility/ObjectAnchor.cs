@@ -401,6 +401,7 @@ public class ObjectAnchor : PreviewableBehaviour
         };
 
         _splineAnchor = splineAnchor.AddComponent<SplineAnchor>();
+        _splineAnchor.anchor = gameObject;
         if (sp.spline.splines.Contains(sp))
         {
             _splineAnchor.startTime = (sp.spline.splines.IndexOf(sp)+1) * 25;
@@ -425,6 +426,7 @@ public class ObjectAnchor : PreviewableBehaviour
     public class SplineAnchor : MonoBehaviour
     {
         public SplineObjects.Spline spline;
+        public GameObject anchor;
 
         public float startTime;
         public float time;
@@ -438,8 +440,14 @@ public class ObjectAnchor : PreviewableBehaviour
                 _started = true;
                 return;
             }
-            
-            var index = Mathf.FloorToInt(time) % (spline.actualSpline.GetPointCount()-1);
+
+            var pc = spline.actualSpline.GetPointCount() - 1;
+            if (time > pc)
+            {
+                time %= pc;
+                anchor.BroadcastEvent("OnTrackEnd");
+            }
+            var index = Mathf.FloorToInt(time) % pc;
             
             var p1 = spline.actualSpline.GetPoint(index).Position;
             var p2 = spline.actualSpline.GetPoint(index + 1).Position;

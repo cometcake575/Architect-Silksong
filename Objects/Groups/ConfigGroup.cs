@@ -59,13 +59,6 @@ public static class ConfigGroup
                     col.a = 0;
                     renderer.color = col;
                 }
-                foreach (var renderer in o.GetComponentsInChildren<ParticleSystem>(true))
-                {
-                    var main = renderer.main;
-                    var col = main.startColor.color;
-                    col.a = 0;
-                    main.startColor = col;
-                }
 
                 o.AddComponent<MiscFixers.ColorLock>();
             }))
@@ -1028,6 +1021,11 @@ public static class ConfigGroup
                 oc.useAlpha = true;
                 oc.a = value.GetValue();
             })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Colour Particles", "colourer_particles", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().particles = value.GetValue();
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Tint Mode", "colourer_mode", (o, value) =>
             {

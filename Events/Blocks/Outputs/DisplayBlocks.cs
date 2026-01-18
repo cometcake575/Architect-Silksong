@@ -28,7 +28,7 @@ public class TitleBlock : ScriptBlock
 
 public class TextBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Display"];
+    protected override IEnumerable<string> Inputs => ["Display", "Stop"];
     protected override IEnumerable<string> Outputs => ["OnClose"];
 
     private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
@@ -68,7 +68,8 @@ public class TextBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
-        _display.Display();
+        if (trigger == "Stop") DialogueBox.EndConversation();
+        else _display.Display();
     }
 }
 

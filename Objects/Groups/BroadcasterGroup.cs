@@ -66,7 +66,7 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Choice = ["Yes", "No"];
     
-    public static readonly List<string> ObjectAnchor = ["OnReverse"];
+    public static readonly List<string> ObjectAnchor = ["OnReverse", "OnTrackEnd"];
     
     public static readonly List<string> TextDisplay = ["OnClose"];
     

@@ -1023,6 +1023,24 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixFirstSinner)
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
+        
+        var runeRage = new GameObject("[Architect] Rune Rage");
+        runeRage.SetActive(false);
+        Object.DontDestroyOnLoad(runeRage);
+        Categories.Attacks.Add(new CustomObject("Rune Rage", "rune_rage", runeRage,
+                description:"Appears when the 'Activate' trigger is run.",
+                sprite: ResourceUtils.LoadSpriteResource("rune_rage", ppu: 100))
+            .WithReceiverGroup(ReceiverGroup.RuneBomb));
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_areaslab", 
+            "Assets/Prefabs/Heroes/Tools/First Weaver Bomb Blast.prefab", o =>
+            {
+                var was = o.activeSelf;
+                o.SetActive(false);
+                Object.Instantiate(o, runeRage.transform);
+                if (was) o.SetActive(true);
+            }, notSceneBundle: true));
 
         Categories.Interactable.Add(new PreloadObject("Slab Pressure Plate", "slab_pressure_plate",
                 ("Slab_05", "spike_trap_slab_jail/pressure_plate"), postSpawnAction: InteractableFixers.FixSlabPlate)

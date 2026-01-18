@@ -20,6 +20,7 @@ public class ObjectColourer : MonoBehaviour
     public float a;
 
     public bool startApplied;
+    public bool particles;
     
     public GameObject target;
 
@@ -85,7 +86,7 @@ public class ObjectColourer : MonoBehaviour
             else sr.color *= col;
         }
         
-        foreach (var renderer in target.GetComponentsInChildren<ParticleSystem>(true))
+        if (particles) foreach (var renderer in target.GetComponentsInChildren<ParticleSystem>(true))
         {
             var main = renderer.main;
             var col = _color;

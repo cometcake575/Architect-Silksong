@@ -9,6 +9,13 @@ public class Login : MenuState
 {
     public override MenuState ReturnState => SharerManager.HomeState;
 
+    private Button _loginBtn;
+    private Button _signupBtn;
+    private Text _result;
+
+    private InputField _userField;
+    private InputField _pwField;
+    
     public override void OnStart()
     {
         var userText = UIUtils.MakeLabel("Username Title", gameObject,
@@ -18,7 +25,7 @@ public class Login : MenuState
         userText.text = "Username:";
         userText.alignment = TextAnchor.MiddleLeft;
         
-        var (userBox, userBoxLabel) = UIUtils.MakeTextbox("Username Input", gameObject,
+        (_userField, var userBoxLabel) = UIUtils.MakeTextbox("Username Input", gameObject,
             new Vector2(0, 55),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             1225, 75);
@@ -33,55 +40,65 @@ public class Login : MenuState
         passText.text = "Password:";
         passText.alignment = TextAnchor.MiddleLeft;
         
-        var (pwBox, pwBoxLabel) = UIUtils.MakeTextbox("Password Input", gameObject,
+        (_pwField, var pwBoxLabel) = UIUtils.MakeTextbox("Password Input", gameObject,
             new Vector2(0, -25),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             1225, 75);
         pwBoxLabel.textComponent.fontSize = 16;
         pwBoxLabel.transform.localScale = Vector3.one;
         ((RectTransform)pwBoxLabel.transform).sizeDelta /= 3;
-        pwBox.inputType = InputField.InputType.Password;
+        _pwField.inputType = InputField.InputType.Password;
 
-        var (loginBtn, loginLabel) = UIUtils.MakeTextButton("Log In", "Log In", gameObject,
+        (_loginBtn, var loginLabel) = UIUtils.MakeTextButton("Log In", "Log In", gameObject,
             new Vector2(-100, -85),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             size: new Vector2(420, 80));
         loginLabel.textComponent.fontSize = 20;
 
-        var (signupBtn, signupLabel) = UIUtils.MakeTextButton("Sign Up", "Sign Up", gameObject,
+        (_signupBtn, var signupLabel) = UIUtils.MakeTextButton("Sign Up", "Sign Up", gameObject,
             new Vector2(100, -85),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             size: new Vector2(420, 80));
         signupLabel.textComponent.fontSize = 20;
         
-        var result = UIUtils.MakeLabel("Status", gameObject,
+        _result = UIUtils.MakeLabel("Status", gameObject,
             new Vector2(0, -140), 
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f)).textComponent;
-        result.fontSize = 16;
-        result.alignment = TextAnchor.MiddleCenter;
+        _result.fontSize = 16;
+        _result.alignment = TextAnchor.MiddleCenter;
 
-        loginBtn.onClick.AddListener(() => StartCoroutine(Login(false)));
-        signupBtn.onClick.AddListener(() => StartCoroutine(Login(true)));
+        _loginBtn.onClick.AddListener(() => StartCoroutine(Login(false)));
+        _signupBtn.onClick.AddListener(() => StartCoroutine(Login(true)));
 
         return;
 
         IEnumerator Login(bool signup)
         {
-            loginBtn.interactable = false;
-            signupBtn.interactable = false;
+            _loginBtn.interactable = false;
+            _signupBtn.interactable = false;
             
-            yield return RequestManager.Login(signup, userBox.text, pwBox.text, result);
-
-            if (RequestManager.SharerKey == null)
-            {
-                loginBtn.interactable = true;
-                signupBtn.interactable = true;
-            }
-            else
+            yield return RequestManager.Login(signup, _userField.text, _pwField.text, _result);
+            
+            if (RequestManager.SharerKey != null)
             {
                 yield return new WaitForSeconds(1);
                 SharerManager.TransitionToState(SharerManager.HomeState);
             }
+            else
+            {
+                _loginBtn.interactable = true;
+                _signupBtn.interactable = true;
+            }
         }
+    }
+
+    public override void OnOpen()
+    {
+        if (!didStart) return;
+        _loginBtn.interactable = true;
+        _signupBtn.interactable = true;
+        _result.text = "";
+        _userField.text = "";
+        _pwField.text = "";
     }
 }
