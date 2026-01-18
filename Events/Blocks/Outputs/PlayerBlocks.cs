@@ -8,7 +8,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class HpBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Give", "Take", "TakeHazard"];
+    protected override IEnumerable<string> Inputs => ["Give", "Take", "TakeInstant", "TakeHazard"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Amount", "Number"),
         ("Lifeblood", "Number")
@@ -35,6 +35,9 @@ public class HpBlock : ScriptBlock
             case "Take":
                 HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide.other, Amount,
                     HazardType.ENEMY);
+                break;
+            case "TakeInstant":
+                HeroController.instance.DoSpecialDamage(Amount, false, "Instant", true, true, true, false);
                 break;
             case "TakeHazard":
                 HeroController.instance.TakeHealth(Amount - 1);
