@@ -547,6 +547,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Loop =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<LoopBlock>("Delay", "delay_num", 
+                (b, f) => b.Delay = f.GetValue()).WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> Compare =
     [
         ConfigurationManager.RegisterConfigType(

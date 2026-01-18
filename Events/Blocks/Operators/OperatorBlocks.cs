@@ -24,6 +24,7 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<OrBlock>("Or");
         ScriptManager.RegisterProcessBlock<NotBlock>("Not");
         ScriptManager.RegisterProcessBlock<DelayBlock>("Delay", ConfigGroup.Delay);
+        ScriptManager.RegisterProcessBlock<LoopBlock>("Loop", ConfigGroup.Loop);
         ScriptManager.RegisterProcessBlock<TimeBlock>("Time", ConfigGroup.Time);
         ScriptManager.RegisterProcessBlock<DayBlock>("Day", ConfigGroup.Time);
         ScriptManager.RegisterProcessBlock<PlayerDataBoolBlock>("PlayerData (Bool)", ConfigGroup.PdBool);
