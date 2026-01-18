@@ -25,7 +25,9 @@ public class MathsBlock : ScriptBlock
             2 => v1 * v2,
             3 => v1 / v2,
             4 => Mathf.Floor(v1 / v2),
-            _ => v1 % v2
+            5 => v1 % v2,
+            6 => Mathf.Pow(v1, v2),
+            _ => Mathf.Pow(v1, 1f/v2)
         };
     }
 }

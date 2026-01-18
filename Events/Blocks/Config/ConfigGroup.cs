@@ -561,7 +561,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<MathsBlock>("Mode", "maths_mode", 
                 (b, f) => b.Mode = f.GetValue())
-                .WithOptions("+", "–", "*", "/", "//", "%").WithDefaultValue(0)
+                .WithOptions("+", "–", "*", "/", "//", "%", "^", "Nth Root").WithDefaultValue(0)
         )
     ];
     
