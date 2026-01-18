@@ -205,6 +205,8 @@ public static class UtilityObjects
         Object.DontDestroyOnLoad(threader);
         threader.SetActive(false);
 
+        BlackThreader.Init();
+        
         threader.AddComponent<BlackThreader>();
         
         return new CustomObject("Black Threader", "black_threader", threader, 
@@ -214,6 +216,7 @@ public static class UtilityObjects
                 "the chance of each attack is configurable.",
                 sprite:ResourceUtils.LoadSpriteResource("black_threader", ppu:64))
             .WithConfigGroup(ConfigGroup.BlackThreader)
+            .WithBroadcasterGroup(BroadcasterGroup.BlackThreader)
             .WithReceiverGroup(ReceiverGroup.BlackThreader);
     }
 

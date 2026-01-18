@@ -118,6 +118,10 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("do_black_thread", "Activate", o =>
         {
             o.GetComponent<BlackThreader>().BlackThread();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("queue_bts", "Queue Attack", o =>
+        {
+            o.GetComponent<BlackThreader>().ForceAttack();
         }))
     ]);
     

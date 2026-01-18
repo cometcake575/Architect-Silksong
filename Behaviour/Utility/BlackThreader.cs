@@ -1,3 +1,4 @@
+using System;
 using Architect.Placements;
 using Architect.Utils;
 using GlobalSettings;
@@ -18,7 +19,23 @@ public class BlackThreader : MonoBehaviour
     private int _attackIndex;
     private bool _blackThreaded;
 
+    public static void Init()
+    {
+        typeof(BlackThreadState).Hook(nameof(BlackThreadState.DoAttack),
+            (Action<BlackThreadState, BlackThreadAttack> orig, BlackThreadState self, BlackThreadAttack attack) =>
+            {
+                if (self is CustomBlackThreadState bts) bts.source.BroadcastEvent("OnAttack");
+                orig(self, attack);
+            });
+    }
+
     private CustomBlackThreadState _bts;
+
+    public void ForceAttack()
+    {
+        if (!_bts) return;
+        _bts.queuedForceAttack = true;
+    }
 
     private void Start()
     {
@@ -58,6 +75,7 @@ public class BlackThreader : MonoBehaviour
         if (!hm) return;
 
         _bts = target.AddComponent<CustomBlackThreadState>();
+        _bts.source = gameObject;
 
         _bts.customAttack = Effects.BlackThreadAttacksDefault[_attackIndex];
         
@@ -81,6 +99,7 @@ public class BlackThreader : MonoBehaviour
     public class CustomBlackThreadState : BlackThreadState
     {
         public BlackThreadAttack customAttack;
+        public GameObject source;
 
         private new void Start()
         {
