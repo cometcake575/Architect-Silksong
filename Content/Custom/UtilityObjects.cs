@@ -584,6 +584,7 @@ public static class UtilityObjects
                              "'Activator' mode detects Shakra Rings, Kratt and Beastlings,\n" +
                              "a trigger layer can be set to only detect specific objects.")
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
+            .WithReceiverGroup(ReceiverGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZones);
     }
 
@@ -732,7 +733,7 @@ public static class UtilityObjects
         var softTerrain = LayerMask.NameToLayer("Soft Terrain");
         point.layer = softTerrain;
         point.AddComponent<Binoculars>();
-
+        
         point.SetActive(false);
         Object.DontDestroyOnLoad(point);
 

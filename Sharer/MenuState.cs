@@ -5,12 +5,9 @@ namespace Architect.Sharer;
 public abstract class MenuState : MonoBehaviour
 {
     public virtual MenuState ReturnState => null;
-    
-    private void Start()
-    {
-        OnStart();
-    }
 
+    public bool started;
+    
     public void Close()
     {
         gameObject.SetActive(false);
@@ -24,6 +21,7 @@ public abstract class MenuState : MonoBehaviour
         SharerManager.ReturnBtn.SetActive(ReturnState);
         SharerManager.OpenSharerBtn.SetActive(!ReturnState);
         
+        if (!started) OnStart();
         OnOpen();
     }
     

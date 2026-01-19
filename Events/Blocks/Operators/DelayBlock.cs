@@ -19,9 +19,18 @@ public class DelayBlock : ScriptBlock
 
     protected override void Reset() => Delay = 0;
 
+    private DelayObj _delay;
+    
+    protected override void SetupReference()
+    {
+        var obj = new GameObject("[Architect] Delay Block");
+        _delay = obj.AddComponent<DelayObj>();
+    }
+
     protected override void Trigger(string trigger)
     {
-        ArchitectPlugin.Instance.StartCoroutine(DelayedEvent());
+        if (!_delay) return;
+        _delay.StartCoroutine(DelayedEvent());
     }
 
     private IEnumerator DelayedEvent()
@@ -29,6 +38,38 @@ public class DelayBlock : ScriptBlock
         var delay = Delay;
         delay += GetVariable<float>("Extra Delay");
         yield return new WaitForSeconds(delay);
+        Event("Out");
+    }
+}
+
+public class WaitUntilBlock : ScriptBlock
+{
+    protected override IEnumerable<(string, string)> InputVars => [("Check", "Boolean")];
+
+    protected override IEnumerable<string> Inputs => ["In"];
+    protected override IEnumerable<string> Outputs => ["Out"];
+
+    private static readonly Color DefaultColor = Color.yellow;
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Wait Until";
+
+    private DelayObj _delay;
+    
+    protected override void SetupReference()
+    {
+        var obj = new GameObject("[Architect] Wait Until Block");
+        _delay = obj.AddComponent<DelayObj>();
+    }
+
+    protected override void Trigger(string trigger)
+    {
+        if (!_delay) return;
+        _delay.StartCoroutine(DelayedEvent());
+    }
+
+    private IEnumerator DelayedEvent()
+    {
+        yield return new WaitUntil(() => GetVariable<bool>("Check"));
         Event("Out");
     }
 }
@@ -52,9 +93,18 @@ public class LoopBlock : ScriptBlock
 
     protected override void Reset() => Delay = 0;
 
+    private DelayObj _delay;
+    
+    protected override void SetupReference()
+    {
+        var obj = new GameObject("[Architect] Delay Block");
+        _delay = obj.AddComponent<DelayObj>();
+    }
+
     protected override void Trigger(string trigger)
     {
-        ArchitectPlugin.Instance.StartCoroutine(DelayedEvent());
+        if (!_delay) return;
+        _delay.StartCoroutine(DelayedEvent());
     }
 
     protected override object GetValue(string id)
@@ -72,3 +122,5 @@ public class LoopBlock : ScriptBlock
         }
     }
 }
+
+public class DelayObj : MonoBehaviour;

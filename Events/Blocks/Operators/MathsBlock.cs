@@ -32,6 +32,34 @@ public class MathsBlock : ScriptBlock
     }
 }
 
+public class TrigBlock : ScriptBlock
+{
+    protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
+    protected override IEnumerable<(string, string)> InputVars => [("Value", "Number")];
+    
+    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Trig Operation";
+
+    public int Mode;
+    public bool IsDegrees;
+
+    protected override object GetValue(string id)
+    {
+        var v1 = GetVariable<float>("Value");
+        if (IsDegrees) v1 *= Mathf.Deg2Rad;
+        return Mode switch
+        {
+            0 => Mathf.Sin(v1),
+            1 => Mathf.Cos(v1),
+            2 => Mathf.Tan(v1),
+            3 => Mathf.Asin(v1),
+            4 => Mathf.Acos(v1),
+            _ => Mathf.Atan(v1)
+        };
+    }
+}
+
 public class NormaliseBlock : ScriptBlock
 {
     protected override IEnumerable<(string, string)> OutputVars => [("X", "Number"), ("Y", "Number")];

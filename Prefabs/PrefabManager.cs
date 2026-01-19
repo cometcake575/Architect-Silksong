@@ -90,5 +90,7 @@ public static class PrefabManager
         HeroController.instance.transform.SetPosition2D(new Vector2(100, 100));
         GameCameras.instance.mainCamera.transform.SetPosition2D(100, 100);
         GameCameras.instance.cameraTarget.transform.SetPosition2D(100, 100);
+        
+        GameCameras.instance.cameraTarget.SceneInit();
     }
 }

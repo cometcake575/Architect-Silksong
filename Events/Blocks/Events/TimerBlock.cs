@@ -6,6 +6,7 @@ namespace Architect.Events.Blocks.Events;
 
 public class TimerBlock : ToggleableBlock
 {
+    protected override IEnumerable<string> Inputs => ["Reset"];
     protected override IEnumerable<string> Outputs => ["OnCall"];
     protected override Color Color => Color.green;
     protected override string Name => "Timer";
@@ -14,11 +15,21 @@ public class TimerBlock : ToggleableBlock
     public float RepeatDelay = 1;
     public float RandDelay;
     public int MaxCalls = -1;
-    
+
+    private TimerEvent _te;
+
+    protected override void Trigger(string trigger)
+    {
+        if (!_te) return;
+        _te.gameObject.SetActive(true);
+        _te.Restart();
+    }
+
     protected override void SetupReference()
     {
-        var te = new GameObject("[Architect] Timer Block").AddComponent<TimerEvent>();
-        te.Block = this;
+        _te = new GameObject("[Architect] Timer Block").AddComponent<TimerEvent>();
+        _te.Block = this;
+        _te.cStartDelay = StartDelay;
     }
 
     public class TimerEvent : MonoBehaviour
@@ -28,16 +39,25 @@ public class TimerBlock : ToggleableBlock
         private int _calls;
         private float _time;
         private float _cRepeatDelay;
+        
+        public float cStartDelay;
+
+        public void Restart()
+        {
+            _time = 0;
+            _calls = 0;
+            cStartDelay = Block.StartDelay;
+        }
 
         private void Update()
         {
             if (!Block.Enabled) return;
             
-            if (Block.StartDelay > 0)
+            if (cStartDelay > 0)
             {
-                Block.StartDelay -= Time.deltaTime;
-                if (Block.StartDelay > 0) return;
-                _time -= Block.StartDelay;
+                cStartDelay -= Time.deltaTime;
+                if (cStartDelay > 0) return;
+                _time -= cStartDelay;
             }
             else
             {

@@ -32,6 +32,7 @@ public class Login : MenuState
         userBoxLabel.textComponent.fontSize = 16;
         userBoxLabel.transform.localScale = Vector3.one;
         ((RectTransform)userBoxLabel.transform).sizeDelta /= 3;
+        _userField.characterLimit = 20;
         
         var passText = UIUtils.MakeLabel("Password Title", gameObject,
             new Vector2(-165, 5), 

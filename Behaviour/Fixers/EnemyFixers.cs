@@ -1105,6 +1105,8 @@ public static class EnemyFixers
         var rc = fsm.GetState("Range Check");
         rc.transitions = rc.transitions
             .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+
+        obj.LocateMyFSM("Battle Music").enabled = false;
     }
 
     public class Watcher : Wakeable

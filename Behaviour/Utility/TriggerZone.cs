@@ -1,3 +1,4 @@
+using System;
 using Architect.Behaviour.Fixers;
 using Architect.Events;
 using Architect.Utils;
@@ -11,6 +12,8 @@ public class TriggerZone : MonoBehaviour
         ResourceUtils.LoadSpriteResource("trigger_zone", FilterMode.Point, ppu: 10);
     public static readonly Sprite CircleZone =
         ResourceUtils.LoadSpriteResource("trigger_zone_circle", FilterMode.Point, ppu: 10);
+
+    public bool block;
     
     public int mode;
     public int layer;
@@ -44,6 +47,7 @@ public class TriggerZone : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
+        if (block) return;
         switch (mode)
         {
             case 0:
@@ -64,5 +68,10 @@ public class TriggerZone : MonoBehaviour
         }
 
         EventManager.BroadcastEvent(gameObject, "ZoneExit");
+    }
+
+    private void OnEnable()
+    {
+        block = false;
     }
 }

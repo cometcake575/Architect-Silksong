@@ -61,13 +61,24 @@ public static class RequestManager
         result.text = signup ? "Account Created" : "Logged In";
     }
 
-    public static IEnumerator GetUserInfo(UserInfo info, Action<bool, string, string, string> callback)
+    public static IEnumerator GetUserInfo(UserInfo info, Action<string, string, string> callback)
     {
         var jsonBody = info.GetRequestJson();
 
-        yield return null;
-        callback(true, "cometcake575", "he/him\n\nThis is a test description to see how well it works. " +
-                                       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultrices ligula id erat imperdiet convallis. Nunc ex lorem, interdum vel tempor a, mollis sit amet ante. Fusce nec elit lobortis, efficitur augue tempus, pellentesque est. Praesent scelerisque felis eu libero iaculis tincidunt. Nulla in vehicula libero. Sed congue facilisis metus eu sodales. Donec libero elit, molestie id vulputate eu, vehicula sit amet metus. Quisque malesuada nibh et suscipit aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sem ipsum, posuere a justo in, tristique vehicula felis. Sed id tempor dolor. In eget tortor non massa fringilla porta.\n\nUt id accumsan purus. Vestibulum malesuada lectus eget purus pretium, eu bibendum odio iaculis. Phasellus vitae lacus libero. Pellentesque nec risus et diam egestas fermentum efficitur vitae ligula. Pellentesque convallis rutrum lacus, a cursus nulla facilisis eget. Nunc nec accumsan mauris, efficitur tincidunt erat. Nunc sit amet neque id odio congue imperdiet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam rhoncus lorem et odio aliquet, ut finibus lectus semper. Nullam scelerisque dolor est, sit amet porta enim rutrum at. Suspendisse potenti. Vivamus gravida fermentum tempor. Aliquam aliquam et orci ut pharetra. Sed tincidunt malesuada dolor maximus molestie. Nulla rutrum interdum libero. ", "file:///Users/arunkapila/Downloads/pfp.png");
+        var request = new UnityWebRequest(URL + "/status", "POST");
+        var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        
+        request.SetRequestHeader("Content-Type", "application/json");
+        
+        var operation = request.SendWebRequest();
+        yield return operation;
+
+        var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+        if (response.ContainsKey("error")) yield break;
+
+        callback(response["username"], response["description"], response["pfp"]);
     }
     
     [Serializable]
@@ -75,5 +86,37 @@ public static class RequestManager
     {
         public string username;
         public string password;
+    }
+
+    public static IEnumerator SendChangeRequest(string changeType, string newValue, Action<bool> callback)
+    {
+        var jsonBody = JsonConvert.SerializeObject(new ChangeRequestData
+        {
+            key = SharerKey,
+            changeType = changeType,
+            newValue = newValue
+        });
+
+        var request = new UnityWebRequest(URL + "/update-info", "POST");
+        var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        
+        request.SetRequestHeader("Content-Type", "application/json");
+        
+        var operation = request.SendWebRequest();
+        yield return operation;
+
+        var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+        
+        callback(!response.ContainsKey("error"));
+    }
+    
+    [Serializable]
+    private class ChangeRequestData
+    {
+        public string key;
+        public string changeType;
+        public string newValue;
     }
 }

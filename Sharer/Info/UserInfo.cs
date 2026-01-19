@@ -46,9 +46,8 @@ public class UserInfo(string userId, bool usingToken)
     public IEnumerator Setup()
     {
         if (IsSetup) yield break;
-        yield return RequestManager.GetUserInfo(this, (setup, user, desc, pfp) =>
+        yield return RequestManager.GetUserInfo(this, (user, desc, pfp) =>
         {
-            if (!setup) return;
             Username = user;
             Description = desc;
             PfpUrl = pfp;

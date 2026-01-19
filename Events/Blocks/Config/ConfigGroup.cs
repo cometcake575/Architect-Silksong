@@ -573,6 +573,20 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Trig =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<TrigBlock>("Function", "trig_func", 
+                (b, f) => b.Mode = f.GetValue())
+                .WithOptions("Sin", "Cos", "Tan", "Arcsin", "Arccos", "Arctan").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<TrigBlock>("Mode", "trig_mode", 
+                (b, f) => b.IsDegrees = f.GetValue() == 0)
+                .WithOptions("Degrees", "Radians").WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> Normalise =
     [
         ConfigurationManager.RegisterConfigType(
@@ -608,7 +622,7 @@ public static class ConfigGroup
             new FloatConfigType<TimerBlock>("Start Delay", "timer_start_delay", (o, value) =>
             {
                 o.StartDelay = value.GetValue();
-            }).WithDefaultValue(0)),
+            }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<TimerBlock>("Repeat Delay", "timer_repeat_delay", (o, value) =>
             {

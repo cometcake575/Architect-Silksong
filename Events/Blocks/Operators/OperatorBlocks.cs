@@ -19,11 +19,13 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<RandomNumBlock>("Random Number", ConfigGroup.RandomNumber);
         ScriptManager.RegisterProcessBlock<RandomBoolBlock>("Random Bool");
         ScriptManager.RegisterProcessBlock<MathsBlock>("Operation", ConfigGroup.Maths);
+        ScriptManager.RegisterProcessBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);
         ScriptManager.RegisterProcessBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);
         ScriptManager.RegisterProcessBlock<AndBlock>("And");
         ScriptManager.RegisterProcessBlock<OrBlock>("Or");
         ScriptManager.RegisterProcessBlock<NotBlock>("Not");
         ScriptManager.RegisterProcessBlock<DelayBlock>("Delay", ConfigGroup.Delay);
+        ScriptManager.RegisterProcessBlock<DelayBlock>("Wait Until");
         ScriptManager.RegisterProcessBlock<LoopBlock>("Loop", ConfigGroup.Loop);
         ScriptManager.RegisterProcessBlock<TimeBlock>("Time", ConfigGroup.Time);
         ScriptManager.RegisterProcessBlock<DayBlock>("Day", ConfigGroup.Time);

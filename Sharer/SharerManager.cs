@@ -21,7 +21,7 @@ public static class SharerManager
     public static GameObject EraseEditsBtn;
     // Appears when returnState is not null in the current MenuState
     public static GameObject ReturnBtn;
-
+    
     private static bool _sharerOpen;
     
     private static GameObject _sharer;

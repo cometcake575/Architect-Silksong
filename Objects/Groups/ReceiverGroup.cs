@@ -36,6 +36,14 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> TriggerZone = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("disable_tz", "DisableImmediate", o =>
+        {
+            o.GetComponent<TriggerZone>().block = true;
+            o.SetActive(false);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Velocity = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("set_velocity", "SetVelocity", (o, b) =>
         {
