@@ -6,8 +6,8 @@ namespace Architect.Events.Blocks.Events;
 
 public class TimerBlock : ToggleableBlock
 {
-    protected override IEnumerable<string> Inputs => ["Reset"];
-    protected override IEnumerable<string> Outputs => ["OnCall"];
+    protected override IEnumerable<string> Inputs => ["Reset", ];
+    protected override IEnumerable<string> Outputs => ["OnCall", "Disable", "Enable"];
     protected override Color Color => Color.green;
     protected override string Name => "Timer";
 
