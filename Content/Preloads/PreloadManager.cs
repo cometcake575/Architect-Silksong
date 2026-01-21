@@ -73,6 +73,12 @@ public static class PreloadManager
     {
         if (HasPreloaded) return;
         SetupCanvas();
+        
+        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("Patchwork"))
+        {
+            ArchitectPlugin.Logger.LogInfo("Patchwork fix...");
+            PatchworkFix.Init();
+        }
         ArchitectPlugin.Instance.StartCoroutine(Preload());
     }
 
