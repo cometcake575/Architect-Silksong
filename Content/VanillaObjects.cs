@@ -90,7 +90,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Decorations)).Offset = new Vector3(0.5723f, 1);
 
         Categories.Attacks.Add(new PreloadObject("Voltbola", "voltvessel_ball",
-                ("localpoolprefabs_assets_areaarborium.bundle", 
+                ("localpoolprefabs_assets_areaarborium.bundle",
                     "Assets/Prefabs/Hornet Enemies/Lightning Bola Ball Enemy.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
@@ -351,7 +351,8 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Junk Pipe", "junk_pipe",
             ("Under_06", "understore_junk_pipe"),
             preloadAction: HazardFixers.FixJunkPipe)
-            .WithRotationGroup(RotationGroup.All));
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.JunkPipe));
 
         Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
             ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
@@ -996,6 +997,15 @@ public static class VanillaObjects
         
         AddEnemy("Guardfly", "guardfly", ("Slab_04", "Slab Fly Mid (2)"));
         AddEnemy("Wardenfly", "wardenfly", ("Slab_22", "Slab Fly Large"));
+        
+        Categories.Attacks.Add(new PreloadObject("Fly Spit", "fly_spit",
+            ("localpoolprefabs_assets_areaslab", "Assets/Prefabs/Hornet Enemies/Slab Fly Glob.prefab"),
+            description:"Usually already landed by the time the room finishes loading.\n" +
+                        "Best used with the Object Spawner.",
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
 
         AddEnemy("Freshfly", "freshfly",
             ("Slab_16b",
@@ -1828,19 +1838,25 @@ public static class VanillaObjects
     private static void AddMarchObjects()
     {
         AddEnemy("Skarrlid", "bone_hunter_tiny",
-            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Tiny"));
+            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Tiny"),
+            preloadAction: MiscFixers.FixRotation);
 
         AddEnemy("Skarrwing", "bone_hunter_buzzer",
-                ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Buzzer"))
+                ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Buzzer"),
+                preloadAction: MiscFixers.FixRotation)
             .WithConfigGroup(ConfigGroup.Skarrwing);
 
         AddEnemy("Skarr Scout", "bone_hunter_child",
             ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Child"),
-            preloadAction: MiscFixers.FixRotation);
+            preloadAction: EnemyFixers.FixSkarr);
 
         AddEnemy("Skarr Stalker", "bone_hunter",
             ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter"),
-            preloadAction: MiscFixers.FixRotation);
+            preloadAction: EnemyFixers.FixSkarr,
+            postSpawnAction: o =>
+            {
+                o.LocateMyFSM("Detect Offscreen").GetState("Idle").transitions = [];
+            });
 
         AddEnemy("Spear Skarr", "bone_hunter_fly",
                 ("Ant_21", "Enemy Control/Ant Merchant Killed/Big Guard Dead/Bone Hunter Fly"),
@@ -1850,7 +1866,7 @@ public static class VanillaObjects
 
         AddEnemy("Skarrgard", "bone_hunter_throw",
             ("Ant_21", "Enemy Control/Normal/Bone Hunter Throw"),
-            preloadAction: EnemyFixers.RemoveConstrainPosition);
+            preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
 
         AddEnemy("Last Claw", "last_claw",
             ("Memory_Ant_Queen", "Boss Scene/Battle Scene/Wave 4/Bone Hunter Fly Chief"),
@@ -1916,7 +1932,8 @@ public static class VanillaObjects
 
         AddEnemy("Vicious Caranid", "bone_circler_v",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Black Thread World/Bone Circler Vicious (1)"),
-            preloadAction: MiscFixers.FixRotation);
+            preloadAction: MiscFixers.FixRotation)
+            .WithConfigGroup(ConfigGroup.HideBody);
 
         AddEnemy("Kilik", "bone_crawler", ("Ant_19", "Bone Crawler (2)"),
             preloadAction: EnemyFixers.RemoveConstrainPosition).WithRotationGroup(RotationGroup.Four);
@@ -2207,6 +2224,15 @@ public static class VanillaObjects
                 if (was) o.SetActive(true);
                 silkAcid.Offset = o2.transform.GetChild(1).transform.localPosition;
             }, notSceneBundle: true));
+
+        Categories.Effects.Add(new PreloadObject("Dust Effect", "emerge_dust",
+            ("Greymoor_13", "Pilgrim 03/Drop Dust"),
+            description:"Appears when the 'Emit' trigger is run.",
+            sprite: ResourceUtils.LoadSpriteResource("dust", ppu:64),
+            preloadAction: MiscFixers.FixDust)
+            .WithReceiverGroup(ReceiverGroup.Dust)
+            .WithConfigGroup(ConfigGroup.Dust)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable));
         
         AddEnemy("Overgrown Pilgrim", "pilgrim_moss_spitter",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Normal World/Pilgrim Moss Spitter"),

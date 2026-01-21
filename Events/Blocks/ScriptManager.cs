@@ -213,8 +213,10 @@ public static class ScriptManager
     
     public static void MakeLink(ScriptBlock sourceBlock, string sourceEvent, ScriptBlock block, string trigger, Connection.LinkType linkType)
     {
-        var source = (RectTransform)sourceBlock.BlockInstance.LinkStarts[sourceEvent];
-        var target = (RectTransform)block.BlockInstance.LinkEnds[trigger];
+        if (!sourceBlock.BlockInstance.LinkStarts.TryGetValue(sourceEvent, out var start)) return;
+        var source = (RectTransform)start;
+        if (!block.BlockInstance.LinkEnds.TryGetValue(trigger, out var end)) return;
+        var target = (RectTransform)end;
 
         if (!source || !target) return;
 

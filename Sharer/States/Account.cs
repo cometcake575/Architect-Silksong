@@ -3,7 +3,6 @@ using Architect.Sharer.Info;
 using Architect.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Architect.Sharer.States;
@@ -48,6 +47,7 @@ public class Account : MenuState
             maxWidth: 400).textComponent;
         _username.fontSize = 16;
         _username.alignment = TextAnchor.UpperLeft;
+        _username.gameObject.AddComponent<UserConfig>();
         
         _desc = UIUtils.MakeLabel("Desc", gameObject,
             new Vector2(20, -40),
@@ -57,6 +57,7 @@ public class Account : MenuState
         _desc.fontSize = 16;
         _desc.alignment = TextAnchor.UpperLeft;
         _desc.horizontalOverflow = HorizontalWrapMode.Wrap;
+        _desc.gameObject.AddComponent<DescConfig>();
 
         _pfp = UIUtils.MakeImage("Profile Picture", gameObject,
             new Vector2(170, 130),
@@ -80,8 +81,9 @@ public class Account : MenuState
     {
         if (CurrentUserInfo == null || CurrentUserInfo.UserID != RequestManager.SharerKey)
         {
-            ArchitectPlugin.Instance.StartCoroutine(SetToMainUser());
+            StartCoroutine(SetToMainUser());
         }
+        _configUI.SetActive(false);
     }
 
     public IEnumerator SetToMainUser()
@@ -103,19 +105,7 @@ public class Account : MenuState
         if (!CurrentUserInfo.IsSetup) yield break;
         _username.text = CurrentUserInfo.Username;
         _desc.text = CurrentUserInfo.Description;
-        ArchitectPlugin.Instance.StartCoroutine(GetSprite(CurrentUserInfo.PfpUrl));
-    }
-
-    private IEnumerator GetSprite(string url)
-    {
-        var www = UnityWebRequestTexture.GetTexture(url);
-        yield return www.SendWebRequest();
-        
-        if (www.result == UnityWebRequest.Result.Success)
-        {
-            var tex = DownloadHandlerTexture.GetContent(www);
-            _pfp.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), default);
-        }
+        StartCoroutine(SharerManager.GetSprite(CurrentUserInfo.PfpUrl, _pfp));
     }
 
     private static void SignOut()
@@ -130,10 +120,11 @@ public class Account : MenuState
         protected abstract string Id { get; }
         protected abstract string Current { get; }
         protected abstract int MaxLength { get; }
+        protected abstract bool IsBig { get; }
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            Instance.ShowOptionType(Title, Id, Current, MaxLength);
+            Instance.ShowOptionType(Title, Id, Current, MaxLength, IsBig);
         }
     }
 
@@ -143,6 +134,7 @@ public class Account : MenuState
         protected override string Id => "username";
         protected override string Current => CurrentUserInfo.Username;
         protected override int MaxLength => 20;
+        protected override bool IsBig => false;
     }
 
     public class DescConfig : OpenConfig
@@ -151,6 +143,7 @@ public class Account : MenuState
         protected override string Id => "description";
         protected override string Current => CurrentUserInfo.Description;
         protected override int MaxLength => 1000;
+        protected override bool IsBig => true;
     }
 
     public class PfpConfig : OpenConfig
@@ -159,55 +152,66 @@ public class Account : MenuState
         protected override string Id => "icon_url";
         protected override string Current => CurrentUserInfo.PfpUrl;
         protected override int MaxLength => 1000;
+        protected override bool IsBig => false;
     }
 
     private GameObject _configUI;
     private Text _changeTitle;
     private InputField _changeField;
+    private RectTransform _changeLabel;
     private string _changeType;
+    private Transform _bg;
 
     private void SetupConfigUI()
     {
         _configUI = new GameObject("Config UI");
         _configUI.transform.SetParent(gameObject.transform, false);
         _configUI.RemoveOffset();
-        _configUI.SetActive(false);
 
         var bg = UIUtils.MakeImage("Bg", _configUI, Vector2.zero,
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(10000, 10000));
         bg.sprite = ResourceUtils.LoadSpriteResource("Sharer.config_bg");
+        _bg = bg.transform;
 
-        (_changeField, var cftxt) = UIUtils.MakeTextbox("Change", _configUI, new Vector2(0, 50),
+        var uiChild = new GameObject("Content");
+        uiChild.transform.SetParent(_configUI.transform, false);
+        uiChild.RemoveOffset();
+        
+        (_changeField, var cfTxt) = UIUtils.MakeTextbox("Change", uiChild, Vector2.zero,
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 1000, 80);
-
-        _changeTitle = UIUtils.MakeLabel("Type", _configUI, new Vector2(0, 100),
+        cfTxt.transform.localScale = Vector3.one;
+        cfTxt.textComponent.fontSize = 16;
+        _changeLabel = (RectTransform)cfTxt.transform;
+        _changeLabel.sizeDelta /= 3;
+        
+        _changeTitle = UIUtils.MakeLabel("Type", uiChild, new Vector2(0, 140),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f))
             .textComponent;
         _changeTitle.fontSize = 20;
+        _changeTitle.alignment = TextAnchor.MiddleCenter;
         
-        var cancel = UIUtils.MakeTextButton("Cancel", "Cancel", _configUI, new Vector2(50, -40),
+        var (cancel, cancelLabel) = UIUtils.MakeTextButton("Cancel", "Cancel", uiChild, new Vector2(70, -140),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            size: new Vector2(420, 80)).Item1;
+            size: new Vector2(360, 80));
+        cancelLabel.textComponent.fontSize = 18;
         cancel.onClick.AddListener(() =>
         {
             _configUI.SetActive(false);
         });
 
-        var confirm = UIUtils.MakeTextButton("Confirm", "Confirm", _configUI, new Vector2(-50, -40),
+        var (confirm, confirmLabel) = UIUtils.MakeTextButton("Confirm", "Confirm", uiChild, new Vector2(-70, -140),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            size: new Vector2(420, 80)).Item1;
-        
+            size: new Vector2(360, 80));
+        confirmLabel.textComponent.fontSize = 18;
         confirm.onClick.AddListener(() =>
         {
             cancel.interactable = false;
             confirm.interactable = false;
-            ArchitectPlugin.Instance.StartCoroutine(RequestManager.SendChangeRequest(
+            StartCoroutine(RequestManager.SendChangeRequest(
                 _changeType, 
                 _changeField.text,
-                b => ArchitectPlugin.Instance.StartCoroutine(OnComplete(b))));
+                b => StartCoroutine(OnComplete(b))));
         });
-
-        bg.transform.SetAsFirstSibling();
 
         return;
 
@@ -220,13 +224,20 @@ public class Account : MenuState
         }
     }
 
-    private void ShowOptionType(string changeTitle, string changeType, string current, int maxLength)
+    private void ShowOptionType(string changeTitle, string changeType, string current, int maxLength, bool isBig)
     {
+        _changeField.characterLimit = maxLength;
+        ((RectTransform)_changeField.transform).sizeDelta = new Vector2(1000, isBig ? 620 : 80);
+        _changeLabel.sizeDelta = new Vector2(325, isBig ? 200 : 26);
+        _changeField.lineType = isBig ? InputField.LineType.MultiLineNewline : InputField.LineType.SingleLine;
+        _changeField.textComponent.alignment = isBig ? TextAnchor.UpperLeft : TextAnchor.MiddleLeft;
+        
         _changeTitle.text = changeTitle;
         _changeField.text = current;
-        _changeField.characterLimit = maxLength;
         _changeType = changeType;
         
         _configUI.SetActive(true);
+        
+        _bg.SetAsFirstSibling();
     }
 }

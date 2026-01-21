@@ -45,7 +45,7 @@ public class ObjectMover : MonoBehaviour
         }
     }
 
-    public void Move(float eX, float eY)
+    public void Move(float eX, float eY, float eRot)
     {
         if (!_target) return;
         if (!_source) return;
@@ -53,7 +53,7 @@ public class ObjectMover : MonoBehaviour
         if (clearVelocity) _rb2d.linearVelocity = Vector2.zero;
 
         var sourceRot = _source.eulerAngles;
-        sourceRot.z += rotation;
+        sourceRot.z += rotation + eRot;
 
         if (moveX) _target.transform.SetPositionX(_source.position.x + xOffset + eX);
         if (moveY) _target.transform.SetPositionY(_source.position.y + yOffset + eY);

@@ -8,6 +8,7 @@ using Architect.Utils;
 using GlobalEnums;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -31,6 +32,8 @@ public static class SharerManager
     public static MenuState HomeState;
 
     private static UIManager _uiManager;
+
+    public static readonly Sprite Placeholder = ResourceUtils.LoadSpriteResource("Sharer.placeholder", FilterMode.Point);
     
     public static void Init()
     {
@@ -208,5 +211,21 @@ public static class SharerManager
         public Action OnClick;
 
         public void OnPointerDown(PointerEventData eventData) => OnClick();
+    }
+
+    public static IEnumerator GetSprite(string url, Image apply)
+    {
+        apply.sprite = Placeholder;
+        var www = UnityWebRequestTexture.GetTexture(url);
+        www.timeout = 30;
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            var tex = DownloadHandlerTexture.GetContent(www);
+            if (tex.width < 1 || tex.height < 1) apply.sprite = Placeholder;
+            else apply.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), default);
+        }
+        else apply.sprite = Placeholder;
     }
 }

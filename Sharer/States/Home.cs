@@ -6,6 +6,8 @@ namespace Architect.Sharer.States;
 
 public class Home : MenuState
 {
+    public static MenuState Manage;
+    
     private Text _txt;
     
     public override void OnStart()
@@ -31,11 +33,16 @@ public class Home : MenuState
         });
         
         MakeButton<Browse>("Browse Levels", -80);
-        MakeButton<Upload>("Upload", -120);
-        MakeButton<Manage>("Manage Levels", -160);
+        MakeButton<LevelConfig>("Upload", -120);
+        Manage = MakeButton<Manage>("Manage Levels", -160);
     }
 
-    private void MakeButton<T>(string stateName, float y) where T : MenuState
+    public override void OnOpen()
+    {
+        LevelConfig.CurrentInfo = null;
+    }
+
+    private MenuState MakeButton<T>(string stateName, float y) where T : MenuState
     {
         var (btn, label) = UIUtils.MakeTextButton(stateName, stateName, gameObject, 
             new Vector2(0, y), 
@@ -49,6 +56,7 @@ public class Home : MenuState
         {
             SharerManager.TransitionToState(state);
         });
+        return state;
     }
 
     private void Update()

@@ -34,6 +34,8 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateFakePerformance());
         
+        Categories.Utility.Add(CreateCocoonSpawn());
+        
         Categories.Utility.Add(CreateWalkTarget());
         Categories.Utility.Add(CreateDarkness());
         Categories.Utility.Add(CreateMemoryToggle());
@@ -442,6 +444,23 @@ public static class UtilityObjects
                 sprite: ResourceUtils.LoadSpriteResource("fake_performance", FilterMode.Point, ppu:64),
                 description: "Acts like the Needolin is playing at this object's position when it is active.")
             .WithConfigGroup(ConfigGroup.FakePerformance);
+    }
+
+    private static PlaceableObject CreateCocoonSpawn()
+    {
+        CustomGuidComponent.Init();
+        var cocoon = new GameObject("[Architect] Cocoon Spawn Point");
+
+        cocoon.SetActive(false);
+        Object.DontDestroyOnLoad(cocoon);
+
+        cocoon.AddComponent<HeroCorpseMarker>().guidComponent = cocoon.AddComponent<CustomGuidComponent>();
+
+        return new CustomObject("Cocoon Spawn Point", "cocoon_spawn",
+                cocoon,
+                sprite: ResourceUtils.LoadSpriteResource("cocoon_spawn", FilterMode.Point, ppu:64),
+                description: "Cocoon spawns at the nearest spawn point.")
+            .WithConfigGroup(ConfigGroup.CocoonSpawnPoint);
     }
 
     private static PlaceableObject CreateObjectSpawner()

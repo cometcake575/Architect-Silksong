@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
@@ -43,6 +44,21 @@ public static class ReceiverGroup
             o.SetActive(false);
         }))
     ]);
+    
+    public static readonly List<EventReceiverType> Dust = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("dust_on", "Emit", o =>
+        {
+            ArchitectPlugin.Instance.StartCoroutine(EmitDust(o));
+        }))
+    ]);
+
+    private static IEnumerator EmitDust(GameObject o)
+    {
+        foreach (var s in o.GetComponentsInChildren<ParticleSystem>()) s.Play();
+        yield return new WaitForSeconds(o.GetComponent<MiscFixers.Dust>().time);
+        foreach (var s in o.GetComponentsInChildren<ParticleSystem>()) s.Stop();
+        o.BroadcastEvent("OnFinish");
+    }
     
     public static readonly List<EventReceiverType> Velocity = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("set_velocity", "SetVelocity", (o, b) =>
@@ -440,7 +456,8 @@ public static class ReceiverGroup
         {
             o.GetComponent<ObjectMover>().Move(
                 b?.GetVariable<float>("Extra X") ?? 0,
-                b?.GetVariable<float>("Extra Y") ?? 0);
+                b?.GetVariable<float>("Extra Y") ?? 0,
+                b?.GetVariable<float>("Extra Rot") ?? 0);
         }))
     ]);
     

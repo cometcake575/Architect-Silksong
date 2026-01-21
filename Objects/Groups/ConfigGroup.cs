@@ -40,6 +40,24 @@ public static class ConfigGroup
                 if (value.GetValue()) o.GetComponent<ObjectRemover>().all = true;
             }).WithDefaultValue(false))
     ]);
+    
+    public static readonly List<ConfigType> CocoonSpawnPoint = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Disable Vanilla Points", "cocoon_disable_others", (o, value) =>
+            {
+                o.GetComponent<CustomGuidComponent>().overrideAll = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
+    
+    public static readonly List<ConfigType> Dust = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Time", "dust_time", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Dust>().time = value.GetValue();
+            }).WithDefaultValue(1))
+    ]);
 
     public static readonly List<ConfigType> Visible = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
@@ -112,6 +130,16 @@ public static class ConfigGroup
             {
                 o.GetComponent<Behaviour.Custom.JellyEgg>().regenTime = value.GetValue();
             }).WithDefaultValue(-1))
+    ]);
+
+    public static readonly List<ConfigType> JunkPipe = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Terrain Collision", "junk_pipe_terrain", (o, value) =>
+            {
+                o.transform.GetChild(5).gameObject.SetActive(false);
+                o.transform.GetChild(6).gameObject.SetActive(false);
+                o.transform.GetChild(7).gameObject.SetActive(false);
+            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> BlackThreader = GroupUtils.Merge(Generic, [
@@ -1484,11 +1512,7 @@ public static class ConfigGroup
                 }).WithDefaultValue(true)),
         DamagesEnemies
     ]);
-
-    public static readonly List<ConfigType> Moorwing = GroupUtils.Merge(Bosses, [DamagesEnemies]);
     
-    public static readonly List<ConfigType> Boran = GroupUtils.Merge(Enemies, [DamagesEnemies]);
-
     public static readonly List<ConfigType> LeafRoller = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Hidden", "hidden_leaf_roller",
@@ -1571,6 +1595,10 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> Moorwing = GroupUtils.Merge(Bosses, [DamagesEnemies]);
+    
+    public static readonly List<ConfigType> Boran = GroupUtils.Merge(Wakeable, [DamagesEnemies]);
+
     public static readonly List<ConfigType> Velocity = GroupUtils.Merge(Gravity, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("X Velocity", "velocity_apply_x", (o, value) =>
@@ -1610,17 +1638,20 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
 
-    public static readonly List<ConfigType> Surgeon = GroupUtils.Merge(Enemies, [
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Dig Range", "surgeon_range", (o, value) =>
-            {
-                o.GetComponent<EnemyFixers.Teleplane>().width = value.GetValue();
-            }).WithDefaultValue(5)),
+    public static readonly List<ConfigType> HideBody = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Invisible Body", "surgeon_no_body", (o, value) =>
             {
                 if (value.GetValue()) o.GetComponent<tk2dSprite>().scale = Vector3.zero;
             }).WithDefaultValue(false))
+    ]);
+
+    public static readonly List<ConfigType> Surgeon = GroupUtils.Merge(HideBody, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Dig Range", "surgeon_range", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.Teleplane>().width = value.GetValue();
+            }).WithDefaultValue(5))
     ]);
 
     public static readonly List<ConfigType> Teleplane = GroupUtils.Merge(Enemies, [

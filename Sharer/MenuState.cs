@@ -21,7 +21,11 @@ public abstract class MenuState : MonoBehaviour
         SharerManager.ReturnBtn.SetActive(ReturnState);
         SharerManager.OpenSharerBtn.SetActive(!ReturnState);
         
-        if (!started) OnStart();
+        if (!started)
+        {
+            started = true;
+            OnStart();
+        }
         OnOpen();
     }
     

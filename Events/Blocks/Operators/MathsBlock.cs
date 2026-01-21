@@ -47,15 +47,14 @@ public class TrigBlock : ScriptBlock
     protected override object GetValue(string id)
     {
         var v1 = GetVariable<float>("Value");
-        if (IsDegrees) v1 *= Mathf.Deg2Rad;
         return Mode switch
         {
-            0 => Mathf.Sin(v1),
-            1 => Mathf.Cos(v1),
-            2 => Mathf.Tan(v1),
-            3 => Mathf.Asin(v1),
-            4 => Mathf.Acos(v1),
-            _ => Mathf.Atan(v1)
+            0 => Mathf.Sin(v1 * (IsDegrees ? Mathf.Deg2Rad : 1)),
+            1 => Mathf.Cos(v1 * (IsDegrees ? Mathf.Deg2Rad : 1)),
+            2 => Mathf.Tan(v1 * (IsDegrees ? Mathf.Deg2Rad : 1)),
+            3 => Mathf.Asin(v1) * (IsDegrees ? Mathf.Rad2Deg : 1),
+            4 => Mathf.Acos(v1) * (IsDegrees ? Mathf.Rad2Deg : 1),
+            _ => Mathf.Atan(v1) * (IsDegrees ? Mathf.Rad2Deg : 1)
         };
     }
 }

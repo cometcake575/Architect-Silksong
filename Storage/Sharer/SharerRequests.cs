@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Architect.Objects.Categories;
 using Architect.Placements;
+using Architect.Prefabs;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -181,6 +184,11 @@ public static class SharerRequests
         }
         
         var json = request.downloadHandler.text;
+        
+        var prefabs = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(json)
+            .Where(o => o.Key.StartsWith("Prefab_"));
+        PrefabsCategory.Prefabs = prefabs.Select(o => 
+            new PrefabObject(o.Key.Replace("Prefab_", ""))).ToList();
         
         var data = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(json);
         ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadLevelData(data, levelId, status));

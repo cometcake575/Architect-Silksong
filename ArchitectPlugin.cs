@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.10.16")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.10.17")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
@@ -85,8 +85,8 @@ public class ArchitectPlugin : BaseUnityPlugin
             HazardFixers.UpdateLanterns();
         }
         CursorManager.Update();
-        // SharerManager.Update();
         LevelSharerUI.Update();
+        // SharerManager.Update();
         AbilityObjects.Update();
     }
 }

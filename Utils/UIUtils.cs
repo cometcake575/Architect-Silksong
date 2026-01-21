@@ -10,7 +10,7 @@ public static class UIUtils
 {
     public static readonly Sprite Square = ResourceUtils.LoadSpriteResource("square");
 
-    private static readonly Color LightGrey = new(0.7f, 0.7f, 0.7f);
+    public static readonly Color LightGrey = new(0.7f, 0.7f, 0.7f);
     
     private static readonly Sprite ButtonSprite = ResourceUtils.LoadSpriteResource(
         "button_outline",

@@ -1263,4 +1263,15 @@ public static class MiscFixers
     {
         obj.transform.SetRotation2D(0);
     }
+
+    public static void FixDust(GameObject obj)
+    {
+        obj.transform.SetRotation2D(0);
+        obj.AddComponent<Dust>();
+    }
+
+    public class Dust : MonoBehaviour
+    {
+        public float time = 1;
+    }
 }

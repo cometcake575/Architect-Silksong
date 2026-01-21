@@ -1852,6 +1852,8 @@ public static class EnemyFixers
         var head = obj.transform.Find("Legs Container").GetChild(0).GetChild(0);
         head.gameObject.AddComponent<PlaceableObject.SpriteSource>();
         head.GetChild(0).Find("Roll Collider").gameObject.layer = LayerMask.NameToLayer("Enemies");
+
+        obj.AddComponent<Boran>();
     }
 
     public static void FixServitorIgnim(GameObject obj)
@@ -2019,6 +2021,16 @@ public static class EnemyFixers
         public override void DoWake() 
         {
             gameObject.LocateMyFSM("Noise Reaction").SendEvent("WAKE");
+        }
+    }
+
+    public class Boran : Wakeable
+    {
+        public override void DoWake() 
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Rest").AddAction(() => fsm.SendEvent("WAKE"), 0);
+            fsm.SendEvent("WAKE");
         }
     }
 
@@ -2362,5 +2374,11 @@ public static class EnemyFixers
     {
         FixUnderworksArenaEnemy(obj);
         obj.AddComponent<FakePersistentMarker>();
+    }
+
+    public static void FixSkarr(GameObject obj)
+    {
+        obj.transform.SetRotation2D(0);
+        obj.RemoveComponent<EnemyEdgeControl>();
     }
 }
