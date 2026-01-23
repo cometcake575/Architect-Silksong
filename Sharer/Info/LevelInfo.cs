@@ -5,7 +5,7 @@ namespace Architect.Sharer.Info;
 
 public class LevelInfo
 {
-    // Used to send a download request
+    // Used to send a download/edit request
     public string LevelId;
 
     // Used for visuals

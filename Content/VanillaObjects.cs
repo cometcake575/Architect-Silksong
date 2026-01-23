@@ -152,6 +152,21 @@ public static class VanillaObjects
         AddEnemy("Corrcrust Karaka", "corrcrust_karaka",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 4/Wave 3/Coral Bubble Brute"),
             postSpawnAction: EnemyFixers.FixCorrcrustKaraka);
+        
+        Categories.Attacks.Add(new PreloadObject("Coral Bubble", "coral_bubble",
+                ("localpoolprefabs_assets_areacoralareamemory", 
+                    "Assets/Prefabs/Hornet Enemies/Coral Bubble.prefab"),
+                postSpawnAction: o =>
+                {
+                    var init = o.LocateMyFSM("Control").GetState("Init");
+                    init.DisableAction(3);
+                    init.DisableAction(4);
+                    init.DisableAction(6);
+                },
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Bubble)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
 
         AddEnemy("Karak Gor", "karak_gor",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)"),

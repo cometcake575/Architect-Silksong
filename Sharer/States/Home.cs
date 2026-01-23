@@ -8,6 +8,9 @@ public class Home : MenuState
 {
     public static MenuState Manage;
     
+    private static Button _manageBtn;
+    private static Button _uploadBtn;
+    
     private Text _txt;
     
     public override void OnStart()
@@ -33,8 +36,8 @@ public class Home : MenuState
         });
         
         MakeButton<Browse>("Browse Levels", -80);
-        MakeButton<LevelConfig>("Upload", -120);
-        Manage = MakeButton<Manage>("Manage Levels", -160);
+        _uploadBtn = MakeButton<LevelConfig>("Upload", -120).Item2;
+        (Manage, _manageBtn) = MakeButton<Manage>("Manage Levels", -160);
     }
 
     public override void OnOpen()
@@ -42,7 +45,7 @@ public class Home : MenuState
         LevelConfig.CurrentInfo = null;
     }
 
-    private MenuState MakeButton<T>(string stateName, float y) where T : MenuState
+    private (MenuState, Button) MakeButton<T>(string stateName, float y) where T : MenuState
     {
         var (btn, label) = UIUtils.MakeTextButton(stateName, stateName, gameObject, 
             new Vector2(0, y), 
@@ -56,11 +59,13 @@ public class Home : MenuState
         {
             SharerManager.TransitionToState(state);
         });
-        return state;
+        return (state, btn);
     }
 
     private void Update()
     {
         _txt.text = RequestManager.SharerKey == null ? "Log In / Sign Up" : "Account";
+        _manageBtn.interactable = RequestManager.SharerKey != null;
+        _uploadBtn.interactable = RequestManager.SharerKey != null;
     }
 }

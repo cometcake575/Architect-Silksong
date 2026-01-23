@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Sharer.Info;
 using Architect.Utils;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -141,6 +143,12 @@ public class LevelConfig : MenuState
         MakeTagBtn(LevelInfo.LevelTag.Areas.GetLabel(), LevelInfo.LevelTag.Areas, new Vector2(-135, -210), ref _tagButtons, FlipTag);
         MakeTagBtn(LevelInfo.LevelTag.Multiplayer.GetLabel(), LevelInfo.LevelTag.Multiplayer, new Vector2(0, -210), ref _tagButtons, FlipTag);
         MakeTagBtn(LevelInfo.LevelTag.Troll.GetLabel(), LevelInfo.LevelTag.Troll, new Vector2(135, -210), ref _tagButtons, FlipTag);
+        
+        // Status
+        var status = UIUtils.MakeLabel("Status", gameObject, new Vector2(0, -290),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f)).textComponent;
+        status.fontSize = 15;
+        status.alignment = TextAnchor.MiddleCenter;
 
         // Upload button
         var (uploadBtn, uploadLabel) = UIUtils.MakeTextButton("Upload", "Upload", gameObject,
@@ -149,6 +157,7 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         uploadLabel.textComponent.fontSize = 18;
         _upload = (uploadBtn.gameObject, uploadLabel.gameObject);
+        uploadBtn.onClick.AddListener(() => Upload());
         
         // Apply and Overwrite buttons
         var (applyBtn, applyLabel) = UIUtils.MakeTextButton("Save Changes", "Save Changes", gameObject,
@@ -157,6 +166,7 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         applyLabel.textComponent.fontSize = 18;
         _apply = (applyBtn.gameObject, applyLabel.gameObject);
+        applyBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 0));
         
         var (overwriteBtn, overwriteLabel) = UIUtils.MakeTextButton("Overwrite Level", "Overwrite Level", gameObject,
             new Vector2(-160, -260),
@@ -164,6 +174,7 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         overwriteLabel.textComponent.fontSize = 18;
         _overwriteLevel = (overwriteBtn.gameObject, overwriteLabel.gameObject);
+        overwriteBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 1));
         
         var (overwriteSaveBtn, overwriteSaveLabel) = UIUtils.MakeTextButton("Overwrite Save", "Overwrite Save", gameObject,
             new Vector2(0, -260),
@@ -171,6 +182,39 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         overwriteSaveLabel.textComponent.fontSize = 18;
         _overwriteSave = (overwriteSaveBtn.gameObject, overwriteSaveLabel.gameObject);
+        overwriteSaveBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 2));
+
+        return;
+
+        void Upload([CanBeNull] string overwriteLevelId = null, int overwriteMode = -1)
+        {
+            uploadBtn.interactable = false;
+            
+            if (!int.TryParse(_saveField.text, out var saveNumber)) saveNumber = -1;
+            
+            StartCoroutine(RequestManager.UploadLevel(
+                _nameField.text,
+                _descField.text,
+                _iconField.text,
+                saveNumber,
+                _difficulty,
+                _duration,
+                _tags,
+                (success, message) =>
+                {
+                    status.text = message;
+                    if (success) StartCoroutine(Return(SharerManager.HomeState));
+                    else uploadBtn.interactable = true;
+                },
+                overwriteLevelId, overwriteMode));
+        }
+
+        IEnumerator Return(MenuState state)
+        {
+            yield return new WaitForSeconds(1);
+            uploadBtn.interactable = true;
+            SharerManager.TransitionToState(state);
+        }
     }
 
     private void FlipTag(LevelInfo.LevelTag t)

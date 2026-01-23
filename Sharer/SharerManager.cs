@@ -21,7 +21,7 @@ public static class SharerManager
     // Appears on Silksong main menu
     public static GameObject EraseEditsBtn;
     // Appears when returnState is not null in the current MenuState
-    public static GameObject ReturnBtn;
+    public static Button ReturnBtn;
     
     private static bool _sharerOpen;
     
@@ -152,8 +152,8 @@ public static class SharerManager
         var (btn, img, _) = UIUtils.MakeButtonWithImage("Return", _sharer,
             new Vector3(-50, -50), new Vector2(1, 1), new Vector2(1, 1),
             220, 220);
-        ReturnBtn = btn.gameObject;
-        ReturnBtn.SetActive(false);
+        ReturnBtn = btn;
+        ReturnBtn.gameObject.SetActive(false);
         img.sprite = returnIcon;
 
         btn.onClick.AddListener(GoToReturnState);

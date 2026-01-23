@@ -18,7 +18,7 @@ public abstract class MenuState : MonoBehaviour
     {
         gameObject.SetActive(true);
         
-        SharerManager.ReturnBtn.SetActive(ReturnState);
+        SharerManager.ReturnBtn.gameObject.SetActive(ReturnState);
         SharerManager.OpenSharerBtn.SetActive(!ReturnState);
         
         if (!started)

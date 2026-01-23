@@ -188,7 +188,7 @@ public static class UIUtils
 
         var trans = gameObject.AddComponent<RectTransform>();
         var label = gameObject.AddComponent<Label>();
-        label.textComponent = gameObject.AddComponent<Text>();
+        label.textComponent = gameObject.AddComponent<TruncatableText>();
         label.textComponent.supportRichText = false;
         label.textComponent.horizontalOverflow = wrapMode;
         
@@ -209,7 +209,7 @@ public static class UIUtils
     {
         public string font = "Perpetua";
 
-        public Text textComponent;
+        public TruncatableText textComponent;
 
         private void Start()
         {
@@ -275,5 +275,29 @@ public static class UIUtils
         rt.anchorMin = Vector2.zero;
         rt.offsetMax = Vector2.zero;
         rt.offsetMin = Vector2.zero;
+    }
+    
+    public class TruncatableText : Text
+    {
+        public bool truncate;
+
+        protected override void Start()
+        {
+            base.Start();
+            if (truncate) Truncate();
+        }
+
+        private void Update()
+        {
+            if (truncate) Truncate();
+        }
+        
+        public void Truncate()
+        {
+            while (rectTransform.sizeDelta.x < preferredWidth)
+            {
+                text = text[..^4] + "...";
+            }
+        }
     }
 }

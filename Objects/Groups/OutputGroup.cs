@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Behaviour.Utility;
 using Architect.Events;
 using Architect.Events.Vars;
 using UnityEngine;
@@ -12,7 +13,22 @@ public static class OutputGroup
     public static readonly List<OutputType> Enemies =
     [
         EventManager.RegisterOutputType(
-            new OutputType("hp", "Health", "Number", o => o.GetComponent<HealthManager>().hp)
+            new OutputType("hp", "Health", "Number", o =>
+            {
+                var hm =  o.GetComponent<HealthManager>();
+                return hm ? hm.hp : 0;
+            })
+        )
+    ];
+
+    public static readonly List<OutputType> EnemyHook =
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("hp_hook", "Health", "Number", o =>
+            {
+                var hm = o.GetComponent<EnemyHook>().hm;
+                return hm ? hm.hp : 0;
+            })
         )
     ];
 

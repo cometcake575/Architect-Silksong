@@ -21,6 +21,7 @@ public static class UtilityObjects
     public static void Init()
     {
         Categories.Utility.Add(CreateItem());
+        Categories.Utility.Add(CreateEnemyHook());
         Categories.Utility.Add(CreateVoider());
         Categories.Utility.Add(CreatePlasmifier());
         Categories.Utility.Add(CreateShielder());
@@ -220,6 +221,24 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.BlackThreader)
             .WithBroadcasterGroup(BroadcasterGroup.BlackThreader)
             .WithReceiverGroup(ReceiverGroup.BlackThreader);
+    }
+
+    private static PlaceableObject CreateEnemyHook()
+    {
+        var hook = new GameObject("Enemy Hook");
+        Object.DontDestroyOnLoad(hook);
+        hook.SetActive(false);
+
+        hook.AddComponent<EnemyHook>();
+        
+        return new CustomObject("Enemy Hook", "enemy_hook", hook, 
+                "Allows connecting enemy events and triggers to vanilla enemies.\n\n" +
+                "The path to an object can be found with tools such as Unity Explorer.",
+                sprite:ResourceUtils.LoadSpriteResource("enemy_hook", FilterMode.Point, ppu:64))
+            .WithConfigGroup(ConfigGroup.EnemyHook)
+            .WithBroadcasterGroup(BroadcasterGroup.Enemies)
+            .WithOutputGroup(OutputGroup.EnemyHook)
+            .WithReceiverGroup(ReceiverGroup.Enemies);
     }
 
     private static PlaceableObject CreatePlasmifier()

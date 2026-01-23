@@ -77,19 +77,22 @@ public class Login : MenuState
         {
             _loginBtn.interactable = false;
             _signupBtn.interactable = false;
-            
+            SharerManager.ReturnBtn.interactable = false;
+
             yield return RequestManager.Login(signup, _userField.text, _pwField.text, _result);
-            
+
             if (RequestManager.SharerKey != null)
             {
                 yield return new WaitForSeconds(1);
+                _userField.text = "";
+                _result.text = "";
+                _pwField.text = "";
                 SharerManager.TransitionToState(SharerManager.HomeState);
             }
-            else
-            {
-                _loginBtn.interactable = true;
-                _signupBtn.interactable = true;
-            }
+
+            _loginBtn.interactable = true;
+            _signupBtn.interactable = true;
+            SharerManager.ReturnBtn.interactable = true;
         }
     }
 

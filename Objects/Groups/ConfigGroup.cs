@@ -41,6 +41,15 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
     
+    public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Path", "enemy_path", (o, value) =>
+            {
+                o.GetComponent<EnemyHook>().path = value.GetValue();
+            }))
+    ]);
+    
     public static readonly List<ConfigType> CocoonSpawnPoint = GroupUtils.Merge(Generic,
     [
         ConfigurationManager.RegisterConfigType(
@@ -1610,6 +1619,14 @@ public static class ConfigGroup
             {
                 o.GetOrAddComponent<VelocityApplier>().y = value.GetValue();
             }).WithDefaultValue(0))
+    ]);
+    
+    public static readonly List<ConfigType> Bubble = GroupUtils.Merge(Gravity, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Pop Naturally", "bubble_pop", (o, value) =>
+            {
+                if (!value.GetValue()) o.LocateMyFSM("Control").GetState("Idle").DisableAction(1);
+            }).WithDefaultValue(true))
     ]);
     
     public static readonly List<ConfigType> Watcher = GroupUtils.Merge(Wakeable, GroupUtils.Merge(Bosses, [

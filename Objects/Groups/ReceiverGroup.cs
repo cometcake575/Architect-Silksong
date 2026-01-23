@@ -479,7 +479,8 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Enemies = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_die", "Die", o =>
         {
-            o.GetComponent<HealthManager>().Die(null, AttackTypes.Generic, true);
+            var hm = o.GetComponent<HealthManager>();
+            if (hm) hm.Die(null, AttackTypes.Generic, true);
         }))
     ]);
     
