@@ -279,11 +279,11 @@ public static class ConfigGroup
     public static readonly List<ConfigType> RandomNumber =
     [
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<RandomNumBlock>("Lower Bound", "random_lower", 
+            new FloatConfigType<RandomNumBlock>("Lower Bound", "random_lower", 
                 (b, f) => b.LowerBound = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<RandomNumBlock>("Upper Bound", "random_upper", 
+            new FloatConfigType<RandomNumBlock>("Upper Bound", "random_upper", 
                 (b, f) => b.UpperBound = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(

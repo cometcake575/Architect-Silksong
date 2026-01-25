@@ -6,6 +6,8 @@ using Architect.Events.Blocks.Events;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
+using Architect.Objects.Tools;
+using Architect.Placements;
 using Architect.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -113,8 +115,11 @@ public static class ScriptManager
                 {
                     foreach (var connection in CurrentStart.Block.EventMap[CurrentStart.id].ToArray())
                     {
-                        DestroyLink(CurrentStart.Block.BlockId, CurrentStart.id, connection.Item1, connection.Item2,
-                            Connection.LinkType.Event);
+                        if (!Input.GetKey(KeyCode.LeftAlt))
+                        {
+                            DestroyLink(CurrentStart.Block.BlockId, CurrentStart.id, connection.Item1, connection.Item2,
+                                Connection.LinkType.Event);
+                        }
 
                         var eMap = Block.EventMap;
                         if (!eMap.ContainsKey(id)) eMap[id] = [];
@@ -347,5 +352,25 @@ public static class ScriptManager
             Config = configGroup,
             Position = -ScriptEditorUI.ScriptParent.transform.localPosition
         };
+    }
+
+    public static void AddToScript(ObjectPlacement obj)
+    {
+        var wasLocal = IsLocal;
+        if (!wasLocal) IsLocal = true;
+
+        EditorUI.ObjectIdLabel.textComponent.text = $"{obj.GetPlacementType().GetName()} added";
+        ArchitectPlugin.Instance.StartCoroutine(CursorObject.ClearCursorInfoLabel());
+
+        var block = new ObjectBlock
+        {
+            TypeId = obj.GetPlacementType().GetId(),
+            TargetId = obj.GetId(),
+            Type = "object"
+        };
+        block.Setup(true);
+        PlacementManager.GetLevelData().ScriptBlocks.Add(block);
+
+        if (!wasLocal) IsLocal = false;
     }
 }

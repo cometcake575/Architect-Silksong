@@ -467,7 +467,6 @@ public static class UtilityObjects
 
     private static PlaceableObject CreateCocoonSpawn()
     {
-        CustomGuidComponent.Init();
         var cocoon = new GameObject("[Architect] Cocoon Spawn Point");
 
         cocoon.SetActive(false);

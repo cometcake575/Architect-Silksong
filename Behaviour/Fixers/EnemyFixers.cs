@@ -1418,6 +1418,7 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Behaviour Base");
         fsm.fsmTemplate = null;
         fsm.GetState("Initial Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Reposition").DisableAction(3);
     }
 
     public static void FixSisterSplinter(GameObject obj)
@@ -1882,6 +1883,8 @@ public static class EnemyFixers
             fsm.SetState("Idle");
             obj.GetComponent<DamageHero>().enabled = true;
         }, 0);
+        fsm.GetState("Roll Check").DisableAction(0);
+        fsm.GetState("Floor").DisableAction(8);
     }
 
     public static void FixGiantFlea(GameObject obj)
@@ -1891,6 +1894,7 @@ public static class EnemyFixers
         init.DisableAction(4);
 
         ((StartRoarEmitter)fsm.GetState("Roar").actions[5]).stunHero = false;
+        fsm.GetState("Revisit").DisableAction(1);
     }
 
     public static void FixPharlidDiver(GameObject obj)
@@ -2380,5 +2384,13 @@ public static class EnemyFixers
     {
         obj.transform.SetRotation2D(0);
         obj.RemoveComponent<EnemyEdgeControl>();
+    }
+
+    public static void FixGnat(GameObject obj)
+    {
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var fsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Custom Corpse");
+        fsm.GetState("Spawn 2").actions[1].enabled = false;
     }
 }

@@ -16,7 +16,7 @@ public static class PrefabManager
     public static bool InPrefabScene;
     public static string Last;
 
-    public static readonly Sprite PrefabIcon = ResourceUtils.LoadSpriteResource("prefab");
+    public static readonly Sprite PrefabIcon = ResourceUtils.LoadSpriteResource("prefab", ppu: 256);
     
     private static string _oldScene;
     private static Vector3 _oldPos;
@@ -79,7 +79,7 @@ public static class PrefabManager
 
         var sm = SceneUtils.CreateSceneManager();
         
-        sm.transform.position = new Vector3(100, 100);
+        sm.transform.position = new Vector3(100, 100, 1);
         sm.transform.localScale = Vector3.one;
 
         var sr = sm.AddComponent<SpriteRenderer>();

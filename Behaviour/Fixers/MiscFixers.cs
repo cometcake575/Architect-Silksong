@@ -21,7 +21,7 @@ namespace Architect.Behaviour.Fixers;
 public static class MiscFixers
 {
     public static Material SpriteMaterial;
-    
+
     public static void Init()
     {
         PreloadManager.RegisterPreload(new BasicPreload(
@@ -340,7 +340,7 @@ public static class MiscFixers
         public int layer;
     }
     
-    public static void FixBreakableLamp(GameObject obj)
+    public static void FixBreakable(GameObject obj)
     {
         obj.GetComponent<Breakable>().onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
     }
@@ -1252,6 +1252,7 @@ public static class MiscFixers
         obj.LocateMyFSM("State Control").enabled = false;
 
         obj.AddComponent<BasicNpcFix>();
+        obj.RemoveComponent<BasicNPCRepeatDialogueLeaveCondition>();
     }
 
     public static void FixFlick(GameObject obj)

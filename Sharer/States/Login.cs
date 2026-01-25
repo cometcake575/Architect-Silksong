@@ -78,7 +78,7 @@ public class Login : MenuState
             _loginBtn.interactable = false;
             _signupBtn.interactable = false;
             SharerManager.ReturnBtn.interactable = false;
-
+            
             yield return RequestManager.Login(signup, _userField.text, _pwField.text, _result);
 
             if (RequestManager.SharerKey != null)

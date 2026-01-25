@@ -7,6 +7,7 @@ namespace Architect.Sharer.States;
 public class Home : MenuState
 {
     public static MenuState Manage;
+    public static MenuState LevelConfig;
     
     private static Button _manageBtn;
     private static Button _uploadBtn;
@@ -36,13 +37,13 @@ public class Home : MenuState
         });
         
         MakeButton<Browse>("Browse Levels", -80);
-        _uploadBtn = MakeButton<LevelConfig>("Upload", -120).Item2;
+        (LevelConfig, _uploadBtn) = MakeButton<LevelConfig>("Upload", -120);
         (Manage, _manageBtn) = MakeButton<Manage>("Manage Levels", -160);
     }
 
     public override void OnOpen()
     {
-        LevelConfig.CurrentInfo = null;
+        States.LevelConfig.CurrentInfo = null;
     }
 
     private (MenuState, Button) MakeButton<T>(string stateName, float y) where T : MenuState

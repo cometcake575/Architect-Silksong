@@ -25,7 +25,7 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<OrBlock>("Or");
         ScriptManager.RegisterProcessBlock<NotBlock>("Not");
         ScriptManager.RegisterProcessBlock<DelayBlock>("Delay", ConfigGroup.Delay);
-        ScriptManager.RegisterProcessBlock<DelayBlock>("Wait Until");
+        ScriptManager.RegisterProcessBlock<WaitUntilBlock>("Wait Until");
         ScriptManager.RegisterProcessBlock<LoopBlock>("Loop", ConfigGroup.Loop);
         ScriptManager.RegisterProcessBlock<TimeBlock>("Time", ConfigGroup.Time);
         ScriptManager.RegisterProcessBlock<DayBlock>("Day", ConfigGroup.Time);

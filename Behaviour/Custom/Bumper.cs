@@ -131,7 +131,7 @@ public class Bumper : SoundMaker, IHitResponder
                        * (_evil ? 0.36f : 1)
                        + new Vector3(0, 10, 0);
 
-        Wind.actuallyJumping = false;
+        Wind.ActuallyJumping = false;
         hero.rb2d.linearVelocityY = velocity.y;
 
         velocity.x *= _evil ? 1 : 1.75f;

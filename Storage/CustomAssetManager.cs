@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Architect.Behaviour.Custom;
 using Architect.Config.Types;
 using Architect.Editor;
+using Architect.Events.Blocks.Config.Types;
+using Architect.Events.Blocks.Outputs;
 using Architect.Utils;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -157,6 +159,23 @@ public static class CustomAssetManager
         if (config.GetTypeId().Equals("png_url")) fileType = ".png";
         else if (config.GetTypeId().Equals("wav_url")) fileType = ".wav";
         else if (config.GetTypeId().Equals("mp4_url")) fileType = ".mov";
+        else return;
+
+        var url = config.GetValue();
+        DownloadingAssets += 1;
+        var b = await SaveFile(url, GetPath(url) + fileType);
+        DownloadingAssets -= 1;
+        Downloaded += 1;
+        status.text = "Downloading Assets...\n" +
+                      $"{Downloaded}/{downloadCount}";
+
+        if (!b) Failed++;
+    }
+
+    public static async Task TryDownloadAssets(StringConfigValue<PngBlock> config, Text status, int downloadCount)
+    {
+        string fileType;
+        if (config.GetTypeId().Equals("png_url")) fileType = ".png";
         else return;
 
         var url = config.GetValue();

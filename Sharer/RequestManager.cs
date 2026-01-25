@@ -1,10 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Architect.Objects.Categories;
+using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Sharer.Info;
+using Architect.Sharer.States;
 using Architect.Storage;
+using BepInEx;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -15,8 +21,7 @@ namespace Architect.Sharer;
 
 public static class RequestManager
 {
-    // TODO Change
-    public const string URL = "http://127.0.0.1:5000";
+    public const string URL = "https://cometcake575.pythonanywhere.com";
     public const string LEVEL_TYPE = "silksong";
 
     [CanBeNull] private static string _sharerKey = StorageManager.LoadSharerKey();
@@ -40,8 +45,8 @@ public static class RequestManager
             password = pw
         });
 
-        var request = new UnityWebRequest(URL + (signup ? "/create" : "/login"), "POST");
-
+        using var request = new UnityWebRequest(URL + (signup ? "/create" : "/login"), "POST");
+        
         var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -50,7 +55,7 @@ public static class RequestManager
 
         var operation = request.SendWebRequest();
         yield return operation;
-
+        
         var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
         if (response == null || !response.TryGetValue("key", out var value))
         {
@@ -67,7 +72,7 @@ public static class RequestManager
     {
         var jsonBody = info.GetRequestJson();
 
-        var request = new UnityWebRequest(URL + "/status", "POST");
+        using var request = new UnityWebRequest(URL + "/status", "POST");
         var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -101,7 +106,7 @@ public static class RequestManager
             newValue = newValue
         });
 
-        var request = new UnityWebRequest(URL + "/update-info", "POST");
+        using var request = new UnityWebRequest(URL + "/update-info", "POST");
         var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -171,7 +176,8 @@ public static class RequestManager
                 gauntlets = tags.Contains(LevelInfo.LevelTag.Gauntlets),
                 areas = tags.Contains(LevelInfo.LevelTag.Areas),
                 troll = tags.Contains(LevelInfo.LevelTag.Troll),
-                bosses = tags.Contains(LevelInfo.LevelTag.Bosses)
+                bosses = tags.Contains(LevelInfo.LevelTag.Bosses),
+                minigames = tags.Contains(LevelInfo.LevelTag.Minigames)
             };
             form.AddField("tags", JsonUtility.ToJson(tagData));
         }
@@ -200,12 +206,20 @@ public static class RequestManager
             yield return done.Task;
         }
 
-        var request = UnityWebRequest.Post(URL + "/upload", form);
+        using var request = UnityWebRequest.Post(URL + "/upload", form);
 
         var operation = request.SendWebRequest();
         yield return operation;
 
-        var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+        Dictionary<string, string> response;
+        try
+        {
+            response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+        }
+        catch (JsonReaderException)
+        {
+            response = null;
+        }
 
         string value = null;
         if (response == null || response.TryGetValue("error", out value))
@@ -228,23 +242,119 @@ public static class RequestManager
         public bool areas;
         public bool troll;
         public bool bosses;
+        public bool minigames;
+    }
+
+    private static List<LevelInfo> LoadLevels(List<Dictionary<string, string>> levelData)
+    {
+        List<LevelInfo> levelInfo = [];
+        foreach (var level in levelData)
+        {
+            var info = new LevelInfo
+            {
+                LevelId = level["level_id"],
+                LevelName = level["level_name"],
+                LevelDesc = level["level_desc"],
+                IconURL = level["icon_url"],
+                HasSave = bool.Parse(level["has_save"]),
+                CreatorName = level["username"],
+                CreatorId = level["user_id"],
+                DownloadCount = int.Parse(level["downloads"]),
+                LikeCount = int.Parse(level["likes"]),
+                Liked = bool.Parse(level["liked"])
+            };
+            if (level.TryGetValue("difficulty", out var difficulty))
+            {
+                info.Difficulty = difficulty switch
+                {
+                    "0" => LevelInfo.LevelDifficulty.None,
+                    "1" => LevelInfo.LevelDifficulty.Easy,
+                    "2" => LevelInfo.LevelDifficulty.Medium,
+                    "3" => LevelInfo.LevelDifficulty.Hard,
+                    "4" => LevelInfo.LevelDifficulty.ExtraHard,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                info.Duration = level["duration"] switch
+                {
+                    "0" => LevelInfo.LevelDuration.Tiny,
+                    "1" => LevelInfo.LevelDuration.Short,
+                    "2" => LevelInfo.LevelDuration.Medium,
+                    "3" => LevelInfo.LevelDuration.Long,
+                    "4" => LevelInfo.LevelDuration.None,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                if (level["platforming"] == "1") info.Tags.Add(LevelInfo.LevelTag.Platforming);
+                if (level["minigames"] == "1") info.Tags.Add(LevelInfo.LevelTag.Minigames);
+                if (level["multiplayer"] == "1") info.Tags.Add(LevelInfo.LevelTag.Multiplayer);
+                if (level["gauntlets"] == "1") info.Tags.Add(LevelInfo.LevelTag.Gauntlets);
+                if (level["areas"] == "1") info.Tags.Add(LevelInfo.LevelTag.Areas);
+                if (level["troll"] == "1") info.Tags.Add(LevelInfo.LevelTag.Troll);
+                if (level["bosses"] == "1") info.Tags.Add(LevelInfo.LevelTag.Bosses);
+            }
+            levelInfo.Add(info);
+        }
+
+        return levelInfo;
     }
 
     /**
      * <param name="filterInfo">How levels should be filtered</param>
-     * <param name="results">The number of results to retrieve</param>
+     * <param name="resultCount">The number of results to retrieve</param>
      * <param name="offset">The first (Offset * Results) levels are ignored</param>
      * <param name="callback">Runs when the request completes</param>
      */
     public static IEnumerator SearchLevels(
         FilterInfo filterInfo,
-        int results,
+        int resultCount,
         int offset,
-        Action<bool, List<LevelInfo>> callback)
+        Action<bool, List<LevelInfo>, int> callback)
     {
-        yield return null;
+        var form = new WWWForm();
+        
+        form.AddField("result_count", resultCount);
+        form.AddField("offset", offset);
+        form.AddField("game", LEVEL_TYPE);
+        
+        form.AddField("key_filter", filterInfo.KeyMode.ToString());
+        if (filterInfo.KeyFilter != null) form.AddField("key", filterInfo.KeyFilter);
+        
+        form.AddField("sorting_rule", filterInfo.SortingRule.ToString());
+        
+        form.AddField("incl_diff", JsonConvert.SerializeObject(filterInfo.IncludedDifficulty));
+        form.AddField("excl_diff", JsonConvert.SerializeObject(filterInfo.ExcludedDifficulty));
+        
+        form.AddField("incl_dur", JsonConvert.SerializeObject(filterInfo.IncludedDurations));
+        form.AddField("excl_dur", JsonConvert.SerializeObject(filterInfo.ExcludedDurations));
+        
+        form.AddField("incl_tags", JsonConvert.SerializeObject(filterInfo.IncludedTags));
+        form.AddField("excl_tags", JsonConvert.SerializeObject(filterInfo.ExcludedTags));
+        
+        if (!filterInfo.UsernameFilter.IsNullOrWhiteSpace()) form.AddField("username", filterInfo.UsernameFilter);
+        if (!filterInfo.SearchQuery.IsNullOrWhiteSpace()) form.AddField("contents", filterInfo.SearchQuery);
+        
+        using var request = UnityWebRequest.Post(URL + "/search-new", form);
 
-        callback(true, []);
+        var operation = request.SendWebRequest();
+        yield return operation;
+        
+        List<Dictionary<string, string>> response;
+        try
+        { 
+            response = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(request.downloadHandler.text);
+        }
+        catch (JsonReaderException) { response = null; }
+        
+        if (response == null || response.IsNullOrEmpty() || response[0].ContainsKey("error"))
+        {
+            callback(false, null, 0);
+            yield break;
+        }
+        
+        var meta = response[0];
+        response.RemoveAt(0);
+        var levelInfo = LoadLevels(response);
+        
+        callback(true, levelInfo, int.Parse(meta["pages"]));
     }
 
     public class FilterInfo
@@ -255,13 +365,148 @@ public static class RequestManager
         public string UsernameFilter;
         public string SearchQuery;
         
-        public List<LevelInfo.LevelDifficulty> ExcludedDifficulty;
-        public List<LevelInfo.LevelDifficulty> IncludedDifficulty;
+        public List<LevelInfo.LevelDifficulty> ExcludedDifficulty = [];
+        public List<LevelInfo.LevelDifficulty> IncludedDifficulty = [];
         
-        public List<LevelInfo.LevelDuration> ExcludedDurations;
-        public List<LevelInfo.LevelDuration> IncludedDurations;
+        public List<LevelInfo.LevelDuration> ExcludedDurations = [];
+        public List<LevelInfo.LevelDuration> IncludedDurations = [];
         
-        public List<LevelInfo.LevelTag> ExcludedTags;
-        public List<LevelInfo.LevelTag> IncludedTags;
+        public List<LevelInfo.LevelTag> ExcludedTags = [];
+        public List<LevelInfo.LevelTag> IncludedTags = [];
+
+        public Browse.SortingRule SortingRule = Browse.SortingRule.Featured;
+
+        public bool Active;
+        
+        public bool KeyMode;
+    }
+
+    public static IEnumerator SendDeleteRequest(
+        string name,
+        Action<bool> callback)
+    {
+        var jsonBody = JsonUtility.ToJson(new DeleteRequestData
+        {
+            key = SharerKey,
+            name = name
+        });
+
+        using var request = new UnityWebRequest(URL + "/delete", "POST");
+
+        var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        var operation = request.SendWebRequest();
+        yield return operation;
+
+        var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+        callback(response != null && !response.ContainsKey("error"));
+    }
+
+    public static IEnumerator LikeLevel(string id)
+    {
+        var form = new WWWForm();
+        
+        form.AddField("level_id", id);
+        form.AddField("key", SharerKey);
+        
+        using var request = UnityWebRequest.Post(URL + "/like", form);
+
+        var operation = request.SendWebRequest();
+        yield return operation;
+    }
+    
+    public static IEnumerator DownloadSave(string levelId, Text status)
+    {
+        status.text = "Downloading Save...";
+
+        var jsonBody = JsonUtility.ToJson(new DownloadRequestData
+        {
+            level_id = levelId
+        });
+        
+        var request = new UnityWebRequest(URL + "/download_save", "POST");
+
+        var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        var operation = request.SendWebRequest();
+        yield return operation;
+        if (request.responseCode != 200)
+        {
+            var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+            var msg = response.GetValueOrDefault("error", "Error occured when downloading");
+            status.text = msg;
+            yield break;
+        }
+
+        var data = request.downloadHandler.data;
+        var done = new TaskCompletionSource<bool>();
+
+        Platform.Current.WriteSaveSlot(Settings.SaveSlot.Value, data, _ => done.SetResult(true));
+        UIManager.instance.slotFour.Prepare(GameManager.instance, true, false);
+        
+        yield return Task.WhenAll(done.Task, Task.Delay(1000));
+
+        status.text = "Download Complete";
+    }
+    
+    internal static IEnumerator DownloadLevel(string levelId, Text status)
+    {
+        status.text = "Downloading Level...";
+
+        var jsonBody = JsonUtility.ToJson(new DownloadRequestData
+        {
+            level_id = levelId
+        });
+        
+        var request = new UnityWebRequest(URL + "/download", "POST");
+
+        var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        var operation = request.SendWebRequest();
+        yield return operation;
+        if (request.responseCode != 200)
+        {
+            var response = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.downloadHandler.text);
+            var msg = response.GetValueOrDefault("error", "Error occured when downloading");
+            status.text = msg;
+            yield break;
+        }
+        
+        var json = request.downloadHandler.text;
+        
+        var prefabs = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(json)
+            .Where(o => o.Key.StartsWith("Prefab_"));
+        PrefabsCategory.Prefabs = prefabs.Select(o => 
+            new PrefabObject(o.Key.Replace("Prefab_", ""))).ToList();
+        
+        var data = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(json);
+        yield return StorageManager.LoadLevelData(data, status);
+
+        PlacementManager.InvalidateScene();
+    }
+
+    [Serializable]
+    public class DownloadRequestData
+    {
+        public string level_id;
+    }
+
+    [Serializable]
+    private class DeleteRequestData
+    {
+        public string key;
+        public string name;
     }
 }

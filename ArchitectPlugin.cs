@@ -8,8 +8,8 @@ using Architect.Multiplayer;
 using Architect.Objects.Categories;
 using Architect.Placements;
 using Architect.Prefabs;
+using Architect.Sharer;
 using Architect.Storage;
-using Architect.Storage.Sharer;
 using Architect.Utils;
 using BepInEx;
 using BepInEx.Logging;
@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.10.19")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.11.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
@@ -71,12 +71,11 @@ public class ArchitectPlugin : BaseUnityPlugin
         
         BroadcasterHooks.Init();
 
-        LevelSharerUI.Init();
-        // SharerManager.Init();
+        SharerManager.Init();
         
         PreloadManager.Init();
     }
-
+    
     private void Update()
     {
         if (HeroController.instance)
@@ -85,8 +84,7 @@ public class ArchitectPlugin : BaseUnityPlugin
             HazardFixers.UpdateLanterns();
         }
         CursorManager.Update();
-        LevelSharerUI.Update();
-        // SharerManager.Update();
+        SharerManager.Update();
         AbilityObjects.Update();
     }
 }

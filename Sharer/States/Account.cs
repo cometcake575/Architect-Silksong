@@ -79,10 +79,7 @@ public class Account : MenuState
     
     public override void OnOpen()
     {
-        if (CurrentUserInfo == null || CurrentUserInfo.UserID != RequestManager.SharerKey)
-        {
-            StartCoroutine(SetToMainUser());
-        }
+        StartCoroutine(SetToMainUser());
         _configUI.SetActive(false);
     }
 
@@ -105,7 +102,7 @@ public class Account : MenuState
         if (!CurrentUserInfo.IsSetup) yield break;
         _username.text = CurrentUserInfo.Username;
         _desc.text = CurrentUserInfo.Description;
-        StartCoroutine(SharerManager.GetSprite(CurrentUserInfo.PfpUrl, _pfp));
+        SharerManager.DoGetSprite(CurrentUserInfo.PfpUrl, _pfp);
     }
 
     private static void SignOut()
@@ -190,7 +187,8 @@ public class Account : MenuState
         _changeTitle.fontSize = 20;
         _changeTitle.alignment = TextAnchor.MiddleCenter;
         
-        var (cancel, cancelLabel) = UIUtils.MakeTextButton("Cancel", "Cancel", uiChild, new Vector2(70, -140),
+        var (cancel, cancelLabel) = UIUtils.MakeTextButton("Cancel", "Cancel", uiChild, 
+            new Vector2(-70, -140),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             size: new Vector2(360, 80));
         cancelLabel.textComponent.fontSize = 18;
@@ -199,7 +197,8 @@ public class Account : MenuState
             _configUI.SetActive(false);
         });
 
-        var (confirm, confirmLabel) = UIUtils.MakeTextButton("Confirm", "Confirm", uiChild, new Vector2(-70, -140),
+        var (confirm, confirmLabel) = UIUtils.MakeTextButton("Confirm", "Confirm", uiChild, 
+            new Vector2(70, -140),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             size: new Vector2(360, 80));
         confirmLabel.textComponent.fontSize = 18;

@@ -11,6 +11,7 @@ public class BlackThreader : MonoBehaviour
 {
     public string id;
     public int mode;
+    public bool blockAttacks;
     public bool requireAct3;
     public float hpMultiplier = 1;
 
@@ -24,7 +25,12 @@ public class BlackThreader : MonoBehaviour
         typeof(BlackThreadState).Hook(nameof(BlackThreadState.DoAttack),
             (Action<BlackThreadState, BlackThreadAttack> orig, BlackThreadState self, BlackThreadAttack attack) =>
             {
-                if (self is CustomBlackThreadState bts) bts.source.BroadcastEvent("OnAttack");
+                if (self is CustomBlackThreadState bts)
+                {
+                    if (bts.blockingAttack) return;
+                    if (bts.blockAttacks) bts.blockingAttack = true;
+                    bts.source.BroadcastEvent("OnAttack");
+                }
                 orig(self, attack);
             });
     }
@@ -34,6 +40,7 @@ public class BlackThreader : MonoBehaviour
     public void ForceAttack()
     {
         if (!_bts) return;
+        _bts.blockingAttack = false;
         _bts.queuedForceAttack = true;
     }
 
@@ -84,6 +91,8 @@ public class BlackThreader : MonoBehaviour
 
         _bts.useCustomHPMultiplier = true;
         _bts.customHPMultiplier = 1;
+
+        _bts.blockAttacks = blockAttacks;
         
         hm.hp = Mathf.FloorToInt(hm.hp * hpMultiplier);
         
@@ -98,6 +107,9 @@ public class BlackThreader : MonoBehaviour
 
     public class CustomBlackThreadState : BlackThreadState
     {
+        public bool blockAttacks;
+        public bool blockingAttack;
+        
         public BlackThreadAttack customAttack;
         public GameObject source;
 
@@ -108,6 +120,9 @@ public class BlackThreader : MonoBehaviour
                 enabled = false;
                 return;
             }
+
+            blockingAttack = blockAttacks;
+            
             attacks = [customAttack];
             SetupThreaded(true);
         }

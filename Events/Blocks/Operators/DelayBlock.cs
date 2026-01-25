@@ -8,7 +8,7 @@ public class DelayBlock : ScriptBlock
 {
     protected override IEnumerable<(string, string)> InputVars => [("Extra Delay", "Number")];
 
-    protected override IEnumerable<string> Inputs => ["In"];
+    protected override IEnumerable<string> Inputs => ["In", "Cancel"];
     protected override IEnumerable<string> Outputs => ["Out"];
 
     private static readonly Color DefaultColor = Color.yellow;
@@ -30,7 +30,8 @@ public class DelayBlock : ScriptBlock
     protected override void Trigger(string trigger)
     {
         if (!_delay) return;
-        _delay.StartCoroutine(DelayedEvent());
+        if (trigger == "In") _delay.StartCoroutine(DelayedEvent());
+        else _delay.StopAllCoroutines();
     }
 
     private IEnumerator DelayedEvent()

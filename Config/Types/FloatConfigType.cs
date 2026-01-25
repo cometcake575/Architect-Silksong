@@ -34,7 +34,16 @@ public class FloatConfigType(
 
     public override ConfigValue Deserialize(string data)
     {
-        return new FloatConfigValue(this, Convert.ToSingle(data, CultureInfo.InvariantCulture));
+        float f;
+        try
+        {
+            f = Convert.ToSingle(data, CultureInfo.InvariantCulture);
+        }
+        catch (FormatException)
+        {
+            f = 9999999;
+        }
+        return new FloatConfigValue(this, f);
     }
 }
 
