@@ -1,7 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Architect.Events.Blocks;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Architect.Placements;
 
@@ -17,6 +18,20 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
     public void ToggleTile((int, int) pos)
     {
         if (!TilemapChanges.Remove(pos)) TilemapChanges.Add(pos);
+    }
+
+    public void Merge(LevelData levelData)
+    {
+        Placements.AddRange(levelData.Placements);
+        TilemapChanges.AddRange(levelData.TilemapChanges.Where(t => !TilemapChanges.Contains(t)));
+        ScriptBlocks.AddRange(levelData.ScriptBlocks);
+    }
+
+    public void Clear()
+    {
+        Placements.Clear();
+        TilemapChanges.Clear();
+        ScriptBlocks.Clear();
     }
 
     public class LevelDataConverter : JsonConverter<LevelData>
