@@ -160,7 +160,11 @@ public static class EditorUI
 
         var currentScene = UIUtils.MakeLabel("Current Scene", _canvasObj,
             new Vector3(50, 45, 0), Vector2.zero, Vector2.zero);
+        var inTestMode = UIUtils.MakeLabel("Test Mode", _canvasObj,
+            new Vector3(-50, 45, 0), new Vector2(1, 0), new Vector2(1, 0));
         currentScene.textComponent.alignment = TextAnchor.LowerLeft;
+        inTestMode.textComponent.alignment = TextAnchor.LowerRight;
+        inTestMode.textComponent.text = "Test Mode";
 
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
@@ -168,7 +172,13 @@ public static class EditorUI
                 orig(self);
                 currentScene.textComponent.text = "Scene: " + GameManager.instance.sceneName;
             });
+        inTestMode.textComponent.text = Settings.TestMode.Value ? "Test Mode" : "";
+        Settings.TestMode.SettingChanged += (_, _) =>
+        {
+            inTestMode.textComponent.text = Settings.TestMode.Value ? "Test Mode" : "";
+        };
         EnableWhenPlaying.Add(currentScene.gameObject);
+        EnableWhenPlaying.Add(inTestMode.gameObject);
 
         var bottomAnchor = new Vector2(0.5f, 0);
         ObjectIdLabel = UIUtils.MakeLabel("Object ID Description", _canvasObj,

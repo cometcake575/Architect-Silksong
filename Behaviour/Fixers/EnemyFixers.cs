@@ -762,6 +762,13 @@ public static class EnemyFixers
         }, 0, true);
         fsm.GetState("Positioning Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
         fsm.GetState("Hidden Underwater").DisableAction(0);
+
+        if (!HeroController.instance.TryFindGroundPoint(out var pos,
+                obj.transform.position,
+                true)) pos = obj.transform.position;
+        
+        fsm.GetState("Get Node").AddAction(() => obj.transform.position = pos, 0);
+        fsm.GetState("Repick Node").AddAction(() => obj.BroadcastEvent("OnAmbush"), 0);
     }
 
     public static void FixStilkinTrapper(GameObject obj)
@@ -799,6 +806,13 @@ public static class EnemyFixers
         fsm.GetState("Water Exit Q").DisableAction(6);
         fsm.GetState("Hide Underwater").DisableAction(0);
         fsm.GetState("Water Pos").DisableAction(1);
+        
+        if (!HeroController.instance.TryFindGroundPoint(out var pos,
+                obj.transform.position,
+                true)) pos = obj.transform.position;
+        
+        fsm.GetState("Get Node").AddAction(() => obj.transform.position = pos, 0);
+        fsm.GetState("Refil HP?").AddAction(() => obj.BroadcastEvent("OnAmbush"), 0);
     }
 
     public static void FixLastClawPreload(GameObject obj)

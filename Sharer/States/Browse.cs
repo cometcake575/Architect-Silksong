@@ -154,7 +154,6 @@ public class Browse : MenuState
         
         _currentRule = SortingRule.Featured;
         WipeFilters();
-        DoSearch();
     }
 
     private void SetSortingRule(SortingRule rule)

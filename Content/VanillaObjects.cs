@@ -1180,10 +1180,12 @@ public static class VanillaObjects
 
         AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
-            postSpawnAction: EnemyFixers.FixStilkin);
+            postSpawnAction: EnemyFixers.FixStilkin)
+            .WithBroadcasterGroup(BroadcasterGroup.Stilkin);
         AddEnemy("Stilkin Trapper", "stilkin_trapper",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
-            postSpawnAction: EnemyFixers.FixStilkinTrapper).DoFlipX();
+            postSpawnAction: EnemyFixers.FixStilkinTrapper)
+            .WithBroadcasterGroup(BroadcasterGroup.Stilkin).DoFlipX();
 
         AddEnemy("Mothleaf Lagnia", "mothleaf", ("Shadow_26", "Swamp Drifter"));
 

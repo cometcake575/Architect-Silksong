@@ -483,12 +483,13 @@ public static class ReceiverGroup
             if (hm) hm.TakeDamage(new HitInstance
             {
                 Source = o,
-                AttackType = AttackTypes.Nail,
+                AttackType = AttackTypes.Generic,
                 NailElement = NailElements.None,
                 DamageDealt = 999999999,
                 ToolDamageFlags = ToolDamageFlags.None,
                 SpecialType = SpecialTypes.None,
                 SlashEffectOverrides = [],
+                IgnoreInvulnerable = true,
                 HitEffectsType = EnemyHitEffectsProfile.EffectsTypes.Minimal,
                 SilkGeneration = HitSilkGeneration.None,
                 Multiplier = 1

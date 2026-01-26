@@ -232,6 +232,8 @@ public static class MiscFixers
         var fsm = obj.GetComponentsInChildren<PlayMakerFSM>().First(o => o.FsmName == "Bench Control");
         fsm.fsmTemplate = null;
         fsm.GetState("Start Rest Anim").AddAction(() => obj.BroadcastEvent("OnSit"), 0);
+        fsm.GetState("Get Off").AddAction(() => obj.BroadcastEvent("OnLeave"), 0);
+        fsm.GetState("Set Custom Wake Up?").AddAction(() => obj.BroadcastEvent("OnSpawnAt"), 0);
     }
 
     public class CustomBench : MonoBehaviour

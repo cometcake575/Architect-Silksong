@@ -14,6 +14,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Judge = GroupUtils.Merge(Enemies, ["OnBlock"]);
     
+    public static readonly List<string> Stilkin = GroupUtils.Merge(Enemies, ["OnAmbush"]);
+    
     public static readonly List<string> Snitchfly = GroupUtils.Merge(Enemies, ["OnFlee"]);
     
     public static readonly List<string> Bosses = ["OnRoar", "OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
@@ -52,7 +54,7 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Callable = ["OnCall"];
     
-    public static readonly List<string> Benches = ["OnSit"];
+    public static readonly List<string> Benches = ["OnSit", "OnLeave", "OnSpawnAt"];
     
     public static readonly List<string> Item = ["BeforePickup"];
     

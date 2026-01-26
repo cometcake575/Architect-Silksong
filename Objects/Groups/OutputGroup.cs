@@ -23,7 +23,7 @@ public static class OutputGroup
             new OutputType("enemy_self", "Self", "Enemy", o =>
             {
                 var hm = o.GetComponent<HealthManager>();
-                return hm ? hm.hp : 0;
+                return hm;
             })
         )
     ];

@@ -309,6 +309,7 @@ public static class RequestManager
         int offset,
         Action<bool, List<LevelInfo>, int> callback)
     {
+        var current = Time.time;
         var form = new WWWForm();
         
         form.AddField("result_count", resultCount);
@@ -332,10 +333,17 @@ public static class RequestManager
         if (!filterInfo.UsernameFilter.IsNullOrWhiteSpace()) form.AddField("username", filterInfo.UsernameFilter);
         if (!filterInfo.SearchQuery.IsNullOrWhiteSpace()) form.AddField("contents", filterInfo.SearchQuery);
         
+        ArchitectPlugin.Logger.LogInfo($"Prepared fields {Time.time - current}");
+        current = Time.time;
+        
         using var request = UnityWebRequest.Post(URL + "/search-new", form);
 
         var operation = request.SendWebRequest();
+        ArchitectPlugin.Logger.LogInfo($"Sending request {Time.time - current}");
+        current = Time.time;
         yield return operation;
+        ArchitectPlugin.Logger.LogInfo($"Received response {Time.time - current}");
+        current = Time.time;
         
         List<Dictionary<string, string>> response;
         try
@@ -349,10 +357,13 @@ public static class RequestManager
             callback(false, null, 0);
             yield break;
         }
+        ArchitectPlugin.Logger.LogInfo($"Confirmed response {Time.time - current}");
+        current = Time.time;
         
         var meta = response[0];
         response.RemoveAt(0);
         var levelInfo = LoadLevels(response);
+        ArchitectPlugin.Logger.LogInfo($"Finished parsing response {Time.time - current}");
         
         callback(true, levelInfo, int.Parse(meta["pages"]));
     }
