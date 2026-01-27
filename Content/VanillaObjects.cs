@@ -310,11 +310,11 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
             ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1")));
 
-        /*AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
+        AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
             postSpawnAction: EnemyFixers.FixLugoli)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
-            .WithConfigGroup(ConfigGroup.Bosses);*/
+            .WithConfigGroup(ConfigGroup.Bosses);
     }
 
     private static void AddUnderworksObjects()
@@ -1464,6 +1464,14 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.Boran);
 
+        Categories.Attacks.Add(new PreloadObject("Servitor Blast", "servitor_blast",
+            ("Peak_04d", "Weaver Servitor Large"), postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.SetState("Shoot Recover");
+                fsm.GetState("Shoot Recover").transitions = [];
+            }));
+
         Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
             preloadAction: InteractableFixers.FixSilkLever)
@@ -2215,14 +2223,16 @@ public static class VanillaObjects
 
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
             ("localpoolprefabs_assets_areaclover.bundle", "Assets/Prefabs/Hornet Enemies/Aspid Hatchling.prefab"),
-            notSceneBundle: true);
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Aknids);
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),
             postSpawnAction: EnemyFixers.FixAknid);
         AddEnemy("Aknid Mother", "grove_pilgrim",
             ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Grove Pilgrim Fly.prefab"),
             notSceneBundle: true,
-            preloadAction: EnemyFixers.FixAknidMother).DoFlipX();
+            preloadAction: EnemyFixers.FixAknidMother)
+            .WithConfigGroup(ConfigGroup.AknidMother).DoFlipX();
         
         var silkAcidCloud = new GameObject("[Architect] Silk Acid Cloud");
         silkAcidCloud.SetActive(false);

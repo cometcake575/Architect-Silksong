@@ -1433,6 +1433,38 @@ public static class ConfigGroup
                 o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
             }).WithDefaultValue(false))
     ]);
+    
+    public static readonly List<ConfigType> Aknids = GroupUtils.Merge(Enemies,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Emit Acid", "aknids_acid", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Break")?.DisableAction(0);
+                    fsm.GetState("Shake")?.DisableAction(3);
+                }
+            }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> AknidMother = GroupUtils.Merge(Aknids,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Spawn Children", "aknid_mother_child", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Hatchling").DisableAction(1);
+
+                    var ede = o.GetComponent<EnemyDeathEffects>();
+                    ede.PreInstantiate();
+                    ede.GetInstantiatedCorpse(AttackTypes.Generic).transform.GetChild(0)
+                        .gameObject.LocateMyFSM("Control").GetState("State 1").DisableAction(1);
+                }
+            }).WithDefaultValue(true))
+    ]);
 
     public static readonly List<ConfigType> Furm = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
