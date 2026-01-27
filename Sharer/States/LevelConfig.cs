@@ -208,7 +208,7 @@ public class LevelConfig : MenuState
                 (success, message) =>
                 {
                     status.text = message;
-                    if (success) StartCoroutine(Return(ReturnState));
+                    if (success) ArchitectPlugin.Instance.StartCoroutine(Return(ReturnState));
                     else
                     {
                         uploadBtn.interactable = true;

@@ -313,7 +313,7 @@ public static class VanillaObjects
         AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
             postSpawnAction: EnemyFixers.FixLugoli)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Lugoli)
             .WithConfigGroup(ConfigGroup.Bosses);
     }
 
@@ -367,7 +367,8 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Junk Pipe", "junk_pipe",
             ("Under_06", "understore_junk_pipe"),
-            preloadAction: HazardFixers.FixJunkPipe)
+            preloadAction: HazardFixers.FixJunkPipe,
+            postSpawnAction: HazardFixers.FixJunkPipePostSpawn)
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.JunkPipe));
 
@@ -1080,8 +1081,16 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Eight));
 
         Categories.Interactable.Add(new PreloadObject("Slab Gate", "jail_gate_door",
-                ("Slab_05", "Jail Gate Door (2)"), preloadAction: EnemyFixers.KeepActive)
-            .WithReceiverGroup(ReceiverGroup.Gates));
+                ("Slab_05", "Jail Gate Door (2)"), preloadAction: EnemyFixers.KeepActive, 
+                postSpawnAction: o =>
+                {
+                    var g = o.GetComponent<Gate>();
+                    g.closeAnim = "Close";
+                    g.isClosed = true;
+                    g.ForceClose();
+                })
+            .WithReceiverGroup(ReceiverGroup.CloseableGates)
+            .WithConfigGroup(ConfigGroup.CloseableGates));
 
         Categories.Hazards.Add(new PreloadObject("Slab Spike Ball", "slab_spike_ball",
             ("Slab_21", "slab_spike_ball"), description:"Hangs from a chain.",
@@ -1272,8 +1281,8 @@ public static class VanillaObjects
     {
         AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"),
             preloadAction: EnemyFixers.RemoveConstrainPosition);
-        /*AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
-            postSpawnAction: EnemyFixers.FixPhantom);*/
+        AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
+            postSpawnAction: EnemyFixers.FixPhantom);
 
         Categories.Hazards.Add(new PreloadObject("Pressure Plate Trap", "dust_trap_spike_plate",
             ("Dust_Maze_01", "Mist Maze Controller/Trap Sets/Trap Set/Dust Trap Spike Plate")));

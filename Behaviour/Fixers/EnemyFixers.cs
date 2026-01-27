@@ -5,6 +5,7 @@ using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using GlobalEnums;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -1354,7 +1355,9 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
 
-        ((Wait)fsm.GetState("Entry Antic").actions[3]).time = 0.01f;
+        var entry = fsm.GetState("Entry Antic");
+        entry.DisableAction(2);
+        ((Wait)entry.actions[3]).time = 0.01f;
         
         fsm.GetState("Stun Start").DisableAction(3);
         
@@ -1365,6 +1368,9 @@ public static class EnemyFixers
         fsm.GetState("Check M").DisableAction(2);
         fsm.GetState("Check R").DisableAction(2);
         fsm.GetState("Dive End").DisableAction(3);
+        
+        fsm.GetState("Stomp Land").AddAction(() => obj.BroadcastEvent("OnStompLand"), 0);
+        fsm.GetState("Butt Land").AddAction(() => obj.BroadcastEvent("OnButtLand"), 0);
         
         var pickPoint = fsm.GetState("Pick Point");
         pickPoint.DisableAction(0);
@@ -1837,19 +1843,120 @@ public static class EnemyFixers
         }, 0);
     }
 
+    private static readonly PhysicsMaterial2D PinMaterial = new()
+    {
+        friction = 1
+    };
+
     public static void FixPhantom(GameObject obj)
     {
         RemoveConstrainPosition(obj);
         var fsm = obj.LocateMyFSM("Control");
+        
+        var pin = fsm.FsmVariables.FindFsmGameObject("Pin Projectile").Value;
+        var pc = pin.GetComponent<Collider2D>();
+        pc.isTrigger = false;
+        pc.sharedMaterial = PinMaterial;
+        
+        var prb2d = pin.GetComponent<Rigidbody2D>();
+        prb2d.bodyType = RigidbodyType2D.Dynamic;
+        prb2d.gravityScale = 0;
 
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("PHANTOM START"));
+        fsm.GetState("Appear").AddAction(() => fsm.SendEvent("FINISHED"));
+        fsm.GetState("Start Pause").AddAction(() => fsm.SendEvent("FINISHED"));
 
         var leftX = fsm.FsmVariables.FindFsmFloat("Left X");
         var rightX = fsm.FsmVariables.FindFsmFloat("Right X");
 
+        var aThrow = (RandomFloat)fsm.GetState("Set A Throw").actions[2];
+        var aThrowMin = aThrow.min;
+        var aThrowMax = aThrow.max;
+
+        var fogin2Y = ((SetPosition)fsm.GetState("Fog In 2").actions[0]).y;
+
+        var aThrowRequirement = ((FloatTestToBool)fsm.GetState("In Air").actions[7]).float2;
+
+        var pullY = ((FloatCompare)fsm.GetState("A Dash").actions[12]).float2;
+        
+        var dragoonY = ((FloatCompare)fsm.GetState("Dragoon Launch").actions[8]).float2;
+
+        fsm.GetState("To Idle").AddAction(() =>
+        {
+            foreach (var col in obj.GetComponentsInChildren<Collider2D>(true))
+            {
+                Physics2D.IgnoreCollision(pc, col);
+            }
+        }, 0);
+        
+        // Adjust positions
         fsm.GetState("Idle").AddAction(FixPositions, 0);
         fsm.GetState("Range Check").AddAction(FixPositions, 0);
 
+        var posState = fsm.GetState("Pos");
+        posState.DisableAction(3);
+
+        var gt = fsm.GetState("G Throw");
+        gt.DisableAction(15);
+        gt.DisableAction(16);
+        var gpw = fsm.GetState("G Pull Wait");
+        gpw.DisableAction(3);
+        gpw.DisableAction(4);
+        
+        gt.AddAction(Thunk, everyFrame: true);
+        gpw.AddAction(Thunk, everyFrame: true);
+
+        var at = fsm.GetState("A Throw");
+        at.DisableAction(13);
+        at.DisableAction(14);
+        at.DisableAction(15);
+        ((SetVelocityAsAngle)at.actions[9]).everyFrame = false;
+        ((FaceAngle)at.actions[10]).everyFrame = false;
+
+        var apw = fsm.GetState("A Pull Wait");
+        apw.DisableAction(3);
+        apw.DisableAction(4);
+        apw.DisableAction(5);
+        apw.AddAction(ThunkAir, everyFrame: true);
+
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        fsm.GetState("Dragoon Down").AddAction(ClearVelocity, 0, true);
+        fsm.GetState("Fog In").AddAction(ClearVelocity, 0);
+
+        var dEnd = fsm.GetState("Dragoon End");
+        dEnd.AddAction(ClearVelocity, 0);
+        
+        var hdc = fsm.GetState("Hero Death Check");
+        hdc.transitions = hdc.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        var toIdle = fsm.GetState("To Idle");
+        toIdle.transitions = toIdle.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+
+        fsm.GetState("In Air").AddAction(() => rb2d.gravityScale = 2.5f, 0);
+        toIdle.AddAction(() => rb2d.gravityScale = 2.5f, 0);
+
+        var fp = fsm.GetState("Final Parry");
+        for (var i = 0; i <= 18; i++) fp.DisableAction(i);
+        fp.AddAction(() =>
+        {
+            obj.GetComponent<HealthManager>().SetDead();
+            obj.GetComponent<SpriteFlash>().Flash(new Color(1f, 1f, 1f), 0.8f, 0, 
+                0.12f, 0.25f);
+            obj.layer = 2;
+            rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
+            obj.GetComponent<tk2dSpriteAnimator>().Play("Death Stagger");
+            fsm.SetState("Blood Stream");
+            pin.SetActive(false);
+            GameManager.instance.FreezeMoment(FreezeMomentTypes.BossDeathSlow);
+        }, 0);
+        var de = fsm.GetState("Death Explode");
+        de.transitions = [];
+        de.AddAction(() => Object.Destroy(obj));
+
+        fsm.FsmGlobalTransitions.First(o => o.EventName == "FINAL BLOCK")
+            .fsmEvent = FsmEvent.FindEvent("ZERO HP");
+        
         return;
 
         void FixPositions()
@@ -1857,6 +1964,40 @@ public static class EnemyFixers
             var xPos = HeroController.instance.transform.GetPositionX();
             leftX.Value = xPos - 8.5f;
             rightX.Value = xPos + 8.5f;
+            
+            if (HeroController.instance.TryFindGroundPoint(out var pos,
+                    obj.transform.position,
+                    true))
+            {
+                aThrowMin.Value = pos.y + 6;
+                aThrowMax.Value = pos.y + 8;
+                fogin2Y.Value = pos.y + 8;
+                dragoonY.Value = pos.y + 20.5f;
+                pullY.Value = pos.y + 3;
+                aThrowRequirement.Value = pos.y + 6;
+            }
+        }
+
+        void ClearVelocity()
+        {
+            rb2d.gravityScale = 0;
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            rb2d.linearVelocityY = 0;
+        }
+
+        void Thunk()
+        {
+            if (prb2d.linearVelocityX == 0) fsm.SendEvent("FINISHED");
+            prb2d.linearVelocityY = 0;
+        }
+
+        void ThunkAir()
+        {
+            if (prb2d.linearVelocityX == 0 || prb2d.linearVelocityY == 0)
+            {
+                fsm.SendEvent("FINISHED");
+                prb2d.linearVelocity = Vector2.zero;
+            }
         }
     }
 

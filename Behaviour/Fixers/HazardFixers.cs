@@ -197,6 +197,10 @@ public static class HazardFixers
     public static void FixJunkPipe(GameObject obj)
     {
         obj.transform.GetChild(2).SetAsFirstSibling();
+    }
+
+    public static void FixJunkPipePostSpawn(GameObject obj)
+    {
         var junkFall = Object.Instantiate(_junkFall, null);
         junkFall.transform.parent = obj.transform;
         junkFall.transform.SetLocalPosition2D(new Vector2(2.5f, -6.5f));
@@ -204,8 +208,6 @@ public static class HazardFixers
         junkFall.transform.Find("Spike Collider").gameObject.LocateMyFSM("Shift Hero").enabled = false;
 
         junkFall.AddComponent<JunkPipe>();
-        
-        junkFall.GetComponent<PlayMakerFSM>().GetState("Pause").DisableAction(2);
     }
 
     public class JunkPipe : MonoBehaviour
