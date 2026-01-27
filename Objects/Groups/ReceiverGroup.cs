@@ -480,7 +480,20 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_die", "Die", o =>
         {
             var hm = o.GetComponent<HealthManager>();
-            if (hm) hm.Die(null, AttackTypes.Generic, true);
+            if (hm) hm.TakeDamage(new HitInstance
+            {
+                Source = o,
+                AttackType = AttackTypes.Generic,
+                NailElement = NailElements.None,
+                DamageDealt = 999999999,
+                ToolDamageFlags = ToolDamageFlags.None,
+                SpecialType = SpecialTypes.None,
+                SlashEffectOverrides = [],
+                IgnoreInvulnerable = true,
+                HitEffectsType = EnemyHitEffectsProfile.EffectsTypes.Minimal,
+                SilkGeneration = HitSilkGeneration.None,
+                Multiplier = 1
+            });
         }))
     ]);
     
@@ -526,12 +539,18 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Transitions = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("transition", "Transition", o =>
         {
-            var tp = o.GetComponent<TransitionPoint>();
-
-            var wasADoor = tp.isADoor;
-            tp.isADoor = false;
-            tp.OnTriggerEnter2D(HeroController.instance.GetComponent<Collider2D>());
-            if (wasADoor) tp.isADoor = true;
+            ArchitectPlugin.Instance.StartCoroutine(Transition(o));
         }))
     ]);
+
+    private static IEnumerator Transition(GameObject o)
+    {
+        var tp = o.GetComponent<TransitionPoint>();
+
+        var wasADoor = tp.isADoor;
+        tp.isADoor = false;
+        yield return HeroController.instance.FreeControl();
+        tp.OnTriggerEnter2D(HeroController.instance.GetComponent<Collider2D>());
+        if (wasADoor) tp.isADoor = true;
+    }
 }

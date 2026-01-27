@@ -53,7 +53,7 @@ public class LevelConfig : MenuState
         nameLabel.textComponent.fontSize = 15;
         nameLabel.transform.localScale = Vector3.one;
         ((RectTransform)nameLabel.transform).sizeDelta /= 3;
-        _nameField.characterLimit = 30;
+        _nameField.characterLimit = 40;
         
         // Desc (text area)
         var descTitle = UIUtils.MakeLabel("Desc Title", gameObject, new Vector2(-200, 185),
@@ -102,7 +102,7 @@ public class LevelConfig : MenuState
         
         (_iconField, var iconBoxLabel) = UIUtils.MakeTextbox("Icon URL", gameObject, new Vector2(225, 45),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 300, 65);
-        _iconField.onEndEdit.AddListener(s => StartCoroutine(SharerManager.GetSprite(s, iconImg)));
+        _iconField.onEndEdit.AddListener(s => SharerManager.DoGetSprite(s, iconImg));
         iconBoxLabel.textComponent.fontSize = 15;
         iconBoxLabel.transform.localScale = Vector3.one;
         ((RectTransform)iconBoxLabel.transform).sizeDelta /= 3;
@@ -138,11 +138,12 @@ public class LevelConfig : MenuState
         tagTitle.text = "Tags";
         tagTitle.alignment = TextAnchor.MiddleLeft;
         MakeTagBtn(LevelInfo.LevelTag.Platforming.GetLabel(), LevelInfo.LevelTag.Platforming, new Vector2(-135, -180), ref _tagButtons, FlipTag);
-        MakeTagBtn(LevelInfo.LevelTag.Gauntlets.GetLabel(), LevelInfo.LevelTag.Gauntlets, new Vector2(0, -180), ref _tagButtons, FlipTag);
-        MakeTagBtn(LevelInfo.LevelTag.Bosses.GetLabel(), LevelInfo.LevelTag.Bosses, new Vector2(135, -180), ref _tagButtons, FlipTag);
-        MakeTagBtn(LevelInfo.LevelTag.Areas.GetLabel(), LevelInfo.LevelTag.Areas, new Vector2(-135, -210), ref _tagButtons, FlipTag);
+        MakeTagBtn(LevelInfo.LevelTag.Gauntlets.GetLabel(), LevelInfo.LevelTag.Gauntlets, new Vector2(-45, -180), ref _tagButtons, FlipTag);
+        MakeTagBtn(LevelInfo.LevelTag.Bosses.GetLabel(), LevelInfo.LevelTag.Bosses, new Vector2(45, -180), ref _tagButtons, FlipTag);
+        MakeTagBtn(LevelInfo.LevelTag.Minigames.GetLabel(), LevelInfo.LevelTag.Minigames, new Vector2(135, -180), ref _tagButtons, FlipTag);
+        MakeTagBtn(LevelInfo.LevelTag.Areas.GetLabel(), LevelInfo.LevelTag.Areas, new Vector2(-90, -210), ref _tagButtons, FlipTag);
         MakeTagBtn(LevelInfo.LevelTag.Multiplayer.GetLabel(), LevelInfo.LevelTag.Multiplayer, new Vector2(0, -210), ref _tagButtons, FlipTag);
-        MakeTagBtn(LevelInfo.LevelTag.Troll.GetLabel(), LevelInfo.LevelTag.Troll, new Vector2(135, -210), ref _tagButtons, FlipTag);
+        MakeTagBtn(LevelInfo.LevelTag.Troll.GetLabel(), LevelInfo.LevelTag.Troll, new Vector2(90, -210), ref _tagButtons, FlipTag);
         
         // Status
         var status = UIUtils.MakeLabel("Status", gameObject, new Vector2(0, -290),
@@ -157,7 +158,6 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         uploadLabel.textComponent.fontSize = 18;
         _upload = (uploadBtn.gameObject, uploadLabel.gameObject);
-        uploadBtn.onClick.AddListener(() => Upload());
         
         // Apply and Overwrite buttons
         var (applyBtn, applyLabel) = UIUtils.MakeTextButton("Save Changes", "Save Changes", gameObject,
@@ -166,7 +166,6 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         applyLabel.textComponent.fontSize = 18;
         _apply = (applyBtn.gameObject, applyLabel.gameObject);
-        applyBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 0));
         
         var (overwriteBtn, overwriteLabel) = UIUtils.MakeTextButton("Overwrite Level", "Overwrite Level", gameObject,
             new Vector2(-160, -260),
@@ -174,7 +173,6 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         overwriteLabel.textComponent.fontSize = 18;
         _overwriteLevel = (overwriteBtn.gameObject, overwriteLabel.gameObject);
-        overwriteBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 1));
         
         var (overwriteSaveBtn, overwriteSaveLabel) = UIUtils.MakeTextButton("Overwrite Save", "Overwrite Save", gameObject,
             new Vector2(0, -260),
@@ -182,6 +180,10 @@ public class LevelConfig : MenuState
             size: new Vector2(420, 80));
         overwriteSaveLabel.textComponent.fontSize = 18;
         _overwriteSave = (overwriteSaveBtn.gameObject, overwriteSaveLabel.gameObject);
+        
+        uploadBtn.onClick.AddListener(() => Upload());
+        applyBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 0));
+        overwriteBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 1));
         overwriteSaveBtn.onClick.AddListener(() => Upload(CurrentInfo.LevelId, 2));
 
         return;
@@ -189,6 +191,9 @@ public class LevelConfig : MenuState
         void Upload([CanBeNull] string overwriteLevelId = null, int overwriteMode = -1)
         {
             uploadBtn.interactable = false;
+            applyBtn.interactable = false;
+            overwriteSaveBtn.interactable = false;
+            overwriteBtn.interactable = false;
             
             if (!int.TryParse(_saveField.text, out var saveNumber)) saveNumber = -1;
             
@@ -203,16 +208,26 @@ public class LevelConfig : MenuState
                 (success, message) =>
                 {
                     status.text = message;
-                    if (success) StartCoroutine(Return(SharerManager.HomeState));
-                    else uploadBtn.interactable = true;
+                    if (success) StartCoroutine(Return(ReturnState));
+                    else
+                    {
+                        uploadBtn.interactable = true;
+                        applyBtn.interactable = true;
+                        overwriteSaveBtn.interactable = true;
+                        overwriteBtn.interactable = true;
+                    }
                 },
                 overwriteLevelId, overwriteMode));
         }
 
         IEnumerator Return(MenuState state)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2);
             uploadBtn.interactable = true;
+            applyBtn.interactable = true;
+            overwriteSaveBtn.interactable = true;
+            overwriteBtn.interactable = true;
+            status.text = "";
             SharerManager.TransitionToState(state);
         }
     }
@@ -297,7 +312,7 @@ public class LevelConfig : MenuState
             highlightedColor = Color.green,
             colorMultiplier = 1,
             selectedColor = Color.green,
-            pressedColor = Color.grey,
+            pressedColor = UIUtils.LightGrey,
             fadeDuration = 0.1f
         };
         var off = new ColorBlock
@@ -306,7 +321,7 @@ public class LevelConfig : MenuState
             highlightedColor = Color.white,
             colorMultiplier = 1,
             selectedColor = Color.white,
-            pressedColor = Color.grey,
+            pressedColor = UIUtils.LightGrey,
             fadeDuration = 0.1f
         };
         foreach (var (t, btn) in _tagButtons)

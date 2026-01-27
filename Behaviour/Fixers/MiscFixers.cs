@@ -21,7 +21,7 @@ namespace Architect.Behaviour.Fixers;
 public static class MiscFixers
 {
     public static Material SpriteMaterial;
-    
+
     public static void Init()
     {
         PreloadManager.RegisterPreload(new BasicPreload(
@@ -232,6 +232,8 @@ public static class MiscFixers
         var fsm = obj.GetComponentsInChildren<PlayMakerFSM>().First(o => o.FsmName == "Bench Control");
         fsm.fsmTemplate = null;
         fsm.GetState("Start Rest Anim").AddAction(() => obj.BroadcastEvent("OnSit"), 0);
+        fsm.GetState("Get Off").AddAction(() => obj.BroadcastEvent("OnLeave"), 0);
+        fsm.GetState("Set Custom Wake Up?").AddAction(() => obj.BroadcastEvent("OnSpawnAt"), 0);
     }
 
     public class CustomBench : MonoBehaviour
@@ -340,7 +342,7 @@ public static class MiscFixers
         public int layer;
     }
     
-    public static void FixBreakableLamp(GameObject obj)
+    public static void FixBreakable(GameObject obj)
     {
         obj.GetComponent<Breakable>().onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
     }
@@ -1252,6 +1254,7 @@ public static class MiscFixers
         obj.LocateMyFSM("State Control").enabled = false;
 
         obj.AddComponent<BasicNpcFix>();
+        obj.RemoveComponent<BasicNPCRepeatDialogueLeaveCondition>();
     }
 
     public static void FixFlick(GameObject obj)

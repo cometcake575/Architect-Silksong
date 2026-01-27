@@ -1,4 +1,7 @@
+using Architect.Events.Blocks.Objects;
 using Architect.Placements;
+using Architect.Prefabs;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -18,6 +21,8 @@ public class ObjectMover : MonoBehaviour
     public string moveTarget = "";
     public bool clearVelocity;
 
+    public GameObject overrideTarget;
+
     private bool _setup;
     private Transform _source;
     private GameObject _target;
@@ -28,11 +33,18 @@ public class ObjectMover : MonoBehaviour
         if (!_setup)
         {
             _setup = true;
-            if (PlacementManager.Objects.TryGetValue(targetId, out _target) && clearVelocity)
+            if (overrideTarget) _target = overrideTarget;
+            if (_target || PlacementManager.Objects.TryGetValue(targetId, out _target))
             {
-                _rb2d = _target.GetComponent<Rigidbody2D>();
-                if (!_rb2d) clearVelocity = false;
-
+                if (_target.GetComponent<ObjectAnchor>())
+                {
+                    _target = _target.transform.parent.gameObject;
+                    if (!_target)
+                    {
+                        _setup = false;
+                        return;
+                    }
+                }
                 if (PlacementManager.Objects.TryGetValue(moveTarget, out var sourceObj)) 
                     _source = sourceObj.transform;
                 else _source = moveMode switch
@@ -41,10 +53,42 @@ public class ObjectMover : MonoBehaviour
                     1 => _target.transform,
                     _ => HeroController.instance.transform
                 };
+                
+                var prefab = _target.GetComponent<Prefab>();
+                if (prefab)
+                {
+                    gameObject.SetActive(false);
+                    foreach (var spawn in prefab.spawns)
+                    {
+                        var go = Instantiate(gameObject);
+                        go.RemoveComponentsInChildren<ObjectBlock.ObjectBlockReference>();
+                        go.transform.position = (transform.position - _target.transform.position + 
+                                                 spawn.transform.position)
+                            .Where(z: 0);
+                        go.GetComponent<ObjectMover>().overrideTarget = spawn;
+                    
+                        var obrs = GetComponents<ObjectBlock.ObjectBlockReference>();
+                        foreach (var obr in obrs)
+                        {
+                            obr.Spawns.Add(go);
+                            var nObr = go.AddComponent<ObjectBlock.ObjectBlockReference>();
+                            nObr.canEvent = false;
+                            nObr.Block = obr.Block;
+                        }
+                        go.SetActive(true);
+                    }
+                    gameObject.SetActive(true);
+                }
+                
+                if (clearVelocity)
+                {
+                    _rb2d = _target.GetComponent<Rigidbody2D>();
+                    if (!_rb2d) clearVelocity = false;
+                }
             }
         }
     }
-
+    
     public void Move(float eX, float eY, float eRot)
     {
         if (!_target) return;

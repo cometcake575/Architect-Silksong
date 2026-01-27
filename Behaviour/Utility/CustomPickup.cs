@@ -9,6 +9,7 @@ public class CustomPickup : MonoBehaviour
 {
     public string item = "";
     public bool ignoreObtained;
+    public bool touch;
 
     private CollectableItemPickup _itemPickup;
 
@@ -37,7 +38,9 @@ public class CustomPickup : MonoBehaviour
 
     private void Start()
     {
-        _itemPickup = Instantiate(Gameplay.CollectableItemPickupPrefab, gameObject.transform);
+        _itemPickup = Instantiate(
+            touch ? Gameplay.CollectableItemPickupInstantPrefab : Gameplay.CollectableItemPickupPrefab, 
+            gameObject.transform);
         _itemPickup.transform.SetLocalPosition2D(Vector2.zero);
         _itemPickup.name = name + " Pickup";
 

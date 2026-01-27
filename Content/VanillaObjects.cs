@@ -278,7 +278,9 @@ public static class VanillaObjects
         
         AddEnemy("Roachcatcher", "roachcatcher", ("Dust_02", "Roachfeeder Short"));
         AddEnemy("Roachfeeder", "roachfeeder",
-            ("Dust_02", "Black Thread States Thread Only Variant/Normal World/Roachfeeder Tall")).DoFlipX();
+            ("Dust_02", "Black Thread States Thread Only Variant/Normal World/Roachfeeder Tall"),
+            preloadAction: o => o.LocateMyFSM("FSM").enabled = false)
+            .DoFlipX();
         AddEnemy("Roachkeeper", "roachkeeper",
             ("Dust_05", "Roachkeeper")).DoFlipX();
 
@@ -308,11 +310,11 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
             ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1")));
 
-        /*AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
+        AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
             postSpawnAction: EnemyFixers.FixLugoli)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
-            .WithConfigGroup(ConfigGroup.Bosses);*/
+            .WithConfigGroup(ConfigGroup.Bosses);
     }
 
     private static void AddUnderworksObjects()
@@ -459,7 +461,7 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areahangareasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Handmaiden.prefab"),
             postSpawnAction: EnemyFixers.FixClawmaiden,
             notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Teleplane);
+            .WithConfigGroup(ConfigGroup.Clawmaiden);
 
         Categories.Interactable.Add(new PreloadObject("Dial Door", "dial_door",
                 ("Song_20b", "Dial Door Bridge"),
@@ -1178,10 +1180,12 @@ public static class VanillaObjects
 
         AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
-            postSpawnAction: EnemyFixers.FixStilkin);
+            postSpawnAction: EnemyFixers.FixStilkin)
+            .WithBroadcasterGroup(BroadcasterGroup.Stilkin);
         AddEnemy("Stilkin Trapper", "stilkin_trapper",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
-            postSpawnAction: EnemyFixers.FixStilkinTrapper).DoFlipX();
+            postSpawnAction: EnemyFixers.FixStilkinTrapper)
+            .WithBroadcasterGroup(BroadcasterGroup.Stilkin).DoFlipX();
 
         AddEnemy("Mothleaf Lagnia", "mothleaf", ("Shadow_26", "Swamp Drifter"));
 
@@ -1460,6 +1464,14 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.Boran);
 
+        Categories.Attacks.Add(new PreloadObject("Servitor Blast", "servitor_blast",
+            ("Peak_04d", "Weaver Servitor Large"), postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.SetState("Shoot Recover");
+                fsm.GetState("Shoot Recover").transitions = [];
+            }));
+
         Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
             preloadAction: InteractableFixers.FixSilkLever)
@@ -1554,17 +1566,17 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
         
         Categories.Misc.Add(new PreloadObject("Greymoor Lamp", "greymoor_lamp",
-                ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakableLamp)
+                ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakable)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Vaults Lamp", "vault_lamp",
-                ("Library_04", "library_lamp_stand (1)"), postSpawnAction: MiscFixers.FixBreakableLamp)
+                ("Library_04", "library_lamp_stand (1)"), postSpawnAction: MiscFixers.FixBreakable)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Vaults Wall Lamp", "vault_w_lamp",
-                ("Library_04", "library_lamp_wall (2)"), postSpawnAction: MiscFixers.FixBreakableLamp)
+                ("Library_04", "library_lamp_wall (2)"), postSpawnAction: MiscFixers.FixBreakable)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
@@ -1824,7 +1836,8 @@ public static class VanillaObjects
             ("Shellwood_01", "Shellwood Goomba")).DoFlipX();
         
         AddEnemy("Flying Shellwood Gnat", "shellwood_gnat_fly", 
-            ("Shellwood_01", "Shellwood Goomba Flyer (1)"));
+            ("Shellwood_01", "Shellwood Goomba Flyer (1)"),
+            postSpawnAction: EnemyFixers.FixGnat);
         
         AddEnemy("Shellwood Gnat Core", "shellwood_gnat_core", 
             ("localpoolprefabs_assets_areashellwood.bundle", "Assets/Prefabs/Hornet Enemies/Shellwood Gnat.prefab"), 
@@ -1923,9 +1936,6 @@ public static class VanillaObjects
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba"),
             preloadAction: MiscFixers.FixRotation);
 
-        Categories.Misc.Add(new PreloadObject("Skull", "bone_goomba_skull",
-            ("Bone_East_03", "bone_goomba_skull_break")));
-
         AddEnemy("Skullwing", "bone_goomba_bounce_fly",
             ("Weave_05b", "Bone Goomba Bounce Fly (11)"),
             preloadAction: MiscFixers.FixRotation);
@@ -1939,8 +1949,15 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.SkullTyrant);
 
+        Categories.Misc.Add(new PreloadObject("Skull", "bone_goomba_skull",
+            ("Bone_East_03", "bone_goomba_skull_break"),
+            postSpawnAction: MiscFixers.FixBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
         Categories.Misc.Add(new PreloadObject("Large Skull", "bone_goomba_skull_large",
-            ("Bone_East_03", "bone_goomba_skull_break_large)")));
+            ("Bone_East_03", "bone_goomba_skull_break_large)"),
+            postSpawnAction: MiscFixers.FixBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         AddEnemy("Caranid", "bone_circler",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Hunting PreScene/Bone Circler"));
@@ -2206,14 +2223,16 @@ public static class VanillaObjects
 
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
             ("localpoolprefabs_assets_areaclover.bundle", "Assets/Prefabs/Hornet Enemies/Aspid Hatchling.prefab"),
-            notSceneBundle: true);
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Aknids);
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),
             postSpawnAction: EnemyFixers.FixAknid);
         AddEnemy("Aknid Mother", "grove_pilgrim",
             ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Grove Pilgrim Fly.prefab"),
             notSceneBundle: true,
-            preloadAction: EnemyFixers.FixAknidMother).DoFlipX();
+            preloadAction: EnemyFixers.FixAknidMother)
+            .WithConfigGroup(ConfigGroup.AknidMother).DoFlipX();
         
         var silkAcidCloud = new GameObject("[Architect] Silk Acid Cloud");
         silkAcidCloud.SetActive(false);

@@ -18,6 +18,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
         ScriptManager.RegisterInputBlock<CurrencyBlock>("Currency Control", ConfigGroup.CurrencyHook);
         ScriptManager.RegisterInputBlock<StatusBlock>("Status Control");
+        ScriptManager.RegisterInputBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
         ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);

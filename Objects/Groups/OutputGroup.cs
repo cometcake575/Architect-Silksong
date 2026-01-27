@@ -15,8 +15,15 @@ public static class OutputGroup
         EventManager.RegisterOutputType(
             new OutputType("hp", "Health", "Number", o =>
             {
-                var hm =  o.GetComponent<HealthManager>();
+                var hm = o.GetComponent<HealthManager>();
                 return hm ? hm.hp : 0;
+            })
+        ),
+        EventManager.RegisterOutputType(
+            new OutputType("enemy_self", "Self", "Enemy", o =>
+            {
+                var hm = o.GetComponent<HealthManager>();
+                return hm;
             })
         )
     ];
@@ -29,6 +36,10 @@ public static class OutputGroup
                 var hm = o.GetComponent<EnemyHook>().hm;
                 return hm ? hm.hp : 0;
             })
+        ),
+        EventManager.RegisterOutputType(
+            new OutputType("hp_hook_target", "Target", "Enemy", 
+                o => o.GetComponent<EnemyHook>().hm)
         )
     ];
 

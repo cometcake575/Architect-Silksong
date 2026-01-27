@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>3.10.19</Version>
+    <Version>3.11.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,10 +41,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources/**/*.png"/>
     <EmbeddedResource Include="Resources/**/*.wav"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Storage\Sharer\" />
   </ItemGroup>
 
   <Target Name="CopyMod" AfterTargets="PostBuildEvent" Condition="'$(SilksongFolder)' != ''">

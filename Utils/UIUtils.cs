@@ -268,13 +268,72 @@ public static class UIUtils
         return img;
     }
 
-    public static void RemoveOffset(this GameObject obj)
+    public static (ScrollRect, GameObject) MakeScrollView(
+        string name, 
+        GameObject parent, 
+        Vector2 pos,
+        Vector2 anchorMin,
+        Vector2 anchorMax,
+        Vector2 size,
+        int height
+    )
+    {
+        var img = MakeImage(name, parent, pos, anchorMin, anchorMax, size);
+        img.sprite = Square;
+        img.transform.localScale = Vector3.one;
+        var sr = img.gameObject.AddComponent<ScrollRect>();
+        sr.horizontal = false;
+        sr.movementType = ScrollRect.MovementType.Clamped;
+        sr.decelerationRate = 1;
+
+        var viewport = new GameObject("Viewport");
+        viewport.transform.SetParent(img.transform, false);
+        viewport.AddComponent<Mask>();
+        var vImg = viewport.AddComponent<Image>();
+        vImg.sprite = Square;
+        viewport.RemoveOffset();
+
+        img.color = Color.clear;
+        vImg.color = new Color(1, 1, 1, 0.1f);
+        
+        var content = new GameObject("Content");
+        content.transform.SetParent(viewport.transform, false);
+        sr.content = content.RemoveOffset();
+        ((RectTransform)content.transform).sizeDelta = new Vector2(0, height);
+
+        var scrollbar = MakeImage("Bar", img.gameObject, 
+            new Vector2(362.5f, 0), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(50, 750));
+        scrollbar.sprite = Square;
+        scrollbar.color = Color.grey;
+        var bar = scrollbar.gameObject.AddComponent<Scrollbar>();
+        bar.direction = Scrollbar.Direction.BottomToTop;
+        
+        var scrollArea = new GameObject("Scroll Area");
+        scrollArea.transform.SetParent(scrollbar.transform, false);
+        scrollArea.RemoveOffset();
+        
+        var handle = MakeImage("Handle", scrollbar.gameObject, 
+            Vector2.zero, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 
+            new Vector2(50, 155));
+        handle.sprite = Square;
+
+        bar.handleRect = handle.GetComponent<RectTransform>();
+        bar.targetGraphic = handle;
+
+        sr.verticalScrollbar = bar;
+        
+        return (sr, content);
+    }
+
+    public static RectTransform RemoveOffset(this GameObject obj)
     {
         var rt = obj.GetOrAddComponent<RectTransform>();
         rt.anchorMax = Vector2.one;
         rt.anchorMin = Vector2.zero;
         rt.offsetMax = Vector2.zero;
         rt.offsetMin = Vector2.zero;
+        return rt;
     }
     
     public class TruncatableText : Text

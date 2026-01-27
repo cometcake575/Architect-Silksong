@@ -22,6 +22,7 @@ public static class Settings
     public static Keybind Overwrite;
     public static Keybind GrabId;
     public static Keybind StartLocked;
+    public static Keybind StartScripted;
     
     public static Keybind Blank;
     public static Keybind Cursor;
@@ -160,6 +161,13 @@ public static class Settings
             "StartLocked",
             KeyCode.None,
             "Makes the placed object be locked instantly upon placing it"
+        ));
+        
+        StartScripted = new Keybind(config.Bind(
+            "Keybinds",
+            "StartScripted",
+            KeyCode.None,
+            "Makes the placed object be added to the script instantly upon placing it"
         ));
         
         Blank = new Keybind(config.Bind(

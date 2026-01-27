@@ -9,14 +9,15 @@ public class Wind : MonoBehaviour
 {
     private static readonly int EnemyLayer = LayerMask.NameToLayer("Enemies");
     private static readonly int ProjectileLayer = LayerMask.NameToLayer("Projectiles");
-    private static readonly int AttackLayer = LayerMask.NameToLayer("Enemy Attack");
+    private static readonly int AttackLayer1 = LayerMask.NameToLayer("Enemy Attack");
+    private static readonly int AttackLayer2 = LayerMask.NameToLayer("Attack");
     
     private static readonly Material WindMaterial = new(Shader.Find("Sprites/Default"))
     {
         mainTexture = ResourceUtils.LoadSpriteResource("wind_particle", FilterMode.Point).texture
     };
     
-    public static bool actuallyJumping;
+    public static bool ActuallyJumping;
     private static bool _windPlayer;
 
     public float speed = 30;
@@ -73,7 +74,9 @@ public class Wind : MonoBehaviour
     {
         if (!affectsEnemies && other.gameObject.layer == EnemyLayer) return;
         if (!affectsProjectiles &&
-            (other.gameObject.layer == ProjectileLayer || other.gameObject.layer == AttackLayer)) return;
+            (other.gameObject.layer == ProjectileLayer 
+             || other.gameObject.layer == AttackLayer1 
+             || other.gameObject.layer == AttackLayer2)) return;
 
         var rb2d = other.GetComponent<Rigidbody2D>();
         if (!rb2d) return;
@@ -107,7 +110,7 @@ public class Wind : MonoBehaviour
         {
             hc.ResetHardLandingTimer();
             if (_force.y > 9 && 
-                !hc.cState.jumping && !hc.cState.doubleJumping && !hc.cState.wallJumping) actuallyJumping = false;
+                !hc.cState.jumping && !hc.cState.doubleJumping && !hc.cState.wallJumping) ActuallyJumping = false;
         }
 
         if (hc.cState.onGround && !hc.CheckTouchingGround())
@@ -125,21 +128,21 @@ public class Wind : MonoBehaviour
         {
             if (HeroController.instance.cState.jumping
                 || HeroController.instance.cState.doubleJumping
-                || HeroController.instance.cState.wallJumping) actuallyJumping = true;
-            else if (HeroController.instance.GetComponent<Rigidbody2D>().linearVelocity.y <= 0) actuallyJumping = false;
+                || HeroController.instance.cState.wallJumping) ActuallyJumping = true;
+            else if (HeroController.instance.GetComponent<Rigidbody2D>().linearVelocity.y <= 0) ActuallyJumping = false;
         };
 
         typeof(HeroController).Hook("BackOnGround",
             (Action<HeroController, bool> orig, HeroController self, bool force) =>
             {
-                actuallyJumping = false;
+                ActuallyJumping = false;
                 orig(self, force);
             });
 
         typeof(HeroController).Hook("JumpReleased",
             (Action<HeroController> orig, HeroController self) =>
             {
-                if (!actuallyJumping)
+                if (!ActuallyJumping)
                 {
                     self.jumpQueuing = false;
                     self.doubleJumpQueuing = false;

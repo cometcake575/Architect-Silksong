@@ -6,11 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Architect.Config.Types;
 using Architect.Editor;
+using Architect.Events.Blocks.Config.Types;
+using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Prefabs;
-using Architect.Storage.Sharer;
 using Architect.Utils;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -209,13 +210,13 @@ public static class StorageManager
         CustomAssetManager.WipeAssets();
     }
 
-    // TODO Update for new level sharer
-    public static IEnumerator LoadLevelData(Dictionary<string, LevelData> levels, string levelId, Text status)
+    public static IEnumerator LoadLevelData(Dictionary<string, LevelData> levels, Text status)
     {
         WipeLevelData();
         var startTime = Time.realtimeSinceStartup;
 
         Dictionary<string, StringConfigValue> downloads = [];
+        Dictionary<string, StringConfigValue<PngBlock>> blockDownloads = [];
         
         foreach (var (scene, data) in levels)
         {
@@ -227,15 +228,28 @@ public static class StorageManager
                 downloads.TryAdd(cfg, config);
             }
             
+            foreach (var config in data.ScriptBlocks.SelectMany(obj => obj.CurrentConfig.Values)
+                         .OfType<StringConfigValue<PngBlock>>())
+            {
+                if (!config.GetTypeId().Contains("_url")) continue;
+                var cfg = config.GetValue();
+                blockDownloads.TryAdd(cfg, config);
+            }
+            
             SaveScene(scene, data);
         }
-
+        
         CustomAssetManager.DownloadingAssets = 0;
         CustomAssetManager.Downloaded = 0;
         CustomAssetManager.Failed = 0;
-        var downloadCount = downloads.Count;
+        var downloadCount = downloads.Count + blockDownloads.Count;
         
         foreach (var config in downloads.Values)
+        {
+            while (CustomAssetManager.DownloadingAssets > 4) yield return null;
+            Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
+        }
+        foreach (var config in blockDownloads.Values)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
@@ -245,8 +259,6 @@ public static class StorageManager
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
 
-        LevelSharerUI.CurrentlyDownloading = false;
-        LevelSharerUI.RefreshActiveOptions();
         PrefabsCategory.Prefabs = LoadPrefabs();
 
         var plural = CustomAssetManager.Failed == 1 ? "" : "s";

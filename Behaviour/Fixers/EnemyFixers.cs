@@ -762,6 +762,13 @@ public static class EnemyFixers
         }, 0, true);
         fsm.GetState("Positioning Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
         fsm.GetState("Hidden Underwater").DisableAction(0);
+
+        if (!HeroController.instance.TryFindGroundPoint(out var pos,
+                obj.transform.position,
+                true)) pos = obj.transform.position;
+        
+        fsm.GetState("Get Node").AddAction(() => obj.transform.position = pos, 0);
+        fsm.GetState("Dig Out G 1").AddAction(() => obj.BroadcastEvent("OnAmbush"), 0);
     }
 
     public static void FixStilkinTrapper(GameObject obj)
@@ -799,6 +806,13 @@ public static class EnemyFixers
         fsm.GetState("Water Exit Q").DisableAction(6);
         fsm.GetState("Hide Underwater").DisableAction(0);
         fsm.GetState("Water Pos").DisableAction(1);
+        
+        if (!HeroController.instance.TryFindGroundPoint(out var pos,
+                obj.transform.position,
+                true)) pos = obj.transform.position;
+        
+        fsm.GetState("Get Node").AddAction(() => obj.transform.position = pos, 0);
+        fsm.GetState("Dig Out G 1").AddAction(() => obj.BroadcastEvent("OnAmbush"), 0);
     }
 
     public static void FixLastClawPreload(GameObject obj)
@@ -1339,6 +1353,61 @@ public static class EnemyFixers
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+
+        ((Wait)fsm.GetState("Entry Antic").actions[3]).time = 0.01f;
+        
+        fsm.GetState("Stun Start").DisableAction(3);
+        
+        var checkL = fsm.GetState("Check L");
+        checkL.DisableAction(0);
+        checkL.DisableAction(1);
+        checkL.DisableAction(4);
+        fsm.GetState("Check M").DisableAction(2);
+        fsm.GetState("Check R").DisableAction(2);
+        fsm.GetState("Dive End").DisableAction(3);
+        
+        var pickPoint = fsm.GetState("Pick Point");
+        pickPoint.DisableAction(0);
+        pickPoint.DisableAction(1);
+        pickPoint.DisableAction(3);
+        var targetX = fsm.FsmVariables.FindFsmFloat("Target X");
+        pickPoint.AddAction(() =>
+        {
+            targetX.Value = obj.transform.GetPositionX() + 
+                            (Random.value > 0.5f ? 1 : -1) * Random.Range(6, 14);
+        }, 3);
+
+        var idleY = fsm.FsmVariables.FindFsmFloat("Idle Y");
+        var swipeY = fsm.FsmVariables.FindFsmFloat("Swipe Y");
+        var targetY = fsm.FsmVariables.FindFsmFloat("Target Y");
+        
+        fsm.GetState("Idle").AddAction(FixYValues, 0);
+        FixYValues();
+
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.setPlayerDataBool = "";
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        RemoveConstrainPosition(corpse);
+        var corpseFsm = corpse.LocateMyFSM("Death");
+        var stagger = corpseFsm.GetState("Stagger");
+        stagger.DisableAction(6);
+        stagger.DisableAction(7);
+
+        return;
+
+        void FixYValues()
+        {
+            if (HeroController.instance.TryFindGroundPoint(out var pos,
+                    obj.transform.position,
+                    true))
+            {
+                var y = pos.y;
+                idleY.Value = y + 2.87f;
+                swipeY.Value = y + 1.39f;
+                targetY.Value = y - 2;
+            }
+        }
     }
 
     public static void FixGms(GameObject obj)
@@ -1418,6 +1487,7 @@ public static class EnemyFixers
         var fsm = obj.LocateMyFSM("Behaviour Base");
         fsm.fsmTemplate = null;
         fsm.GetState("Initial Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Reposition").DisableAction(3);
     }
 
     public static void FixSisterSplinter(GameObject obj)
@@ -1882,6 +1952,8 @@ public static class EnemyFixers
             fsm.SetState("Idle");
             obj.GetComponent<DamageHero>().enabled = true;
         }, 0);
+        fsm.GetState("Roll Check").DisableAction(0);
+        fsm.GetState("Floor").DisableAction(8);
     }
 
     public static void FixGiantFlea(GameObject obj)
@@ -1891,6 +1963,7 @@ public static class EnemyFixers
         init.DisableAction(4);
 
         ((StartRoarEmitter)fsm.GetState("Roar").actions[5]).stunHero = false;
+        fsm.GetState("Revisit").DisableAction(1);
     }
 
     public static void FixPharlidDiver(GameObject obj)
@@ -2380,5 +2453,13 @@ public static class EnemyFixers
     {
         obj.transform.SetRotation2D(0);
         obj.RemoveComponent<EnemyEdgeControl>();
+    }
+
+    public static void FixGnat(GameObject obj)
+    {
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var fsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Custom Corpse");
+        fsm.GetState("Spawn 2").actions[1].enabled = false;
     }
 }

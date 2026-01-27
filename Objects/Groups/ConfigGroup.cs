@@ -98,6 +98,11 @@ public static class ConfigGroup
                 o.GetComponent<CustomPickup>().item = value.GetValue();
             }).WithDefaultValue("Rosary_Set_Small")),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Contact Pickup", "item_touch", (o, value) =>
+            {
+                o.GetComponent<CustomPickup>().touch = value.GetValue();
+            }).WithDefaultValue(false).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Ignore Limit", "item_ignore_obtained", (o, value) =>
             {
                 o.GetComponent<CustomPickup>().ignoreObtained = value.GetValue();
@@ -145,6 +150,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Terrain Collision", "junk_pipe_terrain", (o, value) =>
             {
+                if (value.GetValue()) return;
                 o.transform.GetChild(5).gameObject.SetActive(false);
                 o.transform.GetChild(6).gameObject.SetActive(false);
                 o.transform.GetChild(7).gameObject.SetActive(false);
@@ -187,6 +193,11 @@ public static class ConfigGroup
             {
                 o.GetComponent<BlackThreader>().hpMultiplier = value.GetValue();
             }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Attack Naturally", "voider_no_attack", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().blockAttacks = !value.GetValue();
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Require Act 3", "voider_do_check", (o, value) =>
             {
@@ -920,14 +931,15 @@ public static class ConfigGroup
             new FloatConfigType("Fallthrough Time", "collider_fallthrough",
                 (o, value) =>
                 {
-                    o.AddComponent<Fallthrough>().fallthroughTime = value.GetValue();
+                    o.GetComponentInChildren<Collider2D>().gameObject
+                        .AddComponent<Fallthrough>().fallthroughTime = value.GetValue();
                 }
             ))
     ]);
 
     public static readonly List<ConfigType> BellPlat3 = GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Signs", "collider_fallthrough",
+            new BoolConfigType("Signs", "show_signs",
                 (o, value) =>
                 {
                     for (var i = 0; i < 3; i++) if (!value.GetValue()) o.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);
@@ -1421,6 +1433,38 @@ public static class ConfigGroup
                 o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
             }).WithDefaultValue(false))
     ]);
+    
+    public static readonly List<ConfigType> Aknids = GroupUtils.Merge(Enemies,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Emit Acid", "aknids_acid", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Break")?.DisableAction(0);
+                    fsm.GetState("Shake")?.DisableAction(3);
+                }
+            }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> AknidMother = GroupUtils.Merge(Aknids,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Spawn Children", "aknid_mother_child", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Hatchling").DisableAction(1);
+
+                    var ede = o.GetComponent<EnemyDeathEffects>();
+                    ede.PreInstantiate();
+                    ede.GetInstantiatedCorpse(AttackTypes.Generic).transform.GetChild(0)
+                        .gameObject.LocateMyFSM("Control").GetState("State 1").DisableAction(1);
+                }
+            }).WithDefaultValue(true))
+    ]);
 
     public static readonly List<ConfigType> Furm = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
@@ -1671,7 +1715,7 @@ public static class ConfigGroup
             }).WithDefaultValue(5))
     ]);
 
-    public static readonly List<ConfigType> Teleplane = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> Clawmaiden = GroupUtils.Merge(HideBody, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Teleplane Width", "teleplane_width", (o, value) =>
             {
@@ -2418,14 +2462,9 @@ public static class ConfigGroup
                 var item1 = o.GetComponentInChildren<PersistentBoolItem>();
                 var item2 = o.GetComponentInChildren<PersistentIntItem>();
                 var b = o.GetComponent<EnemyFixers.FakePersistentMarker>();
-                if (b)
-                {
-                    Object.Destroy(item1);
-                    Object.Destroy(item2);
-                }
                 if ((!item1 && !item2) || b)
                 {
-                    var it = o.AddComponent<PersistentBoolItem>();
+                    var it = o.GetOrAddComponent<PersistentBoolItem>();
                     it.itemData = new PersistentBoolItem.PersistentBoolData
                     {
                         ID = o.name,

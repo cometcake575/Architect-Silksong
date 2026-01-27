@@ -158,7 +158,7 @@ public static class SharerManager
 
         btn.onClick.AddListener(GoToReturnState);
         return;
-
+        
         void GoToReturnState()
         {
             if (!_currentMenuState || !_currentMenuState.ReturnState) return;
@@ -213,9 +213,18 @@ public static class SharerManager
         public void OnPointerDown(PointerEventData eventData) => OnClick();
     }
 
-    public static IEnumerator GetSprite(string url, Image apply)
+    public class SpriteURL : MonoBehaviour;
+
+    public static void DoGetSprite(string url, Image apply)
     {
-        apply.sprite = Placeholder;
+        var spriteURL = apply.gameObject.GetOrAddComponent<SpriteURL>();
+        spriteURL.StopAllCoroutines();
+        spriteURL.StartCoroutine(GetSprite(url, apply));
+    }
+    
+    private static IEnumerator GetSprite(string url, Image apply)
+    {
+        apply.sprite = ArchitectPlugin.BlankSprite;
         var www = UnityWebRequestTexture.GetTexture(url);
         www.timeout = 30;
         yield return www.SendWebRequest();

@@ -9,18 +9,21 @@ public class LevelInfo
     public string LevelId;
 
     // Used for visuals
+    public string CreatorId;
     public string CreatorName;
     public string LevelName;
     public string LevelDesc;
     public string IconURL;
+    public bool HasSave;
 
     // Used for filters
     public int DownloadCount;
     public int LikeCount;
-    public int RecentLikeCount;
-    public LevelDifficulty Difficulty;
-    public LevelDuration Duration;
-    public List<LevelTag> Tags;
+    public LevelDifficulty Difficulty = LevelDifficulty.None;
+    public LevelDuration Duration = LevelDuration.None;
+    public List<LevelTag> Tags = [];
+
+    public bool Liked;
 
     // Chosen by creator
     public enum LevelTag
@@ -30,7 +33,8 @@ public class LevelInfo
         Gauntlets,
         Areas,
         Troll,
-        Bosses
+        Bosses,
+        Minigames
     }
 
     // Chosen by creator
@@ -82,7 +86,7 @@ public static class TagMethods
             LevelInfo.LevelDifficulty.Easy => "Easy",
             LevelInfo.LevelDifficulty.Medium => "Medium",
             LevelInfo.LevelDifficulty.Hard => "Hard",
-            LevelInfo.LevelDifficulty.ExtraHard => "Extra Hard",
+            LevelInfo.LevelDifficulty.ExtraHard => "Extreme",
             _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
         };
     }
@@ -92,6 +96,7 @@ public static class TagMethods
         return tag switch
         {
             LevelInfo.LevelTag.Platforming => "Platforming",
+            LevelInfo.LevelTag.Minigames => "Minigames",
             LevelInfo.LevelTag.Multiplayer => "Multiplayer",
             LevelInfo.LevelTag.Gauntlets => "Gauntlets",
             LevelInfo.LevelTag.Areas => "Areas",

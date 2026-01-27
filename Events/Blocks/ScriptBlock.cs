@@ -41,7 +41,7 @@ public abstract class ScriptBlock
     protected virtual IEnumerable<(string, string)> InputVars => [];
 
     public List<ConfigType> Config;
-    protected Dictionary<string, ConfigValue> CurrentConfig = [];
+    public Dictionary<string, ConfigValue> CurrentConfig = [];
     
     protected virtual int InputCount => Inputs.Count();
     protected virtual int OutputCount => Outputs.Count();

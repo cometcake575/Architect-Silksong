@@ -119,6 +119,43 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> EnemyControl =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<EnemyBlock>("Damage Type", "enemy_damage_type", 
+                (b, f) =>
+                {
+                    var val = f.GetStringValue();
+                    b.AttackType = val switch
+                    {
+                        "Water" => AttackTypes.RuinsWater,
+                        "Zap" => AttackTypes.Lightning,
+                        "Needle" => AttackTypes.Nail,
+                        _ => Enum.Parse<AttackTypes>(val)
+                    };
+                }).WithDefaultValue(1)
+                .WithOptions(
+                    "Generic",
+                    "Needle",
+                    "Spell",
+                    "Splatter",
+                    "Water",
+                    "Lava",
+                    "Explosion",
+                    "Coal",
+                    "Fire",
+                    "Zap",
+                    "Trap")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<EnemyBlock>("Health Amount", "enemy_hp_amount", 
+                (b, f) =>
+                {
+                    b.Health = f.GetValue();
+                }).WithDefaultValue(10)
+            )
+    ];
+    
     public static readonly List<ConfigType> Transition =
     [
         ConfigurationManager.RegisterConfigType(
@@ -279,11 +316,11 @@ public static class ConfigGroup
     public static readonly List<ConfigType> RandomNumber =
     [
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<RandomNumBlock>("Lower Bound", "random_lower", 
+            new FloatConfigType<RandomNumBlock>("Lower Bound", "random_lower", 
                 (b, f) => b.LowerBound = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<RandomNumBlock>("Upper Bound", "random_upper", 
+            new FloatConfigType<RandomNumBlock>("Upper Bound", "random_upper", 
                 (b, f) => b.UpperBound = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(

@@ -4,6 +4,7 @@ using System.Linq;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Events.Blocks;
 using Architect.Events.Vars;
 using Architect.Objects.Groups;
 using Architect.Placements;
@@ -179,8 +180,9 @@ public abstract class PlaceableObject : SelectableObject
         if (Settings.StartLocked.IsPressed) obj.ToggleLocked();
         
         EditManager.RegisterLastPos(pos);
-        
         ActionManager.PerformAction(new PlaceObjects([obj]));
+        
+        if (Settings.StartScripted.IsPressed) ScriptManager.AddToScript(obj);
     }
 
     public ObjectPlacement PreparePlacement(Vector3 pos)

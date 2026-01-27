@@ -24,8 +24,6 @@ public static class PreloadManager
     
     public static void Init()
     {
-        AudioListener.pause = true;
-        
         RegisterPreloads();
         AssetRequestAPI.InvokeAfterBundleCreation(FinishPreloading);
     }
@@ -96,7 +94,6 @@ public static class PreloadManager
         EditorUI.CompleteSetup();
         HasPreloaded = true;
         Object.Destroy(_canvasObj);
-        AudioListener.pause = false;
     }
 
     private static IEnumerator Prepare(IPreload preload, ManagedAsset<GameObject> asset)
