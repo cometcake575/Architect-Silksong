@@ -419,6 +419,45 @@ public static class VanillaObjects
             sprite: ResourceUtils.LoadSpriteResource("rune_slam_large", ppu:50))
             .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
         
+        Categories.Attacks.Add(new PreloadObject("Trobbinado", "trobbio_tornado",
+            ("localpoolprefabs_assets_trobbio", "Assets/Prefabs/Hornet Bosses/Trobbio Tornado.prefab"), 
+            notSceneBundle: true));
+        
+        Categories.Attacks.Add(new PreloadObject("Tormented Trobbinado", "t_trobbio_tornado",
+            ("localpoolprefabs_assets_arealibrary", "Assets/Prefabs/Hornet Bosses/Tormented Trobbio Tornado.prefab"),
+            preloadAction: o =>
+            {
+                var anim = o.GetComponent<tk2dSpriteAnimator>();
+                anim.defaultClipId = anim.GetClipIdByName("Tornado Projectile");
+            },
+        notSceneBundle: true));
+        
+        Categories.Attacks.Add(new PreloadObject("Trobbibomb", "trobbio_bomb",
+            ("localpoolprefabs_assets_trobbio", "Assets/Prefabs/Hornet Bosses/Trobbio Bomb.prefab"),
+            description: "Usually already landed by the time the room finishes loading.\n" +
+                         "Best used with the Object Spawner.",
+            notSceneBundle: true, postSpawnAction: HazardFixers.FixTrobbioBomb)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
+        Categories.Attacks.Add(new PreloadObject("Tormented Trobbibomb", "t_trobbio_bomb",
+            ("localpoolprefabs_assets_arealibrary", "Assets/Prefabs/Hornet Bosses/Trobbio Cross Bomb.prefab"), 
+            description: "Usually already landed by the time the room finishes loading.\n" +
+                         "Best used with the Object Spawner.",
+            notSceneBundle: true, postSpawnAction: HazardFixers.FixTrobbioCrossBomb)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
+        AddEnemy("Trobbio", "trobbio",
+            ("Library_13", "Grand Stage Scene/Boss Scene Trobbio/Trobbio"),
+            postSpawnAction: EnemyFixers.FixRegularTrobbio).DoFlipX();
+
+        AddEnemy("Tormented Trobbio", "tormented_trobbio",
+            ("Library_13", "Grand Stage Scene/Boss Scene TormentedTrobbio/Tormented Trobbio"),
+            postSpawnAction: EnemyFixers.FixTormentedTrobbio).DoFlipX();
+        
         PreloadManager.RegisterPreload(new BasicPreload(
             "localpoolprefabs_assets_areahang.bundle", 
             "Assets/Prefabs/Hornet Enemies/rune bomb small.prefab", o =>
@@ -1282,7 +1321,8 @@ public static class VanillaObjects
         AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"),
             preloadAction: EnemyFixers.RemoveConstrainPosition);
         AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
-            postSpawnAction: EnemyFixers.FixPhantom);
+            postSpawnAction: EnemyFixers.FixPhantom)
+            .WithBroadcasterGroup(BroadcasterGroup.SlamEnemies);
 
         Categories.Hazards.Add(new PreloadObject("Pressure Plate Trap", "dust_trap_spike_plate",
             ("Dust_Maze_01", "Mist Maze Controller/Trap Sets/Trap Set/Dust Trap Spike Plate")));

@@ -1,5 +1,6 @@
 using Architect.Content.Preloads;
 using Architect.Utils;
+using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using UnityEngine.Animations;
 using Object = UnityEngine.Object;
@@ -320,5 +321,27 @@ public static class HazardFixers
             default,
             obj.transform
         ).GetComponent<TinkEffect>().overrideCamShake = true;
+    }
+
+    public static void FixTrobbioBomb(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"));
+        fsm.GetState("Fling").DisableAction(0);
+        var air = fsm.GetState("Air");
+        air.DisableAction(15);
+        var timeUp = (BoolAllTrue)air.actions[13];
+        timeUp.boolVariables = [timeUp.boolVariables[2]];
+    }
+    
+    public static void FixTrobbioCrossBomb(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"));
+        fsm.GetState("Fling").DisableAction(0);
+        var air = fsm.GetState("Air");
+        air.DisableAction(11);
+        var timeUp = (BoolAllTrue)air.actions[18];
+        timeUp.boolVariables = [timeUp.boolVariables[2]];
     }
 }

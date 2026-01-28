@@ -17,29 +17,6 @@ public class TransitionBlock : ScriptBlock
     public string Scene = "";
     public string Door = "";
 
-    private TransitionPoint _point;
-
-    protected override void SetupReference()
-    {
-        var customDoor = new GameObject("[Architect] Transition Block");
-        customDoor.SetActive(false);
-        
-        _point = customDoor.AddComponent<TransitionPoint>();
-        _point.nonHazardGate = true;
-
-        _point.targetScene = Scene;
-        _point.entryPoint = Door;
-
-        var col = customDoor.AddComponent<BoxCollider2D>();
-        col.size = new Vector2(3, 3);
-        col.isTrigger = true;
-        
-        customDoor.AddComponent<CustomTransitionPoint>().pointType = 0;
-        customDoor.SetActive(true);
-
-        customDoor.transform.position = new Vector3(-9999, -9999);
-    }
-
     protected override void Trigger(string trigger)
     {
         ArchitectPlugin.Instance.StartCoroutine(Coroutine());
@@ -48,6 +25,15 @@ public class TransitionBlock : ScriptBlock
     private IEnumerator Coroutine()
     {
         yield return HeroController.instance.FreeControl();
-        _point.OnTriggerEnter2D(HeroController.instance.GetComponent<Collider2D>());
+        
+        GameManager.instance.BeginSceneTransition(new GameManager.SceneLoadInfo
+        {
+            SceneName = Scene,
+            EntryGateName = Door,
+            EntryDelay = 0,
+            Visualization = GameManager.SceneLoadVisualizations.Default,
+            PreventCameraFadeOut = true,
+            WaitForSceneTransitionCameraFade = false
+        });
     }
 }

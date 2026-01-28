@@ -523,8 +523,11 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Cooldown", "zap_cooldown", (o, value) =>
             {
-                var wait = (WaitRandom)o.LocateMyFSM("Control").GetState("Zap Pause").Actions[1];
+                var zp = o.LocateMyFSM("Control").GetState("Zap Pause");
+                var wait = (WaitRandom)zp.Actions[1];
                 wait.timeMin = wait.timeMax = value.GetValue();
+                zp.DisableAction(0);
+                zp.DisableAction(2);
             }).WithDefaultValue(1))
     ]);
 

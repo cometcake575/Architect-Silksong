@@ -26,6 +26,8 @@ public static class BroadcasterGroup
 
     public static readonly List<string> BlackThreader = ["OnAttack"];
     
+    public static readonly List<string> SlamEnemies = GroupUtils.Merge(Enemies, ["Slam"]);
+    
     public static readonly List<string> SlamBosses = GroupUtils.Merge(Bosses, ["Slam"]);
     
     public static readonly List<string> SummonerBosses = GroupUtils.Merge(Bosses, ["TrySummon"]);

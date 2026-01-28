@@ -8,6 +8,7 @@ using Architect.Utils;
 using GlobalEnums;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -32,6 +33,16 @@ public static class EnemyFixers
     
     // Seth
     private static GameObject _shieldTrail;
+    
+    // Trobbio
+    private static GameObject _flares;
+    private static GameObject _floor;
+    private static GameObject _bursts;
+    
+    // Tormented Trobbio
+    private static GameObject _tflares;
+    private static GameObject _tfloor;
+    private static GameObject _tbursts;
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -76,6 +87,25 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Shellwood_22", 
             "Boss Scene/Pt Shield Trail",
             o => _shieldTrail = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
+            "Grand Stage Scene/Boss Scene Trobbio/Flare Glitter",
+            o => _flares = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
+            "Grand Stage Scene/Boss Scene Trobbio/Floor Tiles",
+            o => _floor = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
+            "Grand Stage Scene/Boss Scene Trobbio/Trapdoor Bursts",
+            o => _bursts = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
+            "Grand Stage Scene/Boss Scene TormentedTrobbio/Flare Glitter",
+            o => _tflares = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
+            "Grand Stage Scene/Boss Scene TormentedTrobbio/Floor Tiles",
+            o => _tfloor = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
+            "Grand Stage Scene/Boss Scene TormentedTrobbio/Trapdoor Bursts",
+            o => _tbursts = o));
 
         AknidMother.InitSounds();
     }
@@ -1922,6 +1952,8 @@ public static class EnemyFixers
         var rb2d = obj.GetComponent<Rigidbody2D>();
         fsm.GetState("Dragoon Down").AddAction(ClearVelocity, 0, true);
         fsm.GetState("Fog In").AddAction(ClearVelocity, 0);
+        
+        fsm.GetState("Dragoon Blast").AddAction(() => obj.BroadcastEvent("Slam"), 0);
 
         var dEnd = fsm.GetState("Dragoon End");
         dEnd.AddAction(ClearVelocity, 0);
@@ -2602,5 +2634,222 @@ public static class EnemyFixers
         ede.PreInstantiate();
         var fsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Custom Corpse");
         fsm.GetState("Spawn 2").actions[1].enabled = false;
+    }
+
+    public static void FixTormentedTrobbio(GameObject obj)
+    {
+        var fsm = FixTrobbio(obj, _tflares, _tfloor, _tbursts, (y, fsm) =>
+        {
+            ((SetFsmFloat)fsm.GetState("Tornado Start").actions[9]).setValue = y + 3.21f;
+        });
+        
+        fsm.GetState("Wait").AddAction(() => fsm.SendEvent("ENTER"), 0);
+        
+        var sp = fsm.GetState("Start Pause");
+        sp.DisableAction(0);
+        sp.DisableAction(1);
+        sp.DisableAction(2);
+        sp.DisableAction(3);
+        sp.AddAction(() => fsm.SetState("Start Idle"), 0);
+
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        var corpseFsm = corpse.LocateMyFSM("Control");
+        
+        var stagger = corpseFsm.GetState("Stagger");
+        stagger.DisableAction(2);
+        stagger.DisableAction(3);
+        stagger.DisableAction(15);
+
+        var interactable = corpseFsm.GetState("Leave End");
+        interactable.transitions = [];
+        interactable.AddAction(() => Object.Destroy(corpse));
+    }
+
+    public static void FixRegularTrobbio(GameObject obj)
+    {
+        var fsm = FixTrobbio(obj, _flares, _floor, _bursts);
+        
+        var wr = fsm.GetState("Wait Refight");
+        wr.DisableAction(0);
+        wr.DisableAction(1);
+        wr.AddAction(() => fsm.SetState("Start Idle"), 0);
+    }
+
+    public static PlayMakerFSM FixTrobbio(GameObject obj, GameObject flareObj, GameObject floorObj, GameObject burstObj,
+        [CanBeNull] Action<float, PlayMakerFSM> yPos = null)
+    {
+        var flares = Object.Instantiate(flareObj);
+        flares.name = obj.name + " Flares";
+        var floor = Object.Instantiate(floorObj);
+        floor.name = obj.name + " Floor";
+        var bursts = Object.Instantiate(burstObj);
+        bursts.name = obj.name + " Bursts";
+
+        var fsm = obj.LocateMyFSM("Control");
+
+        var tt = fsm.GetState("Tornado Turn");
+        tt.AddAction(new Wait
+        {
+            time = 0.01f
+        });
+        
+        // Tornado range
+        fsm.FsmVariables.FindFsmFloat("Tornado X Min").Value = float.NegativeInfinity;
+        fsm.FsmVariables.FindFsmFloat("Tornado X Max").Value = float.PositiveInfinity;
+        fsm.FsmVariables.FindFsmFloat("Centre X").Value = obj.transform.GetPositionX();
+        
+        // Startup
+        fsm.GetState("State").AddAction(() => fsm.SendEvent("REFIGHT"), 0);
+        
+        fsm.GetState("Start Idle").AddAction(() =>
+        {
+            var rb2d = obj.GetComponent<Rigidbody2D>();
+            rb2d.gravityScale = 1;
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            
+            obj.GetComponent<MeshRenderer>().enabled = true;
+
+            obj.GetComponent<Collider2D>().enabled = true;
+            fsm.FsmVariables.FindFsmGameObject("Damage Collider").Value.SetActive(true);
+        }, 0);
+        
+        // Remove clamp
+        fsm.GetState("Stun Start").DisableAction(2);
+        
+        // Flares
+        fsm.FsmVariables.FindFsmGameObject("Flare Glitter").Value = flares;
+        var flaresFsm = flares.LocateMyFSM("Control");
+        var lowMin = flaresFsm.FsmVariables.FindFsmFloat("Low Min Y");
+        var lowMax = flaresFsm.FsmVariables.FindFsmFloat("Low Max Y");
+        var highMin = flaresFsm.FsmVariables.FindFsmFloat("High Min Y");
+        var highMax = flaresFsm.FsmVariables.FindFsmFloat("High Max Y");
+        var posY = flaresFsm.FsmVariables.FindFsmFloat("Pos Y");
+        var topY = flaresFsm.FsmVariables.FindFsmFloat("Top Y");
+        
+        var flareOffset = new Vector3(73.8811f, 16.7204f, 0.0065f);
+        fsm.GetState("Flash Antic").AddAction(() => 
+            flares.transform.position = obj.transform.position - flareOffset, 0);
+        
+        // Bursts
+        fsm.FsmVariables.FindFsmGameObject("Trapdoor Bursts").Value = bursts;
+        fsm.GetState("BC Pause").AddAction(AdjustBursts, 0);
+        bursts.LocateMyFSM("Control").FsmVariables.FindFsmGameObject("Trobbio").Value = obj;
+        
+        // Floor
+        var exit1 = fsm.GetState("Exit 1");
+        var exitFloorPos = ((SetPosition)fsm.GetState("Exit Pause").actions[2]).y;
+        exit1.AddAction(AdjustFloor, 0);
+        for (var f = 0; f < floor.transform.childCount; f++)
+        {
+            var floorPiece = floor.transform.GetChild(f).gameObject;
+            var floorFsm = floorPiece.LocateMyFSM("Control");
+            var idle = floorFsm.GetState("Idle");
+            idle.DisableAction(1);
+            var bumped = true;
+            idle.AddAction(() =>
+            {
+                if (Mathf.Abs(obj.transform.GetPositionX() - floorPiece.transform.GetPositionX()) < 0.77095f)
+                {
+                    if (!bumped)
+                    {
+                        floorFsm.SendEvent("BUMP");
+                        bumped = true;
+                    }
+                }
+                else bumped = false;
+            }, everyFrame: true);
+        }
+        
+        floor.SetActive(false);
+        fsm.GetState("Bomb Flurry?").AddAction(() => floor.SetActive(true), 0);
+        fsm.GetState("Enter 1").AddAction(() => floor.SetActive(false), 0);
+
+        var md = (FloatCompare)fsm.GetState("Move Dir").actions[0];
+        md.equal = md.lessThan;
+        var md2 = (FloatCompare)fsm.GetState("Move Dir 2").actions[0];
+        md2.equal = md2.lessThan;
+        
+        // Adjust height
+        var floorY = fsm.FsmVariables.FindFsmFloat("Floor Y");
+        var ceilY = fsm.FsmVariables.FindFsmFloat("Max Y");
+        fsm.GetState("Choice").AddAction(AdjustHeightFromSelf, 0);
+        fsm.GetState("Enter Pause").AddAction(AdjustHeightAboveSelf, 0);
+        exit1.AddAction(AdjustHeightFromSelf, 0);
+
+        var entryRf = (RandomFloat)fsm.GetState("Get Entry Point").actions[0];
+        fsm.GetState("Get Entry Point").AddAction(() =>
+        {
+            var ox = obj.transform.GetPositionX();
+            var px = HeroController.instance.transform.GetPositionX();
+            entryRf.min = Mathf.Max(px, ox) - 12.4f;
+            entryRf.max = Mathf.Min(px, ox) + 12.4f;
+        }, 0);
+        
+        AdjustHeightFromSelf();
+        AdjustBursts();
+        AdjustFloor();
+        return fsm;
+
+        void AdjustHeightAboveSelf()
+        {
+            AdjustHeight(5);
+        }
+
+        void AdjustHeightFromSelf()
+        {
+            AdjustHeight(0);
+        }
+
+        void AdjustFloor()
+        {
+            floor.transform.SetPositionX(obj.transform.GetPositionX() - flareOffset.x);
+            for (var f = 0; f < floor.transform.childCount; f++)
+            {
+                var floorPiece = floor.transform.GetChild(f);
+                
+                if (HeroController.instance.TryFindGroundPoint(out var pos,
+                        floorPiece.position + new Vector3(0, 5),
+                        true))
+                {
+                    floorPiece.transform.SetPositionY(pos.y - 1.2f);
+                }
+            }
+        }
+
+        void AdjustBursts()
+        {
+            bursts.transform.SetPositionX(obj.transform.GetPositionX() - flareOffset.x);
+            for (var b = 0; b < bursts.transform.GetChild(0).childCount; b++)
+            {
+                var burst = bursts.transform.GetChild(0).GetChild(b);
+                
+                if (HeroController.instance.TryFindGroundPoint(out var pos,
+                        burst.position + new Vector3(0, 5),
+                        true))
+                {
+                    burst.transform.SetPositionY(pos.y - 1.78f);
+                }
+            }
+        }
+
+        void AdjustHeight(float f)
+        {
+            if (HeroController.instance.TryFindGroundPoint(out var pos,
+                    obj.transform.position + new Vector3(0, f),
+                    true))
+            {
+                lowMin.Value = pos.y + 1.46f;
+                lowMax.Value = pos.y + 2.46f;
+                highMin.Value = pos.y + 6.96f;
+                topY.Value = highMax.Value = pos.y + 9.46f;
+                posY.Value = pos.y + 1.7f;
+                floorY.Value = pos.y + 1.8f;
+                ceilY.Value = pos.y + 11.37f;
+                exitFloorPos.Value = pos.y - 3.04f;
+                yPos?.Invoke(pos.y, fsm);
+            }
+        }
     }
 }
