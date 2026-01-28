@@ -2675,6 +2675,8 @@ public static class EnemyFixers
         wr.DisableAction(0);
         wr.DisableAction(1);
         wr.AddAction(() => fsm.SetState("Start Idle"), 0);
+        
+        fsm.GetState("Death Fling").DisableAction(5);
     }
 
     public static PlayMakerFSM FixTrobbio(GameObject obj, GameObject flareObj, GameObject floorObj, GameObject burstObj,
