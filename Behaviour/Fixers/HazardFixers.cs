@@ -76,6 +76,18 @@ public static class HazardFixers
                     }
                 }, 2);
             }
+            else if (fsm.name.Contains("Trobbio Bomb"))
+            {
+                var air = fsm.GetState("Air");
+                var timeUp = (BoolAllTrue)air.actions[13];
+                timeUp.boolVariables = [timeUp.boolVariables[2]];
+                fsm.GetState("Antic").DisableAction(13);
+            } else if (fsm.name.Contains("Trobbio Cross Bomb"))
+            {
+                var air = fsm.GetState("Air");
+                var timeUp = (BoolAllTrue)air.actions[18];
+                timeUp.boolVariables = [timeUp.boolVariables[2]];
+            }
         };
     }
 
@@ -332,6 +344,7 @@ public static class HazardFixers
         air.DisableAction(15);
         var timeUp = (BoolAllTrue)air.actions[13];
         timeUp.boolVariables = [timeUp.boolVariables[2]];
+        fsm.GetState("Antic").DisableAction(13);
     }
     
     public static void FixTrobbioCrossBomb(GameObject obj)

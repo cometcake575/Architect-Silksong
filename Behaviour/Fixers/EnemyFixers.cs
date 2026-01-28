@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Utility;
@@ -43,6 +44,19 @@ public static class EnemyFixers
     private static GameObject _tflares;
     private static GameObject _tfloor;
     private static GameObject _tbursts;
+    
+    // Kahnn
+    private static readonly List<string> Spears = [
+        "Long Spear",
+        "Air Spear",
+        "Uppercut Spear",
+        "Roar Spikes",
+        "Cross Spears",
+        "Cross Followup Spears",
+        "Shoot Spikes"
+    ];
+    private static readonly Dictionary<string, GameObject> SpearObjects = [];
+
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -106,6 +120,12 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
             "Grand Stage Scene/Boss Scene TormentedTrobbio/Trapdoor Bursts",
             o => _tbursts = o));
+
+        foreach (var spear in Spears)
+        {
+            PreloadManager.RegisterPreload(new BasicPreload("Memory_Coral_Tower", $"Boss Scene/{spear}",
+                o => SpearObjects[spear] = o));
+        }
 
         AknidMother.InitSounds();
     }
@@ -1185,17 +1205,12 @@ public static class EnemyFixers
     public static void FixKarmelitaPreload(GameObject obj)
     {
         RemoveConstrainPosition(obj);
-        
-        obj.LocateMyFSM("Control").enabled = false;
-        
-        obj.transform.parent.DetachChildren();
         obj.transform.SetPositionZ(0.006f);
     }
 
     public static void FixKarmelita(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
-        fsm.enabled = true;
         fsm.GetState("BG Dance").AddAction(() => fsm.SendEvent("CHALLENGE"), 0);
     }
 
@@ -2434,6 +2449,12 @@ public static class EnemyFixers
         
         var fsm = obj.LocateMyFSM("Control");
         
+        // Disable music
+        fsm.GetState("Stun Start 2").DisableAction(5);
+        var rre = fsm.GetState("Rage Roar End");
+        rre.DisableAction(1);
+        rre.DisableAction(2);
+        
         var idle = fsm.GetState("Idle");
         idle.transitions = idle.transitions
             .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
@@ -2444,14 +2465,42 @@ public static class EnemyFixers
         var trail = Object.Instantiate(_shieldTrail);
         trail.SetActive(true);
         fsm.FsmVariables.FindFsmGameObject("Pt Shield Trail").Value = trail;
+
+        var tmix = fsm.FsmVariables.FindFsmFloat("Tele Min X");
+        var tmax = fsm.FsmVariables.FindFsmFloat("Tele Max X");
+        fsm.FsmVariables.FindFsmFloat("Jump X").value = obj.transform.GetPositionX();
+        var gy = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        var ay = fsm.FsmVariables.FindFsmFloat("Air Y");
+
+        var shield = obj.transform.Find("Shield Projectile");
+        var shieldFsm = shield.gameObject.LocateMyFSM("Control");
+        var fly = shieldFsm.GetState("Fly");
+        for (var i = 2; i <= 8; i++) fly.DisableAction(i);
+        fly.AddAction(() =>
+        {
+            var hit = Physics2D.Raycast(shield.position, Vector2.down, 4);
+            if (hit) fsm.SendEvent("FLOOR");
+        }, everyFrame: true);
         
-        fsm.FsmVariables.FindFsmFloat("Tele Min X").Value = obj.transform.GetPositionX() - 50;
-        fsm.FsmVariables.FindFsmFloat("Tele Max X").Value = obj.transform.GetPositionX() + 50;
-        fsm.FsmVariables.FindFsmFloat("Jump X").Value = obj.transform.GetPositionX();
-        fsm.FsmVariables.FindFsmFloat("Ground Y").Value = obj.transform.GetPositionY() + 0.2f;
-        fsm.FsmVariables.FindFsmFloat("Air Y").Value = obj.transform.GetPositionY() + 6.1f;
-        
-        var shield = obj.transform.Find("Shield Projectile").gameObject;
+
+        fsm.GetState("Attack Choice").AddAction(AdjustPositions, 0);
+        AdjustPositions();
+        return;
+
+        void AdjustPositions()
+        {
+            var hx = HeroController.instance.transform.GetPositionX();
+            tmix.Value = hx - 12.5f;
+            tmax.Value = hx + 12.5f;
+
+            if (HeroController.instance.TryFindGroundPoint(out var pos,
+                    obj.transform.position,
+                    true))
+            {
+                gy.Value = pos.y + 0.2f;
+                ay.Value = pos.y + 6.1f;
+            }
+        }
     }
 
     public static void FixCorrcrustKaraka(GameObject obj)
@@ -2583,14 +2632,130 @@ public static class EnemyFixers
             }
         }
     }
-
+    
     public static void FixKahnn(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
+
+        var spears = new GameObject(obj.name + " Spears");
+        GameObject longSpear = null;
+        GameObject shootSpikes = null;
+        foreach (var (spear, spearObj) in SpearObjects)
+        {
+            var so = Object.Instantiate(spearObj, spears.transform);
+            fsm.FsmVariables.FindFsmGameObject(spear).Value = so;
+            var spearFsm = so.LocateMyFSM("Control");
+            if (spearFsm)
+            {
+                var init = spearFsm.GetState("Init");
+                init?.AddAction(() =>
+                {
+                    var ck = spearFsm.FsmVariables.FindFsmGameObject("Coral King");
+                    if (ck != null) ck.Value = obj;
+                });
+            }
+
+            switch (spear)
+            {
+                case "Shoot Spikes":
+                    ((SendEventByName)fsm.GetState("Ground Hit").actions[0])
+                        .eventTarget.fsmComponent = spearFsm;
+                    shootSpikes = so;
+                    break;
+                case "Long Spear":
+                    longSpear = so;
+                    break;
+            }
+        }
+
+        obj.AddComponent<BlackThreader.SingPatcherData>().Check = () => fsm.ActiveStateName.Contains("Antic");
+
+        var startingX = obj.transform.GetPositionX();
         
-        var hds = fsm.GetState("Heart Death Start");
-        hds.DisableAction(0);
-        hds.DisableAction(1);
+        fsm.GetState("Hop Away 1").AddAction(() =>
+        {
+            if (Mathf.Abs(obj.transform.GetPositionX() - startingX) > 12.5f && Random.value > 0.5f)
+            {
+                fsm.SendEvent("JUMP OVER");
+            }
+        });
+        
+        fsm.GetState("Dormant").AddAction(() =>
+        {
+            obj.GetComponent<MeshRenderer>().enabled = true;
+            obj.GetComponent<HealthManager>().IsInvincible = false;
+            fsm.SendEvent("BATTLE START");
+        });
+        fsm.GetState("Start Pos").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Drop In").AddAction(() => fsm.SendEvent("LAND"), 0);
+        fsm.GetState("Intro Land").DisableAction(6);
+        ((StartRoarEmitter)fsm.GetState("Intro Roar").actions[2]).stunHero = false;
+        var ie = fsm.GetState("Intro End");
+        ie.DisableAction(1);
+        ie.DisableAction(2);
+
+        var pc = fsm.GetState("Phase Check");
+        pc.transitions = pc.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        
+        // Death
+        var po = fsm.GetState("Pull Out");
+        fsm.FsmGlobalTransitions.First(o => o.EventName == "ZERO HP")
+            .toFsmState = po;
+        po.DisableAction(13);
+        po.AddAction(() =>
+        {
+            obj.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+            obj.layer = 2;
+        }, 0);
+        po.AddAction(() => fsm.SendEvent("LAND"));
+        fsm.GetState("Hornet Land").AddAction(() => fsm.SendEvent("NEXT"), 0);
+        fsm.GetState("Seth Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Get Item").AddAction(() => fsm.SendEvent("NEXT"), 0);
+
+        var fr = fsm.GetState("Final Rumble");
+        fr.DisableAction(0);
+        ((Wait)fr.actions[1]).time = 20;
+
+        var e = fsm.GetState("Event");
+        e.DisableAction(0);
+        e.AddAction(() => Object.Destroy(obj));
+        
+        obj.LocateMyFSM("Crust Up").GetState("Finish").AddAction(() =>
+        {
+            if (obj.GetComponent<BlackThreadState>()) 
+                obj.GetComponent<MeshRenderer>().enabled = false;
+        });
+        
+        // Positions
+        var centreX = fsm.FsmVariables.FindFsmFloat("Centre X");
+        var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        var airY = fsm.FsmVariables.FindFsmFloat("Air Jab Pos");
+        fsm.GetState("Phase Check").AddAction(FixPositions, 0);
+        fsm.GetState("Next Move").AddAction(FixPositions, 0);
+        FixPositions();
+
+        return;
+
+        void FixPositions()
+        {
+            centreX.Value = obj.transform.GetPositionX();
+            
+            shootSpikes!.transform.SetPositionX(obj.transform.GetPositionX());
+            longSpear!.transform.SetPositionX(obj.transform.GetPositionX());
+            
+            var ground = HeroController.instance.FindGroundPointY(
+                obj.transform.position.x,
+                obj.transform.position.y,
+                true);
+            groundY.Value = ground;
+            airY.Value = ground + 6.55f;
+            
+            shootSpikes!.transform.SetPositionY(ground + 10);
+            if (!longSpear.transform.GetChild(0).gameObject.activeSelf &&
+                !longSpear.transform.GetChild(1).gameObject.activeSelf) 
+                longSpear!.transform.SetPositionY(ground + 7);
+        }
     }
 
     public static void FixPinstress(GameObject obj)
@@ -2676,7 +2841,9 @@ public static class EnemyFixers
         wr.DisableAction(1);
         wr.AddAction(() => fsm.SetState("Start Idle"), 0);
         
+        fsm.GetState("Death Hit").DisableAction(37);
         fsm.GetState("Death Fling").DisableAction(5);
+        fsm.GetState("Death Air").DisableAction(4);
     }
 
     public static PlayMakerFSM FixTrobbio(GameObject obj, GameObject flareObj, GameObject floorObj, GameObject burstObj,

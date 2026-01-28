@@ -247,9 +247,18 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Wakeable)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
         
-        /*
         AddEnemy("Crust King Kahnn", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
-            postSpawnAction: EnemyFixers.FixKahnn);*/
+            postSpawnAction: EnemyFixers.FixKahnn);
+        
+        Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
+                ("Memory_Coral_Tower", "Fish/Pt Exit"),
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("fish", ppu: 377.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Fish);
     }
 
     private static void AddRoadObjects()
@@ -436,7 +445,8 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_trobbio", "Assets/Prefabs/Hornet Bosses/Trobbio Bomb.prefab"),
             description: "Usually already landed by the time the room finishes loading.\n" +
                          "Best used with the Object Spawner.",
-            notSceneBundle: true, postSpawnAction: HazardFixers.FixTrobbioBomb)
+            notSceneBundle: true, 
+            postSpawnAction: HazardFixers.FixTrobbioBomb)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
@@ -445,7 +455,8 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_arealibrary", "Assets/Prefabs/Hornet Bosses/Trobbio Cross Bomb.prefab"), 
             description: "Usually already landed by the time the room finishes loading.\n" +
                          "Best used with the Object Spawner.",
-            notSceneBundle: true, postSpawnAction: HazardFixers.FixTrobbioCrossBomb)
+            notSceneBundle: true, 
+            postSpawnAction: HazardFixers.FixTrobbioCrossBomb)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
@@ -625,6 +636,16 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
             postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
+
+        Categories.Effects.Add(new PreloadObject("Surface Dust Effect", "surface_dust",
+                ("Abandoned_town", "collid"),
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("surface_dust", ppu: 377.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations);
     }
 
     private static void AddDuctObjects()
@@ -1909,7 +1930,9 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();*/
 
         /*AddEnemy("Shrine Guardian Seth", "seth_boss", ("Shellwood_22", "Boss Scene/Seth"),
-            postSpawnAction: EnemyFixers.FixSeth);*/
+            postSpawnAction: EnemyFixers.FixSeth)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);*/
     }
 
     private static void AddMarchObjects()

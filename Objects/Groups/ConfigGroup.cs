@@ -815,6 +815,23 @@ public static class ConfigGroup
                 .WithDefaultValue(0)),
         ZOffset
     ]);
+
+    public static readonly List<ConfigType> Fish = GroupUtils.Merge(Decorations, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Foreground", "fish_fore",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) o.transform.GetChild(1).gameObject.SetActive(false);
+                })
+                .WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Background", "fish_back",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) o.transform.GetChild(0).gameObject.SetActive(false);
+                })
+                .WithDefaultValue(true))
+    ]);
     
     public static readonly List<ConfigType> Vines = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(

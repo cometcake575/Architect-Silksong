@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Architect.Placements;
 using Architect.Utils;
 using GlobalSettings;
@@ -182,6 +184,11 @@ public class BlackThreader : MonoBehaviour
         }
     }
 
+    public class SingPatcherData : MonoBehaviour
+    {
+        public Func<bool> Check;
+    }
+
     private class SingPatcher : MonoBehaviour
     {
         public BlackThreadState bts;
@@ -192,7 +199,15 @@ public class BlackThreader : MonoBehaviour
         private bool _forcedSing;
         private string _lastStateName;
         private string _lastClip;
-        
+
+        private Func<bool> _check;
+
+        private void Start()
+        {
+            var spd = GetComponent<SingPatcherData>();
+            if (spd) _check = spd.Check;
+        }
+
         private void Update()
         {
             var fs = bts.IsInForcedSing;
@@ -204,7 +219,7 @@ public class BlackThreader : MonoBehaviour
                 if (!state.Contains("Idle") && 
                     !state.Contains("Walk") && 
                     !state.Contains("Stationary") && 
-                    !state.Contains("Chase")) return;
+                    !state.Contains("Chase") && !(_check?.Invoke() ?? false)) return;
                 _lastStateName = fsm.ActiveStateName;
                 fsm.SetState("Sing");
                 if (animator)
