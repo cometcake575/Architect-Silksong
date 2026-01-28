@@ -45,7 +45,7 @@ public static class EnemyFixers
     private static GameObject _tfloor;
     private static GameObject _tbursts;
     
-    // Kahnn
+    // Khann
     private static readonly List<string> Spears = [
         "Long Spear",
         "Air Spear",
@@ -2633,7 +2633,7 @@ public static class EnemyFixers
         }
     }
     
-    public static void FixKahnn(GameObject obj)
+    public static void Khann(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
 

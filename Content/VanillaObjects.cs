@@ -247,8 +247,8 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Wakeable)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
         
-        AddEnemy("Crust King Kahnn", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
-            postSpawnAction: EnemyFixers.FixKahnn);
+        AddEnemy("Crust King Khann", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
+            postSpawnAction: EnemyFixers.Khann);
         
         Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
                 ("Memory_Coral_Tower", "Fish/Pt Exit"),
