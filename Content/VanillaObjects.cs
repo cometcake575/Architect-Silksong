@@ -1990,10 +1990,10 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixLastClaw)
             .WithScaleAction(EnemyFixers.ScaleLastClaw);
         
-        /*AddEnemy("Skarrsinger Karmelita", "karmelita",
+        AddEnemy("Skarrsinger Karmelita", "karmelita",
             ("Memory_Ant_Queen", "Boss Scene/Hunter Queen Boss"),
             preloadAction: EnemyFixers.FixKarmelitaPreload,
-            postSpawnAction: EnemyFixers.FixKarmelita);*/
+            postSpawnAction: EnemyFixers.FixKarmelita);
         
         Categories.Platforming.Add(new PreloadObject("Hunterfruit", "march_pogo",
             ("Ant_04", "White Palace Fly")));
