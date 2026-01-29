@@ -37,6 +37,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Blast = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("servitor_blast", "Fire", o =>
+        {
+            o.LocateMyFSM("Control").SetState("Shoot");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> TriggerZone = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("disable_tz", "DisableImmediate", o =>
         {
@@ -479,7 +486,7 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Enemies = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_die", "Die", o =>
         {
-            var hm = o.GetComponent<HealthManager>();
+            var hm = o.GetComponentInChildren<HealthManager>();
             if (hm) hm.TakeDamage(new HitInstance
             {
                 Source = o,

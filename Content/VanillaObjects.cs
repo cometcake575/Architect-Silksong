@@ -248,7 +248,9 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
         
         AddEnemy("Crust King Khann", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
-            postSpawnAction: EnemyFixers.Khann);
+            postSpawnAction: EnemyFixers.Khann)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
         
         Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
                 ("Memory_Coral_Tower", "Fish/Pt Exit"),
@@ -1537,10 +1539,24 @@ public static class VanillaObjects
         Categories.Attacks.Add(new PreloadObject("Servitor Blast", "servitor_blast",
             ("Peak_04d", "Weaver Servitor Large"), postSpawnAction: o =>
             {
+                o.RemoveComponent<HealthManager>();
+                o.RemoveComponentsInChildren<tk2dSpriteAnimator>();
+                o.RemoveComponentsInChildren<tk2dSprite>();
+                o.RemoveComponentsInChildren<MeshRenderer>();
+                o.RemoveComponentsInChildren<Rigidbody2D>();
+                o.RemoveComponent<BoxCollider2D>();
+                o.transform.Find("Head Collider").gameObject.RemoveComponent<CircleCollider2D>();
                 var fsm = o.LocateMyFSM("Control");
-                fsm.SetState("Shoot Recover");
-                fsm.GetState("Shoot Recover").transitions = [];
-            }));
+                var shoot = fsm.GetState("Shoot");
+                shoot.DisableAction(8);
+                shoot.DisableAction(9);
+                fsm.fsm.startState = "Shoot Recover";
+                var sr = fsm.GetState("Shoot Recover");
+                for (var i = 0; i <= 19; i++) sr.DisableAction(i);
+                sr.transitions = [];
+            }, description: "Activates when the 'Fire' trigger is run, just the blast effect")
+            .WithRotationGroup(RotationGroup.All)
+            .WithReceiverGroup(ReceiverGroup.Blast));
 
         Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
@@ -2215,6 +2231,16 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation)
             .WithConfigGroup(ConfigGroup.Fleas)
             .WithBroadcasterGroup(BroadcasterGroup.Fleas));
+
+        /*AddEnemy("Fourth Chorus", "fourth_chorus",
+            ("Bone_East_08_boss_golem", "Boss Scene"),
+            preloadAction: o =>
+            {
+                var sg = o.transform.Find("song_golem");
+                sg.position = Vector3.zero;
+                sg.Find("Song_Butt").Find("SG_waist").Find("Torso").Find("SG_head")
+                    .gameObject.AddComponent<PlaceableObject.SpriteSource>();
+            }, postSpawnAction: EnemyFixers.FixFourthChorus);*/
     }
 
     private static void AddWormwaysObjects()

@@ -3021,4 +3021,9 @@ public static class EnemyFixers
             }
         }
     }
+
+    public static void FixFourthChorus(GameObject obj)
+    {
+        
+    }
 }
