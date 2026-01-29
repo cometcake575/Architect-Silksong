@@ -1256,8 +1256,8 @@ public static class EnemyFixers
         var hm = obj.GetComponent<HealthManager>();
         fsm.GetState("Roar Antic").AddAction(() =>
         {
-            fsm.FsmVariables.FindFsmInt("P2 HP").Value = 99999;//(int)(hm.hp * 0.65f);
-            fsm.FsmVariables.FindFsmInt("P3 HP").Value = 99999; //(int)(hm.hp * 0.35f);
+            fsm.FsmVariables.FindFsmInt("P2 HP").Value = (int)(hm.hp * 0.65f);
+            fsm.FsmVariables.FindFsmInt("P3 HP").Value = (int)(hm.hp * 0.35f);
         }, 0);
 
         obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
