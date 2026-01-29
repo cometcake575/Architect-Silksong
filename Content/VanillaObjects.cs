@@ -1993,7 +1993,9 @@ public static class VanillaObjects
         AddEnemy("Skarrsinger Karmelita", "karmelita",
             ("Memory_Ant_Queen", "Boss Scene/Hunter Queen Boss"),
             preloadAction: EnemyFixers.FixKarmelitaPreload,
-            postSpawnAction: EnemyFixers.FixKarmelita);
+            postSpawnAction: EnemyFixers.FixKarmelita)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.Bosses);
         
         Categories.Platforming.Add(new PreloadObject("Hunterfruit", "march_pogo",
             ("Ant_04", "White Palace Fly")));

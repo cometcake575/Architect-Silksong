@@ -64,6 +64,7 @@ public static class EnemyFixers
     
     // Fourth Chorus
     private static GameObject _lavaPlats;
+    private static GameObject _lavaRocks;
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -153,6 +154,14 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_08", 
             "Boss Scene/Lava Plats",
             o => _lavaPlats = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Bone_East_08", 
+            "Boss Scene/Lava Rocks",
+            o =>
+            {
+                KeepActive(o);
+                _lavaRocks = o;
+            }));
 
         AknidMother.InitSounds();
     }
@@ -3229,6 +3238,15 @@ public static class EnemyFixers
         };
         item.OnGetSaveState += (out bool b) => { b = fc.head.GetComponent<HealthManager>().isDead; };
 
+        var rocks = Object.Instantiate(_lavaRocks, obj.transform);
+        rocks.name = obj.name + " Lava Rocks";
+        rocks.transform.position = fc.head.transform.position
+            .Where(z: rocks.transform.GetPositionZ()) - new Vector3(80.9f, 8.8f);
+        rocks.SetActive(true);
+        fsm.FsmVariables.FindFsmGameObject("Rocks L").Value = rocks.transform.Find("Rocks L").gameObject;
+        fsm.FsmVariables.FindFsmGameObject("Rocks M").Value = rocks.transform.Find("Rocks M").gameObject;
+        fsm.FsmVariables.FindFsmGameObject("Rocks R").Value = rocks.transform.Find("Rocks R").gameObject;
+            
         var plats = Object.Instantiate(_lavaPlats, obj.transform);
         plats.name = obj.name + " Lava Plats";
         plats.transform.position = fc.head.transform.position
@@ -3241,7 +3259,11 @@ public static class EnemyFixers
         ds.DisableAction(0);
         ds.DisableAction(1);
 
-        fsm.GetState("Init").DisableAction(17);
+        var init = fsm.GetState("Init");
+        init.DisableAction(17);
+        init.DisableAction(26);
+        init.DisableAction(27);
+        init.DisableAction(28);
         
         fsm.GetState("Meet?").AddAction(() => fsm.SendEvent("REMEET"), 0);
         fsm.GetState("Clamp Roar?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
