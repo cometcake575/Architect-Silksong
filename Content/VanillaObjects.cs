@@ -2199,6 +2199,12 @@ public static class VanillaObjects
                         .AddComponent<PlaceableObject.SpriteSource>())
                 .WithConfigGroup(ConfigGroup.Hazards))
             .Offset -= new Vector3(0, 8, 0);
+
+        AddEnemy("Forebrother Gron", "forebrother_gron", ("Dock_09", "Boss Scene/Dock Guard Thrower"),
+            postSpawnAction: EnemyFixers.FixGron)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .DoFlipX();
     }
 
     private static void AddFieldsObjects()

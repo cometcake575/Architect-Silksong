@@ -1853,6 +1853,7 @@ public static class EnemyFixers
         var xMax = fsm.FsmVariables.FindFsmFloat("X Max");
         
         fsm.GetState("Idle").AddAction(FixXPos, 0);
+        ((CheckYPosition)fsm.GetState("Death Fly").actions[8]).compareTo.Value = obj.transform.position.y - 1;
         
         return fsm;
 
@@ -1877,15 +1878,14 @@ public static class EnemyFixers
     public static void FixGron(GameObject obj)
     {
         var fsm = FixForebrother(obj);
-        var pause = fsm.GetState("Start Pause");
-        pause.DisableAction(0);
-        pause.DisableAction(1);
+        fsm.GetState("Start Pause").DisableAction(0);
+        
+        var init = fsm.GetState("Init");
+        init.transitions = [];
+        init.AddAction(() => fsm.SetState("Entry Fall"), 0);
 
-        var range = obj.GetComponentInChildren<AlertRange>();
-        pause.AddAction(() =>
-        {
-            if (range.IsHeroInRange()) fsm.SetState("Entry Land");
-        }, 0);
+        var cbts = (ConvertBoolToString)fsm.GetState("Shout").actions[5];
+        cbts.trueString = cbts.falseString;
     }
 
     private static readonly PhysicsMaterial2D PinMaterial = new()
