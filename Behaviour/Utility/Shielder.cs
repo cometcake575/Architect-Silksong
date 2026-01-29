@@ -34,7 +34,7 @@ public class Shielder : MonoBehaviour
 
     public void Shield(GameObject target)
     {
-        var hm = target.GetComponent<HealthManager>();
+        var hm = target.GetComponentInChildren<HealthManager>();
         if (!hm) return;
 
         hm.immuneToBeams = immuneToBeams;

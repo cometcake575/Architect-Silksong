@@ -504,6 +504,14 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> FourthChorus = GroupUtils.Merge(Enemies, [
+        EventManager.RegisterReceiverType(new EventReceiverType("disable_chorus_plats", "RemovePlats", o =>
+        {
+            var pl = o.GetComponent<EnemyFixers.FourthChorus>().plats;
+            if (pl) pl.SetActive(false);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Garpid = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("garpid_attack", "Attack", o =>
         {

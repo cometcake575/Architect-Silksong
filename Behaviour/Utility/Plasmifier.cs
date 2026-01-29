@@ -26,7 +26,7 @@ public class Plasmifier : MonoBehaviour
 
     public void Plasmify(GameObject target)
     {
-        var hm = target.GetComponent<HealthManager>();
+        var hm = target.GetComponentInChildren<HealthManager>();
         if (!hm) return;
 
         target.AddComponent<LifebloodState>().healAmount = heal;

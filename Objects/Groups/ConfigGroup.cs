@@ -1554,6 +1554,15 @@ public static class ConfigGroup
                     o.GetOrAddComponent<EnemyFixers.DisableBossTitle>();
                 }).WithDefaultValue(true))
     ]);
+    
+    public static readonly List<ConfigType> FourthChorus = GroupUtils.Merge(Bosses, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Spawn Platforms", "boss_plats",
+                (o, value) =>
+                {
+                    o.GetComponent<EnemyFixers.FourthChorus>().doPlats = value.GetValue();
+                }).WithDefaultValue(true))
+    ]);
 
     private static readonly ConfigType DamagesEnemies = ConfigurationManager.RegisterConfigType(
         new BoolConfigType("Damages Enemies", "damages_enemies",

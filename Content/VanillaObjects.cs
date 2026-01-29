@@ -1989,14 +1989,12 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixLastClawPreload,
             postSpawnAction: EnemyFixers.FixLastClaw)
             .WithScaleAction(EnemyFixers.ScaleLastClaw);
-
-        /*
-        AddEnemy("Skarrsinger Karmelita", "karmelita",
+        
+        /*AddEnemy("Skarrsinger Karmelita", "karmelita",
             ("Memory_Ant_Queen", "Boss Scene/Hunter Queen Boss"),
             preloadAction: EnemyFixers.FixKarmelitaPreload,
-            postSpawnAction: EnemyFixers.FixKarmelita);
-            */
-
+            postSpawnAction: EnemyFixers.FixKarmelita);*/
+        
         Categories.Platforming.Add(new PreloadObject("Hunterfruit", "march_pogo",
             ("Ant_04", "White Palace Fly")));
 
@@ -2238,15 +2236,13 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Fleas)
             .WithBroadcasterGroup(BroadcasterGroup.Fleas));
 
-        /*AddEnemy("Fourth Chorus", "fourth_chorus",
+        AddEnemy("Fourth Chorus", "fourth_chorus",
             ("Bone_East_08_boss_golem", "Boss Scene"),
-            preloadAction: o =>
-            {
-                var sg = o.transform.Find("song_golem");
-                sg.position = Vector3.zero;
-                sg.Find("Song_Butt").Find("SG_waist").Find("Torso").Find("SG_head")
-                    .gameObject.AddComponent<PlaceableObject.SpriteSource>();
-            }, postSpawnAction: EnemyFixers.FixFourthChorus);*/
+            preloadAction: EnemyFixers.FixFourthChorusPreload, 
+            postSpawnAction: EnemyFixers.FixFourthChorus)
+            .WithConfigGroup(ConfigGroup.FourthChorus)
+            .WithReceiverGroup(ReceiverGroup.FourthChorus)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
     }
 
     private static void AddWormwaysObjects()

@@ -11,6 +11,7 @@ using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -56,7 +57,13 @@ public static class EnemyFixers
         "Shoot Spikes"
     ];
     private static readonly Dictionary<string, GameObject> SpearObjects = [];
-
+    
+    // Karmelita
+    private static GameObject _grindSpikesL;
+    private static GameObject _grindSpikesR;
+    
+    // Fourth Chorus
+    private static GameObject _lavaPlats;
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -77,7 +84,7 @@ public static class EnemyFixers
         typeof(DisplayBossTitle).Hook(nameof(DisplayBossTitle.OnEnter),
             (Action<DisplayBossTitle> orig, DisplayBossTitle self) =>
             {
-                if (self.fsmComponent.GetComponent<DisableBossTitle>()) self.bossTitle.value = "";
+                if (self.fsmComponent.GetComponentInParent<DisableBossTitle>()) self.bossTitle.value = "";
                 orig(self);
             });
         
@@ -126,6 +133,26 @@ public static class EnemyFixers
             PreloadManager.RegisterPreload(new BasicPreload("Memory_Coral_Tower", $"Boss Scene/{spear}",
                 o => SpearObjects[spear] = o));
         }
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Memory_Ant_Queen", 
+            "Boss Scene/Grind Spikes R",
+            o =>
+            {
+                o.RemoveComponentsInChildren<CheckOutOfBoundsX>();
+                _grindSpikesR = o;
+            }));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Memory_Ant_Queen", 
+            "Boss Scene/Grind Spikes L",
+            o =>
+            {
+                o.RemoveComponentsInChildren<CheckOutOfBoundsX>();
+                _grindSpikesL = o;
+            }));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Bone_East_08", 
+            "Boss Scene/Lava Plats",
+            o => _lavaPlats = o));
 
         AknidMother.InitSounds();
     }
@@ -1205,13 +1232,128 @@ public static class EnemyFixers
     public static void FixKarmelitaPreload(GameObject obj)
     {
         RemoveConstrainPosition(obj);
+        var anim = obj.GetComponent<tk2dSpriteAnimator>();
+        anim.defaultClipId = anim.GetClipIdByName("Roar");
         obj.transform.SetPositionZ(0.006f);
     }
 
     public static void FixKarmelita(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("BG Dance").AddAction(() => fsm.SendEvent("CHALLENGE"), 0);
+
+        var spikesL = Object.Instantiate(_grindSpikesL);
+        spikesL.name = obj.name + " Spikes L";
+        var spikesR = Object.Instantiate(_grindSpikesR);
+        spikesR.name = obj.name + " Spikes R";
+
+        fsm.FsmVariables.FindFsmGameObject("Grind Spikes L").Value = spikesL;
+        fsm.FsmVariables.FindFsmGameObject("Grind Spikes R").Value = spikesR;
+
+        obj.AddComponent<BlackThreader.SingPatcherData>().Check = () => fsm.ActiveStateName.Contains("Movement");
+        
+        fsm.fsm.startState = "Roar Antic";
+
+        var hm = obj.GetComponent<HealthManager>();
+        fsm.GetState("Roar Antic").AddAction(() =>
+        {
+            fsm.FsmVariables.FindFsmInt("P2 HP").Value = 99999;//(int)(hm.hp * 0.65f);
+            fsm.FsmVariables.FindFsmInt("P3 HP").Value = 99999; //(int)(hm.hp * 0.35f);
+        }, 0);
+
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[0]).stunHero = false;
+        fsm.GetState("Battle Start").DisableAction(0);
+        
+        var attackChoice = fsm.GetState("Attack Choice");
+        attackChoice.transitions = attackChoice.transitions
+            .Where(trans => trans.EventName != "HORNET DEAD").ToArray();
+        
+        fsm.GetState("Spin Aim").DisableAction(5);
+        fsm.FsmVariables.FindFsmGameObject("Arena Centre")
+            .Value = new GameObject(obj.name + " Arena Centre") 
+            { transform = { position = obj.transform.position } };
+        
+        // Death
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        RemoveConstrainPosition(corpse);
+        
+        var deathFsm = corpse.LocateMyFSM("Death");
+        var stagger = deathFsm.GetState("Stagger");
+        stagger.DisableAction(8);
+        stagger.DisableAction(9);
+        stagger.transitions[0].toState = "Steam";
+        stagger.transitions[0].toFsmState = deathFsm.GetState("Steam");
+
+        var blow = deathFsm.GetState("Blow");
+        blow.DisableAction(2);
+        blow.transitions = [];
+        blow.AddAction(() => Object.Destroy(corpse));
+
+        // Y Positions
+        var landY = fsm.FsmVariables.FindFsmFloat("Land Y");
+        var otherLandY = ((CheckYPosition)fsm.GetState("Wall Dive").actions[6]).compareTo;
+        var spearSlam = fsm.GetState("Spear Slam");
+        var spearSlamY = ((SetPosition)spearSlam.actions[7]).y;
+
+        var as1 = fsm.GetState("Air Sickles");
+        var as2 = fsm.GetState("Air Sickles 2");
+        var airSickles1Y = ((SetPosition2d)as1.actions[1]).y;
+        var airSickles2Y = ((SetPosition2d)as2.actions[1]).y;
+        
+        as1.AddAction(FixSickles, 0);
+        as2.AddAction(FixSickles, 0);
+        
+        fsm.GetState("Spin Attack").AddAction(AdjustPositions, 0, true);
+        fsm.GetState("Throw Fall").AddAction(AdjustPositions, 0, true);
+        fsm.GetState("Wall Dive").AddAction(AdjustPositions, 0, true);
+        
+        // Fix stuck stunned issue
+        var stunAir = fsm.GetState("Stun Air");
+        var time = 0f;
+        stunAir.AddAction(() => time = Time.time);
+        stunAir.AddAction(() =>
+        {
+            if (Time.time - time > 5) fsm.SendEvent("LAND");
+        }, everyFrame: true);
+
+        // Spear Slam
+        var spearSet = fsm.FsmVariables.FindFsmGameObject("Spear Set");
+        spearSlam.AddAction(() => spearSet.Value.RemoveComponentsInChildren<CheckOutOfBoundsX>(), 7);
+        
+        // Dash Grind
+        fsm.GetState("Dash Grind").AddAction(FixSpikes, 0);
+
+        AdjustPositions();
+        return;
+
+        void AdjustPositions()
+        {
+            var ground = HeroController.instance.FindGroundPointY(
+                obj.transform.position.x,
+                obj.transform.position.y + 0.5f,
+                true) + 1.57f;
+
+            landY.Value = ground;
+            otherLandY.Value = ground + 0.27f;
+            spearSlamY.Value = ground - 2.23f;
+        }
+
+        void FixSickles()
+        {
+            airSickles1Y.Value = obj.transform.GetPositionY() - 3.92f;
+            airSickles2Y.Value = obj.transform.GetPositionY() - 3.92f;
+        }
+
+        void FixSpikes()
+        {
+            spikesL.transform.SetPositionY(landY.Value - 21.13f);
+            spikesR.transform.SetPositionY(landY.Value - 21.13f);
+            spikesL.transform.SetPositionX(obj.transform.GetPositionX()-71);
+            spikesR.transform.SetPositionX(obj.transform.GetPositionX()+71);
+        }
     }
 
     public static void FixCraggler(GameObject obj)
@@ -3022,8 +3164,126 @@ public static class EnemyFixers
         }
     }
 
+    public static void FixFourthChorusPreload(GameObject obj)
+    {
+        var sg = obj.transform.Find("song_golem");
+        sg.position = Vector3.zero;
+        sg.gameObject.SetActive(true);
+        var head = sg.Find("Song_Butt").Find("SG_waist").Find("Torso").Find("SG_head").gameObject;
+        head.AddComponent<PlaceableObject.SpriteSource>();
+        
+        var fc = obj.AddComponent<FourthChorus>();
+        fc.parent = obj;
+        fc.head = head;
+    }
+
+    public class FourthChorus : MonoBehaviour
+    {
+        public GameObject plats;
+        public GameObject parent;
+        public GameObject head;
+        public bool threaded;
+        public bool doPlats;
+        private bool _done;
+        
+        private void Update()
+        {
+            if (threaded)
+            {
+                threaded = false;
+                foreach (var par in parent.GetComponentsInChildren<tk2dSprite>(true))
+                {
+                    if (par.gameObject != gameObject) par.color = Color.black;
+                }
+                foreach (var par in parent.GetComponentsInChildren<SpriteRenderer>(true))
+                {
+                    if (par.gameObject != gameObject) par.color = Color.black;
+                }
+            }
+            if (_done) return;
+            _done = true;
+            var pbi = GetComponentInChildren<PersistentBoolItem>(true);
+            if (pbi && pbi.itemData.Value) gameObject.SetActive(false);
+        }
+
+        private void Start()
+        {
+            if (!doPlats) plats.SetActive(false);
+        }
+    }
+
     public static void FixFourthChorus(GameObject obj)
     {
+        var fsm = obj.transform.GetChild(0).gameObject.LocateMyFSM("Control");
+        var fc = obj.GetComponent<FourthChorus>();
         
+        var item = obj.AddComponent<PersistentBoolItem>();
+        item.OnSetSaveState += b =>
+        {
+            fc.head.GetComponent<HealthManager>().isDead = b;
+            if (b)
+            {
+                obj.SetActive(false);
+                item.SetValueOverride(true);
+            }
+        };
+        item.OnGetSaveState += (out bool b) => { b = fc.head.GetComponent<HealthManager>().isDead; };
+
+        var plats = Object.Instantiate(_lavaPlats, obj.transform);
+        plats.name = obj.name + " Lava Plats";
+        plats.transform.position = fc.head.transform.position
+            .Where(z: plats.transform.GetPositionZ()) + new Vector3(4.32f, -5.4f);
+        fsm.FsmVariables.FindFsmGameObject("Lava Plats").Value = plats;
+        plats.SetActive(true);
+        fc.plats = plats;
+        
+        var ds = fsm.GetState("Death Start");
+        ds.DisableAction(0);
+        ds.DisableAction(1);
+
+        fsm.GetState("Init").DisableAction(17);
+        
+        fsm.GetState("Meet?").AddAction(() => fsm.SendEvent("REMEET"), 0);
+        fsm.GetState("Clamp Roar?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Music").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Punch").DisableAction(1);
+        fsm.GetState("Punch Antic").DisableAction(4);
+        
+        fsm.GetState("Swipe L").DisableAction(5);
+        fsm.GetState("Swipe R").DisableAction(5);
+        
+        fsm.GetState("Remeet Roar").DisableAction(9);
+        var rnc = fsm.GetState("Roar No Clamp");
+        rnc.DisableAction(0);
+        ((StartRoarEmitter)rnc.actions[12]).stunHero = false;
+        rnc.AddAction(() => obj.BroadcastEvent("OnRoar"), 13);
+
+        Fix("To HandSlam Antic", 2);
+        Fix("Remeet Roar", 10);
+        Fix("Punch Antic", 5);
+        Fix("Stun Anim", 1);
+        Fix("Death Anim", 1);
+        FixB("Slam M", 2);
+        FixB("Slam M", 5);
+        FixB("Slam MR", 1);
+        FixB("Slam ML", 1);
+        FixB("Slam R", 1);
+        FixB("Slam L", 1);
+
+        return;
+
+        void Fix(string stateName, int index)
+        {
+            var apt = (AnimatePositionTo)fsm.GetState(stateName).actions[index];
+            apt.localSpace = true;
+            var toValue = apt.toValue;
+            toValue.value -= new Vector3(80.9f, 8.8f);
+        }
+
+        void FixB(string stateName, int index)
+        {
+            var toValue = ((SetVector3Value)fsm.GetState(stateName).actions[index]).vector3Value;
+            toValue.value -= new Vector3(80.9f, 8.8f);
+        }
     }
 }

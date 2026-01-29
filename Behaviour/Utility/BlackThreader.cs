@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Architect.Behaviour.Fixers;
 using Architect.Placements;
 using Architect.Utils;
 using GlobalSettings;
@@ -80,9 +79,11 @@ public class BlackThreader : MonoBehaviour
 
     public void BlackThread(GameObject target)
     {
-        var hm = target.GetComponent<HealthManager>();
+        var hm = target.GetComponentInChildren<HealthManager>();
+        var fc = target.GetComponent<EnemyFixers.FourthChorus>();
         if (!hm) return;
 
+        target = hm.gameObject;
         _bts = target.AddComponent<CustomBlackThreadState>();
         _bts.source = gameObject;
 
@@ -90,7 +91,9 @@ public class BlackThreader : MonoBehaviour
         
         _bts.extraSpriteRenderers = target.GetComponentsInChildren<SpriteRenderer>(true);
         _bts.extraMeshRenderers = target.GetComponentsInChildren<MeshRenderer>(true);
-
+        
+        if (fc) fc.threaded = true;
+        
         _bts.useCustomHPMultiplier = true;
         _bts.customHPMultiplier = 1;
 

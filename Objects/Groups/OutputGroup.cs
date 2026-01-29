@@ -22,7 +22,7 @@ public static class OutputGroup
         EventManager.RegisterOutputType(
             new OutputType("enemy_self", "Self", "Enemy", o =>
             {
-                var hm = o.GetComponent<HealthManager>();
+                var hm = o.GetComponentInChildren<HealthManager>();
                 return hm;
             })
         )
