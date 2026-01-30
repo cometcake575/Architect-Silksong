@@ -1571,15 +1571,15 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Silkdew", "silkcatcher_dew",
             ("Clover_06", "Group/Clover_Silk_Pod")));
 
-        /*
         Categories.Interactable.Add(new PreloadObject("Shakra Summon Pole", "mapper_pole",
-                ("Greymoor_08_mapper", "Mapper Call Pole")));
+                ("Greymoor_08_mapper", "Mapper Call Pole"),
+                postSpawnAction: InteractableFixers.FixShakraPole)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
 
         AddEnemy("Shakra (Boss)", "shakra_boss",
                 ("Greymoor_08_mapper", "Mapper Spar NPC"),
-                postSpawnAction: MiscFixers.FixShakraBoss)
-            .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses);*/
+                postSpawnAction: EnemyFixers.FixShakra)
+            .WithConfigGroup(ConfigGroup.ShakraBoss);
 
         Categories.Misc.Add(new PreloadObject("Shakra NPC (Ally)", "shakra",
                 ("Shellwood_01",
@@ -1994,7 +1994,7 @@ public static class VanillaObjects
             ("Memory_Ant_Queen", "Boss Scene/Hunter Queen Boss"),
             preloadAction: EnemyFixers.FixKarmelitaPreload,
             postSpawnAction: EnemyFixers.FixKarmelita)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Karmelita)
             .WithConfigGroup(ConfigGroup.Bosses);
         
         Categories.Platforming.Add(new PreloadObject("Hunterfruit", "march_pogo",
@@ -2006,6 +2006,7 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Sickle Trap", "hunter_sickle_trap",
                 ("Ant_04", "Hunter Sickle Trap"))
+            .WithConfigGroup(ConfigGroup.Hazards)
             .WithReceiverGroup(ReceiverGroup.Trap)).DoFlipX();
 
         Categories.Hazards.Add(new PreloadObject("Gurr Trap", "hunter_landmine",
@@ -2484,7 +2485,13 @@ public static class VanillaObjects
     private static PlaceableObject AddSolid(string name, string id, (string, string) path,
         [CanBeNull] Action<GameObject> preloadAction = null)
     {
-        return Categories.Solids.Add(new PreloadObject(name, id, path, preloadAction: preloadAction))
+        return Categories.Solids.Add(new PreloadObject(name, id, path, preloadAction: preloadAction, 
+                postSpawnAction: o =>
+                {
+                    var sf = o.AddComponent<SpriteFlash>();
+                    sf.children = [];
+                    sf.parents = [];
+                }))
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Colliders);
     }

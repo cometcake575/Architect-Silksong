@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Architect.Events;
 using Architect.Objects.Placeable;
 using Architect.Utils;
@@ -163,5 +164,16 @@ public static class InteractableFixers
             _started = true;
             GetComponent<DialDoorBridge>().SetInitialRotation(rot % 180 != 0);
         }
+    }
+
+    public static void FixShakraPole(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        var idle = fsm.GetState("Idle");
+        idle.transitions = idle.transitions.Where(o => o.EventName == "HIT").ToArray();
+        var hit = fsm.GetState("Hit");
+        hit.transitions[0].toState = "Idle";
+        hit.transitions[0].toFsmState = idle;
+        hit.AddAction(() => obj.BroadcastEvent("OnActivate"));
     }
 }

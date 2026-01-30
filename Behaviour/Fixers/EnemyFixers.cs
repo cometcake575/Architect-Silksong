@@ -1261,6 +1261,9 @@ public static class EnemyFixers
         obj.AddComponent<BlackThreader.SingPatcherData>().Check = () => fsm.ActiveStateName.Contains("Movement");
         
         fsm.fsm.startState = "Roar Antic";
+        
+        fsm.GetState("Stun Start").AddAction(() => obj.BroadcastEvent("OnStun"), 0);
+        fsm.GetState("Restart Singing").AddAction(() => obj.BroadcastEvent("OnRecover"), 0);
 
         var hm = obj.GetComponent<HealthManager>();
         fsm.GetState("Roar Antic").AddAction(() =>
@@ -3324,5 +3327,63 @@ public static class EnemyFixers
             var toValue = ((SetVector3Value)fsm.GetState(stateName).actions[index]).vector3Value;
             toValue.value -= new Vector3(80.9f, 8.8f);
         }
+    }
+
+    public static void FixShakra(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+
+        Object.Destroy(obj.LocateMyFSM("Dialogue"));
+
+        var fsm = obj.LocateMyFSM("Attack Enemies");
+        fsm.fsmTemplate = null;
+        
+        fsm.GetState("Idle").AddAction(() => fsm.SendEvent("BATTLE HERO"), 0);
+        fsm.GetState("Start Music?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.fsm.globalTransitions = fsm.fsm.globalTransitions
+            .Where(o => o.EventName != "START AWAY").ToArray();
+
+        var lookPos = fsm.GetState("Look Pos");
+        lookPos.DisableAction(0);
+        lookPos.DisableAction(1);
+
+        var lookR = fsm.GetState("Look R");
+        lookR.DisableAction(2);
+        lookR.DisableAction(3);
+
+        var lookL = fsm.GetState("Look L");
+        lookL.DisableAction(2);
+        lookL.DisableAction(3);
+
+        var doY = fsm.GetState("Do Y");
+        doY.DisableAction(2);
+        doY.DisableAction(3);
+
+        var tryStomp = fsm.GetState("Try Stomp");
+        tryStomp.DisableAction(5);
+        tryStomp.DisableAction(6);
+        tryStomp.DisableAction(9);
+        tryStomp.DisableAction(10);
+
+        var destinationRetry = fsm.GetState("Destination Retry");
+        destinationRetry.DisableAction(2);
+
+        var chargeSide = fsm.GetState("Charge Side");
+        chargeSide.DisableAction(0);
+        chargeSide.DisableAction(1);
+
+        var chargeTeleIn = fsm.GetState("Charge Tele In");
+        chargeTeleIn.DisableAction(3);
+        var chargeY = fsm.FsmVariables.FindFsmFloat("Charge Y");
+        chargeTeleIn.AddAction(() =>
+        {
+            var ground = HeroController.instance.FindGroundPointY(
+                HeroController.instance.transform.position.x,
+                HeroController.instance.transform.position.y + 0.5f,
+                true);
+            chargeY.Value = ground + 0.717f;
+        }, 6);
+        
+        fsm.GetState("End Battle").AddAction(() => Object.Destroy(obj));
     }
 }

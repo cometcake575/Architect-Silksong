@@ -540,11 +540,6 @@ public static class MiscFixers
         obj.AddComponent<Seth>();
     }
 
-    public static void FixShakraBoss(GameObject obj)
-    {
-        //EnemyFixers.RemoveConstrainPosition(obj);
-    }
-
     public static void FixShakra(GameObject obj)
     {
         obj.AddComponent<Shakra>();

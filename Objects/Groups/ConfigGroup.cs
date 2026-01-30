@@ -1594,6 +1594,22 @@ public static class ConfigGroup
                 }).WithDefaultValue(true)),
         DamagesEnemies
     ]);
+
+    public static readonly List<ConfigType> ShakraBoss = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Lethal Damage", "shakra_lethal",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    var fsm = o.LocateMyFSM("Attack Enemies");
+                    var proj = fsm.FsmVariables.FindFsmGameObject("Projectile");
+                    fsm.GetState("Throw 2").AddAction(() => 
+                        proj.Value.GetComponentInChildren<DamageHero>(true)
+                            .damagePropertyFlags &= ~DamagePropertyFlags.NonLethal, 4);
+                    foreach (var comp in o.GetComponentsInChildren<DamageHero>(true))
+                        comp.damagePropertyFlags &= ~DamagePropertyFlags.NonLethal;
+                }).WithDefaultValue(true))
+    ]);
     
     public static readonly List<ConfigType> LeafRoller = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(

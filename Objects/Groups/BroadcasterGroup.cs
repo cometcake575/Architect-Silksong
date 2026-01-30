@@ -24,6 +24,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> SkullTyrant = GroupUtils.Merge(Bosses, ["Stomp"]);
     
+    public static readonly List<string> Karmelita = GroupUtils.Merge(Bosses, ["OnStun", "OnRecover"]);
+    
     public static readonly List<string> Lugoli = GroupUtils.Merge(Bosses, ["OnStompLand", "OnButtLand", "OnLadleSlam"]);
 
     public static readonly List<string> BlackThreader = ["OnAttack"];
