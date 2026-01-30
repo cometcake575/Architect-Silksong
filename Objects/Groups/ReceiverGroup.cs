@@ -443,6 +443,16 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Respawn = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("set_bench_spawn", "SetSpawn", o =>
+        {
+            PlayerData.instance.SetBenchRespawn(
+                o.GetComponent<RespawnMarker>(), 
+                GameManager.instance.sceneName, 
+                0);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> ObjectAnchor = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("anchor_reset", "Reset", o =>
         {

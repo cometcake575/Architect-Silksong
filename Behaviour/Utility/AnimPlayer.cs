@@ -63,6 +63,7 @@ public class AnimPlayer : MonoBehaviour
             if (_active != this) yield break;
             _tookCtrl = true;
             EditManager.IgnoreControlRelinquished = true;
+            hero.rb2d.linearVelocity = Vector2.zero;
             hero.RelinquishControl();
         }
     }

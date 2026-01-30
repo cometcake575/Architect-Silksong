@@ -523,6 +523,7 @@ public static class EditManager
         
         _loadPos = true;
         _posToLoad = HeroController.instance.transform.position;
+        HeroController.instance.transform.parent = null;
         GameManager.instance.SaveLevelState();
         GameManager.instance.LoadScene(GameManager.instance.sceneName);
     }

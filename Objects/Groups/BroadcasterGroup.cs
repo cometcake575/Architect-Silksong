@@ -8,6 +8,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Damageable = ["OnDamage"];
     
+    public static readonly List<string> Exploding = ["OnExplode"];
+    
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
     public static readonly List<string> Shardillard = GroupUtils.Merge(Enemies, ["OnBounce"]);
@@ -22,7 +24,7 @@ public static class BroadcasterGroup
     
     public static readonly List<string> SkullTyrant = GroupUtils.Merge(Bosses, ["Stomp"]);
     
-    public static readonly List<string> Lugoli = GroupUtils.Merge(Bosses, ["OnStompLand", "OnButtLand"]);
+    public static readonly List<string> Lugoli = GroupUtils.Merge(Bosses, ["OnStompLand", "OnButtLand", "OnLadleSlam"]);
 
     public static readonly List<string> BlackThreader = ["OnAttack"];
     

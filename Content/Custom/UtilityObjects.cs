@@ -52,6 +52,8 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateTeleportPoint());
         
+        Categories.Utility.Add(CreateRespawnPoint());
+        
         Categories.Utility.Add(CreateHazardRespawnPoint());
         Categories.Utility.Add(CreateObjectRemover("hrp_remover", "Disable Hazard Respawn Point",
                 FindObjectsToDisable<HazardRespawnTrigger>, "Removes the nearest Hazard Respawn Point.")
@@ -741,6 +743,27 @@ public static class UtilityObjects
             preview:true)
             .WithConfigGroup(ConfigGroup.HazardRespawn)
             .WithReceiverGroup(ReceiverGroup.HazardRespawn);
+    }
+
+    private static PlaceableObject CreateRespawnPoint()
+    {
+        var point = new GameObject("Respawn Point");
+
+        point.SetActive(false);
+        Object.DontDestroyOnLoad(point);
+
+        point.AddComponent<RespawnMarker>();
+        
+        return new CustomObject("Respawn Point", "respawn_point", point, 
+            sprite:ResourceUtils.LoadSpriteResource("respawn_point", ppu: 50),
+            description:"A point that the player can respawn at after dying.\n\n" +
+                        "To set the player's spawn use the 'SetSpawn' trigger.",
+            preview:true)
+            .WithFlipAction((o, f) =>
+            {
+                if (f) o.GetComponent<RespawnMarker>().respawnFacingRight = true;
+            })  
+            .WithReceiverGroup(ReceiverGroup.Respawn);
     }
 
     private static PlaceableObject CreateTeleportPoint()

@@ -1,3 +1,4 @@
+using System;
 using Architect.Content.Preloads;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
@@ -356,5 +357,29 @@ public static class HazardFixers
         air.DisableAction(11);
         var timeUp = (BoolAllTrue)air.actions[18];
         timeUp.boolVariables = [timeUp.boolVariables[2]];
+    }
+
+    public class Flintbomb : MonoBehaviour
+    {
+        private MeshRenderer _renderer;
+
+        private void Start()
+        {
+            _renderer = GetComponent<MeshRenderer>();
+        }
+
+        private void Update()
+        {
+            if (!_renderer.enabled)
+            {
+                enabled = false;
+                gameObject.BroadcastEvent("OnExplode");
+            }
+        }
+    }
+
+    public static void FixFlintbomb(GameObject obj)
+    {
+        obj.AddComponent<Flintbomb>();
     }
 }

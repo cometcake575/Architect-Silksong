@@ -2145,9 +2145,11 @@ public static class VanillaObjects
                     "Assets/Prefabs/Enemies/Projectiles/DF Bomb Rock.prefab"),
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
+                postSpawnAction: HazardFixers.FixFlintbomb,
                 notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
+            .WithBroadcasterGroup(BroadcasterGroup.Exploding)
             .WithReceiverGroup(ReceiverGroup.Velocity));
         
         AddEnemy("Smokerock Sifter", "shield_dockworker",
@@ -2199,6 +2201,11 @@ public static class VanillaObjects
                         .AddComponent<PlaceableObject.SpriteSource>())
                 .WithConfigGroup(ConfigGroup.Hazards))
             .Offset -= new Vector3(0, 8, 0);
+
+        AddEnemy("Forebrother Signis", "forebrother_signis", ("Dock_09", "Boss Scene/Dock Guard Slasher"),
+                postSpawnAction: EnemyFixers.FixSignis)
+            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses);
 
         AddEnemy("Forebrother Gron", "forebrother_gron", ("Dock_09", "Boss Scene/Dock Guard Thrower"),
             postSpawnAction: EnemyFixers.FixGron)

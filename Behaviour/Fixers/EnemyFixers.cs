@@ -1334,6 +1334,8 @@ public static class EnemyFixers
         
         // Dash Grind
         fsm.GetState("Dash Grind").AddAction(FixSpikes, 0);
+        
+        fsm.GetState("Restart Singing").DisableAction(0);
 
         AdjustPositions();
         return;
@@ -1565,6 +1567,7 @@ public static class EnemyFixers
         fsm.GetState("Check R").DisableAction(2);
         fsm.GetState("Dive End").DisableAction(3);
         
+        fsm.GetState("Swipe 5").AddAction(() => obj.BroadcastEvent("OnLadleSlam"), 0);
         fsm.GetState("Stomp Land").AddAction(() => obj.BroadcastEvent("OnStompLand"), 0);
         fsm.GetState("Butt Land").AddAction(() => obj.BroadcastEvent("OnButtLand"), 0);
         
@@ -2004,7 +2007,6 @@ public static class EnemyFixers
         var xMax = fsm.FsmVariables.FindFsmFloat("X Max");
         
         fsm.GetState("Idle").AddAction(FixXPos, 0);
-        ((CheckYPosition)fsm.GetState("Death Fly").actions[8]).compareTo.Value = obj.transform.position.y - 1;
         
         return fsm;
 
@@ -2024,12 +2026,27 @@ public static class EnemyFixers
         {
             if (range.IsHeroInRange()) fsm.SendEvent("BATTLE START");
         }, 0);
+
+        var dh = fsm.GetState("Death Hit");
+        dh.DisableAction(15);
+        dh.DisableAction(16);
+        ((CheckYPosition)fsm.GetState("Death Fly").actions[10]).compareTo.Value = obj.transform.position.y - 1;
+
+        ((StartRoarEmitter)fsm.GetState("Roar").actions[3]).stunHero = false;
+        var re = fsm.GetState("Roar End");
+        re.DisableAction(9);
+        re.DisableAction(10);
+        
+        fsm.GetState("P2 Roar End").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
+        fsm.GetState("P3 Roar End").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
+        fsm.GetState("P4 Roar End").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
     }
 
     public static void FixGron(GameObject obj)
     {
         var fsm = FixForebrother(obj);
         fsm.GetState("Start Pause").DisableAction(0);
+        ((CheckYPosition)fsm.GetState("Death Fly").actions[8]).compareTo.Value = obj.transform.position.y - 1;
         
         var init = fsm.GetState("Init");
         init.transitions = [];
