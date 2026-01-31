@@ -1713,7 +1713,7 @@ public static class EnemyFixers
         fsm.GetState("Reposition").DisableAction(3);
     }
 
-    public static void FixSisterSplinter(GameObject obj)
+        public static void FixSisterSplinter(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
         
@@ -1749,6 +1749,9 @@ public static class EnemyFixers
         fsm.GetState("Idle").AddAction(AdjustAllPos, 0);
         fsm.GetState("Stun Hit").AddAction(AdjustYPos, 0);
         AdjustAllPos();
+
+        fsm.GetState("Spike Summon").AddAction(() => obj.BroadcastEvent("TrySpikes"), 0);
+        fsm.GetState("Duo Fight").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
 
         /*fsm.FsmVariables.FindFsmGameObject("Spikes Folder").Value = 
             Object.Instantiate(_splinterSpikes, obj.transform.position, obj.transform.rotation);*/
