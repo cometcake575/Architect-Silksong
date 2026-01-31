@@ -32,22 +32,31 @@ public class RaycastBlock : ScriptBlock
         _yHit = 0;
         _dist = 0;
         MaxDistance = 10;
+        Mode = 0;
     }
 
     public float MaxDistance = 10;
+    public int Mode;
     private bool _hit;
     private float _xHit;
     private float _yHit;
     private float _dist;
 
     private static readonly int TerrainMask = LayerMask.GetMask("Terrain");
+    private static readonly int EnemyMask = LayerMask.GetMask("Enemies");
+    private static readonly int PlayerMask = LayerMask.GetMask("Player");
     protected override void Trigger(string trigger)
     {
         var raycast = Physics2D.Raycast(
             new Vector2(GetVariable<float>("X Pos"), GetVariable<float>("Y Pos")),
             new Vector2(GetVariable<float>("X Dir"), GetVariable<float>("Y Dir")),
             MaxDistance,
-            TerrainMask
+            Mode switch
+            {
+                0 => TerrainMask,
+                1 => EnemyMask,
+                _ => PlayerMask
+            }
         );
         if (!raycast) Reset();
         else

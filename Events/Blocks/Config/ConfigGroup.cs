@@ -33,6 +33,11 @@ public static class ConfigGroup
             new FloatConfigType<RaycastBlock>("Max Distance", "raycast_max_dist", 
                 (b, f) => b.MaxDistance = f.GetValue())
                 .WithDefaultValue(10)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<RaycastBlock>("Mode", "raycast_mode", 
+                (b, f) => b.Mode = f.GetValue())
+                .WithDefaultValue(0).WithOptions("Terrain", "Enemies", "Player")
         )
     ];
     
