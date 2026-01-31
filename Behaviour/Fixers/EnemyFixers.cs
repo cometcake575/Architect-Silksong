@@ -182,6 +182,7 @@ public static class EnemyFixers
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalse>();
         obj.RemoveComponentsInChildren<DeactivateIfPlayerdataFalseDelayed>();
         obj.RemoveComponentsInChildren<TestGameObjectActivator>();
+        obj.RemoveComponentsInChildren<PlayerDataTestResponse>();
     }
 
     public static void KeepActiveRemoveConstrainPos(GameObject obj)

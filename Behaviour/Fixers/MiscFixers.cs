@@ -227,6 +227,12 @@ public static class MiscFixers
         obj.AddComponent<CustomBench>();
     }
     
+    public static void FixSackBench(GameObject obj)
+    {
+        obj.transform.SetPositionZ(0.009f);
+        obj.AddComponent<CustomBench>(); 
+    }
+    
     public static void AddBenchEvent(GameObject obj)
     {
         var fsm = obj.GetComponentsInChildren<PlayMakerFSM>().First(o => o.FsmName == "Bench Control");
@@ -541,9 +547,23 @@ public static class MiscFixers
         obj.transform.Find("Citadel Library NPC").gameObject.SetActive(false);
     }
 
-    public static void FixGreenPrince(GameObject obj)
+    public static void FixBasicNpc(GameObject obj)
     {
         obj.AddComponent<BasicNpcFix>();
+    }
+
+    public static void FixSadPavo(GameObject obj)
+    {
+        EnemyFixers.KeepActive(obj);
+        obj.AddComponent<SadPavo>();
+    }
+
+    public static void FixPinPilgrim(GameObject obj)
+    {
+        EnemyFixers.KeepActive(obj);
+        obj.transform.SetPositionZ(0.006f);
+        obj.AddComponent<BasicNpcFix>();
+        obj.transform.GetChild(3).gameObject.SetActive(false);
     }
 
     public static void FixSeth(GameObject obj)
@@ -682,6 +702,18 @@ public static class MiscFixers
             npc.talkText = [txt];
             npc.repeatText = txt;
             npc.returnText = txt;
+        }
+    }
+    
+    public class SadPavo : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Convo Check").AddAction(() => fsm.SendEvent("FINISHED"), 1);
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[2];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
         }
     }
     

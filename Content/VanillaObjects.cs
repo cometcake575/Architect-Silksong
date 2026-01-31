@@ -843,7 +843,7 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Green Prince NPC", "green_prince",
             ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
-            postSpawnAction: MiscFixers.FixGreenPrince)
+            postSpawnAction: MiscFixers.FixBasicNpc)
             .WithConfigGroup(ConfigGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Lily Pad / Nuphar", "lilypad",
@@ -1439,6 +1439,14 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Benches)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
         
+        /*Categories.Misc.AddStart(new PreloadObject("Sack Bench", "sack_bench",
+                ("Wisp_04", "Fall Bench Group/Breakable Hang Sack 3"),
+                preloadAction: MiscFixers.FixSackBench,
+                postSpawnAction: MiscFixers.AddBenchEvent,
+                preview: true)
+            .WithConfigGroup(ConfigGroup.Benches)
+            .WithBroadcasterGroup(BroadcasterGroup.Benches));*/
+        
         Categories.Misc.AddStart(new PreloadObject("Bed", "bellhome_bed",
                 ("Belltown_Room_Spare", "furnishings/bed/RestBench"),
                 preloadAction: MiscFixers.FixBench,
@@ -1826,6 +1834,20 @@ public static class VanillaObjects
         Categories.Attacks.Add(new PreloadObject("Throwing Bell", "throwing_bell",
             ("localpoolprefabs_assets_areasong", "Assets/Prefabs/Enemies/Fungus 1 + 2/Throwing Bell.prefab"),
             notSceneBundle: true));
+
+        Categories.Misc.Add(new PreloadObject("Pin Pilgrim (NPC)", "pin_pilgrim_npc",
+            ("Belltown", "Pin Pilgrim"),
+            preloadAction: MiscFixers.FixPinPilgrim)
+            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+
+        /*Categories.Misc.Add(new PreloadObject("Pavo", "pavo_normal",
+            ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter NPC"),
+            postSpawnAction: MiscFixers.FixBasicNpc)
+            .WithConfigGroup(ConfigGroup.Npcs));*/
+        Categories.Misc.Add(new PreloadObject("Sad Pavo", "pavo_sad",
+            ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter Act3"),
+            postSpawnAction: MiscFixers.FixSadPavo)
+            .WithConfigGroup(ConfigGroup.Npcs));
     }
 
     private static void AddWispObjects()
@@ -1929,6 +1951,7 @@ public static class VanillaObjects
         AddEnemy("Crawling Shellwood Gnat", "shellwood_gnat", 
             ("Shellwood_01", "Shellwood Goomba")).DoFlipX();
         
+        // TODO Figure out why vanilla ones in Mosstown_03 (shellwood) are broken
         AddEnemy("Flying Shellwood Gnat", "shellwood_gnat_fly", 
             ("Shellwood_01", "Shellwood Goomba Flyer (1)"),
             postSpawnAction: EnemyFixers.FixGnat);
