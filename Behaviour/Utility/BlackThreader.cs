@@ -2,6 +2,7 @@ using System;
 using Architect.Behaviour.Fixers;
 using Architect.Placements;
 using Architect.Utils;
+using GlobalEnums;
 using GlobalSettings;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -81,7 +82,24 @@ public class BlackThreader : MonoBehaviour
     {
         var hm = target.GetComponentInChildren<HealthManager>();
         var fc = target.GetComponent<EnemyFixers.FourthChorus>();
-        if (!hm) return;
+        if (!hm)
+        {
+            foreach (var dh in target.GetComponentsInChildren<DamageHero>(true))
+                dh.damagePropertyFlags |= DamagePropertyFlags.Void;
+            foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
+                sr.material.EnableKeyword("BLACKTHREAD");
+            foreach (var sr in target.GetComponentsInChildren<MeshRenderer>(true))
+                sr.material.EnableKeyword("BLACKTHREAD");
+            foreach (var aSource in target.GetComponentsInChildren<AudioSource>(true))
+                aSource.outputAudioMixerGroup = Effects.BlackThreadVoiceMixerGroup;
+            foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
+                try
+                {
+                    sr.EnableKeyword("BLACKTHREAD");
+                } catch { /* ignored */ }
+
+            return;
+        }
 
         target = hm.gameObject;
         _bts = target.AddComponent<CustomBlackThreadState>();
@@ -135,6 +153,8 @@ public class BlackThreader : MonoBehaviour
         private bool CustomStart()
         {
             GetSingFsm();
+            var btd = GetComponent<BlackThreadData>();
+            if (btd) btd.OnBlackThread?.Invoke();
             if (!singFsm)
             {
                 var anim = GetComponent<tk2dSpriteAnimator>();
@@ -155,6 +175,7 @@ public class BlackThreader : MonoBehaviour
                 if (!singFsm) return false;
                 
                 var patch = gameObject.AddComponent<SingPatcher>();
+                if (btd) patch.SingCheck = btd.SingCheck;
                 patch.fsm = fsm;
                 patch.bts = this;
                 patch.animator = anim;
@@ -187,9 +208,10 @@ public class BlackThreader : MonoBehaviour
         }
     }
 
-    public class SingPatcherData : MonoBehaviour
+    public class BlackThreadData : MonoBehaviour
     {
-        public Func<bool> Check;
+        public Func<bool> SingCheck;
+        public Action OnBlackThread;
     }
 
     private class SingPatcher : MonoBehaviour
@@ -203,13 +225,7 @@ public class BlackThreader : MonoBehaviour
         private string _lastStateName;
         private string _lastClip;
 
-        private Func<bool> _check;
-
-        private void Start()
-        {
-            var spd = GetComponent<SingPatcherData>();
-            if (spd) _check = spd.Check;
-        }
+        public Func<bool> SingCheck;
 
         private void Update()
         {
@@ -222,7 +238,7 @@ public class BlackThreader : MonoBehaviour
                 if (!state.Contains("Idle") && 
                     !state.Contains("Walk") && 
                     !state.Contains("Stationary") && 
-                    !state.Contains("Chase") && !(_check?.Invoke() ?? false)) return;
+                    !state.Contains("Chase") && !(SingCheck?.Invoke() ?? false)) return;
                 _lastStateName = fsm.ActiveStateName;
                 fsm.SetState("Sing");
                 if (animator)

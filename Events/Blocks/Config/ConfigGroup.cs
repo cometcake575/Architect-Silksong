@@ -227,7 +227,12 @@ public static class ConfigGroup
             new ChoiceConfigType<BoolVarBlock>("Persistence", "var_persistence_bool", 
                 (b, f) => b.PType = f.GetValue())
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
-        )
+        ),
+        /*ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<BoolVarBlock>("Prefab-Local", "var_local_bool", 
+                (b, f) => b.Local = f.GetValue())
+                .WithDefaultValue(true).MarkPrefabOnly()
+        )*/
     ];
     
     public static readonly List<ConfigType> NumVar =
@@ -240,7 +245,12 @@ public static class ConfigGroup
             new ChoiceConfigType<NumVarBlock>("Persistence", "var_persistence_num", 
                 (b, f) => b.PType = f.GetValue())
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
-        )
+        ),
+        /*ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<BoolVarBlock>("Prefab-Local", "var_local_num", 
+                    (b, f) => b.Local = f.GetValue())
+                .WithDefaultValue(true).MarkPrefabOnly()
+        )*/
     ];
 
     public static readonly List<ConfigType> TimeSlower = [

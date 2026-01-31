@@ -207,7 +207,7 @@ public class WavObject : SoundMaker, IPlayable
         _playing = true;
         if (_started && Source.time < sound.length)
         {
-            Source.Play();
+            Source.PlayScheduled(AudioSettings.dspTime);
             yield break;
         }
         _started = true;

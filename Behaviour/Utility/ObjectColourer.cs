@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Architect.Behaviour.Fixers;
 using Architect.Events.Blocks.Objects;
 using Architect.Placements;
@@ -59,42 +61,107 @@ public class ObjectColourer : MonoBehaviour
 
             target = t;
             
-            if (startApplied) Apply();
+            if (startApplied) Apply(0);
         }
     }
 
-    public void Apply()
+    public void Apply(float fadeTime, Color? color = null)
     {
         if (!target) return;
-        
+        StartCoroutine(DoApply(fadeTime, color ?? _color));
+    }
+
+    public void StopFade()
+    {
+        StopAllCoroutines();
+        _current = 0;
+    }
+
+    private int _current;
+
+    public IEnumerator DoApply(float fadeTime, Color color)
+    {
         var lk = target.GetOrAddComponent<MiscFixers.ColorLock>();
         lk.enabled = false;
 
         foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
         {
-            var col = _color;
-            if (!useAlpha) col.a = sr.color.a;
-            if (directSet) sr.color = col;
-            else sr.color *= col;
+            _current++;
+            StartCoroutine(FadeRoutine(fadeTime, sr, color));
         }
 
         foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
         {
-            var col = _color;
-            if (!useAlpha) col.a = sr.color.a;
-            if (directSet) sr.color = col;
-            else sr.color *= col;
+            _current++;
+            StartCoroutine(FadeRoutine(fadeTime, sr, color));
         }
         
         if (particles) foreach (var renderer in target.GetComponentsInChildren<ParticleSystem>(true))
         {
-            var main = renderer.main;
-            var col = _color;
-            if (!useAlpha) col.a = main.startColor.color.a;
-            if (directSet) main.startColor = col;
-            else main.startColor = col * main.startColor.color;
+            _current++;
+            StartCoroutine(FadeRoutine(fadeTime, renderer, color));
         }
 
+        yield return new WaitUntil(() => _current == 0);
         lk.enabled = true;
+    }
+
+    private IEnumerator FadeRoutine(float fadeTime, SpriteRenderer sr, Color color)
+    {
+        var time = 0f;
+        
+        var start = sr.color;
+        var end = directSet ? color : start * color;
+        if (!useAlpha) end.a = start.a;
+        
+        while (time < fadeTime)
+        {
+            sr.color = Color.Lerp(start, end, time / fadeTime);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        
+        sr.color = end;
+        _current--;
+    }
+
+    private IEnumerator FadeRoutine(float fadeTime, tk2dSprite sr, Color color)
+    {
+        var time = 0f;
+        
+        var start = sr.color;
+        var end = directSet ? color : start * color;
+        if (!useAlpha) end.a = start.a;
+        
+        while (time < fadeTime)
+        {
+            sr.color = Color.Lerp(start, end, time / fadeTime);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        
+        sr.color = end;
+        _current--;
+    }
+
+    private IEnumerator FadeRoutine(float fadeTime, ParticleSystem sr, Color color)
+    {
+        var time = 0f;
+        
+        var main = sr.main;
+        
+        var start = main.startColor.color;
+        var end = directSet ? color : start * color;
+        if (!useAlpha) end.a = start.a;
+        
+        while (time < fadeTime)
+        {
+            main.startColor = Color.Lerp(start, end, time / fadeTime);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        
+        main.startColor = end;
+        _current--;
     }
 }

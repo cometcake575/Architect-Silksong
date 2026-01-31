@@ -533,7 +533,7 @@ public static class ReceiverGroup
             var hm = o.GetComponentInChildren<HealthManager>();
             if (!hm) return;
             var dm = hm.gameObject.GetOrAddComponent<EnemyFixers.DeathMarker>();
-            if (!hm || Time.time - dm.time < 0.1f) return;
+            if (Time.time - dm.time < 0.1f) return;
             dm.time = Time.time;
             hm.TakeDamage(new HitInstance
             {
@@ -593,9 +593,20 @@ public static class ReceiverGroup
     ]);
     
     public static readonly List<EventReceiverType> Colourer = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("do_colour", "ApplyColour", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("do_colour", "Colour", (o, b) =>
         {
-            o.GetComponent<ObjectColourer>().Apply();
+            o.GetComponent<ObjectColourer>().Apply(Mathf.Max(0, b?.GetVariable<float>("Fade Time") ?? 0));
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("do_colour_dynamic", "DynamicColour", (o, b) =>
+        {
+            o.GetComponent<ObjectColourer>().Apply(
+                Mathf.Max(0, b.GetVariable<float>("Fade Time")),
+                new Color(
+                    b.GetVariable<float>("R", 1), 
+                    b.GetVariable<float>("G", 1), 
+                    b.GetVariable<float>("B", 1), 
+                    b.GetVariable<float>("A", 1))
+            );
         }))
     ]);
     

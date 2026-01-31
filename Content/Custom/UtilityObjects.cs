@@ -517,6 +517,7 @@ public static class UtilityObjects
                              "This works with most objects, but not all of them.\n\n" +
                              "Find the ID of the object to copy using the Cursor tool.")
             .WithConfigGroup(ConfigGroup.Colourer)
+            .WithInputGroup(InputGroup.Colourer)
             .WithReceiverGroup(ReceiverGroup.Colourer);
     }
 

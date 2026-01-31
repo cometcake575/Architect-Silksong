@@ -1256,8 +1256,20 @@ public static class EnemyFixers
 
         fsm.FsmVariables.FindFsmGameObject("Grind Spikes L").Value = spikesL;
         fsm.FsmVariables.FindFsmGameObject("Grind Spikes R").Value = spikesR;
-
-        obj.AddComponent<BlackThreader.SingPatcherData>().Check = () => fsm.ActiveStateName.Contains("Movement");
+        
+        var btd = obj.AddComponent<BlackThreader.BlackThreadData>();
+        btd.SingCheck = () => fsm.ActiveStateName.Contains("Movement");
+        btd.OnBlackThread = () =>
+        {
+            foreach (var sr in spikesL.GetComponentsInChildren<DamageHero>(true))
+            {
+                sr.damagePropertyFlags |= DamagePropertyFlags.Void;
+            }
+            foreach (var sr in spikesR.GetComponentsInChildren<DamageHero>(true))
+            {
+                sr.damagePropertyFlags |= DamagePropertyFlags.Void;
+            }
+        };
         
         fsm.fsm.startState = "Roar Antic";
 
@@ -2806,7 +2818,7 @@ public static class EnemyFixers
         }
     }
     
-    public static void Khann(GameObject obj)
+    public static void FixKhann(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
 
@@ -2841,7 +2853,15 @@ public static class EnemyFixers
             }
         }
 
-        obj.AddComponent<BlackThreader.SingPatcherData>().Check = () => fsm.ActiveStateName.Contains("Antic");
+        var btd = obj.AddComponent<BlackThreader.BlackThreadData>();
+        btd.SingCheck = () => fsm.ActiveStateName.Contains("Antic");
+        btd.OnBlackThread = () =>
+        {
+            foreach (var sr in spears.GetComponentsInChildren<DamageHero>(true))
+            {
+                sr.damagePropertyFlags |= DamagePropertyFlags.Void;
+            }
+        };
 
         var startingX = obj.transform.GetPositionX();
         
@@ -3268,6 +3288,15 @@ public static class EnemyFixers
         fsm.FsmVariables.FindFsmGameObject("Rocks L").Value = rocks.transform.Find("Rocks L").gameObject;
         fsm.FsmVariables.FindFsmGameObject("Rocks M").Value = rocks.transform.Find("Rocks M").gameObject;
         fsm.FsmVariables.FindFsmGameObject("Rocks R").Value = rocks.transform.Find("Rocks R").gameObject;
+        
+        var btd = fc.head.AddComponent<BlackThreader.BlackThreadData>();
+        var headFsm = fc.head.LocateMyFSM("Phase Control");
+        btd.SingCheck = () => headFsm.ActiveStateName.Contains("Phase");
+        btd.OnBlackThread = () =>
+        {
+            foreach (var o in obj.GetComponentsInChildren<DamageHero>(true))
+                o.damagePropertyFlags |= DamagePropertyFlags.Void;
+        };
             
         var plats = Object.Instantiate(_lavaPlats, obj.transform);
         plats.name = obj.name + " Lava Plats";
@@ -3464,6 +3493,6 @@ public static class EnemyFixers
 
     public class DeathMarker : MonoBehaviour
     {
-        public float time = Time.time;
+        public float time = 0;
     }
 }

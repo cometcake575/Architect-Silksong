@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Operators;
 
-public class BoolVarBlock : ScriptBlock
+public class BoolVarBlock : LocalBlock
 {
     protected override IEnumerable<string> Inputs => ["Set"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Boolean")];
@@ -75,7 +75,7 @@ public class BoolVarBlock : ScriptBlock
 }
 
 
-public class NumVarBlock : ScriptBlock
+public class NumVarBlock : LocalBlock
 {
     protected override IEnumerable<string> Inputs => ["Set"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Number")];

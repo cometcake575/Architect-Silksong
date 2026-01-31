@@ -248,7 +248,7 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
         
         AddEnemy("Crust King Khann", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
-            postSpawnAction: EnemyFixers.Khann)
+            postSpawnAction: EnemyFixers.FixKhann)
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
         
@@ -1666,7 +1666,7 @@ public static class VanillaObjects
         Object.DontDestroyOnLoad(explosion);
         Categories.Attacks.Add(new CustomObject("Explosion", "explosion", explosion,
                 description:"Appears when the 'Activate' trigger is run.",
-                sprite: ResourceUtils.LoadSpriteResource("explosion", ppu:64))
+                sprite: ResourceUtils.LoadSpriteResource("explosion", ppu:82))
             .WithReceiverGroup(ReceiverGroup.RuneBomb)
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Damager));
@@ -1834,8 +1834,11 @@ public static class VanillaObjects
             ("Wisp_02", "Wisp Bounce Pod")));
 
         Categories.Hazards.Add(new PreloadObject("Wispfire Lantern", "wisp_flame_lantern",
-                ("Wisp_02", "Wisp Farmers/Wisp Flame Lantern"), preloadAction: HazardFixers.FixWispLantern)
-            .WithConfigGroup(ConfigGroup.WispLanterns));
+                ("Wisp_02", "Wisp Farmers/Wisp Flame Lantern"), 
+                preloadAction: HazardFixers.FixWispLantern,
+                postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.WispLanterns)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
         Categories.Attacks.Add(new PreloadObject("Wisp", "wisp",
                 ("localpoolprefabs_assets_areawisp.bundle", "Assets/Prefabs/Hornet Enemies/Wisp Fireball.prefab"), 
@@ -2304,6 +2307,19 @@ public static class VanillaObjects
         AddEnemy("Grom", "grom", ("Crawl_01", "Bone Worm Nests/Worm Pool/Bone Worm (2)"),
             postSpawnAction: EnemyFixers.FixGrom)
             .WithConfigGroup(ConfigGroup.Grom);
+
+        
+        Categories.Attacks.Add(new PreloadObject("Lifeblood Bullet", "lifeblood_shot",
+                ("localpoolprefabs_assets_lifeblood", "Assets/Prefabs/Hornet Enemies/Lifeblood Projectile.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
+        Categories.Misc.Add(new PreloadObject("Winged Lifeseed", "winged_lifeseed",
+            ("localpoolprefabs_assets_lifeblood", "Assets/Prefabs/Items/Health Flyer.prefab"), notSceneBundle: true));
         
         AddEnemy("Plasmid", "plasmid",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),

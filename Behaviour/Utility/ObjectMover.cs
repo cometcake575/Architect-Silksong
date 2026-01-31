@@ -55,7 +55,7 @@ public class ObjectMover : MonoBehaviour
                     _ => new GameObject("[Architect] Origin")
                     {
                         transform = { position = Vector3.zero }
-                    }.transform
+                    }.transform 
                 };
                 
                 var prefab = _target.GetComponent<Prefab>();

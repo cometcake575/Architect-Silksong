@@ -27,12 +27,17 @@ public class RaycastBlock : ScriptBlock
 
     protected override void Reset()
     {
+        Clear();
+        MaxDistance = 10;
+        Mode = 0;
+    }
+
+    private void Clear()
+    {
         _hit = false;
         _xHit = 0;
         _yHit = 0;
         _dist = 0;
-        MaxDistance = 10;
-        Mode = 0;
     }
 
     public float MaxDistance = 10;
@@ -58,7 +63,7 @@ public class RaycastBlock : ScriptBlock
                 _ => PlayerMask
             }
         );
-        if (!raycast) Reset();
+        if (!raycast) Clear();
         else
         {
             _hit = true;

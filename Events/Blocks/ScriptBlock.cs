@@ -6,6 +6,7 @@ using Architect.Events.Blocks.Config;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Objects;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Utils;
 using BepInEx;
 using JetBrains.Annotations;
@@ -87,8 +88,18 @@ public abstract class ScriptBlock
         {
             clone.VarMap[ev] = (blockId + idAddition, var);
         }
-        
-        clone.CurrentConfig = CurrentConfig;
+
+        foreach (var (key, c) in CurrentConfig)
+        {
+            ConfigValue cfg;
+            if (this is LocalBlock { Local: true } && c is IdConfigValue<ScriptBlock> id)
+            {
+                cfg = ConfigurationManager.DeserializeConfigValue(id.GetTypeId(),
+                    id.SerializeValue() + idAddition);
+            }
+            else cfg = c;
+            clone.CurrentConfig[key] = cfg;
+        }
         
         var ext = SerializeExtraData();
         if (ext.ContainsKey("object")) ext["object"] += idAddition;
@@ -100,7 +111,11 @@ public abstract class ScriptBlock
     public void Setup(bool visual, bool newBlock = false)
     {
         ScriptManager.Blocks[BlockId] = this;
-        if (visual) SetupBlock(newBlock);
+        if (visual)
+        {
+            SetupBlock(newBlock);
+            foreach (var cfg in CurrentConfig.Values) cfg.Setup(this);
+        }
         else
         {
             Reset();
@@ -234,6 +249,7 @@ public abstract class ScriptBlock
 
             foreach (var type in Config)
             {
+                if (type.PrefabOnly && !PrefabManager.InPrefabScene) continue;
                 var uiImg = UIUtils.MakeImage(
                     "Image",
                     configArea,

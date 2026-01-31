@@ -9,11 +9,18 @@ public abstract class ConfigType(string name, string id)
 {
     public readonly string Name = name;
     public readonly string Id = id;
+    public bool PrefabOnly;
 
     public abstract ConfigValue Deserialize(string data);
 
     [CanBeNull]
     public abstract ConfigValue GetDefaultValue();
+
+    public ConfigType MarkPrefabOnly()
+    {
+        PrefabOnly = true;
+        return this;
+    }
     
     public abstract ConfigElement CreateInput(GameObject parent, Button apply, Vector3 pos, [CanBeNull] string currentVal);
 

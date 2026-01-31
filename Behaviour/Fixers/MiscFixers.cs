@@ -356,7 +356,7 @@ public static class MiscFixers
     
     public static void FixBreakable(GameObject obj)
     {
-        obj.GetComponent<Breakable>().onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
+        obj.GetComponentInChildren<Breakable>().onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
     }
     
     public static void FixLamp(GameObject obj)
