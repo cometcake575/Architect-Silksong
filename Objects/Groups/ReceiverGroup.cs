@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
+using Architect.Content.Custom;
 using Architect.Events;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
@@ -34,6 +35,25 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("wisp_go", "Fire", o =>
         {
             o.LocateMyFSM("Control").SetState("Fire Antic");
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> AbilityCrystal = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("crystal_clear", "ClearAll", o =>
+        {
+            AbilityObjects.ActiveCrystals.Clear();
+            AbilityObjects.RefreshCrystalUI();
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> MagmaRocks = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("magma_go", "Away", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("AWAY");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("magma_back", "Return", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("RETURN");
         }))
     ]);
     
@@ -72,6 +92,20 @@ public static class ReceiverGroup
         {
             if (b == null) return;
             o.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(
+                b.GetVariable<float>("New X"),
+                b.GetVariable<float>("New Y")
+            );
+        }))
+    ]);
+    
+    public static readonly List<EventReceiverType> MapperRing = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("set_velocity_ring", "SetVelocity", (o, b) =>
+        {
+            if (b == null) return;
+            var rb2d = o.GetComponent<Rigidbody2D>();
+            o.transform.GetChild(0).gameObject.SetActive(true);
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            rb2d.linearVelocity = new Vector2(
                 b.GetVariable<float>("New X"),
                 b.GetVariable<float>("New Y")
             );
@@ -497,7 +531,11 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_die", "Die", o =>
         {
             var hm = o.GetComponentInChildren<HealthManager>();
-            if (hm) hm.TakeDamage(new HitInstance
+            if (!hm) return;
+            var dm = hm.gameObject.GetOrAddComponent<EnemyFixers.DeathMarker>();
+            if (!hm || Time.time - dm.time < 0.1f) return;
+            dm.time = Time.time;
+            hm.TakeDamage(new HitInstance
             {
                 Source = o,
                 AttackType = AttackTypes.Generic,

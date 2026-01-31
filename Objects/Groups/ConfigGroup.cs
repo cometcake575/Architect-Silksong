@@ -1366,7 +1366,7 @@ public static class ConfigGroup
                 {
                     o.GetComponent<ObjectMover>().moveMode = value.GetValue();
                 }
-            ).WithOptions("Mover", "Self", "Player").WithDefaultValue(0)),
+            ).WithOptions("Mover", "Self", "Player", "Absolute").WithDefaultValue(0)),
             ConfigurationManager.RegisterConfigType(new IdConfigType("Position Source ID", "mover_mode_2", 
                 (o, value) =>
                 {
@@ -1543,6 +1543,38 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     o.LocateMyFSM("Control").GetState("Stun").DisableAction(0);
                 }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> Gromling = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Constant Ambush", "gromling_constant",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Ambush Ready").AddAction(() => fsm.SendEvent("AMBUSH"));
+                }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Hide Time", "gromling_hide",
+                (o, value) =>
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    var val = value.GetValue();
+                    var wr = (WaitRandom)fsm.GetState("Dig Away Pause").actions[0];
+                    wr.timeMin = val;
+                    wr.timeMax = val;
+                }).WithDefaultValue(1))
+    ]);
+    
+    public static readonly List<ConfigType> Grom = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Heal", "grom_heal",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Reparent").DisableAction(2);
+                }).WithDefaultValue(false))
     ]);
     
     public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
@@ -2219,7 +2251,17 @@ public static class ConfigGroup
             {
                 if (value.GetValue()) return;
                 o.RemoveComponent<CogRollThenFallOver>();
-            }).WithDefaultValue(false))
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Velocity", "ring_x_vel", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.MapperRing>().x = value.GetValue();
+            }).WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Velocity", "ring_y_vel", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.MapperRing>().y = value.GetValue();
+            }).WithDefaultValue(0).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> Transitions = GroupUtils.Merge(Stretchable, [

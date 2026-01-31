@@ -123,7 +123,8 @@ public static class AbilityObjects
                          "Can also be used to refresh abilities midair or without silk.\n\n" +
                          "Ability crystals override any active bindings.")
             .WithConfigGroup(ConfigGroup.AbilityCrystal)
-            .WithBroadcasterGroup(BroadcasterGroup.AbilityCrystal));
+            .WithBroadcasterGroup(BroadcasterGroup.AbilityCrystal)
+            .WithReceiverGroup(ReceiverGroup.AbilityCrystal));
     }
     #endregion
 

@@ -11,7 +11,6 @@ using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -1261,9 +1260,6 @@ public static class EnemyFixers
         obj.AddComponent<BlackThreader.SingPatcherData>().Check = () => fsm.ActiveStateName.Contains("Movement");
         
         fsm.fsm.startState = "Roar Antic";
-        
-        fsm.GetState("Stun Start").AddAction(() => obj.BroadcastEvent("OnStun"), 0);
-        fsm.GetState("Restart Singing").AddAction(() => obj.BroadcastEvent("OnRecover"), 0);
 
         var hm = obj.GetComponent<HealthManager>();
         fsm.GetState("Roar Antic").AddAction(() =>
@@ -1337,8 +1333,14 @@ public static class EnemyFixers
         
         // Dash Grind
         fsm.GetState("Dash Grind").AddAction(FixSpikes, 0);
+
+        var restartSinging = fsm.GetState("Restart Singing");
+        var stunStart = fsm.GetState("Stun Start");
+        restartSinging.DisableAction(0);
+        stunStart.DisableAction(13);
         
-        fsm.GetState("Restart Singing").DisableAction(0);
+        stunStart.AddAction(() => obj.BroadcastEvent("OnStun"), 0);
+        restartSinging.AddAction(() => obj.BroadcastEvent("OnRecover"), 0);
 
         AdjustPositions();
         return;
@@ -3385,5 +3387,83 @@ public static class EnemyFixers
         }, 6);
         
         fsm.GetState("End Battle").AddAction(() => Object.Destroy(obj));
+    }
+
+    public static void FixBellBeast(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+
+        var cx = obj.transform.GetPositionX();
+        var cy = obj.transform.GetPositionY();
+        fsm.FsmVariables.FindFsmFloat("Centre X").Value = cx;
+        fsm.FsmVariables.FindFsmFloat("Left X").Value = cx - 10.35f;
+        fsm.FsmVariables.FindFsmFloat("Right X").Value = cx + 10.35f;
+
+        var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        var leapOutY = fsm.FsmVariables.FindFsmFloat("LeapOut Y");
+        var submergeY = fsm.FsmVariables.FindFsmFloat("Submerge Y");
+        
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+        fsm.GetState("Burst Pos").AddAction(() => UpdatePositions(cx, cy), 0);
+        fsm.GetState("Rage Antic").AddAction(() => UpdatePositions(cx, cy), 0);
+        
+        UpdatePositions(cx, cy);
+
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        RemoveConstrainPosition(corpse);
+        
+        var corpseFsm = corpse.LocateMyFSM("Death");
+        corpseFsm.GetState("Stagger").DisableAction(2);
+        var blow = corpseFsm.GetState("Blow");
+        blow.DisableAction(3);
+        blow.DisableAction(4);
+        blow.AddAction(() => Object.Destroy(corpse));
+
+        return;
+
+        void UpdatePositions(float xPos, float yPos)
+        {
+            var ground = HeroController.instance.FindGroundPointY(
+                xPos,
+                yPos + 1,
+                true) + 1.83f;
+            groundY.Value = ground;
+            leapOutY.Value = ground - 11.52f;
+            submergeY.Value = ground - 18;
+        }
+    }
+
+    public static void FixGrom(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+
+        var startPos = obj.transform.position;
+        fsm.GetState("Dormant").AddAction(() =>
+        {
+            obj.transform.position = startPos;
+            fsm.SendEvent("SPAWN");
+        });
+        fsm.GetState("Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        
+        var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
+        fsm.GetState("Drop").AddAction(() =>
+        {
+            var ground = HeroController.instance.FindGroundPointY(
+                obj.transform.position.x,
+                obj.transform.position.y + 1,
+                true);
+            groundY.Value = ground;
+        }, 2, true);
+
+        ((AddHP)fsm.GetState("Heal").actions[0]).healToMax = true;
+    }
+
+    public class DeathMarker : MonoBehaviour
+    {
+        public float time = Time.time;
     }
 }

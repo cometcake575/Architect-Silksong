@@ -51,7 +51,11 @@ public class ObjectMover : MonoBehaviour
                 {
                     0 => transform,
                     1 => _target.transform,
-                    _ => HeroController.instance.transform
+                    2 => HeroController.instance.transform,
+                    _ => new GameObject("[Architect] Origin")
+                    {
+                        transform = { position = Vector3.zero }
+                    }.transform
                 };
                 
                 var prefab = _target.GetComponent<Prefab>();

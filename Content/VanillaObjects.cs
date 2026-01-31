@@ -1498,7 +1498,9 @@ public static class VanillaObjects
                     "Mapper/Mapper_ambient_rings/rings/mapper extra rings/mapper rings/Mapper_Ring_world (3)"),
                 preloadAction: MiscFixers.MarkRing)
             .WithConfigGroup(ConfigGroup.MapperRing)
-            .WithBroadcasterGroup(BroadcasterGroup.MapperRing));
+            .WithBroadcasterGroup(BroadcasterGroup.MapperRing)
+            .WithReceiverGroup(ReceiverGroup.MapperRing)
+            .WithInputGroup(InputGroup.Velocity));
         
         Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
             ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
@@ -1620,14 +1622,6 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixShermaCaretaker)
             .WithConfigGroup(ConfigGroup.Npcs));
 
-        Categories.Misc.Add(new PreloadObject("Beastling", "bellbeast_child",
-                ("localpoolprefabs_assets_shared",
-                    "Assets/Prefabs/Hornet NPCs/Bellbeast Child.prefab"),
-                notSceneBundle: true,
-                postSpawnAction: MiscFixers.FixBellBaby)
-            .WithConfigGroup(ConfigGroup.TriggerActivator)
-            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
-
         Categories.Platforming.Add(new PreloadObject("Updraft", "updraft_region",
                 ("Ant_19", "Updraft Region (1)"),
                 preloadAction: MiscFixers.FixUpdraft,
@@ -1696,6 +1690,17 @@ public static class VanillaObjects
                     fsm.GetState("Crest Msg").DisableAction(2);
                     fsm.GetState("Reload Scene").DisableAction(3);
                 }, sprite: ResourceUtils.LoadSpriteResource("bind_source", ppu:33)));*/
+        
+        Categories.Enemies.Add(new PreloadObject("Void Mass", "void_mass_citadel",
+                ("Song_15", "Black Thread States/Black Thread World/Black_Thread_Core_Citadel"),
+                preloadAction: o => o.transform.rotation = Quaternion.Euler(0, 0, -15),
+                postSpawnAction: EnemyFixers.KeepActive,
+                sprite: ResourceUtils.LoadSpriteResource("void_mass", ppu: 64))
+            .WithReceiverGroup(ReceiverGroup.Enemies)
+            .WithBroadcasterGroup(BroadcasterGroup.Enemies)
+            .WithConfigGroup(ConfigGroup.Enemies)
+            .WithOutputGroup(OutputGroup.Enemies)
+            .WithRotationGroup(RotationGroup.All));
     }
 
     private static void AddMemoriumObjects()
@@ -2124,6 +2129,20 @@ public static class VanillaObjects
         AddSolid("Bone Platform 1", "marrow_plat_01", ("Bone_East_03", "bone_plat_02 (2)"));
         AddSolid("Bone Platform 2", "bone_plat_03", ("Bone_East_03", "bone_plat_03 (2)"));
         AddSolid("Bone Platform 3", "marrow_plat_02", ("Bone_East_03", "bone_plat_03 (6)"));
+
+        /*AddEnemy("Bell Beast (Boss)", "bell_beast_boss",
+            ("Bone_05_boss", "Boss Scene/Bone Beast"),
+            postSpawnAction: EnemyFixers.FixBellBeast);*/
+        
+        // Bell beast NPC
+
+        Categories.Misc.Add(new PreloadObject("Beastling", "bellbeast_child",
+                ("localpoolprefabs_assets_shared",
+                    "Assets/Prefabs/Hornet NPCs/Bellbeast Child.prefab"),
+                notSceneBundle: true,
+                postSpawnAction: MiscFixers.FixBellBaby)
+            .WithConfigGroup(ConfigGroup.TriggerActivator)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
     }
 
     private static void AddDocksObjects()
@@ -2253,6 +2272,10 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.FourthChorus)
             .WithReceiverGroup(ReceiverGroup.FourthChorus)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
+
+        Categories.Platforming.Add(new PreloadObject("Magma Rocks", "magma_rocks",
+            ("Bone_East_08", "Boss Scene/Pre Activation Floor/Song Golem Floor (8)"))
+            .WithReceiverGroup(ReceiverGroup.MagmaRocks));
     }
 
     private static void AddWormwaysObjects()
@@ -2267,6 +2290,20 @@ public static class VanillaObjects
             .DoFlipX();
         AddEnemy("Craggler", "craggler", ("Crawl_04", "Roof Crab"),
             postSpawnAction: EnemyFixers.FixCraggler);
+
+        AddEnemy("Gromling", "gromling", ("Crawl_01", "Crypt Worms/GameObject/Crypt Worm (9)"),
+                postSpawnAction: o =>
+                {
+                    var range = o.transform.Find("Ambush Range");
+                    range.localPosition = Vector3.zero;
+                    var rangeCol = range.GetComponent<BoxCollider2D>();
+                    rangeCol.offset = Vector2.zero;
+                    rangeCol.size = new Vector2(8, 5);
+                })
+            .WithConfigGroup(ConfigGroup.Gromling);
+        AddEnemy("Grom", "grom", ("Crawl_01", "Bone Worm Nests/Worm Pool/Bone Worm (2)"),
+            postSpawnAction: EnemyFixers.FixGrom)
+            .WithConfigGroup(ConfigGroup.Grom);
         
         AddEnemy("Plasmid", "plasmid",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),

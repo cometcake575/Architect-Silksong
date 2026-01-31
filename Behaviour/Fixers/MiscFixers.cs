@@ -260,9 +260,19 @@ public static class MiscFixers
         private Collider2D _col2d;
         private bool _ground;
 
+        public float x;
+        public float y;
+
         private void Start()
         {
             _col2d = GetComponent<Collider2D>();
+            
+            if (x == 0 && y == 0) return;
+            var rb2d = GetComponent<Rigidbody2D>();
+            rb2d.linearVelocityX = x;
+            rb2d.linearVelocityY = y;
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            transform.GetChild(0).gameObject.SetActive(true);
         }
 
         private void OnCollisionEnter2D(Collision2D _)
@@ -272,6 +282,7 @@ public static class MiscFixers
                 _ground = true;
                 gameObject.BroadcastEvent("OnLand");
             }
+            gameObject.BroadcastEvent("OnCollide"); 
         }
 
         private void OnCollisionExit2D(Collision2D _)
@@ -290,6 +301,7 @@ public static class MiscFixers
 
         public bool CheckTouchingGround()
         {
+            if (!_col2d) return true;
             var bounds1 = _col2d.bounds;
             double x1 = bounds1.min.x;
             bounds1 = _col2d.bounds;

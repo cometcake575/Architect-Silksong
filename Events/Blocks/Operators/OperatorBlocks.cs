@@ -21,6 +21,7 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<MathsBlock>("Operation", ConfigGroup.Maths);
         ScriptManager.RegisterProcessBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);
         ScriptManager.RegisterProcessBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);
+        ScriptManager.RegisterProcessBlock<RaycastBlock>("Raycast", ConfigGroup.Raycast);
         ScriptManager.RegisterProcessBlock<AndBlock>("And");
         ScriptManager.RegisterProcessBlock<OrBlock>("Or");
         ScriptManager.RegisterProcessBlock<NotBlock>("Not");

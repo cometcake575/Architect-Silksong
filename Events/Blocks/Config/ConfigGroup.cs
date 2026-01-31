@@ -27,6 +27,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Raycast =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<RaycastBlock>("Max Distance", "raycast_max_dist", 
+                (b, f) => b.MaxDistance = f.GetValue())
+                .WithDefaultValue(10)
+        )
+    ];
+    
     public static readonly List<ConfigType> Prefab =
     [
         ConfigurationManager.RegisterConfigType(
