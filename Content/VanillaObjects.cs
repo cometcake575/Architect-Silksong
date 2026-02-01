@@ -2154,7 +2154,13 @@ public static class VanillaObjects
 
         Categories.Interactable.Add(new PreloadObject("Bone Gate", "bone_gate",
                 ("Chapel_Wanderer", "Battle Scene/Gates/Battle Gate Bone"),
-                preloadAction: o => Object.Destroy(o.transform.Find("Wall Collider").gameObject))
+                preloadAction: o =>
+                {
+                    var col = o.GetComponent<BoxCollider2D>();
+                    col.offset = Vector2.zero;
+                    col.size = new Vector2(1.5f, 6);
+                    Object.Destroy(o.transform.Find("Wall Collider").gameObject);
+                })
             .WithConfigGroup(ConfigGroup.BoneGate)
             .WithReceiverGroup(ReceiverGroup.BoneGate)
             .WithRotationGroup(RotationGroup.Four));
