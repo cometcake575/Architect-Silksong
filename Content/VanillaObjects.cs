@@ -2161,7 +2161,7 @@ public static class VanillaObjects
                     col.size = new Vector2(1.5f, 6);
                     Object.Destroy(o.transform.Find("Wall Collider").gameObject);
                 })
-            .WithConfigGroup(ConfigGroup.BoneGate)
+            .WithConfigGroup(ConfigGroup.CloseableGates)
             .WithReceiverGroup(ReceiverGroup.BoneGate)
             .WithRotationGroup(RotationGroup.Four));
 
@@ -2530,7 +2530,8 @@ public static class VanillaObjects
                 ("Mosstown_02", "traps_left/Pilgrim Trap Spike"),
                 description: "This spike starts hidden, the 'Activate' trigger will\n" +
                              "cause the spike to come out of the ground.")
-            .WithReceiverGroup(ReceiverGroup.Trap));
+            .WithReceiverGroup(ReceiverGroup.Trap)
+            .WithConfigGroup(ConfigGroup.Hazards));
 
         Categories.Misc.Add(new PreloadObject("Pilby NPC", "pilby_death",
             ("Bonetown", "Black Thread States/Normal World/Bonetown Resident"),

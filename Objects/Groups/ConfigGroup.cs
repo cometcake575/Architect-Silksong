@@ -414,17 +414,17 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Start Open", "gate_start_open", (o, value) =>
             {
-                if (!value.GetValue()) return;
-                o.GetComponent<Gate>().Opened();
-            }).WithDefaultValue(false))
-    ]);
-
-    public static readonly List<ConfigType> BoneGate = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Start Open", "bone_gate_start_open", (o, value) =>
-            {
-                if (value.GetValue()) return;
-                o.LocateMyFSM("BG Control").FsmVariables.FindFsmBool("Start Closed").Value = true;
+                var gate = o.GetComponent<Gate>();
+                if (gate)
+                {
+                    if (!value.GetValue()) return;
+                    gate.Opened();
+                }
+                else
+                {
+                    if (value.GetValue()) return;
+                    o.LocateMyFSM("BG Control").FsmVariables.FindFsmBool("Start Closed").Value = true;
+                }
             }).WithDefaultValue(false))
     ]);
 
