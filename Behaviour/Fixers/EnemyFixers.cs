@@ -64,6 +64,9 @@ public static class EnemyFixers
     // Fourth Chorus
     private static GameObject _lavaPlats;
     private static GameObject _lavaRocks;
+    
+    // Sister Splinter
+    private static GameObject _splinterSpikes;
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -127,6 +130,10 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
             "Grand Stage Scene/Boss Scene TormentedTrobbio/Trapdoor Bursts",
             o => _tbursts = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Shellwood_18", 
+            "Boss Scene Parent/Boss Scene/Spikes",
+            o => _splinterSpikes = o));
 
         foreach (var spear in Spears)
         {
@@ -1756,9 +1763,10 @@ public static class EnemyFixers
         fsm.GetState("Spike Summon").AddAction(() => obj.BroadcastEvent("TrySpikes"), 0);
         fsm.GetState("Duo Fight").AddAction(() => obj.BroadcastEvent("TrySummon"), 0);
 
-        /*fsm.FsmVariables.FindFsmGameObject("Spikes Folder").Value = 
-            Object.Instantiate(_splinterSpikes, obj.transform.position, obj.transform.rotation);*/
-
+        var spikes = Object.Instantiate(_splinterSpikes);
+        fsm.FsmVariables.FindFsmGameObject("Spikes Folder").Value = spikes;
+        spikes.transform.position = obj.transform.position - new Vector3(45, 16.88f, 0.008f);
+        
         return;
 
         void AdjustAllPos()
@@ -3409,6 +3417,9 @@ public static class EnemyFixers
         var chargeSide = fsm.GetState("Charge Side");
         chargeSide.DisableAction(0);
         chargeSide.DisableAction(1);
+
+        var teleIn = fsm.GetState("Tele In");
+        teleIn.transitions = teleIn.transitions.Where(o => o.EventName != "UNALERT").ToArray();
 
         var chargeTeleIn = fsm.GetState("Charge Tele In");
         chargeTeleIn.DisableAction(3);

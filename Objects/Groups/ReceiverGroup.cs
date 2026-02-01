@@ -364,6 +364,17 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> BoneGate = GroupUtils.Merge(Gates, [
+        EventManager.RegisterReceiverType(new EventReceiverType("bone_gate_close", "Close", o =>
+        {
+            o.LocateMyFSM("BG Control").SendEvent("BG CLOSE");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("bone_gate_open", "Open", o =>
+        {
+            o.LocateMyFSM("BG Control").SendEvent("BG OPEN");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Confetti = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("confetti_burst", "Burst", o =>
         {

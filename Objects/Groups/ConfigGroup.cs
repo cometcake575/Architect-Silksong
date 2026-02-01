@@ -419,6 +419,15 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
 
+    public static readonly List<ConfigType> BoneGate = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Open", "gate_start_open", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.LocateMyFSM("BG Control").FsmVariables.FindFsmBool("Start Closed").Value = true;
+            }).WithDefaultValue(false))
+    ]);
+
     public static readonly List<ConfigType> Relay = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Relay ID", "relay_id", (o, value) =>

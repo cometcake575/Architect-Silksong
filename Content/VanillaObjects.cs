@@ -1970,11 +1970,11 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.Decorations);
         
-        AddEnemy("Sister Splinter", "sister_splinter",
+        /*AddEnemy("Sister Splinter", "sister_splinter",
             ("Shellwood_18", "Boss Scene Parent/Boss Scene/Splinter Queen"),
             postSpawnAction: EnemyFixers.FixSisterSplinter)
             .WithBroadcasterGroup(BroadcasterGroup.SisterSplinter)
-            .WithConfigGroup(ConfigGroup.Bosses);
+            .WithConfigGroup(ConfigGroup.Bosses);*/
         
         /*AddEnemy("Shrine Guardian Seth", "seth_boss", ("Shellwood_22", "Boss Scene/Seth"),
             postSpawnAction: EnemyFixers.FixSeth)
@@ -2151,6 +2151,13 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Levers)
             .WithConfigGroup(ConfigGroup.Levers)
             .WithRotationGroup(RotationGroup.Eight));
+
+        Categories.Interactable.Add(new PreloadObject("Bone Gate", "bone_gate",
+                ("Chapel_Wanderer", "Battle Scene/Gates/Battle Gate Bone"),
+                preloadAction: o => Object.Destroy(o.transform.Find("Wall Collider").gameObject))
+            .WithConfigGroup(ConfigGroup.BoneGate)
+            .WithReceiverGroup(ReceiverGroup.BoneGate)
+            .WithRotationGroup(RotationGroup.Four));
 
         AddSolid("Bone Platform 1", "marrow_plat_01", ("Bone_East_03", "bone_plat_02 (2)"));
         AddSolid("Bone Platform 2", "bone_plat_03", ("Bone_East_03", "bone_plat_03 (2)"));
