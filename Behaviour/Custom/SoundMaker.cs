@@ -12,7 +12,7 @@ public class SoundMaker : MonoBehaviour
     public virtual void Awake()
     {
         if (muted) return;
-        Source = gameObject.GetOrAddComponent<AudioSource>();
+        Source = gameObject.AddComponent<AudioSource>();
         Source.minDistance = 10;
     }
 

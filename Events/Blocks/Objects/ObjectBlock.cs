@@ -36,6 +36,7 @@ public class ObjectBlock : ScriptBlock
                         .Where(block => block is ReceiveBlock { Local: true })
                         .Cast<ReceiveBlock>()
                         .Select(rb => rb.EventName)
+                        .Distinct()
                         .Append("prefab_start");
                 }
                 default:
@@ -61,7 +62,8 @@ public class ObjectBlock : ScriptBlock
                     return o.ScriptBlocks
                         .Where(block => block is BroadcastBlock { Local: true })
                         .Cast<BroadcastBlock>()
-                        .Select(rb => rb.EventName);
+                        .Select(rb => rb.EventName)
+                        .Distinct();
                 }
                 default:
                     return ObjectType.BroadcasterGroup;

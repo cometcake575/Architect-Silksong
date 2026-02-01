@@ -154,10 +154,12 @@ public class Prefab : PreviewableBehaviour
             switch (clone)
             {
                 case BroadcastBlock bb:
+                    if (!bb.Local) continue;
                     bb.ActualEventName = ((BroadcastBlock)block).EventName;
                     bb.TargetPrefab = gameObject;
                     break;
                 case ReceiveBlock rb:
+                    if (!rb.Local) continue;
                     rb.ActualEventName = ((ReceiveBlock)block).EventName;
                     _receivers[rb.ActualEventName] = rb;
                     break;

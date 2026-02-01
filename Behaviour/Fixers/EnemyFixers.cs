@@ -1676,6 +1676,7 @@ public static class EnemyFixers
     {
         private static readonly AudioClip[] Clips = new AudioClip[4];
         private static AudioClip _sporeClip;
+        private static AudioClip _yelpClip;
 
         public static void InitSounds()
         {
@@ -1684,18 +1685,20 @@ public static class EnemyFixers
             ResourceUtils.LoadClipResource("AknidMother.hit_3", clip => Clips[2] = clip);
             ResourceUtils.LoadClipResource("AknidMother.hit_4", clip => Clips[3] = clip);
             ResourceUtils.LoadClipResource("AknidMother.spore", clip => _sporeClip = clip);
+            ResourceUtils.LoadClipResource("AknidMother.yelp", clip => _yelpClip = clip);
         }
         
         private void Start()
         {
             GetComponent<EnemyHitEffectsRegular>().ReceivedHitEffect += (_, _) =>
             {
-                PlaySound(Clips[Random.RandomRangeInt(0, 4)], 5);
+                PlaySound(Clips[Random.RandomRangeInt(0, 4)], 0.5f, 1.2f);
             };
             var ctrl = gameObject.LocateMyFSM("Control");
             ctrl.GetState("Sing End").transitions[0].toFsmState = ctrl.GetState("Recover");
             
-            
+            ctrl.GetState("Startle").AddAction(() => PlaySound(_yelpClip, 0.65f, 1.2f), 0);
+            ctrl.GetState("Shake Start").AddAction(() => PlaySound(_sporeClip, 0.65f, 1.2f), 0);
         }
     }
 
