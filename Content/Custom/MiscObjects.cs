@@ -43,6 +43,7 @@ public static class MiscObjects
         
         Categories.Platforming.Add(CreateWind());
         Categories.Platforming.Add(CreateBumper());
+        //Categories.Platforming.Add(CreateDreamBlock());
 
         Categories.Hazards.Add(CreateCustomHazard("White Thorns", "white_thorns",
         [

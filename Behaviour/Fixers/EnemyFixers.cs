@@ -1679,8 +1679,9 @@ public static class EnemyFixers
         obj.AddComponent<AknidMother>();
     }
 
-    private class AknidMother : SoundMaker
+    public class AknidMother : SoundMaker
     {
+        public bool active;
         private static readonly AudioClip[] Clips = new AudioClip[4];
         private static AudioClip _sporeClip;
         private static AudioClip _yelpClip;
@@ -1697,6 +1698,7 @@ public static class EnemyFixers
         
         private void Start()
         {
+            if (!active) return;
             GetComponent<EnemyHitEffectsRegular>().ReceivedHitEffect += (_, _) =>
             {
                 PlaySound(Clips[Random.RandomRangeInt(0, 4)], 0.5f, 1.2f);
@@ -3519,6 +3521,18 @@ public static class EnemyFixers
 
     public class DeathMarker : MonoBehaviour
     {
-        public float time = 0;
+        public float time;
+    }
+
+    public static void FixWidow(GameObject obj)
+    {
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        rb2d.bodyType = RigidbodyType2D.Dynamic;
+        rb2d.gravityScale = 0;
+        
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+        fsm.GetState("Set Intro Pos").AddAction(() => fsm.SendEvent("FINISHED"), 0);
     }
 }

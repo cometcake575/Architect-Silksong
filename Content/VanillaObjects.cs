@@ -556,6 +556,36 @@ public static class VanillaObjects
             ("Song_12", "Black Thread States/Normal World/sc_plat_float_fat (1)"));
         AddSolid("Citadel Platform 4", "citadel_plat_4",
             ("Song_01", "sc_plat_float_tall"));
+        
+        Categories.Interactable.Add(new PreloadObject("Ring Switch", "harpoon_gate", 
+            ("Cog_Dancers", "Black Thread States/Normal World/harpoon_ring_gate"), 
+            preloadAction: o =>
+            {
+                o.transform.GetChild(0).gameObject.SetActive(false);
+                o.transform.GetChild(1).gameObject.SetActive(false);
+                o.transform.GetChild(3).gameObject.SetActive(false);
+                o.transform.GetChild(4).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+
+                o.transform.GetChild(2).position -= new Vector3(7.6233f, -6.6127f);
+                o.transform.GetChild(4).position -= new Vector3(7.6233f, -6.6127f);
+                o.transform.GetChild(5).position -= new Vector3(7.6233f, -6.6127f);
+            }, postSpawnAction: o =>
+            {
+                var l = o.GetComponentInChildren<HarpoonRingSlideLock>();
+                l.Dropped.AddListener(() =>
+                {
+                    o.BroadcastEvent("OnPull");
+                    o.BroadcastEvent("FirstPull");
+                });
+                o.GetComponentInChildren<PersistentBoolItem>().OnSetSaveState += value =>
+                {
+                    if (!value) return;
+                    o.BroadcastEvent("OnPull");
+                    o.BroadcastEvent("LoadedPulled");
+                };
+            }))
+            .WithConfigGroup(ConfigGroup.Levers)
+            .WithBroadcasterGroup(BroadcasterGroup.Levers);
     }
 
     private static void AddVaultsObjects()
@@ -593,8 +623,7 @@ public static class VanillaObjects
             ("Cradle_03", "cradle_spike_plat (10)/art/Cradle__0004_moving_plat (9)"),
             postSpawnAction: HazardFixers.FixCradleSpikes));
 
-        /*
-        AddEnemy("Grand Mother Silk", "gms_boss", ("Cradle_03", "Boss Scene/Silk Boss"),
+        /*AddEnemy("Grand Mother Silk", "gms_boss", ("Cradle_03", "Boss Scene/Silk Boss"),
             postSpawnAction: EnemyFixers.FixGms);*/
     }
 
@@ -1337,6 +1366,12 @@ public static class VanillaObjects
                     rb2d.linearVelocity = o.transform.rotation * (new Vector3(-28, 0, 0) * o.transform.GetScaleX());
                 }, 0, true);
             }).WithRotationGroup(RotationGroup.All));
+
+        Categories.Interactable.Add(new PreloadObject("Wooden Gate", "bile_gate",
+                ("Shadow_18", "Battle Scene/Gates/Battle Gate Swamp"))
+            .WithConfigGroup(ConfigGroup.CloseableGates)
+            .WithReceiverGroup(ReceiverGroup.BattleGate)
+            .WithRotationGroup(RotationGroup.Four));
     }
 
     private static void AddMistObjects()
@@ -1709,6 +1744,41 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Enemies)
             .WithOutputGroup(OutputGroup.Enemies)
             .WithRotationGroup(RotationGroup.All));
+
+        Categories.Platforming.Add(new PreloadObject("Small Bell", "bell_s",
+                ("Bone_01c", "bell_bench/frame/small_bell Parent"),
+                preloadAction: o =>
+                {
+                    o.transform.SetPositionZ(-0.114f);
+                    foreach (var sr in o.GetComponentsInChildren<SpriteRenderer>()) 
+                        sr.maskInteraction = SpriteMaskInteraction.None;
+                }, postSpawnAction: o =>
+                {
+                    var fsm = o.transform.GetChild(1).gameObject.LocateMyFSM("interactive_bell");
+                    fsm.fsmTemplate = null;
+                    fsm.GetState("Apply Force").AddAction(() => o.BroadcastEvent("OnHit"), 0);
+                }))
+            .WithConfigGroup(ConfigGroup.Decorations)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable);
+
+        Categories.Platforming.Add(new PreloadObject("Large Bell", "bell_l",
+            ("Bone_01c", "bell_bench/frame/Bell Main Parent"),
+            preloadAction: o =>
+            {
+                o.transform.SetPositionZ(-0.004f);
+                o.transform.GetChild(2).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+                o.transform.GetChild(2).GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+                o.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
+                foreach (var sr in o.GetComponentsInChildren<SpriteRenderer>()) 
+                    sr.maskInteraction = SpriteMaskInteraction.None;
+            }, postSpawnAction: o =>
+            {
+                var fsm = o.transform.GetChild(2).gameObject.LocateMyFSM("interactive_bell");
+                fsm.fsmTemplate = null;
+                fsm.GetState("Apply Force").AddAction(() => o.BroadcastEvent("OnHit"), 0);
+            }))
+            .WithConfigGroup(ConfigGroup.Decorations)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable);
     }
 
     private static void AddMemoriumObjects()
@@ -1848,6 +1918,10 @@ public static class VanillaObjects
             ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter Act3"),
             postSpawnAction: MiscFixers.FixSadPavo)
             .WithConfigGroup(ConfigGroup.Npcs));
+
+        /*AddEnemy("Widow", "widow",
+            ("Belltown_Shrine", "Black Thread States Thread Only Variant/Normal World/Boss Scene/Spinner Boss"),
+            postSpawnAction: EnemyFixers.FixWidow);*/
     }
 
     private static void AddWispObjects()
@@ -1952,7 +2026,7 @@ public static class VanillaObjects
             ("Shellwood_01", "Shellwood Goomba")).DoFlipX();
         
         // TODO Figure out why vanilla ones in Mosstown_03 (shellwood) are broken
-        AddEnemy("Flying Shellwood Gnat", "shellwood_gnat_fly", 
+        AddEnemy("Flying Shellwood Gnat", "shellwood_gnat_fly",
             ("Shellwood_01", "Shellwood Goomba Flyer (1)"),
             postSpawnAction: EnemyFixers.FixGnat);
         
@@ -2162,7 +2236,7 @@ public static class VanillaObjects
                     Object.Destroy(o.transform.Find("Wall Collider").gameObject);
                 })
             .WithConfigGroup(ConfigGroup.CloseableGates)
-            .WithReceiverGroup(ReceiverGroup.BoneGate)
+            .WithReceiverGroup(ReceiverGroup.BattleGate)
             .WithRotationGroup(RotationGroup.Four));
 
         AddSolid("Bone Platform 1", "marrow_plat_01", ("Bone_East_03", "bone_plat_02 (2)"));
@@ -2395,7 +2469,21 @@ public static class VanillaObjects
             ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Flea Games Host NPC"),
             preloadAction: MiscFixers.FixFleamaster)
             .WithConfigGroup(ConfigGroup.Npcs));
-
+        
+        /*
+        Categories.Misc.Add(new PreloadObject("Juggle Flea", "juggle_flea",
+            ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Bellfleas/Bellflea Juggler"),
+            postSpawnAction: o =>
+            {
+                
+            }));
+        
+        Categories.Misc.Add(new PreloadObject("Bounce Flea", "bounce_flea",
+            ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Bouncing/Bellfleas/Bellflea Bouncer")));
+        
+        Categories.Misc.Add(new PreloadObject("Dodge Flea", "dodge_flea",
+            ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Dodging/Bellfleas/Bellflea Swooper")));
+        */
         /*Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",
             ("Aqueduct_05_festival",
                 "Caravan_States/Flea Festival/Flea Game - Dodging/Active While Playing/Dodge Plat L")));*/

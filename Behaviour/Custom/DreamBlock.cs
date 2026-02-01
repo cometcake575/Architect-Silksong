@@ -20,7 +20,6 @@ public class DreamBlock : MonoBehaviour
     private static int _wallJumpBuffer;
     private static int _turnaroundBuffer;
     private static bool _extendedJump;
-    private static bool _aboutToDash;
     private static AudioSource _source;
 
     private static AudioClip _enter;
@@ -55,10 +54,8 @@ public class DreamBlock : MonoBehaviour
     private void Update()
     {
         Physics2D.IgnoreCollision(HeroController.instance.col2d, _collider, 
-            HeroController.instance.cState.dashing ||
-            _aboutToDash ||
-            HeroController.instance.sprintFSM.ActiveStateName.Contains("Air Sprint"));
-
+            InputHandler.Instance.inputActions.Dash.IsPressed);
+        
         if (!_setup)
         {
             _setup = true;
@@ -197,7 +194,6 @@ public class DreamBlock : MonoBehaviour
             {
                 var actions = InputHandler.Instance.inputActions;
 
-                _aboutToDash = true;
                 self.StartCoroutine(DashLater(
                     self.touchingWallR && !actions.Left.IsPressed,
                     self.touchingWallL && !actions.Right.IsPressed));
@@ -205,15 +201,11 @@ public class DreamBlock : MonoBehaviour
             }
 
             orig(self, startAlreadyDashing);
-            _aboutToDash = false;
             blockDir = false;
             return;
             
             IEnumerator DashLater(bool willRight, bool willLeft)
             {
-                yield return null;
-                yield return null;
-                yield return null;
                 yield return null;
                 
                 if (willRight) self.FaceRight();
@@ -227,10 +219,6 @@ public class DreamBlock : MonoBehaviour
                 orig(self, startAlreadyDashing);
 
                 yield return null;
-                yield return null;
-                yield return null;
-                yield return null;
-                _aboutToDash = false;
                 blockDir = false;
             }
         });

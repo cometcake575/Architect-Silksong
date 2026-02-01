@@ -1492,6 +1492,11 @@ public static class ConfigGroup
                     ede.GetInstantiatedCorpse(AttackTypes.Generic).transform.GetChild(0)
                         .gameObject.LocateMyFSM("Control").GetState("State 1").DisableAction(1);
                 }
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Custom Sounds", "aknid_mother_sound", (o, value) =>
+            {
+                if (value.GetValue()) o.GetComponent<EnemyFixers.AknidMother>().active = true;
             }).WithDefaultValue(true))
     ]);
 
@@ -2384,6 +2389,21 @@ public static class ConfigGroup
                 {
                     o.GetComponent<ObjectRemover>().filter = value.GetValue();
                 }))
+    ]);
+
+    public static readonly List<ConfigType> DisableRenderer = GroupUtils.Merge(Remover, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Disable All In Range", "remover_all_in_range",
+                (o, value) =>
+                {
+                    o.GetComponent<ObjectRemover>().allInRange = value.GetValue();
+                })),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Range", "remover_range",
+                (o, value) =>
+                {
+                    o.GetComponent<ObjectRemover>().range = value.GetValue();
+                }).WithDefaultValue(25))
     ]);
 
     public static readonly List<ConfigType> RoomClearer = GroupUtils.Merge(Remover, [

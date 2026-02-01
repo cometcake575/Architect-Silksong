@@ -364,7 +364,7 @@ public static class ReceiverGroup
         }))
     ]);
     
-    public static readonly List<EventReceiverType> BoneGate = GroupUtils.Merge(Gates, [
+    public static readonly List<EventReceiverType> BattleGate = GroupUtils.Merge(Gates, [
         EventManager.RegisterReceiverType(new EventReceiverType("bone_gate_close", "Close", o =>
         {
             o.LocateMyFSM("BG Control").SendEvent("BG CLOSE");

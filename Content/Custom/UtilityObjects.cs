@@ -97,7 +97,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateObjectRemover("render_remover", "Disable Renderer", 
                 FindObjectsToDisable<Renderer>, "Removes the nearest renderer.")
-            .WithConfigGroup(ConfigGroup.Remover)
+            .WithConfigGroup(ConfigGroup.DisableRenderer)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
         Categories.Utility.Add(CreateObjectRemover("object_remover", "Disable Object", (o, _) =>
@@ -701,9 +701,12 @@ public static class UtilityObjects
             .Select(obj => obj.gameObject);
 
         var or = disabler.GetComponent<ObjectRemover>();
-        if (or && or.all)
+        if (or)
         {
-            return objects.Select(o => o.GetOrAddComponent<Disabler>()).ToArray();
+            if (or.all) return objects.Select(o => o.GetOrAddComponent<Disabler>()).ToArray();
+            if (or.allInRange) return objects
+                .Where(o => (o.transform.position - disabler.transform.position)
+                    .Where(z: 0).sqrMagnitude < or.range * or.range).Select(o => o.GetOrAddComponent<Disabler>()).ToArray();
         }
         
         var lowest = float.MaxValue;
@@ -721,7 +724,7 @@ public static class UtilityObjects
             }
         }
         
-        return point is not null && lowest <= 500 ? [point.gameObject.GetOrAddComponent<Disabler>()] : [];
+        return point is not null && lowest <= or.range * or.range ? [point.gameObject.GetOrAddComponent<Disabler>()] : [];
     }
 
     private static PlaceableObject CreateHazardRespawnPoint()

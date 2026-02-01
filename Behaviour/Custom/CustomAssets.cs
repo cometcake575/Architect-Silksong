@@ -85,6 +85,7 @@ public class PngObject : MonoBehaviour, IPlayable
     public void Play()
     {
         playing = true;
+        if (!_renderer || _sprites == null) return;
         _renderer.sprite = _sprites[frame];
     }
 

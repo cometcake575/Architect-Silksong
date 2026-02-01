@@ -135,10 +135,13 @@ public class ObjectBlock : ScriptBlock
         {
             if (obj.activeInHierarchy || receiver is { RunWhenInactive: true })
             {
-                if (receiver != null) receiver.Trigger(_referencedObject, this);
+                if (receiver != null)
+                {
+                    receiver.Trigger(obj, this);
+                }
                 else
                 {
-                    var prefab = _referencedObject.GetComponent<Prefab>();
+                    var prefab = obj.GetComponent<Prefab>();
                     if (!prefab) return;
                     prefab.Receive(trigger);
                 }

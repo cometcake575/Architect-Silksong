@@ -129,7 +129,9 @@ public static class EditManager
         
         typeof(HeroController).Hook(nameof(HeroController.CanTakeDamageIgnoreInvul), BlockAction);
 
-        typeof(HeroController).Hook(nameof(HeroController.CanOpenInventory), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanOpenInventory), 
+            (Func<HeroController, bool> orig, HeroController self) => 
+                (!Settings.BlockInventoryInEditMode.Value || !IsEditing) && orig(self));
 
         typeof(HeroController).Hook(nameof(HeroController.CanDash), BlockAction);
         
