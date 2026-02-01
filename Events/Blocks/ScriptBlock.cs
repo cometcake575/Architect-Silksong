@@ -89,13 +89,18 @@ public abstract class ScriptBlock
             clone.VarMap[ev] = (blockId + idAddition, var);
         }
 
+        foreach (var (_, c) in CurrentConfig)
+        {
+            c.Setup(this);
+        }
+
         foreach (var (key, c) in CurrentConfig)
         {
             ConfigValue cfg;
-            if (this is LocalBlock { Local: true } && c is IdConfigValue<ScriptBlock> id)
+            if (this is LocalBlock { Local: true } && c.IsLocal)
             {
-                cfg = ConfigurationManager.DeserializeConfigValue(id.GetTypeId(),
-                    id.SerializeValue() + idAddition);
+                cfg = ConfigurationManager.DeserializeConfigValue(c.GetTypeId(),
+                    c.SerializeValue() + idAddition);
             }
             else cfg = c;
             clone.CurrentConfig[key] = cfg;
@@ -315,7 +320,7 @@ public abstract class ScriptBlock
                 new Vector2(-55, i * -50),
                 new Vector2(0, 1),
                 new Vector2(0, 1));
-            inputTxt.textComponent.text = this is ObjectBlock ? EventManager.GetReceiverType(input).Name : input;
+            inputTxt.textComponent.text = this is ObjectBlock ? EventManager.GetReceiverType(input)?.Name ?? input : input;
             inputTxt.textComponent.alignment = TextAnchor.MiddleRight;
 
             inputImg.sprite = Input;

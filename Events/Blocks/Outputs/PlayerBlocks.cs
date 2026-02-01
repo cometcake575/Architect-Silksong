@@ -24,7 +24,7 @@ public class HpBlock : ScriptBlock
     }
 
     public int Amount;
-    
+
     protected override void Trigger(string trigger)
     {
         switch (trigger)
@@ -68,7 +68,7 @@ public class SilkBlock : ScriptBlock
     }
 
     public int Amount;
-    
+
     protected override void Trigger(string trigger)
     {
         if (trigger == "Give") HeroController.instance.AddSilk(Amount, true);
@@ -98,7 +98,7 @@ public class CurrencyBlock : ScriptBlock
     public int Amount;
     public CurrencyType CurrencyType = CurrencyType.Money;
     public bool ShowCounter = true;
-    
+
     protected override void Trigger(string trigger)
     {
         if (trigger == "Give") HeroController.instance.AddCurrency(Amount, CurrencyType, ShowCounter);

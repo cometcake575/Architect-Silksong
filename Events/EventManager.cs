@@ -20,7 +20,7 @@ public static class EventManager
     
     public static EventReceiverType GetReceiverType(string id)
     {
-        return ReceiverTypes[id];
+        return ReceiverTypes.GetValueOrDefault(id);
     }
     
     public static OutputType RegisterOutputType(OutputType type)

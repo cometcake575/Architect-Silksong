@@ -39,6 +39,8 @@ public abstract class ConfigType<TType, TValue>(
 
 public abstract class ConfigValue
 {
+    public virtual bool IsLocal => false;
+    
     public abstract string SerializeValue();
 
     public abstract string GetTypeId();

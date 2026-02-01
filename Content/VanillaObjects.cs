@@ -1835,7 +1835,7 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areasong", "Assets/Prefabs/Enemies/Fungus 1 + 2/Throwing Bell.prefab"),
             notSceneBundle: true));
 
-        Categories.Misc.Add(new PreloadObject("Pin Pilgrim (NPC)", "pin_pilgrim_npc",
+        Categories.Misc.Add(new PreloadObject("Pin Pilgrim NPC", "pin_pilgrim_npc",
             ("Belltown", "Pin Pilgrim"),
             preloadAction: MiscFixers.FixPinPilgrim)
             .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());

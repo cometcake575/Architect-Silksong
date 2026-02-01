@@ -3419,6 +3419,7 @@ public static class EnemyFixers
         fsm.GetState("End Battle").AddAction(() => Object.Destroy(obj));
     }
 
+    private static readonly int TerrainMask = LayerMask.GetMask("Terrain");
     public static void FixBellBeast(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
@@ -3427,9 +3428,18 @@ public static class EnemyFixers
 
         var cx = obj.transform.GetPositionX();
         var cy = obj.transform.GetPositionY();
+
+        var right = Physics2D.Raycast(obj.transform.position, Vector2.right, 10.35f, TerrainMask);
+        var left = Physics2D.Raycast(obj.transform.position, Vector2.left, 10.35f, TerrainMask);
+        
         fsm.FsmVariables.FindFsmFloat("Centre X").Value = cx;
-        fsm.FsmVariables.FindFsmFloat("Left X").Value = cx - 10.35f;
-        fsm.FsmVariables.FindFsmFloat("Right X").Value = cx + 10.35f;
+        var lx = fsm.FsmVariables.FindFsmFloat("Left X");
+        var rx = fsm.FsmVariables.FindFsmFloat("Right X");
+        
+        if (right) rx.Value = right.point.x - 1;
+        else rx.Value = cx + 10.35f;
+        if (left) lx.Value = left.point.x + 1;
+        else lx.Value = cx - 10.35f;
 
         var groundY = fsm.FsmVariables.FindFsmFloat("Ground Y");
         var leapOutY = fsm.FsmVariables.FindFsmFloat("LeapOut Y");
@@ -3448,10 +3458,8 @@ public static class EnemyFixers
         
         var corpseFsm = corpse.LocateMyFSM("Death");
         corpseFsm.GetState("Stagger").DisableAction(2);
-        var blow = corpseFsm.GetState("Blow");
-        blow.DisableAction(3);
-        blow.DisableAction(4);
-        blow.AddAction(() => Object.Destroy(corpse));
+        corpseFsm.GetState("Blow").DisableAction(4);
+        corpseFsm.GetState("End Pause").AddAction(() => Object.Destroy(corpse));
 
         return;
 

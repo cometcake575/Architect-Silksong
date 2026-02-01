@@ -59,11 +59,10 @@ public class AnimPlayer : MonoBehaviour
 
         if (takeCtrl)
         {
-            yield return hero.FreeControl();
+            yield return hero.FreeControl(hc => hc.rb2d.linearVelocity == Vector2.zero);
             if (_active != this) yield break;
             _tookCtrl = true;
             EditManager.IgnoreControlRelinquished = true;
-            hero.rb2d.linearVelocity = Vector2.zero;
             hero.RelinquishControl();
         }
     }
@@ -73,6 +72,7 @@ public class AnimPlayer : MonoBehaviour
         if (_animTimeRemaining <= 0) return;
 
         _animTimeRemaining -= Time.deltaTime;
+        HeroController.instance.rb2d.linearVelocity = Vector2.zero;
         if (_animTimeRemaining <= 0) Stop();
     }
 

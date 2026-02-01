@@ -42,9 +42,11 @@ public static class PrefabManager
             GameManager.instance.StartCoroutine(GameManager.instance.PauseGameToggle(false));
             GameManager.instance.SetPausedState(false);
         }
-
+        
+        InPrefabScene = !InPrefabScene;
+        
         GameManager.instance.entryGateName = "";
-        if (InPrefabScene)
+        if (!InPrefabScene)
         {
             ScriptEditorUI.ToggleParent.SetActive(true);
             EditManager.NoclipPos = _oldPos;
@@ -63,8 +65,6 @@ public static class PrefabManager
             _oldPos = HeroController.instance.transform.position;
             ArchitectPlugin.Instance.StartCoroutine(LoadScene($"Prefab_{prefabName}"));
         }
-
-        InPrefabScene = !InPrefabScene;
     }
 
     private static IEnumerator LoadScene(string sceneName)

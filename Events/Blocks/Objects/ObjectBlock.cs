@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Editor;
+using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Placeable;
 using Architect.Placements;
+using Architect.Prefabs;
+using Architect.Storage;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Objects;
@@ -14,15 +18,60 @@ public class ObjectBlock : ScriptBlock
 
     private PlaceableObject ObjectType => PlaceableObject.RegisteredObjects.GetValueOrDefault(TypeId);
 
-    protected override IEnumerable<string> Inputs => 
-        ObjectType?.ReceiverGroup.Select(o => o.Id) ?? [];
-    protected override IEnumerable<string> Outputs => ObjectType?.BroadcasterGroup ?? [];
+    protected override IEnumerable<string> Inputs
+    {
+        get
+        {
+            switch (ObjectType)
+            {
+                case null:
+                    return [];
+                case PrefabObject prefab:
+                {
+                    if (!PrefabManager.Prefabs.TryGetValue(prefab.Name, out var o)) 
+                        o = PrefabManager.Prefabs[prefab.Name] = StorageManager.LoadScene($"Prefab_{prefab.Name}");
+                    foreach (var sb in o.ScriptBlocks) 
+                    foreach (var (_, c) in sb.CurrentConfig) c.Setup(sb);
+                    return o.ScriptBlocks
+                        .Where(block => block is ReceiveBlock { Local: true })
+                        .Cast<ReceiveBlock>()
+                        .Select(rb => rb.EventName)
+                        .Append("prefab_start");
+                }
+                default:
+                    return ObjectType.ReceiverGroup.Select(o => o.Id);
+            }
+        }
+    }
+
+    protected override IEnumerable<string> Outputs
+    {
+        get
+        {
+            switch (ObjectType)
+            {
+                case null:
+                    return [];
+                case PrefabObject prefab:
+                {
+                    if (!PrefabManager.Prefabs.TryGetValue(prefab.Name, out var o)) 
+                        o = PrefabManager.Prefabs[prefab.Name] = StorageManager.LoadScene($"Prefab_{prefab.Name}");
+                    foreach (var sb in o.ScriptBlocks) 
+                    foreach (var (_, c) in sb.CurrentConfig) c.Setup(sb);
+                    return o.ScriptBlocks
+                        .Where(block => block is BroadcastBlock { Local: true })
+                        .Cast<BroadcastBlock>()
+                        .Select(rb => rb.EventName);
+                }
+                default:
+                    return ObjectType.BroadcasterGroup;
+            }
+        }
+    }
+    
     protected override IEnumerable<(string, string)> OutputVars => 
         ObjectType?.OutputGroup.Select(o => (o.Id, o.GetTypeId())) ?? [];
     protected override IEnumerable<(string, string)> InputVars => ObjectType?.InputGroup ?? [];
-
-    protected override int InputCount => ObjectType?.BroadcasterGroup.Count ?? 1;
-    protected override int OutputCount => ObjectType?.ReceiverGroup.Count ?? 1;
 
     internal static readonly Color ValidColor = new(0.7f, 0.3f, 0.9f);
     private static readonly Color InvalidColor = new(0.6f, 0, 0);
@@ -74,10 +123,24 @@ public class ObjectBlock : ScriptBlock
     {
         if (!_referencedObject) return;
         var receiver = EventManager.GetReceiverType(trigger);
-        if (_referencedObject.activeInHierarchy || receiver.RunWhenInactive) receiver.Trigger(_referencedObject, this);
+        DoTrigger(_referencedObject);
         foreach (var spawn in _reference.Spawns.Where(spawn => spawn))
+            DoTrigger(spawn);
+        
+        return;
+
+        void DoTrigger(GameObject obj)
         {
-            receiver.Trigger(spawn, this);
+            if (obj.activeInHierarchy || receiver is { RunWhenInactive: true })
+            {
+                if (receiver != null) receiver.Trigger(_referencedObject, this);
+                else
+                {
+                    var prefab = _referencedObject.GetComponent<Prefab>();
+                    if (!prefab) return;
+                    prefab.Receive(trigger);
+                }
+            }
         }
     }
 

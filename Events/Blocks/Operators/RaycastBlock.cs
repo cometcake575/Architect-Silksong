@@ -50,6 +50,7 @@ public class RaycastBlock : ScriptBlock
     private static readonly int TerrainMask = LayerMask.GetMask("Terrain");
     private static readonly int EnemyMask = LayerMask.GetMask("Enemies");
     private static readonly int PlayerMask = LayerMask.GetMask("Player");
+
     protected override void Trigger(string trigger)
     {
         var raycast = Physics2D.Raycast(

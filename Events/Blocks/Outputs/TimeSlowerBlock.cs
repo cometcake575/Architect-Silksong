@@ -28,7 +28,7 @@ public class TimeSlowerBlock : ScriptBlock
     public bool NoPause;
 
     private static int _timeSlowedCount;
-    
+
     protected override void Trigger(string id)
     {
         if (!NoPause) _timeSlowedCount++;

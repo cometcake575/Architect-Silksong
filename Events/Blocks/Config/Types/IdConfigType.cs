@@ -49,6 +49,8 @@ public class IdConfigValue<T>(IdConfigType<T> type, string value)
     {
         return value;
     }
+
+    public override bool IsLocal => true;
 }
 
 public class IdConfigElement : ConfigElement

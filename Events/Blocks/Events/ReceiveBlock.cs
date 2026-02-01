@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Events;
 
-public class ReceiveBlock : ScriptBlock
+public class ReceiveBlock : LocalBlock
 {
     protected override IEnumerable<string> Outputs => ["OnReceive"];
 
@@ -11,6 +11,7 @@ public class ReceiveBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Receive";
     
+    public string ActualEventName;
     public string EventName;
     
     protected override void SetupReference()

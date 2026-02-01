@@ -220,7 +220,7 @@ public static class ConfigGroup
     public static readonly List<ConfigType> BoolVar =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<BoolVarBlock>("Variable ID", "var_id_bool", 
+            new IdConfigType<BoolVarBlock>("Variable ID", "var_id_bool", 
                 (b, f) => b.Id = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(
@@ -228,17 +228,17 @@ public static class ConfigGroup
                 (b, f) => b.PType = f.GetValue())
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
         ),
-        /*ConfigurationManager.RegisterConfigType(
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType<BoolVarBlock>("Prefab-Local", "var_local_bool", 
                 (b, f) => b.Local = f.GetValue())
                 .WithDefaultValue(true).MarkPrefabOnly()
-        )*/
+        )
     ];
     
     public static readonly List<ConfigType> NumVar =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<NumVarBlock>("Variable ID", "var_id_num", 
+            new IdConfigType<NumVarBlock>("Variable ID", "var_id_num", 
                 (b, f) => b.Id = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(
@@ -246,11 +246,11 @@ public static class ConfigGroup
                 (b, f) => b.PType = f.GetValue())
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
         ),
-        /*ConfigurationManager.RegisterConfigType(
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType<BoolVarBlock>("Prefab-Local", "var_local_num", 
                     (b, f) => b.Local = f.GetValue())
                 .WithDefaultValue(true).MarkPrefabOnly()
-        )*/
+        )
     ];
 
     public static readonly List<ConfigType> TimeSlower = [
@@ -304,19 +304,29 @@ public static class ConfigGroup
     public static readonly List<ConfigType> Broadcast =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<BroadcastBlock>("Event ID", "in_name", (o, value) =>
+            new IdConfigType<BroadcastBlock>("Event ID", "in_name", (o, value) =>
             {
                 o.EventName = value.GetValue();
-            }))
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<BroadcastBlock>("Prefab-Local", "in_local", 
+                    (b, f) => b.Local = f.GetValue())
+                .WithDefaultValue(true).MarkPrefabOnly()
+        )
     ];
     
     public static readonly List<ConfigType> Receive =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<ReceiveBlock>("Event ID", "out_name", (o, value) =>
+            new IdConfigType<ReceiveBlock>("Event ID", "out_name", (o, value) =>
             {
                 o.EventName = value.GetValue();
-            }))
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<ReceiveBlock>("Prefab-Local", "out_local", 
+                    (b, f) => b.Local = f.GetValue())
+                .WithDefaultValue(true).MarkPrefabOnly()
+        )
     ];
     
     public static readonly List<ConfigType> MultiplayerOut =

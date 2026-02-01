@@ -53,7 +53,7 @@ public class PowerupGetBlock : ScriptBlock
     public string ButtonText = "";
     public string DescTopText = "";
     public string DescBotText = "";
-    
+
     protected override void Trigger(string trigger)
     {
         ArchitectPlugin.Instance.StartCoroutine(Coroutine());

@@ -4,6 +4,8 @@ using Architect.Behaviour.Utility;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events.Blocks;
+using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Storage;
@@ -17,7 +19,7 @@ public class PrefabObject : PlaceableObject
 {
     private static GameObject _prefabObject;
 
-    public readonly string Name; 
+    public readonly string Name;
     
     public static void Init()
     {
@@ -103,6 +105,7 @@ public class Prefab : PreviewableBehaviour
 {
     public string id;
     public List<GameObject> spawns = [];
+    private Dictionary<string, ReceiveBlock> _receivers = [];
 
     private void Start()
     {
@@ -146,7 +149,25 @@ public class Prefab : PreviewableBehaviour
 
         foreach (var block in o.ScriptBlocks)
         {
-            block.Clone(name).Setup(false);
+            var clone = block.Clone(name);
+            clone.Setup(false);
+            switch (clone)
+            {
+                case BroadcastBlock bb:
+                    bb.ActualEventName = ((BroadcastBlock)block).EventName;
+                    bb.TargetPrefab = gameObject;
+                    break;
+                case ReceiveBlock rb:
+                    rb.ActualEventName = ((ReceiveBlock)block).EventName;
+                    _receivers[rb.ActualEventName] = rb;
+                    break;
+            }
         }
+    }
+
+    public void Receive(string eName)
+    {
+        if (!_receivers.TryGetValue(eName, out var receiver)) return;
+        receiver.Event("OnReceive");
     }
 }
