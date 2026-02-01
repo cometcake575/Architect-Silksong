@@ -332,7 +332,7 @@ public static class VanillaObjects
     {
         Categories.Misc.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
                 ("Under_17", "Architect Scene/Chair/pillar E/pillar D/pillar C/pillar B/pillar A/seat/Architect NPC"),
-                preloadAction: MiscFixers.FixArchitect, postSpawnAction: MiscFixers.FixArchitect)
+                preloadAction: MiscFixers.FixArchitect)
             .WithConfigGroup(ConfigGroup.Npcs));
         
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",

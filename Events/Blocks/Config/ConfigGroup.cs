@@ -247,7 +247,7 @@ public static class ConfigGroup
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
         ),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<BoolVarBlock>("Prefab-Local", "var_local_num", 
+            new BoolConfigType<NumVarBlock>("Prefab-Local", "var_local_num", 
                     (b, f) => b.Local = f.GetValue())
                 .WithDefaultValue(true).MarkPrefabOnly()
         )
