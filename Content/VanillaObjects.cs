@@ -1970,12 +1970,12 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.Decorations);
         
-        /*
         AddEnemy("Sister Splinter", "sister_splinter",
             ("Shellwood_18", "Boss Scene Parent/Boss Scene/Splinter Queen"),
             postSpawnAction: EnemyFixers.FixSisterSplinter)
-            .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();*/
-
+            .WithBroadcasterGroup(BroadcasterGroup.SisterSplinter)
+            .WithConfigGroup(ConfigGroup.Bosses);
+        
         /*AddEnemy("Shrine Guardian Seth", "seth_boss", ("Shellwood_22", "Boss Scene/Seth"),
             postSpawnAction: EnemyFixers.FixSeth)
             .WithConfigGroup(ConfigGroup.Bosses)
