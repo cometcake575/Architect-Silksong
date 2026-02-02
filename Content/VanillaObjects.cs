@@ -572,6 +572,7 @@ public static class VanillaObjects
             }, postSpawnAction: o =>
             {
                 var l = o.GetComponentInChildren<HarpoonRingSlideLock>();
+                o.transform.GetChild(5).name = o.name + " Switch";
                 l.Dropped.AddListener(() =>
                 {
                     o.BroadcastEvent("OnPull");
