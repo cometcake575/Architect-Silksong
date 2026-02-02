@@ -32,6 +32,10 @@ public class TravelBlock : ScriptBlock
                 o.transform.position = Vector3.zero;
                 Object.Destroy(o.transform.GetChild(3).GetChild(0).gameObject);
                 _ftm = o.GetComponent<FastTravelMap>();
+                
+                var constrain = o.transform.GetChild(1).gameObject.AddComponent<ConstrainPosition>();
+                constrain.constrainX = true;
+                constrain.constrainY = true;
 
                 _map = Object.Instantiate(o.transform.Find("backing").gameObject)
                     .GetComponent<SpriteRenderer>();
@@ -172,7 +176,9 @@ public class TravelBlock : ScriptBlock
         HeroController.instance.RelinquishControl();
         PlayerData.instance.disablePause = true;
         _ftm.Open();
-
+        _ftm.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+        _ftm.transform.GetChild(1).GetChild(2).gameObject.SetActive(false);
+        
         _ftm.LocationConfirmed += Dismiss;
         yield break;
 

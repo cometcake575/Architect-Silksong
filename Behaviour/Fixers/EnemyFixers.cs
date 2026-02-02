@@ -3010,7 +3010,7 @@ public static class EnemyFixers
         var fsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Custom Corpse");
         fsm.GetState("Spawn 2").actions[1].enabled = false;
     }
-
+    
     public static void FixTormentedTrobbio(GameObject obj)
     {
         var fsm = FixTrobbio(obj, _tflares, _tfloor, _tbursts, (y, fsm) =>
@@ -3027,6 +3027,36 @@ public static class EnemyFixers
         sp.DisableAction(3);
         sp.AddAction(() => fsm.SetState("Start Idle"), 0);
 
+        var fa = fsm.GetState("Flash Antic");
+        fa.DisableAction(9);
+        
+        // Initial positions
+        var runningTime = 0f;
+        var fromX = 0f;
+        var fromY = 0f;
+        
+        fa.AddAction(() =>
+        {
+            runningTime = 0;
+            fromX = obj.transform.GetPositionX();
+            fromY = obj.transform.GetPositionY();
+        }, 9);
+        var targetY = fsm.FsmVariables.FindFsmFloat("Target Y");
+        
+        // Move with Rigidbody2D
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        fa.AddAction(() =>
+        {
+            runningTime += Time.deltaTime;
+
+            var percentage = Mathf.Clamp01(runningTime * 2.5f);
+            
+            rb2d.MovePosition(new Vector2(
+                fromX,
+                EaseOutSine(fromY, targetY.Value, percentage))
+            );
+        }, 10, true);
+
         var ede = obj.GetComponent<EnemyDeathEffects>();
         ede.PreInstantiate();
         var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
@@ -3040,6 +3070,15 @@ public static class EnemyFixers
         var interactable = corpseFsm.GetState("Leave End");
         interactable.transitions = [];
         interactable.AddAction(() => Object.Destroy(corpse));
+
+        return;
+
+
+        float EaseOutSine(float start, float end, float value)
+        {
+            end -= start;
+            return end * Mathf.Sin((float) (value / 1.0 * 1.5707963705062866)) + start;
+        }
     }
 
     public static void FixRegularTrobbio(GameObject obj)
@@ -3173,12 +3212,12 @@ public static class EnemyFixers
 
         void AdjustHeightAboveSelf()
         {
-            AdjustHeight(5);
+            AdjustHeight(6.5f);
         }
 
         void AdjustHeightFromSelf()
         {
-            AdjustHeight(0);
+            AdjustHeight(2);
         }
 
         void AdjustFloor()
@@ -3189,7 +3228,7 @@ public static class EnemyFixers
                 var floorPiece = floor.transform.GetChild(f);
                 
                 if (HeroController.instance.TryFindGroundPoint(out var pos,
-                        floorPiece.position + new Vector3(0, 5),
+                        obj.transform.position + new Vector3(0, 5),
                         true))
                 {
                     floorPiece.transform.SetPositionY(pos.y - 1.2f);
@@ -3215,20 +3254,19 @@ public static class EnemyFixers
 
         void AdjustHeight(float f)
         {
-            if (HeroController.instance.TryFindGroundPoint(out var pos,
-                    obj.transform.position + new Vector3(0, f),
-                    true))
-            {
-                lowMin.Value = pos.y + 1.46f;
-                lowMax.Value = pos.y + 2.46f;
-                highMin.Value = pos.y + 6.96f;
-                topY.Value = highMax.Value = pos.y + 9.46f;
-                posY.Value = pos.y + 1.7f;
-                floorY.Value = pos.y + 1.8f;
-                ceilY.Value = pos.y + 11.37f;
-                exitFloorPos.Value = pos.y - 3.04f;
-                yPos?.Invoke(pos.y, fsm);
-            }
+            var ground = HeroController.instance.FindGroundPointY(
+                obj.transform.GetPositionX(),
+                obj.transform.GetPositionY() + f);
+
+            lowMin.Value = ground + 1.46f;
+            lowMax.Value = ground + 2.46f;
+            highMin.Value = ground + 6.96f;
+            topY.Value = highMax.Value = ground + 9.46f;
+            posY.Value = ground + 1.7f;
+            floorY.Value = ground + 1.8f;
+            ceilY.Value = ground + 11.37f;
+            exitFloorPos.Value = ground - 3.04f;
+            yPos?.Invoke(ground, fsm);
         }
     }
 

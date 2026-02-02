@@ -41,6 +41,7 @@ public static class EditorUI
     private static GameObject _mapUI;
     private static RectTransform _mapTransform;
     private static GameObject _scriptUI;
+    private static GameObject _workshopUI;
     
     public static AbstractCategory CurrentCategory = Categories.All;
     public static int PageIndex;
@@ -62,6 +63,7 @@ public static class EditorUI
     
     private static (Button, UIUtils.Label) _mapButton;
     private static (Button, UIUtils.Label) _scriptButton;
+    private static (Button, UIUtils.Label) _workshopButton;
     
     private static GameObject _shareLevelButton;
     private static GameObject _shareLevelLabel;
@@ -119,15 +121,27 @@ public static class EditorUI
         st.offsetMin = Vector2.zero;
         st.anchoredPosition = new Vector2(0, 20);
         
+        _workshopUI = new GameObject("Workshop UI")
+        {
+            transform = { parent = _canvasObj.transform }
+        };
+        _workshopUI.SetActive(false);
+        var wt = _workshopUI.AddComponent<RectTransform>();
+        wt.anchorMax = Vector2.one;
+        wt.anchorMin = Vector2.zero;
+        wt.offsetMax = Vector2.zero;
+        wt.offsetMin = Vector2.zero;
+        
         ScriptEditorUI.Init(_scriptUI);
         
-        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-200, 15));
-        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(200, 15));
+        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-263.5f, 15));
+        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(263.5f, 15));
+        _workshopButton = SetupModeButton(EditorType.Workshop, "Workshop", new Vector3(263.5f, -50));
     }
     
     private static (Button, UIUtils.Label) SetupModeButton(EditorType type, string name, Vector3 pos)
     {
-        var size = new Vector2(1150, 50);
+        var size = new Vector2(765, 50);
         var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _canvasObj, pos, 
             new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
         
@@ -400,6 +414,7 @@ public static class EditorUI
             {
                 _mapUI.SetActive(false);
                 _scriptUI.SetActive(false);
+                _workshopUI.SetActive(false);
                 Deletable.DeleteButton.SetActive(false);
                 _currentType = EditorType.Map;
             }
@@ -428,6 +443,8 @@ public static class EditorUI
         _mapButton.Item2.gameObject.SetActive(!legacy);
         _scriptButton.Item1.gameObject.SetActive(!legacy);
         _scriptButton.Item2.gameObject.SetActive(!legacy);
+        _workshopButton.Item1.gameObject.SetActive(!legacy);
+        _workshopButton.Item2.gameObject.SetActive(!legacy);
 
         if (_configTransform) _configTransform.anchoredPosition = new Vector2(0, legacy ? 0 : -20);
         _mapTransform.anchoredPosition = new Vector2(0, legacy ? 0 : 20);
@@ -450,6 +467,7 @@ public static class EditorUI
 
         _mapUI.SetActive(_currentType == EditorType.Map);
         _scriptUI.SetActive(_currentType == EditorType.Script);
+        _workshopUI.SetActive(_currentType == EditorType.Workshop);
     }
 
     public static void WipeTabs()
@@ -1109,6 +1127,7 @@ public static class EditorUI
     private enum EditorType
     {
         Map,
-        Script
+        Script,
+        Workshop
     }
 }

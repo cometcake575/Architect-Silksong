@@ -1100,7 +1100,7 @@ public static class ConfigGroup
             new FloatConfigType("Colour A", "colourer_alpha", (o, value) =>
             {
                 var oc = o.GetComponent<ObjectColourer>();
-                oc.useAlpha = true;
+                oc.useAlphaByDefault = true;
                 oc.a = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
