@@ -812,6 +812,10 @@ public static class ConfigGroup
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
 
+    public static readonly List<ConfigType> BlurPlane = GroupUtils.Merge(Generic, [
+        ZOffset
+    ]);
+
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Render Layer", "obj_layer",

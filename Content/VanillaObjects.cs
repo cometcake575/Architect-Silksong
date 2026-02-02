@@ -1428,6 +1428,15 @@ public static class VanillaObjects
 
     private static void AddMiscObjects()
     {
+        Categories.Effects.Add(new PreloadObject("Blur Plane", "blur_plane",
+            ("Belltown", "BlurPlane"), 
+            sprite: ResourceUtils.LoadSpriteResource("blur", ppu: 3775000),
+            preview: true,
+            description: "Having multiple blur planes together can cause issues.\n" +
+                         "It is recommended to disable the vanilla BlurPlane when using a custom one.",
+            preloadAction: o => o.transform.localScale = new Vector3(100000, 100000, 1)))
+            .WithConfigGroup(ConfigGroup.BlurPlane);
+        
         Categories.Misc.Add(new PreloadObject("Breakable Wall A", "breakable_wall_2",
             ("Bone_19", "Breakable Wall"),
             preloadAction: o =>
