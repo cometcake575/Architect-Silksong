@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Architect.Editor;
 using Architect.Utils;
+using Architect.Workshop;
 using Silksong.AssetHelper.ManagedAssets;
 using Silksong.AssetHelper.Plugin;
 using UnityEngine;
@@ -92,6 +93,7 @@ public static class PreloadManager
         while (_count < Preloaded.Count) yield return null;
         
         EditorUI.CompleteSetup();
+        WorkshopManager.Setup();
         HasPreloaded = true;
         Object.Destroy(_canvasObj);
     }

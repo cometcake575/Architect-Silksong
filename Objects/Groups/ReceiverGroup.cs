@@ -130,6 +130,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Spine = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("spine_go", "Shoot", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("ANTIC");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> DialDoor = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("dial_rotate_l", "RotateLeft", o =>
         {
@@ -214,7 +221,8 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Burst = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_zap", "Activate", o =>
         {
-            o.transform.GetChild(0).gameObject.SetActive(true);
+            var c = o.transform.GetChild(0);
+            c.gameObject.SetActive(true);
         }))
     ]);
     
@@ -335,7 +343,7 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> Gates = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("gate_open", "Open", o =>
         {
-            o.GetComponent<Gate>().Open();
+            o.GetComponent<Gate>()?.Open();
         }))
     ]);
     
@@ -364,7 +372,7 @@ public static class ReceiverGroup
         }))
     ]);
     
-    public static readonly List<EventReceiverType> BattleGate = GroupUtils.Merge(Gates, [
+    public static readonly List<EventReceiverType> BattleGate = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("bone_gate_close", "Close", o =>
         {
             o.LocateMyFSM("BG Control").SendEvent("BG CLOSE");

@@ -133,29 +133,38 @@ public static class PlacementManager
                 }
             }
         }
-
-        var map = GetTilemap();
-        if (map)
+        
+        
+        if (SceneUtils.CustomScenes.ContainsKey(sceneName))
         {
-            if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
+            if (!_levelData.TilemapChanges.IsNullOrEmpty()) SceneUtils.TilemapChanges = _levelData.TilemapChanges;
+            if (ext != null && !ext.TilemapChanges.IsNullOrEmpty()) SceneUtils.ExtTilemapChanges = ext.TilemapChanges;
+        }
+        else
+        {
+            var map = GetTilemap();
+            if (map)
             {
-                foreach (var (x, y) in ext.TilemapChanges)
+                if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
                 {
-                    if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                    else map.ClearTile(x, y, 0);
+                    foreach (var (x, y) in ext.TilemapChanges)
+                    {
+                        if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                        else map.ClearTile(x, y, 0);
+                    }
+                }
+                
+                if (!_levelData.TilemapChanges.IsNullOrEmpty())
+                {
+                    foreach (var (x, y) in _levelData.TilemapChanges)
+                    {
+                        if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                        else map.ClearTile(x, y, 0);
+                    }
+
+                    map.Build();
                 }
             }
-
-            if (!_levelData.TilemapChanges.IsNullOrEmpty())
-            {
-                foreach (var (x, y) in _levelData.TilemapChanges)
-                {
-                    if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                    else map.ClearTile(x, y, 0);
-                }
-            }
-
-            map.Build();
         }
 
         var wasLocal = ScriptManager.IsLocal;

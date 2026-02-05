@@ -2458,8 +2458,7 @@ public static class ConfigGroup
         )
     ]);
     
-    public static readonly List<ConfigType> Hazards = GroupUtils.Merge(Decorations, [
-        DamagesEnemies,
+    public static readonly List<ConfigType> PlayerHazards = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Damages Player", "damages_player",
                 (o, value) =>
@@ -2471,6 +2470,10 @@ public static class ConfigGroup
                     if (dmg) dmg.gameObject.RemoveComponent<PlayMakerFSM>();
                 })
         )
+    ]);
+    
+    public static readonly List<ConfigType> Hazards = GroupUtils.Merge(PlayerHazards, [
+        DamagesEnemies
     ]);
     
     public static readonly List<ConfigType> StretchableHazards = GroupUtils.Merge(Stretchable, 

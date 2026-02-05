@@ -33,12 +33,16 @@ public class ObjectRemover : MonoBehaviour
         if (_shouldEnable)
         {
             _shouldEnable = false;
-            DoEnable();
+            StartCoroutine(DoEnable());
         }
     }
 
-    private void DoEnable()
+    private IEnumerator DoEnable()
     {
+        if (GameManager.instance.IsFirstLevelForPlayer)
+        {
+            yield return new WaitUntil(() => GameManager.instance.timeInScene > 0.8f);
+        }
         _toggle = UtilityObjects.GetObjects(this);
         foreach (var obj in _toggle) if (obj) obj.Disable(name);
     }

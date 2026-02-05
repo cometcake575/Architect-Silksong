@@ -70,7 +70,12 @@ public static class VanillaObjects
         PreloadManager.RegisterPreload(new BasicPreload("Coral_29", "Boss Scene/Zap Clusters/Cluster 1/Mega Jelly Zap",
             o =>
             {
-                Object.Instantiate(o, sphere.transform).transform.localPosition = Vector3.zero;
+                var vr = Object.Instantiate(o, sphere.transform);
+                var constrain = vr.AddComponent<ConstrainPosition>();
+                constrain.localSpace = true;
+                constrain.constrainX = true;
+                constrain.constrainY = true;
+                vr.transform.localPosition = Vector3.zero;
             }));
         Categories.Hazards.Add(new CustomObject("Voltring", "coral_lightning_orb", sphere,
             sprite: ResourceUtils.LoadSpriteResource("voltring", ppu:64))
@@ -87,7 +92,7 @@ public static class VanillaObjects
                 o.transform.SetScaleY(-o.transform.GetScaleY());
                 o.transform.SetRotation2D(180 - o.transform.GetRotation2D());
             })
-            .WithConfigGroup(ConfigGroup.Decorations)).Offset = new Vector3(0.5723f, 1);
+            .WithConfigGroup(ConfigGroup.PlayerHazards)).Offset = new Vector3(0.5723f, 1);
 
         Categories.Attacks.Add(new PreloadObject("Voltbola", "voltvessel_ball",
                 ("localpoolprefabs_assets_areaarborium.bundle",
@@ -261,6 +266,10 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(f, f));
             })
             .WithConfigGroup(ConfigGroup.Fish);
+
+        Categories.Misc.Add(new PreloadObject("Karaka Statue", "karaka_statue",
+            ("Coral_Tower_01", "Coral_Warrior_break"), postSpawnAction: MiscFixers.FixBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
     private static void AddRoadObjects()
@@ -509,6 +518,19 @@ public static class VanillaObjects
             ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)"),
             postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(3))
             .DoFlipX();
+        
+        var sphere = new GameObject("Thread Storm");
+        sphere.SetActive(false);
+        Object.DontDestroyOnLoad(sphere);
+        PreloadManager.RegisterPreload(new BasicPreload("Song_25", 
+            "Black Thread States/Normal World/Song Reed Grand (2)/grand_reed_spell_sphere",
+            o =>
+            {
+                Object.Instantiate(o, sphere.transform).transform.localPosition = new Vector3(0, 2);
+            }));
+        Categories.Attacks.Add(new CustomObject("Thread Storm", "thread_storm", sphere,
+                sprite: ResourceUtils.LoadSpriteResource("thread_storm", ppu:40))
+            .WithReceiverGroup(ReceiverGroup.Burst));
 
         AddEnemy("Clawmaiden", "clawmaiden",
             ("localpoolprefabs_assets_areahangareasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Handmaiden.prefab"),
@@ -1424,6 +1446,10 @@ public static class VanillaObjects
             postSpawnAction:EnemyFixers.FixLastJudge)
             .WithConfigGroup(ConfigGroup.LastJudge)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
+
+        Categories.Misc.Add(new PreloadObject("Judge Statue", "judge_statue",
+                ("Coral_32", "fossil_judge_break_leanRight"), postSpawnAction: MiscFixers.FixBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
     private static void AddMiscObjects()
@@ -2376,6 +2402,12 @@ public static class VanillaObjects
         AddEnemy("Hoker", "spine_floater", ("Bone_East_14", "Spine Floater (9)"),
                 postSpawnAction: MiscFixers.FixHoker)
             .WithConfigGroup(ConfigGroup.Hoker).DoFlipX();
+
+        Categories.Attacks.Add(new PreloadObject("Spine", "hoker_spine",
+            ("localpoolprefabs_assets_areawilds", "Assets/Prefabs/Hornet Enemies/Spine Floater Spine.prefab"), 
+            notSceneBundle: true)
+            .WithRotationGroup(RotationGroup.All)
+            .WithReceiverGroup(ReceiverGroup.Spine));
 
         AddEnemy("Rhinogrund", "rhino", ("Bone_East_10_Church", "Rhino Scene/Rhino"),
             preloadAction:EnemyFixers.KeepActive);

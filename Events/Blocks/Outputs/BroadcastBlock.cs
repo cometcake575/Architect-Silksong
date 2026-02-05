@@ -21,12 +21,16 @@ public class BroadcastBlock : LocalBlock
 
     protected override void Trigger(string id)
     {
+        DoBroadcast(EventName);
+        if (TargetPrefab) TargetPrefab.BroadcastEvent(ActualEventName);
+    }
+
+    public static void DoBroadcast(string eventName)
+    {
         foreach (var e in ReceiveBlock.RcEvent.Events
-                     .Where(e => e.Block.EventName == EventName))
+                     .Where(e => e.Block.EventName == eventName))
         {
             e.Block.Event("OnReceive");
         }
-
-        if (TargetPrefab) TargetPrefab.BroadcastEvent(ActualEventName);
-    }
+    } 
 }

@@ -193,7 +193,12 @@ public class WavObject : SoundMaker, IPlayable
     protected void Start()
     {
         if (string.IsNullOrEmpty(url)) return;
-        CustomAssetManager.DoLoadSound(gameObject, url);
+        CustomAssetManager.DoLoadSound(url, clip =>
+        {
+            sound = clip;
+            sound.LoadAudioData();
+        });
+        
     }
 
     public void Play()

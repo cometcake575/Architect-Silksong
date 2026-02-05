@@ -490,11 +490,12 @@ public class Browse : MenuState
     {
         var downloadIcon = ResourceUtils.LoadSpriteResource("Sharer.downloads");
         
-        (_scrollRect, var scroll) = UIUtils.MakeScrollView("Scroll",
-            _browse, new Vector2(-22.5f, -30),
+        (_scrollRect, var scroll, _) = UIUtils.MakeScrollView("Scroll",
+            _browse, 
+            new Vector2(-22.5f, -30),
+            new Vector2(362.5f, 0),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(635, 400), 1500);
-        scroll.AddComponent<VerticalLayoutGroup>();
         
         for (var i = 0; i < 15; i++)
         {

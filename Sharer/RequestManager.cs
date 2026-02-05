@@ -10,6 +10,7 @@ using Architect.Prefabs;
 using Architect.Sharer.Info;
 using Architect.Sharer.States;
 using Architect.Storage;
+using Architect.Workshop;
 using BepInEx;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -21,7 +22,7 @@ namespace Architect.Sharer;
 
 public static class RequestManager
 {
-    public const string URL = "https://cometcake575.pythonanywhere.com";
+    public const string URL = "http://127.0.0.1:5000";
     public const string LEVEL_TYPE = "silksong";
 
     [CanBeNull] private static string _sharerKey = StorageManager.LoadSharerKey();
@@ -188,6 +189,10 @@ public static class RequestManager
             var jsonData = StorageManager.SerializeAllScenes();
             var jsonBytes = Encoding.UTF8.GetBytes(jsonData);
             form.AddBinaryData("level", jsonBytes, "level.json", "application/json");
+            
+            var wJsonData = JsonConvert.SerializeObject(WorkshopManager.WorkshopData);
+            var wJsonBytes = Encoding.UTF8.GetBytes(wJsonData);
+            form.AddBinaryData("workshop", wJsonBytes, "workshop.json", "application/json");
         }
 
         // Check if save slot is valid, add if so
@@ -477,7 +482,7 @@ public static class RequestManager
             level_id = levelId
         });
         
-        var request = new UnityWebRequest(URL + "/download", "POST");
+        var request = new UnityWebRequest(URL + "/download_level", "POST");
 
         var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -496,14 +501,18 @@ public static class RequestManager
         }
         
         var json = request.downloadHandler.text;
+
+        var result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
         
-        var prefabs = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(json)
+        var prefabs = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(result["level"])
             .Where(o => o.Key.StartsWith("Prefab_"));
         PrefabsCategory.Prefabs = prefabs.Select(o => 
             new PrefabObject(o.Key.Replace("Prefab_", ""))).ToList();
         
-        var data = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(json);
-        yield return StorageManager.LoadLevelData(data, status);
+        var data = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(result["level"]);
+        var wData = JsonConvert.DeserializeObject<WorkshopData>(result["workshop"]);
+        
+        yield return StorageManager.LoadLevelData(data, wData, status);
 
         PlacementManager.InvalidateScene();
     }

@@ -129,6 +129,7 @@ public static class UtilityObjects
 
                     var objects = o.scene.GetRootGameObjects().Where(obj =>
                         !obj.name.StartsWith("[Architect]")
+                        && !obj.name.Contains("Hornet Cocoon Corpse")
                         && !obj.name.StartsWith("_SceneManager")
                         && !obj.GetComponent<CustomTransitionPoint>()
                         && !obj.GetComponent<WorldRumblePreventWhileActive>()
@@ -218,7 +219,8 @@ public static class UtilityObjects
                 "Makes an enemy become black threaded, can either make the enemy start threaded\n" +
                 "or require the 'Activate' trigger to be run.\n\n" +
                 "Enemies will pick one void attack to use,\n" +
-                "the chance of each attack is configurable.",
+                "the chance of each attack is configurable.\n\n" +
+                "Also works on certain non-enemies.",
                 sprite:ResourceUtils.LoadSpriteResource("black_threader", ppu:64))
             .WithConfigGroup(ConfigGroup.BlackThreader)
             .WithBroadcasterGroup(BroadcasterGroup.BlackThreader)

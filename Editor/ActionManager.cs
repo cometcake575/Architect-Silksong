@@ -22,6 +22,7 @@ public static class ActionManager
             (Action<HeroController> orig, HeroController self) =>
             {
                 orig(self);
+                if (GameManager.instance.sceneName == "Temp" || _lastScene == "Temp") return;
                 
                 if (_lastScene != GameManager.instance.sceneName)
                 {

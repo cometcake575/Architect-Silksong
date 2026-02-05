@@ -475,6 +475,7 @@ public static class EditManager
         
         StorageManager.SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());
         StorageManager.SaveScene(StorageManager.GLOBAL, PlacementManager.GetGlobalData());
+        StorageManager.SaveWorkshopData();
     }
     
     #region Scene Reloading
@@ -527,6 +528,7 @@ public static class EditManager
         _posToLoad = HeroController.instance.transform.position;
         HeroController.instance.transform.parent = null;
         GameManager.instance.SaveLevelState();
+        GameManager.instance.IsFirstLevelForPlayer = false;
         GameManager.instance.LoadScene(GameManager.instance.sceneName);
     }
     #endregion

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BepInEx;
 using GlobalEnums;
 using Unity.Mathematics.Geometry;
 using UnityEngine;
@@ -55,7 +56,7 @@ public class HpBlock : ScriptBlock
 
 public class SilkBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Give", "Take"];
+    protected override IEnumerable<string> Inputs => ["Give", "Take", "BreakCocoon"];
     protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
@@ -71,8 +72,20 @@ public class SilkBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
-        if (trigger == "Give") HeroController.instance.AddSilk(Amount, true);
-        else HeroController.instance.TakeSilk(Amount);
+        switch (trigger)
+        {
+            case "Give":
+                HeroController.instance.AddSilk(Amount, true);
+                break;
+            case "Take":
+                HeroController.instance.TakeSilk(Amount);
+                break;
+            case "BreakCocoon":
+                if (PlayerData.instance.HeroCorpseScene.IsNullOrWhiteSpace()) return;
+                HeroController.instance.CocoonBroken();
+                EventRegister.SendEvent(EventRegisterEvents.BreakHeroCorpse);
+                break;
+        }
     }
 
     protected override object GetValue(string id)

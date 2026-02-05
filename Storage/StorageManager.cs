@@ -13,6 +13,8 @@ using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Utils;
+using Architect.Workshop;
+using BepInEx;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -50,6 +52,7 @@ public static class StorageManager
                 {
                     SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());
                     SaveScene(GLOBAL, PlacementManager.GetGlobalData());
+                    SaveWorkshopData();
                 }
 
                 foreach (var (scene, edits) in ScheduledEdits)
@@ -97,6 +100,28 @@ public static class StorageManager
 
         return File.Exists(path) ? DeserializeLevel(File.ReadAllText(path)) : 
             new LevelData([], [], []);
+    }
+
+    public static void LoadWorkshopData()
+    {
+        var path = DataPath + "workshop.json";
+        if (!File.Exists(path))
+        {
+            WorkshopManager.LoadWorkshop(new WorkshopData());
+            return;
+        }
+        
+        var data = File.ReadAllText(path);
+        
+        WorkshopManager.LoadWorkshop(JsonConvert.DeserializeObject<WorkshopData>(data));
+    }
+
+    public static void SaveWorkshopData()
+    {
+        var path = DataPath + "workshop.json";
+        if (File.Exists(path)) File.Delete(path);
+        
+        File.WriteAllText(path, JsonConvert.SerializeObject(WorkshopManager.WorkshopData, Formatting.Indented));
     }
 
     public static LevelData DeserializeLevel(string data)
@@ -210,7 +235,7 @@ public static class StorageManager
         CustomAssetManager.WipeAssets();
     }
 
-    public static IEnumerator LoadLevelData(Dictionary<string, LevelData> levels, Text status)
+    public static IEnumerator LoadLevelData(Dictionary<string, LevelData> levels, WorkshopData workshop, Text status)
     {
         WipeLevelData();
         var startTime = Time.realtimeSinceStartup;
@@ -238,11 +263,23 @@ public static class StorageManager
             
             SaveScene(scene, data);
         }
+
+        Dictionary<string, string> workshopDownloads = [];
+        foreach (var item in workshop.Items)
+        {
+            foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
+            if (item.FilesToDownload == null) continue;
+            foreach (var file in item.FilesToDownload)
+            {
+                if (file.Item1.IsNullOrWhiteSpace()) continue;
+                workshopDownloads.TryAdd(file.Item1, file.Item2);
+            }
+        }
         
         CustomAssetManager.DownloadingAssets = 0;
         CustomAssetManager.Downloaded = 0;
         CustomAssetManager.Failed = 0;
-        var downloadCount = downloads.Count + blockDownloads.Count;
+        var downloadCount = downloads.Count + blockDownloads.Count + workshopDownloads.Count;
         
         foreach (var config in downloads.Values)
         {
@@ -254,12 +291,19 @@ public static class StorageManager
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
         }
+        foreach (var (url, type) in workshopDownloads)
+        {
+            while (CustomAssetManager.DownloadingAssets > 4) yield return null;
+            Task.Run(() => CustomAssetManager.TryDownloadAssets(url, type, status, downloadCount));
+        }
         while (CustomAssetManager.Downloaded < downloadCount) yield return null;
         
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
 
         PrefabsCategory.Prefabs = LoadPrefabs();
+        WorkshopManager.LoadWorkshop(workshop);
+        SaveWorkshopData();
 
         var plural = CustomAssetManager.Failed == 1 ? "" : "s";
         status.text = "Download Complete" + (CustomAssetManager.Failed == 0 ? "" : 

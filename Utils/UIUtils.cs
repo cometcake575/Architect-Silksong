@@ -268,10 +268,11 @@ public static class UIUtils
         return img;
     }
 
-    public static (ScrollRect, GameObject) MakeScrollView(
+    public static (ScrollRect, GameObject, GameObject) MakeScrollView(
         string name, 
         GameObject parent, 
         Vector2 pos,
+        Vector2 scrollbarPos,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 size,
@@ -302,7 +303,7 @@ public static class UIUtils
         ((RectTransform)content.transform).sizeDelta = new Vector2(0, height);
 
         var scrollbar = MakeImage("Bar", img.gameObject, 
-            new Vector2(362.5f, 0), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            scrollbarPos, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(50, 750));
         scrollbar.sprite = Square;
         scrollbar.color = Color.grey;
@@ -323,7 +324,9 @@ public static class UIUtils
 
         sr.verticalScrollbar = bar;
         
-        return (sr, content);
+        content.AddComponent<VerticalLayoutGroup>();
+        
+        return (sr, content, scrollbar.gameObject);
     }
 
     public static RectTransform RemoveOffset(this GameObject obj)

@@ -121,6 +121,8 @@ public static class EditorUI
         st.offsetMin = Vector2.zero;
         st.anchoredPosition = new Vector2(0, 20);
         
+        ScriptEditorUI.Init(_scriptUI);
+        
         _workshopUI = new GameObject("Workshop UI")
         {
             transform = { parent = _canvasObj.transform }
@@ -131,12 +133,13 @@ public static class EditorUI
         wt.anchorMin = Vector2.zero;
         wt.offsetMax = Vector2.zero;
         wt.offsetMin = Vector2.zero;
+        wt.anchoredPosition = new Vector2(0, 20);
         
-        ScriptEditorUI.Init(_scriptUI);
+        WorkshopUI.Init(_workshopUI);
         
         _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-263.5f, 15));
-        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(263.5f, 15));
-        _workshopButton = SetupModeButton(EditorType.Workshop, "Workshop", new Vector3(263.5f, -50));
+        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(0, 15));
+        _workshopButton = SetupModeButton(EditorType.Workshop, "Workshop", new Vector3(263.5f, 15));
     }
     
     private static (Button, UIUtils.Label) SetupModeButton(EditorType type, string name, Vector3 pos)

@@ -170,6 +170,14 @@ public static class ConfigGroup
             )
     ];
     
+    public static readonly List<ConfigType> QuestControl =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<QuestBlock>("Quest ID", "quest_id", 
+                (b, f) => b.QuestName = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> Transition =
     [
         ConfigurationManager.RegisterConfigType(

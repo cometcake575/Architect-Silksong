@@ -109,17 +109,17 @@ public static class CustomAssetManager
         callback(Sprites[id]);
     }
 
-    public static void DoLoadSound(GameObject obj, string url)
+    public static void DoLoadSound(string url, Action<AudioClip> callback)
     {
-        ArchitectPlugin.Instance.StartCoroutine(LoadSound(url, obj));
+        ArchitectPlugin.Instance.StartCoroutine(LoadSound(url, callback));
     }
 
-    private static IEnumerator LoadSound(string url, [CanBeNull] GameObject obj = null)
+    private static IEnumerator LoadSound(string url, Action<AudioClip> callback)
     {
         if (LoadingSounds.Contains(url))
         {
             yield return new WaitUntil(() => !LoadingSounds.Contains(url));
-            if (obj && Sounds.TryGetValue(url, out var sound)) obj.GetComponent<WavObject>().sound = sound;
+            if (Sounds.TryGetValue(url, out var sound)) callback(sound);
             yield break;
         }
         
@@ -139,7 +139,7 @@ public static class CustomAssetManager
             }));
         }
 
-        if (obj) obj.GetComponent<WavObject>().sound = Sounds[url];
+        callback(Sounds[url]);
     }
 
     public static string GetPath(string url)
@@ -179,6 +179,31 @@ public static class CustomAssetManager
         else return;
 
         var url = config.GetValue();
+        DownloadingAssets += 1;
+        var b = await SaveFile(url, GetPath(url) + fileType);
+        DownloadingAssets -= 1;
+        Downloaded += 1;
+        status.text = "Downloading Assets...\n" +
+                      $"{Downloaded}/{downloadCount}";
+
+        if (!b) Failed++;
+    }
+
+    public static async Task TryDownloadAssets(string url, string type, Text status, int downloadCount)
+    {
+        string fileType;
+        switch (type)
+        {
+            case "png":
+                fileType = ".png";
+                break;
+            case "wav":
+                fileType = ".wav";
+                break;
+            default:
+                return;
+        }
+
         DownloadingAssets += 1;
         var b = await SaveFile(url, GetPath(url) + fileType);
         DownloadingAssets -= 1;
