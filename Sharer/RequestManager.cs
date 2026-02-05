@@ -22,7 +22,7 @@ namespace Architect.Sharer;
 
 public static class RequestManager
 {
-    public const string URL = "http://127.0.0.1:5000";
+    public const string URL = "https://cometcake575.pythonanywhere.com";
     public const string LEVEL_TYPE = "silksong";
 
     [CanBeNull] private static string _sharerKey = StorageManager.LoadSharerKey();
