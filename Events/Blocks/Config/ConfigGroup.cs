@@ -178,6 +178,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> ToolControl =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ToolBlock>("Tool ID", "tool_id", 
+                (b, f) => b.ToolName = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> Transition =
     [
         ConfigurationManager.RegisterConfigType(

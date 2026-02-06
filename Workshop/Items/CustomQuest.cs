@@ -104,7 +104,7 @@ public class CustomQuest : SpriteItem
 
     public void RefreshLSprite()
     {
-        if (GIconUrl.IsNullOrWhiteSpace()) return;
+        if (LIconUrl.IsNullOrWhiteSpace()) return;
         CustomAssetManager.DoLoadSprite(LIconUrl, LPoint, LPpu, 1, 1, sprites =>
         {
             if (sprites.IsNullOrEmpty()) return;

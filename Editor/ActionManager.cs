@@ -162,7 +162,10 @@ public class EraseObject(List<ObjectPlacement> placements) : IEdit
 {
     public void Execute()
     {
-        foreach (var o in placements) o.Destroy();
+        foreach (var o in placements)
+        {
+            PlacementManager.GetPlacement(o.GetId())?.Destroy();
+        }
     }
     
     public static void Execute(string scene, List<string> removals)
@@ -226,7 +229,10 @@ public class MoveObjects(List<(ObjectPlacement, Vector3, Vector3)> data) : IEdit
     public void Execute()
     {
         // Dragging preview will already have moved to new position, this is used for undo/redo and multiplayer
-        foreach (var (obj, pos, _) in data) obj.Move(pos);
+        foreach (var (obj, pos, _) in data)
+        {
+            PlacementManager.GetPlacement(obj.GetId())?.Move(pos);
+        }
     }
     
     public static void Execute(string scene, List<(string, Vector3)> movements)

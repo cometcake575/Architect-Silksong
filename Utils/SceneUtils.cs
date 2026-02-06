@@ -249,6 +249,7 @@ public static class SceneUtils
         csm.atmosSnapshot = GameManager.instance.noAtmosSnapshot;
         csm.enviroSnapshot = GameManager.instance.silentSnapshot;
         csm.musicSnapshot = GameManager.instance.noMusicSnapshot;
+        csm.darknessLevel = 0;
         
         sm.AddComponent<HazardRespawnMarker>();
         sm.SetActive(true);

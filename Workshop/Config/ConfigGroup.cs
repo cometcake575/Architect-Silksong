@@ -135,6 +135,27 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> CustomTool = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomTool>("Tool Name", "tool_name", (item, value) =>
+            {
+                item.ItemName = value.GetValue();
+            }).WithDefaultValue("Sample Name")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomTool>("Description", "tool_desc", (item, value) =>
+            {
+                item.ItemDesc = value.GetValue();
+            }).WithDefaultValue("Sample Description")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomTool>("Type", "tool_type", (item, value) =>
+            {
+                item.ItemType = (ToolItemType)value.GetValue();
+            }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill")
+        )
+    ];
+    
     public static readonly List<ConfigType> Scene = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomScene>("Group ID", "scene_group", (item, value) =>
@@ -219,6 +240,56 @@ public static class ConfigGroup
             {
                 item.Color.b = value.GetValue();
             }).WithDefaultValue(1)
+        )
+    ];
+    
+    public static readonly List<ConfigType> UseToolSprites =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new NoteConfigType<CustomTool>("Only apply to Red and Skill tools", "tool_sprite_type_info")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomTool>("HUD Icon URL", "png_tool_ui_url", (item, value) =>
+            {
+                item.HIconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomTool>("Anti Aliasing", "png_tool_ui_antialias", (item, value) =>
+            {
+                item.HPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomTool>("Pixels Per Unit", "png_tool_ui_ppu", (item, value) =>
+            {
+                item.HPpu = value.GetValue();
+            }).WithDefaultValue(100)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomTool>("HUD Usable URL", "png_tool_glow_url", (item, value) =>
+            {
+                item.GIconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomTool>("Anti Aliasing", "png_tool_glow_antialias", (item, value) =>
+            {
+                item.GPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomTool>("Pixels Per Unit", "png_tool_glow_ppu", (item, value) =>
+            {
+                item.GPpu = value.GetValue();
+            }).WithDefaultValue(100)
+        )
+    ];
+    
+    public static readonly List<ConfigType> RedTools =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new NoteConfigType<CustomTool>("Only apply to Red tools", "tool_red_info")
         )
     ];
     

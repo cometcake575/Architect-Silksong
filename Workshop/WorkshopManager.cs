@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Editor;
+using Architect.Events.Blocks.Outputs;
 using Architect.Storage;
 using Architect.Utils;
 using Architect.Workshop.Config;
@@ -25,6 +26,13 @@ public static class WorkshopManager
             ConfigGroup.SpriteItem,
             ConfigGroup.ItemUsing,
             ConfigGroup.ItemUse);
+
+        Register<CustomTool>("Tool",
+            new Vector2(-300, -225),
+            ConfigGroup.CustomTool,
+            ConfigGroup.SpriteItem,
+            ConfigGroup.UseToolSprites,
+            ConfigGroup.RedTools);
         
         Register<CustomQuest>("Quest",
             new Vector2(-100, -150),
@@ -38,11 +46,6 @@ public static class WorkshopManager
         Register<CustomScene>("Scene",
             new Vector2(-100, -300),
             ConfigGroup.Scene);
-    }
-    
-    public static void Setup()
-    {
-        StorageManager.LoadWorkshopData();
         
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,
@@ -60,6 +63,43 @@ public static class WorkshopManager
                 }
                 return orig(self, predicate);
             });
+        
+        typeof(HeroController).Hook(nameof(HeroController.ThrowTool),
+            (Action<HeroController, bool> orig, HeroController self, bool isAutoThrow) =>
+            {
+                if (self.willThrowTool)
+                {
+                    if (CustomTool.List.Contains(self.willThrowTool.name))
+                    {
+                        switch (self.willThrowTool.type)
+                        {
+                            case ToolItemType.Skill:
+                                HeroController.instance.TakeSilk(PlayerData.instance.SilkSkillCost);
+                                break;
+                            case ToolItemType.Red:
+                            {
+                                var sd = self.willThrowTool.SavedData;
+                                sd.AmountLeft--;
+                                self.willThrowTool.SavedData = sd;
+                                ToolItemManager.ReportAllBoundAttackToolsUpdated();
+                                break;
+                            }
+                            case ToolItemType.Blue:
+                            case ToolItemType.Yellow:
+                            default:
+                                break;
+                        }
+
+                        ToolBlock.DoBroadcast(self.willThrowTool.name);
+                    }
+                }
+                orig(self, isAutoThrow);
+            });
+    }
+    
+    public static void Setup()
+    {
+        StorageManager.LoadWorkshopData();
     }
 
     public static void LoadWorkshop(WorkshopData data)

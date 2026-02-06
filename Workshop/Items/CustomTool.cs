@@ -1,0 +1,115 @@
+using System.Collections.Generic;
+using Architect.Storage;
+using BepInEx;
+using TeamCherry.Localization;
+using UnityEngine;
+
+namespace Architect.Workshop.Items;
+
+public class CustomTool : SpriteItem
+{
+    private ToolItemBasic _tool;
+
+    public static readonly List<string> List = [];
+
+    public string ItemName = string.Empty;
+    public string ItemDesc = string.Empty;
+    public ToolItemType ItemType = ToolItemType.Red;
+    
+    public string HIconUrl = string.Empty;
+    public bool HPoint;
+    public float HPpu = 100;
+    
+    public string GIconUrl = string.Empty;
+    public bool GPoint;
+    public float GPpu = 100;
+
+    public int RepairCost;
+    public bool PreventIncrease;
+    public int MaxAmount = 10;
+    
+    public override (string, string)[] FilesToDownload => [
+        (IconUrl, "png"),
+        (HIconUrl, "png"),
+        (GIconUrl, "png")
+    ];
+    
+    public override void Register()
+    {
+        List.Add(Id);
+
+        _tool = ItemType == ToolItemType.Skill ? 
+            ScriptableObject.CreateInstance<ToolItemSkill>() : 
+            ScriptableObject.CreateInstance<CustomToolItem>();
+        _tool.usageOptions.FsmEventName = "";
+        _tool.name = Id;
+        _tool.type = ItemType;
+        _tool.displayName = new LocalisedString("ArchitectMod", ItemName);
+        _tool.description = new LocalisedString("ArchitectMod", ItemDesc);
+        
+        _tool.alternateUnlockedTest = new PlayerDataTest();
+
+        _tool.preventStorageIncrease = PreventIncrease;
+        _tool.baseStorageAmount = MaxAmount;
+        
+        ToolItemManager.Instance.toolItems.Add(_tool);
+        ToolItemManager.IncrementVersion();
+        
+        base.Register();
+        RefreshHSprite();
+        RefreshGSprite();
+    }
+
+    protected override void OnReadySprite()
+    {
+        _tool.inventorySprite = Sprite;
+    }
+
+    public override void Unregister()
+    {
+        List.Remove(Id);
+        
+        ToolItemManager.Instance.toolItems.Remove(_tool);
+        ToolItemManager.IncrementVersion();
+    }
+
+    public void RefreshHSprite()
+    {
+        if (HIconUrl.IsNullOrWhiteSpace()) return;
+        CustomAssetManager.DoLoadSprite(HIconUrl, HPoint, HPpu, 1, 1, sprites =>
+        {
+            if (sprites.IsNullOrEmpty()) return;
+            _tool.hudSprite = sprites[0];
+        });
+    }
+
+    public void RefreshGSprite()
+    {
+        if (GIconUrl.IsNullOrWhiteSpace()) return;
+        CustomAssetManager.DoLoadSprite(GIconUrl, GPoint, GPpu, 1, 1, sprites =>
+        {
+            if (sprites.IsNullOrEmpty()) return;
+            switch (_tool)
+            {
+                case ToolItemSkill tis:
+                    tis.hudGlowSprite = sprites[0];
+                    break;
+                case CustomToolItem cti:
+                    cti.fullSprite = sprites[0];
+                    break;
+            }
+        });
+    }
+
+    public class CustomToolItem : ToolItemBasic
+    {
+        public Sprite fullSprite;
+        
+        public override Sprite GetHudSprite(IconVariants iconVariant)
+        {
+            var orig = base.GetHudSprite(iconVariant);
+            if (!IsEmpty) return fullSprite ?? orig;
+            return orig;
+        }
+    }
+}

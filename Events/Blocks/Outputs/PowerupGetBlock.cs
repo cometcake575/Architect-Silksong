@@ -75,6 +75,7 @@ public class PowerupGetBlock : ScriptBlock
         msg.nameText.text = NameText;
         msg.prefixText.text = PrefixText;
         msg.promptButtonSingleText.text = SuffixText;
+        msg.promptButtonModifierText.text = "";
         msg.descTextTop.text = DescTopText;
         msg.descTextBot.text = DescBotText;
 
@@ -84,6 +85,8 @@ public class PowerupGetBlock : ScriptBlock
             msg.promptButtonSingleText.transform.SetLocalPositionX(0);
             msg.promptButtonSingleText.alignment = TextAlignmentOptions.Center;
         } else msg.promptButtonSingle.textContainer.textMeshPro.text = ButtonText;
+
+        msg.promptButtonModifier.textContainer.textMeshPro.text = "";
         
         msg.transform.SetLocalPosition2D(Vector2.zero);
         GameCameras.instance.HUDOut();
