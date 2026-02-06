@@ -464,6 +464,9 @@ public static class EditManager
         if (IsEditing && Input.GetMouseButton(0)) CurrentObject.Release();
 
         _lastEditToggle = Time.time;
+        foreach (var o in SceneManager.GetActiveScene().GetRootGameObjects()
+                     .SelectMany(o => o.GetComponentsInChildren<TransitionPoint>())) 
+            o.gameObject.SetActive(false);
         IsEditing = !IsEditing;
         if (!IsEditing) PlayerData.instance.isInvincible = false;
         else

@@ -1456,11 +1456,12 @@ public static class VanillaObjects
     {
         Categories.Effects.Add(new PreloadObject("Blur Plane", "blur_plane",
             ("Belltown", "BlurPlane"), 
-            sprite: ResourceUtils.LoadSpriteResource("blur", ppu: 3775000),
+            sprite: ResourceUtils.LoadSpriteResource("blur", ppu: 3775),
             preview: true,
             description: "Having multiple blur planes together can cause issues.\n" +
                          "It is recommended to disable the vanilla BlurPlane when using a custom one.",
-            preloadAction: o => o.transform.localScale = new Vector3(100000, 100000, 1)))
+            preloadAction: o => o.transform.localScale = new Vector3(100, 100, 1),
+            postSpawnAction: o => o.transform.localScale *= 1000000))
             .WithConfigGroup(ConfigGroup.BlurPlane);
         
         Categories.Misc.Add(new PreloadObject("Breakable Wall A", "breakable_wall_2",

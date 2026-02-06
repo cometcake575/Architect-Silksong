@@ -33,8 +33,7 @@ public static class WorkshopManager
         
         Register<SceneGroup>("Scene Group",
             new Vector2(-300, -300),
-            ConfigGroup.SceneGroup,
-            ConfigGroup.SpriteItem);
+            ConfigGroup.SceneGroup);
         
         Register<CustomScene>("Scene",
             new Vector2(-100, -300),

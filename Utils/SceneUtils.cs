@@ -206,6 +206,13 @@ public static class SceneUtils
         col.offset = new Vector2(-9999, -9999);
         col.isTrigger = true;
 
+        var gs = 0f;
+        if (GameManager.instance.IsFirstLevelForPlayer)
+        {
+            gs = HeroController.instance.rb2d.gravityScale;
+            HeroController.instance.rb2d.gravityScale = 0;
+        }
+
         yield return SceneManager.UnloadSceneAsync(current);
 
         yield return new WaitForSeconds(0.2f);
@@ -220,6 +227,8 @@ public static class SceneUtils
             Tilemap = map;
             GameManager.instance.tilemap = map;
             map.ForceBuild();
+            
+            HeroController.instance.rb2d.gravityScale = gs;
         }
 
         yield return new WaitForSeconds(0.8f);
