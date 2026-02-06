@@ -24,7 +24,7 @@ public class CustomTool : SpriteItem
     public bool GPoint;
     public float GPpu = 100;
 
-    public int RepairCost;
+    public int RepairCost = 5;
     public bool PreventIncrease;
     public int MaxAmount = 10;
     
@@ -51,6 +51,7 @@ public class CustomTool : SpriteItem
 
         _tool.preventStorageIncrease = PreventIncrease;
         _tool.baseStorageAmount = MaxAmount;
+        if (_tool is CustomToolItem cti) cti.cost = RepairCost;
         
         ToolItemManager.Instance.toolItems.Add(_tool);
         ToolItemManager.IncrementVersion();
@@ -104,12 +105,25 @@ public class CustomTool : SpriteItem
     public class CustomToolItem : ToolItemBasic
     {
         public Sprite fullSprite;
+
+        public int cost = 5;
         
         public override Sprite GetHudSprite(IconVariants iconVariant)
         {
             var orig = base.GetHudSprite(iconVariant);
             if (!IsEmpty) return fullSprite ?? orig;
             return orig;
+        }
+
+        public override bool TryReplenishSingle(
+            bool doReplenish,
+            float inCost,
+            out float outCost,
+            out int reserveCost)
+        {
+            base.TryReplenishSingle(doReplenish, inCost, out outCost, out reserveCost);
+            outCost = cost;
+            return true;
         }
     }
 }

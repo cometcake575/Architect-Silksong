@@ -290,6 +290,24 @@ public static class ConfigGroup
     [
         ConfigurationManager.RegisterConfigType(
             new NoteConfigType<CustomTool>("Only apply to Red tools", "tool_red_info")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomTool>("Max Amount", "tool_red_max", (item, value) =>
+            {
+                item.MaxAmount = value.GetValue();
+            }).WithDefaultValue(10)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomTool>("Affected by Pouches", "tool_red_pouch", (item, value) =>
+            {
+                item.PreventIncrease = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomTool>("Repair Cost", "tool_red_repair_cost", (item, value) =>
+            {
+                item.RepairCost = value.GetValue();
+            }).WithDefaultValue(5)
         )
     ];
     
