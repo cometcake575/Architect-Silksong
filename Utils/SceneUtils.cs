@@ -112,7 +112,7 @@ public static class SceneUtils
             {
                 if (CustomScenes.ContainsKey(destScene))
                 {
-                    StorageManager.SaveScene(destScene, PlacementManager.GetLevelData());
+                    StorageManager.SaveScene(self.sceneName, PlacementManager.GetLevelData());
                     StorageManager.SaveScene(StorageManager.GLOBAL, PlacementManager.GetGlobalData());
                     
                     PersistentAudioManager.OnLeaveScene();

@@ -74,7 +74,7 @@ public static class PrefabManager
         var scene = SceneManager.CreateScene(sceneName);
         SceneManager.SetActiveScene(scene);
 
-        var unload2 =  SceneManager.UnloadSceneAsync(current);
+        var unload2 = SceneManager.UnloadSceneAsync(current);
         if (unload2 != null) while (!unload2.isDone) yield return null;
 
         var sm = SceneUtils.CreateSceneManager();
