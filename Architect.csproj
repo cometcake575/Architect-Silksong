@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>3.13.6</Version>
+    <Version>3.13.7</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +35,9 @@
     <PackageReference Include="Silksong.SSMP" Version="0.0.5"/>
     <Reference Include="Patchwork">
       <HintPath>$(SilksongPluginsFolder)/Ashiepaws-Patchwork/Patchwork.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickWarp">
+      <HintPath>$(SilksongPluginsFolder)/QuickWarp/QuickWarp.dll</HintPath>
     </Reference>
   </ItemGroup>
 

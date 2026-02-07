@@ -436,6 +436,35 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Png = GroupUtils.Merge(Playable, [
+        EventManager.RegisterReceiverType(new EventReceiverType("png_flip_x", "FlipX", o =>
+        {
+            o.transform.SetScaleX(-o.transform.GetScaleX());
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("png_flip_y", "FlipY", o =>
+        {
+            o.transform.SetScaleY(-o.transform.GetScaleY());
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("png_set_width", "SetWidth", (o, b) =>
+        {
+            if (b == null) return;
+            o.transform.SetScaleX(b.GetVariable<float>("New Width", 1));
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("png_set_height", "SetHeight", (o, b) =>
+        {
+            if (b == null) return;
+            o.transform.SetScaleY(b.GetVariable<float>("New Height", 1));
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("png_set_fps", "SetFPS", (o, b) =>
+        {
+            if (b == null) return;
+            var png = o.GetComponentInChildren<PngObject>();
+            var val = b.GetVariable<float>("New FPS", 1);
+            if (val == 0) png.frameTime = 0;
+            else png.frameTime = 1 / Mathf.Max(0.01f, val);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Wav = GroupUtils.Merge(Playable, [
         EventManager.RegisterReceiverType(new EventReceiverType("set_volume", "SetVolume", (o, b) =>
         {

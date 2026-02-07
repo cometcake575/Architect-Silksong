@@ -10,6 +10,7 @@ public class CustomPickup : MonoBehaviour
     public string item = "";
     public bool ignoreObtained;
     public bool touch;
+    public int persistence;
 
     private CollectableItemPickup _itemPickup;
 
@@ -43,6 +44,15 @@ public class CustomPickup : MonoBehaviour
             gameObject.transform);
         _itemPickup.transform.SetLocalPosition2D(Vector2.zero);
         _itemPickup.name = name + " Pickup";
+        switch (persistence)
+        {
+            case 0:
+                _itemPickup.gameObject.RemoveComponent<PersistentBoolItem>();
+                break;
+            case 1:
+                _itemPickup.GetComponent<PersistentBoolItem>().itemData.IsSemiPersistent = true;
+                break;
+        }
 
         var savedItem = MiscUtils.GetSavedItem(item);
         if (!savedItem) return;

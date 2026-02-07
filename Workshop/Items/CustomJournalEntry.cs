@@ -23,11 +23,6 @@ public class CustomJournalEntry : SpriteItem
 
     public override void Register()
     {
-        foreach (var o in EnemyJournalManager.Instance.recordList)
-        {
-            ArchitectPlugin.Logger.LogInfo(o.name);
-        }
-        
         _record = ScriptableObject.CreateInstance<EnemyJournalRecord>();
         _record.name = Id;
         

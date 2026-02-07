@@ -33,8 +33,9 @@ public static class MiscObjects
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
                 "Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.Png)
-            .WithReceiverGroup(ReceiverGroup.Playable)
+            .WithReceiverGroup(ReceiverGroup.Png)
             .WithBroadcasterGroup(BroadcasterGroup.Finishable)
+            .WithInputGroup(InputGroup.Png)
             .WithOutputGroup(OutputGroup.Png));
         
         Categories.Misc.Add(CreateSilkSphere());

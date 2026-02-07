@@ -55,15 +55,14 @@ public class PngObject : MonoBehaviour, IPlayable
         _sprites = newSprites;
         _renderer.sprite = _sprites[0];
 
-        if (frameTime == 0) _count = 1;
-        else _remainingFrameTime = frameTime;
+        _remainingFrameTime = frameTime;
     }
 
     private void Update()
     {
-        if (_count <= 1 || !playing || !_renderer || _sprites == null) return;
+        if (frameTime <= 0 || _count <= 1 || !playing || !_renderer || _sprites == null) return;
         _remainingFrameTime -= Time.deltaTime;
-        while (_remainingFrameTime < 0)
+        while (_remainingFrameTime < 0 && frameTime > 0)
         {
             _remainingFrameTime += frameTime;
             frame++;

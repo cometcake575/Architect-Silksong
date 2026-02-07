@@ -105,6 +105,7 @@ public static class WorkshopManager
     
     public static void Setup()
     {
+        SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
     }
 

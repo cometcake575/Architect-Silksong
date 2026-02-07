@@ -30,6 +30,17 @@ public static class SceneUtils
 
     public static readonly Dictionary<string, CustomScene> CustomScenes = [];
     public static readonly Dictionary<string, SceneGroup> SceneGroups = [];
+
+    public static bool QWHookEnabled;
+
+    public static void InitQWHook()
+    {
+        if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("io.github.hk-speedrunning.quickwarp"))
+        {
+            ArchitectPlugin.Logger.LogInfo("Enabling QuickWarp Hook");
+            QWHookEnabled = QuickWarpHook.Init();
+        }
+    }
     
     public static void Init()
     {

@@ -107,7 +107,10 @@ public static class ConfigGroup
             {
                 o.GetComponent<CustomPickup>().ignoreObtained = value.GetValue();
             }).WithDefaultValue(true)),
-        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "item_stay"))
+        ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Stay Collected", "item_stay", (o, value) =>
+        {
+            o.GetComponent<CustomPickup>().persistence = value.GetValue();
+        }).WithOptions("False", "Bench", "True"))
     ]);
 
     public static readonly List<ConfigType> CoralNut = GroupUtils.Merge(Visible, [

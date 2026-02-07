@@ -631,8 +631,8 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.TriggerZones);
     }
 
-    public static readonly Sprite SquareDamager = ResourceUtils.LoadSpriteResource("enemy_hurt", FilterMode.Point, ppu: 10);
-    public static readonly Sprite CircleDamager = ResourceUtils.LoadSpriteResource("enemy_hurt_circle", FilterMode.Point, ppu: 10);
+    public static readonly Sprite SquareDamager = ResourceUtils.LoadSpriteResource("enemy_damager", FilterMode.Point, ppu:64);
+    public static readonly Sprite CircleDamager = ResourceUtils.LoadSpriteResource("enemy_damager_circle", FilterMode.Point, ppu:64);
 
     private static PlaceableObject CreateEnemyDamager()
     {
@@ -644,6 +644,8 @@ public static class UtilityObjects
         var bc = point.AddComponent<BoxCollider2D>();
         bc.isTrigger = true;
         bc.size = new Vector2(3.2f, 3.2f);
+
+        point.AddComponent<NonBouncer>();
 
         var cc = point.AddComponent<PolygonCollider2D>();
         cc.isTrigger = true;
@@ -849,7 +851,8 @@ public static class UtilityObjects
         return new CustomObject("Binoculars", "freecam", point,
                 description:"Enables a Freecam mode when hit by the player,\n" +
                             "or when receiving the StartUsing trigger. Use the scroll wheel to zoom in/out.\n\n" +
-                            "Useful for giving players a preview of a map.")    
+                            "Useful for giving players a preview of a map.\n\n" +
+                            "Press jump to leave Freecam mode.")    
             .WithConfigGroup(ConfigGroup.Binoculars)
             .WithReceiverGroup(ReceiverGroup.Binoculars)
             .WithBroadcasterGroup(BroadcasterGroup.Binoculars );

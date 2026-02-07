@@ -29,8 +29,6 @@ public class CustomTransitionPoint : PreviewableBehaviour
         
         var tp = GetComponent<TransitionPoint>();
         
-        tp.targetScene ??= "Tut_01";
-        tp.entryPoint ??= "left1";
         SceneTeleportMap.AddTransitionGate(tp.targetScene, tp.entryPoint);
 
         tp.InteractLabel = InteractableBase.PromptLabels.Enter;

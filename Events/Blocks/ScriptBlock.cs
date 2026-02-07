@@ -23,7 +23,7 @@ public abstract class ScriptBlock
 {
     protected static readonly ScriptBlockConverter Sbc = new();
     
-    protected static readonly (string, string) Space = ("", "");
+    public static readonly (string, string) Space = ("", "");
 
     protected static readonly Sprite FlowchartBlock = ResourceUtils.LoadSpriteResource(
         "Flowcharts.flowchart_block",

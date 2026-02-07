@@ -50,7 +50,7 @@ public class CustomTool : SpriteItem
         _tool.alternateUnlockedTest = new PlayerDataTest();
 
         _tool.preventStorageIncrease = PreventIncrease;
-        _tool.baseStorageAmount = MaxAmount;
+        if (ItemType == ToolItemType.Red) _tool.baseStorageAmount = MaxAmount;
         if (_tool is CustomToolItem cti) cti.cost = RepairCost;
         
         ToolItemManager.Instance.toolItems.Add(_tool);

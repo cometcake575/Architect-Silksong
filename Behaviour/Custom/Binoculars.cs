@@ -30,7 +30,7 @@ public class Binoculars : MonoBehaviour
         if (!_active) return;
 
         var actions = InputHandler.Instance.inputActions;
-        if (actions.Jump.WasPressed)
+        if (actions.Jump.WasPressed || GameManager.instance.isPaused)
         {
             BinocularsActive = false;
             _active = false;

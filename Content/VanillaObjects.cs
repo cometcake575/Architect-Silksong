@@ -1831,6 +1831,15 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixGiantFlea)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .WithConfigGroup(ConfigGroup.HugeFlea);
+
+        Categories.Effects.Add(new PreloadObject("Fly Swarm Effect", "fly_swarm_effect",
+            ("Arborium_02", "ant_tiny_white_bug_swarm"), preloadAction: o =>
+            {
+                o.transform.GetChild(0).localPosition = Vector3.zero;
+                o.transform.GetChild(1).localPosition = Vector3.zero;
+                o.transform.GetChild(2).gameObject.SetActive(false);
+                o.transform.GetChild(3).gameObject.SetActive(false);
+            }, sprite: ResourceUtils.LoadSpriteResource("fly_swarm", ppu:62.5f)));
     }
     
     private static void AddCogworksObjects()

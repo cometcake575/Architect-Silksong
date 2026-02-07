@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Events.Blocks;
 
 namespace Architect.Objects.Groups;
 
@@ -13,6 +14,14 @@ public static class InputGroup
     public static readonly List<(string, string)> Velocity = [("New X", "Number"), ("New Y", "Number")];
     
     public static readonly List<(string, string)> FleaCounter = [("New Value", "Number")];
+
+    public static readonly List<(string, string)> Png =
+    [
+        ("New Width", "Number"),
+        ScriptBlock.Space,
+        ("New Height", "Number"),
+        ScriptBlock.Space,
+        ("New FPS", "Number")];
     
     public static readonly List<(string, string)> Colourer = [
         ("R", "Number"), 
