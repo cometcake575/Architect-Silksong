@@ -2130,7 +2130,7 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType("Shape", "trigger_shape",
+            new ChoiceConfigType("Shape", "enemy_damager_shape",
                     (o, value) =>
                     {
                         if (value.GetValue() == 0) return;
