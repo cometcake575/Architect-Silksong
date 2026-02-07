@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Architect.Events.Blocks.Outputs;
 using Architect.Storage;
 using BepInEx;
@@ -9,6 +10,8 @@ namespace Architect.Workshop.Items;
 public class CustomItem : SpriteItem
 {
     private CustomCollectable _item;
+
+    public static readonly Dictionary<string, CustomItem> Items = [];
 
     public string ItemName = string.Empty;
     public string ItemDesc = string.Empty;
@@ -50,6 +53,7 @@ public class CustomItem : SpriteItem
         _item.consume = Consume;
         
         CollectableItemManager.Instance.masterList.Add(_item);
+        Items.Add(Id, this);
         
         base.Register();
         RefreshAudio1();
@@ -60,6 +64,7 @@ public class CustomItem : SpriteItem
 
     public override void Unregister()
     {
+        Items.Remove(Id);
         CollectableItemManager.Instance.masterList.Remove(_item);
         CollectableItemManager.IncrementVersion();
     }

@@ -63,7 +63,12 @@ public static class WorkshopManager
                     foreach (var name in collectables.GetValidNames()
                                  .Where(item => !self.IsItemInMasterList(item)))
                     {
-                        collectables.RuntimeData.Remove(name);
+                        if (CustomItem.Items.TryGetValue(name, out var item))
+                        {
+                            item.Unregister();
+                            item.Register();
+                        }
+                        else collectables.RuntimeData.Remove(name);
                         CollectableItemManager.IncrementVersion();
                     }
                 }
