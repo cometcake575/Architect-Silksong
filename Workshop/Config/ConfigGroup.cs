@@ -9,7 +9,7 @@ public static class ConfigGroup
     public static readonly List<ConfigType> SpriteItem =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<SpriteItem>("Texture URL", "png_url", (item, value) =>
+            new StringConfigType<SpriteItem>("Icon URL", "png_url", (item, value) =>
             {
                 item.IconUrl = value.GetValue();
             })
@@ -53,6 +53,65 @@ public static class ConfigGroup
             {
                 item.MaxPitch1 = value.GetValue();
             }).WithDefaultValue(1.2f)
+        )
+    ];
+    
+    public static readonly List<ConfigType> JournalEntry =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomJournalEntry>("Enemy Name", "journal_display_name", (item, value) =>
+            {
+                item.ItemName = value.GetValue();
+            }).WithDefaultValue("Sample Name")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomJournalEntry>("Description", "journal_desc", (item, value) =>
+            {
+                item.ItemDesc = value.GetValue();
+            }).WithDefaultValue("Sample Description")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomJournalEntry>("Hunter's Notes", "journal_hdesc", (item, value) =>
+            {
+                item.ItemHDesc = value.GetValue();
+            }).WithDefaultValue("Sample Hunter's Notes")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomJournalEntry>("Required Kills", "journal_kills", (item, value) =>
+            {
+                item.KillsRequired = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new NoteConfigType<CustomJournalEntry>("A vanilla entry (list can be found in the guide)", "journal_before_note")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomJournalEntry>("Add Before", "journal_before", (item, value) =>
+            {
+                item.InsertBefore = value.GetValue();
+            })
+        )
+    ];
+    
+    public static readonly List<ConfigType> JournalEntrySprites =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomJournalEntry>("Enemy Image URL", "png_journal_url", (item, value) =>
+            {
+                item.LIconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomJournalEntry>("Anti Aliasing", "png_journal_antialias", (item, value) =>
+            {
+                item.LPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomJournalEntry>("Pixels Per Unit", "png_journal_ppu", (item, value) =>
+            {
+                item.LPpu = value.GetValue();
+            }).WithDefaultValue(100)
         )
     ];
     

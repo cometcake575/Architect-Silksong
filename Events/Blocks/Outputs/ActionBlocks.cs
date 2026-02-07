@@ -19,6 +19,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<CurrencyBlock>("Currency Control", ConfigGroup.CurrencyHook);
         ScriptManager.RegisterInputBlock<StatusBlock>("Status Control");
         ScriptManager.RegisterInputBlock<QuestBlock>("Quest Control", ConfigGroup.QuestControl);
+        ScriptManager.RegisterInputBlock<JournalEntryBlock>("Journal Control", ConfigGroup.EntryControl);
         ScriptManager.RegisterInputBlock<ToolBlock>("Tool Control", ConfigGroup.ToolControl);
         ScriptManager.RegisterInputBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);

@@ -178,6 +178,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> EntryControl =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<JournalEntryBlock>("Entry ID", "journal_entry_id", 
+                (b, f) => b.EntryName = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> ToolControl =
     [
         ConfigurationManager.RegisterConfigType(

@@ -33,6 +33,12 @@ public static class WorkshopManager
             ConfigGroup.SpriteItem,
             ConfigGroup.UseToolSprites,
             ConfigGroup.RedTools);
+
+        Register<CustomJournalEntry>("Journal Entry",
+            new Vector2(-100, -225),
+            ConfigGroup.JournalEntry,
+            ConfigGroup.SpriteItem,
+            ConfigGroup.JournalEntrySprites);
         
         Register<CustomQuest>("Quest",
             new Vector2(-100, -150),

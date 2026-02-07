@@ -2128,6 +2128,22 @@ public static class ConfigGroup
                 }))
     ]);
 
+    public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Shape", "trigger_shape",
+                    (o, value) =>
+                    {
+                        if (value.GetValue() == 0) return;
+                        o.GetComponent<PolygonCollider2D>().enabled = true;
+                        o.GetComponent<BoxCollider2D>().enabled = false;
+                    }, (o, value, _) =>
+                    {
+                        o.GetComponent<SpriteRenderer>().sprite =
+                            value.GetValue() == 0 ? UtilityObjects.SquareDamager : UtilityObjects.CircleDamager;
+                    })
+                .WithOptions("Square", "Circle").WithDefaultValue(0))
+    ]);
+
     public static readonly List<ConfigType> FleaCounter = GroupUtils.Merge(Png, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Start Score", "flea_counter_start", (o, value) =>

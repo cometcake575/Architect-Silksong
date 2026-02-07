@@ -248,7 +248,7 @@ public static class WorkshopUI
             var (addBtn, addLabel) = UIUtils.MakeTextButton(
                 "Create", $"Create {type}", _openArea, pos, 
                 new Vector2(0.5f, 1), new Vector2(0.5f, 1),
-                size: new Vector2(420, 80));
+                size: new Vector2(440, 80));
             addLabel.textComponent.fontSize = 18;
             
             addBtn.onClick.AddListener(() =>

@@ -32,6 +32,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateObjectColourer());
         Categories.Utility.Add(CreateTriggerZone());
+        // Categories.Utility.Add(CreateEnemyDamager());
         Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateFakePerformance());
         
@@ -628,6 +629,48 @@ public static class UtilityObjects
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
             .WithReceiverGroup(ReceiverGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZones);
+    }
+
+    public static readonly Sprite SquareDamager = ResourceUtils.LoadSpriteResource("enemy_hurt", FilterMode.Point, ppu: 10);
+    public static readonly Sprite CircleDamager = ResourceUtils.LoadSpriteResource("enemy_hurt_circle", FilterMode.Point, ppu: 10);
+
+    private static PlaceableObject CreateEnemyDamager()
+    {
+        var point = new GameObject("Enemy Damager")
+        {
+            layer = LayerMask.NameToLayer("Attack")
+        };
+
+        var bc = point.AddComponent<BoxCollider2D>();
+        bc.isTrigger = true;
+        bc.size = new Vector2(3.2f, 3.2f);
+
+        var cc = point.AddComponent<PolygonCollider2D>();
+        cc.isTrigger = true;
+
+        var points = new Vector2[24];
+        for (var i = 0; i < 24; i++)
+        {
+            var angle = 2 * Mathf.PI * i / 24;
+            var x = Mathf.Cos(angle) * 1.6f;
+            var y = Mathf.Sin(angle) * 1.6f;
+            points[i] = new Vector2(x, y);
+        }
+
+        cc.pathCount = 1;
+        cc.SetPath(0, points);
+        cc.enabled = false;
+
+        var de = point.AddComponent<DamageEnemies>();
+        
+        point.SetActive(false);
+        Object.DontDestroyOnLoad(point);
+
+        return new CustomObject("Enemy Damager", "enemy_damager",
+                point,
+                sprite: SquareDamager,
+                description: "Damages enemies inside the zone with configurable damage and damage types.")
+            .WithConfigGroup(ConfigGroup.EnemyDamager);
     }
 
     private static PlaceableObject CreateInteraction()
