@@ -5,7 +5,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class UIBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["HudIn", "HudOut", "FadeIn", "FadeOut"];
+    protected override IEnumerable<string> Inputs => ["HudIn", "HudOut", "FadeIn", "FadeOut", "CloseInventory"];
 
     private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
     protected override Color Color => DefaultColor;
@@ -41,6 +41,9 @@ public class UIBlock : ScriptBlock
                 break;
             case "FadeOut":
                 ScreenFaderUtils.Fade(Color.clear, new Color(R, G, B, A), Duration);
+                break;
+            case "CloseInventory":
+                EventRegister.SendEvent(EventRegisterEvents.InventoryCancel);
                 break;
         }
     }

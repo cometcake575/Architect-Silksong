@@ -38,7 +38,7 @@ public static class SceneUtils
         if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("io.github.hk-speedrunning.quickwarp"))
         {
             ArchitectPlugin.Logger.LogInfo("Enabling QuickWarp Hook");
-            QWHookEnabled = QuickWarpHook.Init();
+            QuickWarpHookLoader.Init();
         }
     }
     

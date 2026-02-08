@@ -54,6 +54,7 @@ public class CustomTool : SpriteItem
         if (_tool is CustomToolItem cti) cti.cost = RepairCost;
         
         ToolItemManager.Instance.toolItems.Add(_tool);
+        WorkshopManager.CustomItems.Add(this);
         ToolItemManager.IncrementVersion();
         
         base.Register();
@@ -71,6 +72,7 @@ public class CustomTool : SpriteItem
         List.Remove(Id);
         
         ToolItemManager.Instance.toolItems.Remove(_tool);
+        WorkshopManager.CustomItems.Remove(this);
         ToolItemManager.IncrementVersion();
     }
 

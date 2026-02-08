@@ -14,10 +14,10 @@ public static class QuickWarpHook
     private static FieldInfo _transitionsByScene;
     private static FieldInfo _respawnsByScene;
 
-    public static bool Init()
+    public static void Init()
     {
         _gui = Resources.FindObjectsOfTypeAll<QuickWarpGUI>().FirstOrDefault();
-        if (!_gui) return false;
+        if (!_gui) return;
 
         _areaNames = typeof(QuickWarpGUI).GetField("_areaNames",
             BindingFlags.NonPublic | BindingFlags.Instance);
@@ -27,8 +27,8 @@ public static class QuickWarpHook
             BindingFlags.NonPublic | BindingFlags.Static);
         _respawnsByScene = typeof(Warp).GetField("_respawns_by_scene", 
             BindingFlags.NonPublic | BindingFlags.Static);
-        
-        return true;
+
+        SceneUtils.QWHookEnabled = true;
     }
 
     private static void RegisterGroup(string groupName)

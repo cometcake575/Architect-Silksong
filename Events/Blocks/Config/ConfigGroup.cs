@@ -162,7 +162,7 @@ public static class ConfigGroup
                     "Trap")
         ),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<EnemyBlock>("Health Amount", "enemy_hp_amount", 
+            new IntConfigType<EnemyBlock>("Amount", "enemy_hp_amount", 
                 (b, f) =>
                 {
                     b.Health = f.GetValue();

@@ -15,6 +15,8 @@ namespace Architect.Workshop;
 public static class WorkshopManager
 {
     public static WorkshopData WorkshopData;
+    
+    public static readonly List<WorkshopItem> CustomItems = [];
 
     public static readonly Dictionary<string, (Vector2, Func<string, WorkshopItem>)> WorkshopItems = [];
 
@@ -59,19 +61,21 @@ public static class WorkshopManager
             {
                 if (Application.isPlaying)
                 {
+                    foreach (var item in CustomItems.ToArray())
+                    {
+                        item.Unregister();
+                        item.Register();
+                    }
+
                     var collectables = PlayerData.instance.Collectables;
                     foreach (var name in collectables.GetValidNames()
                                  .Where(item => !self.IsItemInMasterList(item)))
                     {
-                        if (CustomItem.Items.TryGetValue(name, out var item))
-                        {
-                            item.Unregister();
-                            item.Register();
-                        }
-                        else collectables.RuntimeData.Remove(name);
+                        collectables.RuntimeData.Remove(name);
                         CollectableItemManager.IncrementVersion();
                     }
                 }
+
                 return orig(self, predicate);
             });
         

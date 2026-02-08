@@ -112,6 +112,50 @@ public static class ConfigGroup
             o.GetComponent<CustomPickup>().persistence = value.GetValue();
         }).WithOptions("False", "Bench", "True"))
     ]);
+    
+    public static readonly List<ConfigType> EnemyDamager =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Damage Type", "enemy_damager_damage_type", 
+                    (o, value) =>
+                    {
+                        var val = value.GetStringValue();
+                        o.GetComponent<DamageEnemies>().attackType = val switch
+                        {
+                            "Water" => AttackTypes.RuinsWater,
+                            "Zap" => AttackTypes.Lightning,
+                            "Needle" => AttackTypes.Nail,
+                            _ => Enum.Parse<AttackTypes>(val)
+                        };
+                    }).WithDefaultValue(1)
+                .WithOptions(
+                    "Generic",
+                    "Needle",
+                    "Spell",
+                    "Splatter",
+                    "Water",
+                    "Lava",
+                    "Explosion",
+                    "Coal",
+                    "Fire",
+                    "Zap",
+                    "Trap")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Amount", "enemy_damager_hp_amount", 
+                (o, value) =>
+                {
+                    o.GetComponent<DamageEnemies>().damageDealt = value.GetValue();
+                }).WithDefaultValue(10)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Multi Hit", "enemy_damager_multihit", 
+                (o, value) =>
+                {
+                    o.GetComponent<DamageEnemies>().multiHitter = value.GetValue();
+                }).WithDefaultValue(false)
+        )
+    ];
 
     public static readonly List<ConfigType> CoralNut = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
@@ -2131,7 +2175,7 @@ public static class ConfigGroup
                 }))
     ]);
 
-    public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [
+    public static readonly List<ConfigType> EnemyDamageSource = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Shape", "enemy_damager_shape",
                     (o, value) =>

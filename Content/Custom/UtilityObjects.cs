@@ -32,7 +32,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateObjectColourer());
         Categories.Utility.Add(CreateTriggerZone());
-        // Categories.Utility.Add(CreateEnemyDamager());
+        Categories.Utility.Add(CreateEnemyDamager());
         Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateFakePerformance());
         
@@ -664,6 +664,7 @@ public static class UtilityObjects
         cc.enabled = false;
 
         var de = point.AddComponent<DamageEnemies>();
+        de.damageDealt = 5;
         
         point.SetActive(false);
         Object.DontDestroyOnLoad(point);

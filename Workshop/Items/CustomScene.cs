@@ -16,14 +16,14 @@ public class CustomScene : WorkshopItem
     {
         SceneUtils.CustomScenes.Add(Id, this);
         
-        if (SceneUtils.QWHookEnabled) QuickWarpHook.RegisterScene(Group, Id);
+        if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.RegisterScene(Group, Id);
     }
 
     public override void Unregister()
     {
         SceneUtils.CustomScenes.Remove(Id);
         
-        if (SceneUtils.QWHookEnabled) QuickWarpHook.UnregisterScene(Group, Id);
+        if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.UnregisterScene(Group, Id);
     }
 
     public override Sprite GetIcon() => Icon;

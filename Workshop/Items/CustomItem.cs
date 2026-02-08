@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Architect.Events.Blocks.Outputs;
 using Architect.Storage;
 using BepInEx;
@@ -10,8 +9,6 @@ namespace Architect.Workshop.Items;
 public class CustomItem : SpriteItem
 {
     private CustomCollectable _item;
-
-    public static readonly Dictionary<string, CustomItem> Items = [];
 
     public string ItemName = string.Empty;
     public string ItemDesc = string.Empty;
@@ -31,7 +28,9 @@ public class CustomItem : SpriteItem
     public override void Register()
     {
         _item = ScriptableObject.CreateInstance<CustomCollectable>();
+        
         _item.consumeEvent = UseEvent;
+        _item.consume = Consume;
         
         _item.name = Id;
         _item.displayName = new LocalisedString("ArchitectMod", ItemName);
@@ -49,11 +48,9 @@ public class CustomItem : SpriteItem
         _item.customMaxAmount = MaxAmount;
         _item.setExtraPlayerDataBools = [];
         _item.setExtraPlayerDataInts = [];
-
-        _item.consume = Consume;
         
         CollectableItemManager.Instance.masterList.Add(_item);
-        Items.Add(Id, this);
+        WorkshopManager.CustomItems.Add(this);
         
         base.Register();
         RefreshAudio1();
@@ -64,23 +61,9 @@ public class CustomItem : SpriteItem
 
     public override void Unregister()
     {
-        Items.Remove(Id);
+        WorkshopManager.CustomItems.Remove(this);
         CollectableItemManager.Instance.masterList.Remove(_item);
         CollectableItemManager.IncrementVersion();
-    }
-
-    public class CustomCollectable : CollectableItemBasic
-    {
-        public string consumeEvent;
-        public bool consume;
-        
-        public override void ConsumeItemResponse()
-        {
-            if (consumeEvent.IsNullOrWhiteSpace()) return;
-            BroadcastBlock.DoBroadcast(consumeEvent);
-        }
-
-        public override bool TakeItemOnConsume => consume;
     }
 
     protected override void OnReadySprite()
@@ -142,5 +125,19 @@ public class CustomItem : SpriteItem
             Clip2 = clip;
             OnReadyAudio2();
         });
+    }
+
+    public class CustomCollectable : CollectableItemBasic
+    {
+        public string consumeEvent;
+        public bool consume;
+        
+        public override void ConsumeItemResponse()
+        {
+            if (consumeEvent.IsNullOrWhiteSpace()) return;
+            BroadcastBlock.DoBroadcast(consumeEvent);
+        }
+
+        public override bool TakeItemOnConsume => consume;
     }
 }
