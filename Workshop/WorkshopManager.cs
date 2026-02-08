@@ -120,6 +120,7 @@ public static class WorkshopManager
 
     public static void LoadWorkshop(WorkshopData data)
     {
+        data ??= new WorkshopData();
         if (WorkshopData != null) foreach (var item in WorkshopData.Items) item.Unregister();
 
         WorkshopData = data;

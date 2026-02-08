@@ -287,16 +287,19 @@ public static class SceneUtils
 
         Tilemap.Build();
 
-        tm.AddComponent<TilemapLateLoader>();
+        tm.AddComponent<TilemapLateLoader>().scene = scene.Id;
         
         return (tm, Tilemap.renderData);
     }
     
     public static List<(int, int)> TilemapChanges;
     public static List<(int, int)> ExtTilemapChanges;
+    public static string TilemapScene;
 
     public class TilemapLateLoader : MonoBehaviour
     {
+        public string scene;
+        
         public void Load()
         {
             if (!ExtTilemapChanges.IsNullOrEmpty())
@@ -324,7 +327,7 @@ public static class SceneUtils
 
         private void Update()
         {
-            Load();
+            if (scene == TilemapScene) Load();
         }
     }
 }

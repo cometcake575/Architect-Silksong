@@ -957,7 +957,11 @@ public static class ConfigGroup
                             break;
                         case 4:
                             o.layer = Default;
-                            o.GetComponentInChildren<Collider2D>().isTrigger = false;
+                            foreach (var c in o.GetComponentsInChildren<Collider2D>())
+                            {
+                                c.isTrigger = false;
+                                c.gameObject.layer = Default;
+                            }
                             break;
                     }
                 }
@@ -1482,6 +1486,19 @@ public static class ConfigGroup
                     fsm.GetState("Shake")?.DisableAction(3);
                 }
             }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> Aknid = GroupUtils.Merge(Enemies,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Spit Attack", "aknid_cut_attack", (o, value) =>
+            {
+                if (value.GetValue())
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Choice").DisableAction(0);
+                }
+            }).WithDefaultValue(false))
     ]);
     
     public static readonly List<ConfigType> AknidMother = GroupUtils.Merge(Aknids,

@@ -619,6 +619,17 @@ public static class VanillaObjects
         AddEnemy("Lampbearer", "lampbearer", ("Library_04", "Black Thread States/Normal World/Lightbearer (3)"),
                 preloadAction: EnemyFixers.FixPatroller)
             .WithConfigGroup(ConfigGroup.YPatroller).DoFlipX();
+
+        Categories.Attacks.Add(new PreloadObject("Lamp", "lamp_attack",
+                ("localpoolprefabs_assets_arealibrary",
+                    "Assets/Prefabs/Enemies/Fungus 1 + 2/Lightbearer Globe Projectile.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
         AddEnemy("Scrollreader", "scrollreader", ("Library_04", "Black Thread States/Normal World/Scrollkeeper"));
         AddEnemy("Vaultkeeper", "vaultkeeper", ("Library_04", "Scholar"));
     }
@@ -1490,7 +1501,7 @@ public static class VanillaObjects
             {
                 var was = o.activeSelf;
                 o.SetActive(false);
-                Object.Instantiate(o, threadEffect.transform);
+                Object.Instantiate(o, threadEffect.transform).RemoveComponent<DeactivateIfPlayerdataTrue>();
                 if (was) o.SetActive(true);
             }, notSceneBundle: true));
         
@@ -2227,6 +2238,33 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Hunter's March Pressure Plate", "hunter_trap_plate",
                 ("Ant_04", "Hunter Trap Plate"), postSpawnAction: InteractableFixers.FixMarchPlate)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)).DoFlipX();
+
+        Categories.Attacks.Add(new PreloadObject("Skarr Sickle", "sickle_attack_s",
+                ("localpoolprefabs_assets_areaant", "Assets/Prefabs/Hornet Enemies/Hunter Child Sickle.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+
+        Categories.Attacks.Add(new PreloadObject("Skarr Javelin", "javelin_attack",
+                ("localpoolprefabs_assets_areaant", "Assets/Prefabs/Hornet Enemies/Bone Hunter Javelin.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+
+        Categories.Attacks.Add(new PreloadObject("Large Skarr Javelin", "sickle_attack_l",
+                ("localpoolprefabs_assets_areaantareamemory", "Assets/Prefabs/Hornet Enemies/Bone Hunter Chief Javelin.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
     }
 
     private static void AddMarrowObjects()
@@ -2629,7 +2667,8 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Aknids);
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),
-            postSpawnAction: EnemyFixers.FixAknid);
+            postSpawnAction: EnemyFixers.FixAknid)
+            .WithConfigGroup(ConfigGroup.Aknid);
         AddEnemy("Aknid Mother", "grove_pilgrim",
             ("localpoolprefabs_assets_areadust.bundle", "Assets/Prefabs/Hornet Enemies/Grove Pilgrim Fly.prefab"),
             notSceneBundle: true,
@@ -2674,6 +2713,36 @@ public static class VanillaObjects
             ("Mosstown_01", "Black Thread States Thread Only Variant/Normal World/Pilgrim Moss Spitter"),
             preloadAction: MiscFixers.FixRotation);
 
+        Categories.Attacks.Add(new PreloadObject("Moss Ball", "moss_ball",
+                ("localpoolprefabs_assets_areamoss",
+                    "Assets/Prefabs/Enemies/Fungus 1 + 2/Grass Ball.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+
+        Categories.Attacks.Add(new PreloadObject("Aknid Glob", "aspid_glob",
+                ("localpoolprefabs_assets_areamoss",
+                    "Assets/Prefabs/Hornet Enemies/Aspid Collector Glob.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
+        Categories.Attacks.Add(new PreloadObject("Aknid Bullet", "aspid_bullet",
+                ("localpoolprefabs_assets_areacrawl", 
+                    "Assets/Prefabs/Hornet Enemies/Aspid Bullet.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+        
         AddEnemy("Pilgrim Groveller", "pilgrim_03",
             ("Mosstown_01", "Pilgrim 03 (1)")).DoFlipX();
 

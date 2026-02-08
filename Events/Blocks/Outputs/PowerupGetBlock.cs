@@ -85,9 +85,12 @@ public class PowerupGetBlock : ScriptBlock
             msg.promptButtonSingleText.transform.SetLocalPositionX(0);
             msg.promptButtonSingleText.alignment = TextAlignmentOptions.Center;
         }
+        else
+        {
+            msg.promptButtonSingle.textContainer.textMeshPro.text = ButtonText;
+        }
 
         msg.promptButtonModifier.gameObject.SetActive(false);
-        msg.promptButtonSingle.gameObject.SetActive(false);
         
         msg.transform.SetLocalPosition2D(Vector2.zero);
         GameCameras.instance.HUDOut();

@@ -47,7 +47,7 @@ public static class EventManager
             legacyBroadcaster.Broadcast(triggerName);
         }
 
-        foreach (var block in obj.GetComponents<ObjectBlock.ObjectBlockReference>())
+        foreach (var block in obj.GetComponentsInParent<ObjectBlock.ObjectBlockReference>())
         {
             block.OnEvent(triggerName);
         }

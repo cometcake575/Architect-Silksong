@@ -137,8 +137,9 @@ public static class PlacementManager
         
         if (SceneUtils.CustomScenes.ContainsKey(sceneName))
         {
-            if (!_levelData.TilemapChanges.IsNullOrEmpty()) SceneUtils.TilemapChanges = _levelData.TilemapChanges;
-            if (ext != null && !ext.TilemapChanges.IsNullOrEmpty()) SceneUtils.ExtTilemapChanges = ext.TilemapChanges;
+            SceneUtils.TilemapChanges = _levelData.TilemapChanges;
+            SceneUtils.ExtTilemapChanges = ext?.TilemapChanges;
+            SceneUtils.TilemapScene = sceneName;
         }
         else
         {
