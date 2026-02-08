@@ -49,6 +49,7 @@ public class ArchitectPlugin : BaseUnityPlugin
         MiscFixers.Init();
         EnemyFixers.Init();
         HazardFixers.Init();
+        InteractableFixers.Init();
         
         Categories.Init();
         

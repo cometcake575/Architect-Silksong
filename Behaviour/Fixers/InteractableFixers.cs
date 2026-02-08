@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Architect.Events;
-using Architect.Objects.Placeable;
 using Architect.Utils;
 using UnityEngine;
 
@@ -9,6 +8,16 @@ namespace Architect.Behaviour.Fixers;
 
 public static class InteractableFixers
 {
+    public static void Init()
+    {
+        typeof(AnimatorControlSequence).Hook(nameof(AnimatorControlSequence.PlayAnimatorFromStart),
+            (Action<AnimatorControlSequence> orig, AnimatorControlSequence self) =>
+            {
+                if (!self.animator) return;
+                orig(self);
+            });
+    }
+    
     public static void FixMarchPlate(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
