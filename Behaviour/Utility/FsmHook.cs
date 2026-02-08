@@ -1,5 +1,6 @@
 using System.Linq;
 using Architect.Placements;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -27,7 +28,12 @@ public class FsmHook : MonoBehaviour
     private void Setup()
     {
         _setup = true;
-        if (!PlacementManager.Objects.TryGetValue(targetId, out var target)) return;
+        if (!PlacementManager.Objects.TryGetValue(targetId, out var target))
+        {
+            var o = ObjectUtils.GetGameObjectFromArray(gameObject.scene.GetRootGameObjects(), targetId);
+            if (!o) return;
+            target = o;
+        }
         _fsm = target.GetComponentsInChildren<PlayMakerFSM>().FirstOrDefault(o => o.FsmName == fsmName);
     }
 
