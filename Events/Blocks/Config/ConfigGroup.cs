@@ -276,6 +276,24 @@ public static class ConfigGroup
                 .WithDefaultValue(true).MarkPrefabOnly()
         )
     ];
+    
+    public static readonly List<ConfigType> StringVar =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType<StringVarBlock>("Variable ID", "var_id_str", 
+                (b, f) => b.Id = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<StringVarBlock>("Persistence", "var_persistence_str", 
+                (b, f) => b.PType = f.GetValue())
+                .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<StringVarBlock>("Prefab-Local", "var_local_str", 
+                    (b, f) => b.Local = f.GetValue())
+                .WithDefaultValue(true).MarkPrefabOnly()
+        )
+    ];
 
     public static readonly List<ConfigType> TimeSlower = [
         ConfigurationManager.RegisterConfigType(
@@ -598,6 +616,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> ConstantText =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ConstantTextBlock>("Text", "constant_text", 
+                (b, f) => b.Value = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> PdBool =
     [
         ConfigurationManager.RegisterConfigType(
@@ -656,6 +682,15 @@ public static class ConfigGroup
             new ChoiceConfigType<CompareBlock>("Mode", "compare_mode", 
                 (b, f) => b.Mode = f.GetValue())
                 .WithOptions("=", ">", "<", ">=", "<=").WithDefaultValue(0)
+        )
+    ];
+    
+    public static readonly List<ConfigType> StringCompare =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<StringCompareBlock>("Mode", "string_compare_mode", 
+                (b, f) => b.Mode = f.GetValue())
+                .WithOptions("Equals", "Contains", "Starts", "Ends", "Longer").WithDefaultValue(0)
         )
     ];
     

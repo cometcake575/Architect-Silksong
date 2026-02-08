@@ -29,3 +29,30 @@ public class CompareBlock : ScriptBlock
         };
     }
 }
+
+public class StringCompareBlock : ScriptBlock
+{
+    protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
+    protected override IEnumerable<(string, string)> InputVars => [("1", "Text"), ("2", "Text")];
+    
+    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Compare Text";
+
+    public int Mode;
+
+    protected override object GetValue(string id)
+    {
+        var v1 = GetVariable<string>("1");
+        var v2 = GetVariable<string>("2");
+        
+        return Mode switch
+        {
+            0 => v1 == v2,
+            1 => v1.Contains(v2),
+            2 => v1.StartsWith(v2),
+            3 => v1.EndsWith(v2),
+            _ => v1.Length > v2.Length
+        };
+    }
+}

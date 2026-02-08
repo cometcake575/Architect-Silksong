@@ -22,6 +22,7 @@ public static class UtilityObjects
     {
         Categories.Utility.Add(CreateItem());
         Categories.Utility.Add(CreateEnemyHook());
+        Categories.Utility.Add(CreateFsmHook());
         Categories.Utility.Add(CreateVoider());
         Categories.Utility.Add(CreatePlasmifier());
         Categories.Utility.Add(CreateShielder());
@@ -244,6 +245,22 @@ public static class UtilityObjects
             .WithBroadcasterGroup(BroadcasterGroup.Enemies)
             .WithOutputGroup(OutputGroup.EnemyHook)
             .WithReceiverGroup(ReceiverGroup.Enemies);
+    }
+
+    private static PlaceableObject CreateFsmHook()
+    {
+        var hook = new GameObject("FSM Hook");
+        Object.DontDestroyOnLoad(hook);
+        hook.SetActive(false);
+
+        hook.AddComponent<FsmHook>();
+        
+        return new CustomObject("FSM Hook", "fsm_hook", hook, 
+                "Allows detecting the current FSM State of an object.\n" +
+                "The FSMSeer mod can be used to see FSM names and states.",
+                sprite:ResourceUtils.LoadSpriteResource("fsm_hook", FilterMode.Point, ppu:64))
+            .WithConfigGroup(ConfigGroup.FsmHook)
+            .WithOutputGroup(OutputGroup.FsmHook);
     }
 
     private static PlaceableObject CreatePlasmifier()

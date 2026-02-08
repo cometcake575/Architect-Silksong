@@ -51,6 +51,14 @@ public static class OutputGroup
         )
     ];
 
+    public static readonly List<OutputType> FsmHook =
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("fsm_hoo_state", "State", "Text",
+                o => o.GetComponent<FsmHook>().GetState())
+        )
+    ];
+
     public static readonly List<OutputType> ObjectAnchor =
     [
         EventManager.RegisterOutputType(

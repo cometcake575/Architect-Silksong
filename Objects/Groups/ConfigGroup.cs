@@ -1269,6 +1269,21 @@ public static class ConfigGroup
             ).WithDefaultValue(100))
     ]);
 
+    public static readonly List<ConfigType> FsmHook = GroupUtils.Merge(Generic, [
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "fsm_hook_target", 
+                (o, value) => 
+                {
+                    o.GetComponent<FsmHook>().targetId = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("FSM Name", "fsm_hook_name", 
+                (o, value) => 
+                {
+                    o.GetComponent<FsmHook>().fsmName = value.GetValue();
+                }
+            ))
+    ]);
+
     public static readonly List<ConfigType> ObjectAnchor = GroupUtils.Merge(Generic, [
             ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "anchor_target", 
                 (o, value) => 
@@ -1703,6 +1718,7 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> SavageBeastfly = GroupUtils.Merge(Bosses, [
+        DamagesEnemies,
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Start Phase", "beastfly_phase",
                 (o, value) =>

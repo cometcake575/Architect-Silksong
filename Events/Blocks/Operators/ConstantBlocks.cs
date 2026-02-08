@@ -34,3 +34,19 @@ public class ConstantBoolBlock : ScriptBlock
         return Value;
     }
 }
+
+public class ConstantTextBlock : ScriptBlock
+{
+    public string Value;
+
+    protected override IEnumerable<(string, string)> OutputVars => [("Value", "Text")];
+
+    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Constant (Text)";
+
+    protected override object GetValue(string id)
+    {
+        return Value;
+    }
+}

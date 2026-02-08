@@ -8,20 +8,25 @@ public static class OperatorBlocks
     {
         BoolVarBlock.Init();
         NumVarBlock.Init();
+        // StringVarBlock.Init();
         
         ScriptManager.RegisterProcessBlock<CounterBlock>("Counter", ConfigGroup.Counter);
         ScriptManager.RegisterProcessBlock<IfBlock>("If");
         ScriptManager.RegisterProcessBlock<CompareBlock>("Compare", ConfigGroup.Compare);
+        ScriptManager.RegisterProcessBlock<StringCompareBlock>("Compare Text", ConfigGroup.StringCompare);
         ScriptManager.RegisterProcessBlock<ConstantNumBlock>("Constant Num", ConfigGroup.ConstantNum);
         ScriptManager.RegisterProcessBlock<ConstantBoolBlock>("Constant Bool", ConfigGroup.ConstantBool);
+        ScriptManager.RegisterProcessBlock<ConstantTextBlock>("Constant Text", ConfigGroup.ConstantText);
         ScriptManager.RegisterProcessBlock<BoolVarBlock>("Variable (Bool)", ConfigGroup.BoolVar);
         ScriptManager.RegisterProcessBlock<NumVarBlock>("Variable (Number)", ConfigGroup.NumVar);
+        // ScriptManager.RegisterProcessBlock<StringVarBlock>("Variable (Text)", ConfigGroup.StringVar);
         ScriptManager.RegisterProcessBlock<RandomNumBlock>("Random Number", ConfigGroup.RandomNumber);
         ScriptManager.RegisterProcessBlock<RandomBoolBlock>("Random Bool");
         ScriptManager.RegisterProcessBlock<MathsBlock>("Operation", ConfigGroup.Maths);
         ScriptManager.RegisterProcessBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);
         ScriptManager.RegisterProcessBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);
         ScriptManager.RegisterProcessBlock<RaycastBlock>("Raycast", ConfigGroup.Raycast);
+        ScriptManager.RegisterProcessBlock<SceneNameBlock>("Scene Name");
         ScriptManager.RegisterProcessBlock<AndBlock>("And");
         ScriptManager.RegisterProcessBlock<OrBlock>("Or");
         ScriptManager.RegisterProcessBlock<NotBlock>("Not");

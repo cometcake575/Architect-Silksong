@@ -5,7 +5,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class EnemyBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Damage", "Heal", "CappedHeal"];
+    protected override IEnumerable<string> Inputs => ["Damage", "Heal", "CappedHeal", "Set"];
     protected override IEnumerable<(string, string)> InputVars => [("Target", "Enemy")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
@@ -45,6 +45,9 @@ public class EnemyBlock : ScriptBlock
                 break;
             case "Heal":
                 target.hp += Health;
+                break;
+            case "Set":
+                target.hp = Health;
                 break;
             case "CappedHeal":
                 target.AddHP(Health, target.initHp);

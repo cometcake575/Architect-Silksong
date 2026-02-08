@@ -74,7 +74,6 @@ public class BoolVarBlock : LocalBlock
     }
 }
 
-
 public class NumVarBlock : LocalBlock
 {
     protected override IEnumerable<string> Inputs => ["Set"];
@@ -142,5 +141,71 @@ public class NumVarBlock : LocalBlock
             return 0;
         }
         return _pii.itemData.Value / 1000f;
+    }
+}
+
+public class StringVarBlock : LocalBlock
+{
+    protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<(string, string)> InputVars => [("New Value", "Text")];
+    protected override IEnumerable<(string, string)> OutputVars => [("Value", "Text")];
+
+    private static readonly Dictionary<string, PersistentItem<string>> Vars = [];
+    private static readonly Dictionary<string, string> TempVars = [];
+    
+    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Variable (Text)";
+
+    public string Id = "";
+    public int PType;
+
+    private PersistentItem<string> _pii;
+
+    public static void Init()
+    {
+        typeof(HeroController).Hook(nameof(HeroController.SceneInit),
+            (Action<HeroController> orig, HeroController self) =>
+            {
+                orig(self);
+                TempVars.Clear();
+            });
+    }
+
+    protected override void SetupReference()
+    {
+        if (PType == 0) return;
+        if (!Vars.TryGetValue(Id, out var item) || !item)
+        {
+            var o = new GameObject("[Architect] Variable Block");
+            o.SetActive(false);
+            _pii = o.AddComponent<PersistentItem<string>>();
+            _pii.itemData = new PersistentItemData<string>
+            {
+                ID = Id,
+                SceneName = "All",
+                IsSemiPersistent = PType == 1
+            };
+            o.SetActive(true);
+            Vars[Id] = _pii;
+        }
+        else _pii = item;
+    }
+
+    protected override void Trigger(string trigger)
+    {
+        var val = GetVariable<string>("New Value");
+        if (PType == 0)
+        {
+            TempVars[Id] = val;
+            return;
+        }
+
+        _pii.itemData.Value = val;
+    }
+
+    protected override object GetValue(string id)
+    {
+        return PType == 0 ? TempVars.GetValueOrDefault(Id, "") : _pii.itemData.Value;
     }
 }
