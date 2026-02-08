@@ -16,7 +16,7 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Judge = GroupUtils.Merge(Enemies, ["OnBlock"]);
     
-    public static readonly List<string> Stilkin = GroupUtils.Merge(Enemies, ["OnAmbush"]);
+    public static readonly List<string> Ambushers = GroupUtils.Merge(Enemies, ["OnAmbush"]);
     
     public static readonly List<string> Snitchfly = GroupUtils.Merge(Enemies, ["OnFlee"]);
     

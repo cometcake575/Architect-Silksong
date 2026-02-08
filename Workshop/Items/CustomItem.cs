@@ -34,14 +34,14 @@ public class CustomItem : SpriteItem
         
         _item.name = Id;
         _item.displayName = new LocalisedString("ArchitectMod", ItemName);
-        _item.description = new LocalisedString("ArchitectMod", ItemDesc);
+        _item.description = new LocalisedString("ArchitectMod", ItemDesc.Replace("<br>", "\n"));
         _item.useResponseTextOverride = new LocalisedString("ArchitectMod", UseType);
         _item.useResponses =
         [
             new CollectableItem.UseResponse
             {
                 UseType = CanUse ? CollectableItem.UseTypes.Rosaries : CollectableItem.UseTypes.None,
-                Description = new LocalisedString("ArchitectMod", UseDesc)
+                Description = new LocalisedString("ArchitectMod", UseDesc.Replace("<br>", "\n"))
             }
         ];
         

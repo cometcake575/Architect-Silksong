@@ -38,6 +38,15 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> ThreadEffect = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_thread", "Activate", o =>
+        {
+            var sp = o.GetComponent<MiscFixers.ThreadEffect>().sp;
+            sp.gameObject.SetActive(true);
+            sp.PlayPossess();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> AbilityCrystal = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("crystal_clear", "ClearAll", o =>
         {

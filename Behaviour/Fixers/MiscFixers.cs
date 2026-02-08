@@ -1316,4 +1316,17 @@ public static class MiscFixers
     {
         public float time = 1;
     }
+
+    public static void FixThreadEffect(GameObject obj)
+    {
+        var sp = obj.GetComponentInChildren<SilkPossession>(true);
+        sp.possessedEnemy = obj;
+        sp.audioSource = HeroController.instance.audioSource;
+        obj.AddComponent<ThreadEffect>().sp = sp;
+    }
+
+    public class ThreadEffect : MonoBehaviour
+    {
+        public SilkPossession sp;
+    }
 }

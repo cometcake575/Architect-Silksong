@@ -15,7 +15,7 @@ public static class OutputGroup
         EventManager.RegisterOutputType(
             new OutputType("hp", "Health", "Number", o =>
             {
-                var hm = o.GetComponent<HealthManager>();
+                var hm = o.GetComponentInChildren<HealthManager>();
                 return hm ? hm.hp : 0;
             })
         ),

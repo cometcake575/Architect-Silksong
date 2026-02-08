@@ -8,6 +8,7 @@ using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using GlobalSettings;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -1304,11 +1305,11 @@ public static class VanillaObjects
         AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
             postSpawnAction: EnemyFixers.FixStilkin)
-            .WithBroadcasterGroup(BroadcasterGroup.Stilkin);
+            .WithBroadcasterGroup(BroadcasterGroup.Ambushers);
         AddEnemy("Stilkin Trapper", "stilkin_trapper",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
             postSpawnAction: EnemyFixers.FixStilkinTrapper)
-            .WithBroadcasterGroup(BroadcasterGroup.Stilkin).DoFlipX();
+            .WithBroadcasterGroup(BroadcasterGroup.Ambushers).DoFlipX();
 
         AddEnemy("Mothleaf Lagnia", "mothleaf", ("Shadow_26", "Swamp Drifter"));
 
@@ -1450,6 +1451,16 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Judge Statue", "judge_statue",
                 ("Coral_32", "fossil_judge_break_leanRight"), postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        
+        Categories.Effects.Add(new PreloadObject("Sand Effect", "sand_effect",
+                ("Coral_32", "blown_sand_tiled_set"),
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("sand", ppu: 377.5f)))
+            .WithScaleAction((o, f) =>
+            {
+                o.transform.SetScale2D(new Vector2(f, f));
+            })
+            .WithConfigGroup(ConfigGroup.Decorations);
     }
 
     private static void AddMiscObjects()
@@ -1463,6 +1474,35 @@ public static class VanillaObjects
             preloadAction: o => o.transform.localScale = new Vector3(100, 100, 1),
             postSpawnAction: o => o.transform.localScale *= 1000000))
             .WithConfigGroup(ConfigGroup.BlurPlane);
+        
+        var threadEffect = new GameObject("[Architect] Thread Effect");
+        threadEffect.SetActive(false);
+        Object.DontDestroyOnLoad(threadEffect);
+        Categories.Effects.Add(new CustomObject("Thread Effect", "thread_effect", threadEffect,
+                description:"Appears when the 'Activate' trigger is run.",
+                postSpawnAction: MiscFixers.FixThreadEffect,
+                sprite: ResourceUtils.LoadSpriteResource("thread", ppu:64))
+            .WithReceiverGroup(ReceiverGroup.ThreadEffect).DoFlipX());
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "globalpoolprefabs_assets_all", 
+            "Assets/Prefabs/Silk Possession Obj.prefab", o =>
+            {
+                var was = o.activeSelf;
+                o.SetActive(false);
+                Object.Instantiate(o, threadEffect.transform);
+                if (was) o.SetActive(true);
+            }, notSceneBundle: true));
+        
+        var blackThreadEffect = new GameObject("[Architect] Black Thread Effect");
+        blackThreadEffect.SetActive(false);
+        Object.DontDestroyOnLoad(blackThreadEffect);
+        Categories.Effects.Add(new CustomObject("Black Thread Effect", "black_thread_effect", blackThreadEffect,
+                description:"Appears when the 'Activate' trigger is run.",
+                sprite: ResourceUtils.LoadSpriteResource("black_thread", ppu:64))
+            .WithReceiverGroup(ReceiverGroup.RuneBomb));
+        Object.Instantiate(Effects.BlackThreadEnemyStartEffect, blackThreadEffect.transform)
+            .transform.localPosition = Vector3.zero;
         
         Categories.Misc.Add(new PreloadObject("Breakable Wall A", "breakable_wall_2",
             ("Bone_19", "Breakable Wall"),
@@ -1638,7 +1678,8 @@ public static class VanillaObjects
                 sr.transitions = [];
             }, description: "Activates when the 'Fire' trigger is run, just the blast effect")
             .WithRotationGroup(RotationGroup.All)
-            .WithReceiverGroup(ReceiverGroup.Blast));
+            .WithReceiverGroup(ReceiverGroup.Blast)
+            .WithConfigGroup(ConfigGroup.Damager));
 
         Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
@@ -1968,6 +2009,24 @@ public static class VanillaObjects
         /*AddEnemy("Widow", "widow",
             ("Belltown_Shrine", "Black Thread States Thread Only Variant/Normal World/Boss Scene/Spinner Boss"),
             postSpawnAction: EnemyFixers.FixWidow);*/
+
+        Categories.Attacks.Add(new PreloadObject("Bell Eater Bullet", "bell_bullet",
+                ("localpoolprefabs_assets_areabellway", "Assets/Prefabs/Enemies/Projectiles/Shot Giant Centipede.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
+
+        Categories.Attacks.Add(new PreloadObject("Bell Eater Bomb", "bell_bomb",
+                ("localpoolprefabs_assets_areabellway", "Assets/Prefabs/Hornet Bosses/Giant Centipede Bomb.prefab"),
+                description:"Usually already landed by the time the room finishes loading.\n" +
+                            "Best used with the Object Spawner.",
+                notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
     }
 
     private static void AddWispObjects()
@@ -2464,12 +2523,16 @@ public static class VanillaObjects
                     var rangeCol = range.GetComponent<BoxCollider2D>();
                     rangeCol.offset = Vector2.zero;
                     rangeCol.size = new Vector2(8, 5);
+
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Wall?").AddAction(() => o.BroadcastEvent("OnAmbush"), 0);
                 })
-            .WithConfigGroup(ConfigGroup.Gromling);
+            .WithConfigGroup(ConfigGroup.Gromling)
+            .WithBroadcasterGroup(BroadcasterGroup.Ambushers);
+        
         AddEnemy("Grom", "grom", ("Crawl_01", "Bone Worm Nests/Worm Pool/Bone Worm (2)"),
             postSpawnAction: EnemyFixers.FixGrom)
             .WithConfigGroup(ConfigGroup.Grom);
-
         
         Categories.Attacks.Add(new PreloadObject("Lifeblood Bullet", "lifeblood_shot",
                 ("localpoolprefabs_assets_lifeblood", "Assets/Prefabs/Hornet Enemies/Lifeblood Projectile.prefab"),

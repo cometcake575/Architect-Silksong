@@ -23,7 +23,7 @@ public class TravelBlock : ScriptBlock
     public static void Init()
     {
         PreloadManager.RegisterPreload(new BasicPreload(
-            "localpoolprefabs_assets_areabellway.bundle", 
+            "localpoolprefabs_assets_areabellway", 
             "Assets/Prefabs/UI/Fast Travel Map.prefab",
             o =>
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Architect.Sharer.Info;
+using Architect.Storage;
 using Architect.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -203,6 +204,8 @@ public class Browse : MenuState
 
     private Button _downloadSBtn;
 
+    private Text _status;
+
     private void SetupLevelInfoZone()
     {
         _title = UIUtils.MakeLabel("Title", _level, new Vector2(-195, 125),
@@ -274,11 +277,11 @@ public class Browse : MenuState
             size: new Vector2(420, 80));
         downloadSLabel.textComponent.fontSize = 18;
 
-        var status = UIUtils.MakeLabel("Status", _level,
+        _status = UIUtils.MakeLabel("Status", _level,
             new Vector2(0, -280),
             new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f)).textComponent;
-        status.fontSize = 15;
-        status.alignment = TextAnchor.MiddleCenter;
+        _status.fontSize = 15;
+        _status.alignment = TextAnchor.MiddleCenter;
         
         _downloadSBtn.onClick.AddListener(() =>
         {
@@ -300,7 +303,7 @@ public class Browse : MenuState
             _downloadSBtn.interactable = false;
             closeBtn.interactable = false;
             SharerManager.ReturnBtn.interactable = false;
-            yield return RequestManager.DownloadSave(_info.LevelId, status);
+            yield return RequestManager.DownloadSave(_info.LevelId, _status);
             closeBtn.interactable = true;
             downloadBtn.interactable = true;
             _downloadSBtn.interactable = true;
@@ -313,7 +316,7 @@ public class Browse : MenuState
             _downloadSBtn.interactable = false;
             closeBtn.interactable = false;
             SharerManager.ReturnBtn.interactable = false;
-            yield return RequestManager.DownloadLevel(_info.LevelId, status);
+            yield return RequestManager.DownloadLevel(_info.LevelId, _status);
             closeBtn.interactable = true;
             downloadBtn.interactable = true;
             if (_info.HasSave) _downloadSBtn.interactable = true;
@@ -344,6 +347,8 @@ public class Browse : MenuState
         SharerManager.DoGetSprite(info.IconURL, _img);
 
         _userTitle.text = info.CreatorName;
+        _status.text = "Downloading a level will overwrite existing level files\n" +
+                       $"Downloading a save will overwrite slot {Settings.SaveSlot.Value}";
         StartCoroutine(RequestManager.GetUserInfo(new UserInfo(info.CreatorId, false),
             (_, desc, pfp) =>
             {

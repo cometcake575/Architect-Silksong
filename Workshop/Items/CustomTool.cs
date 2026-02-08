@@ -45,7 +45,7 @@ public class CustomTool : SpriteItem
         _tool.name = Id;
         _tool.type = ItemType;
         _tool.displayName = new LocalisedString("ArchitectMod", ItemName);
-        _tool.description = new LocalisedString("ArchitectMod", ItemDesc);
+        _tool.description = new LocalisedString("ArchitectMod", ItemDesc.Replace("<br>", "\n"));
         
         _tool.alternateUnlockedTest = new PlayerDataTest();
 
