@@ -13,8 +13,8 @@ public class ReceiveBlock : LocalBlock
     
     public string ActualEventName;
     public string EventName;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var te = new GameObject("[Architect] Receive Block").AddComponent<RcEvent>();
         te.Block = this;

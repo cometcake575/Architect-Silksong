@@ -21,6 +21,7 @@ namespace Architect.Events.Blocks;
 [JsonConverter(typeof(ScriptBlockConverter))]
 public abstract class ScriptBlock
 {
+    public static readonly Sprite AddSprite = ResourceUtils.LoadSpriteResource("add", FilterMode.Point);
     protected static readonly ScriptBlockConverter Sbc = new();
     
     public static readonly (string, string) Space = ("", "");
@@ -113,7 +114,7 @@ public abstract class ScriptBlock
         return clone;
     }
 
-    public void Setup(bool visual, bool newBlock = false)
+    public virtual void Setup(bool visual, bool newBlock = false)
     {
         ScriptManager.Blocks[BlockId] = this;
         if (visual)
@@ -129,7 +130,7 @@ public abstract class ScriptBlock
         }
     }
     
-    public void LateSetup()
+    public virtual void LateSetup()
     {
         if (!EditManager.IsEditing) return;
         if (!IsValid) return;
@@ -457,6 +458,7 @@ public abstract class ScriptBlock
         public ScriptBlock Block;
         public Text text;
         public Image img;
+        public ScriptBlockInstance overrideDrag;
 
         public readonly Dictionary<string, Transform> LinkStarts = [];
         public readonly Dictionary<string, Transform> LinkEnds = [];
@@ -471,12 +473,22 @@ public abstract class ScriptBlock
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (overrideDrag)
+            {
+                overrideDrag.OnDrag(eventData);
+                return;
+            }
             transform.position = eventData.position + _offset;
             Block.Position = transform.localPosition;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (overrideDrag)
+            {
+                overrideDrag.OnBeginDrag(eventData);
+                return;
+            }
             _offset = (Vector2)transform.position - eventData.position;
             transform.SetAsLastSibling();
         }
@@ -491,7 +503,7 @@ public abstract class ScriptBlock
 
     protected virtual void DeserializeExtraData(Dictionary<string, string> data) { }
 
-    protected virtual void SetupReference() { }
+    public virtual void SetupReference() { }
     
     protected virtual void Reset() { }
 

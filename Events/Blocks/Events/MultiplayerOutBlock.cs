@@ -12,8 +12,8 @@ public class MultiplayerOutBlock : ScriptBlock
     protected override string Name => "Multiplayer Receive";
     
     public string EventName;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var te = new GameObject("[Architect] Multiplayer Out Block").AddComponent<MpEvent>();
         te.Block = this;

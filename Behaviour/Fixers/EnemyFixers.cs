@@ -2531,6 +2531,7 @@ public static class EnemyFixers
         {
             var fsm = gameObject.LocateMyFSM("Control");
             fsm.GetState("Wall").AddAction(() => fsm.SendEvent("WAKE"));
+            fsm.SendEvent("WAKE");
         }
     }
 

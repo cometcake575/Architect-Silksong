@@ -227,7 +227,7 @@ public static class SceneUtils
         yield return SceneManager.UnloadSceneAsync(current);
 
         yield return new WaitForSeconds(0.2f);
-        GameManager.instance.SetPausedState(false);
+        UIManager.instance.AudioGoToGameplay(0);
 
         if (GameManager.instance.IsFirstLevelForPlayer)
         {
@@ -243,7 +243,7 @@ public static class SceneUtils
         }
 
         yield return new WaitForSeconds(0.8f);
-        GameManager.instance.SetPausedState(false);
+        UIManager.instance.AudioGoToGameplay(0);
     }
 
     public static GameObject CreateSceneManager()

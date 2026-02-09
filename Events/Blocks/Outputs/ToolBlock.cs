@@ -27,8 +27,8 @@ public class ToolBlock : ScriptBlock
         var tool = ToolItemManager.Instance.toolItems.GetByName(ToolName);
         return tool && tool.IsEquipped;
     }
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var te = new GameObject("[Architect] Receive Block").AddComponent<ToolEvent>();
         te.Block = this;

@@ -33,7 +33,7 @@ public class BoolVarBlock : LocalBlock
             });
     }
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         if (PType == 0) return;
         if (!Vars.TryGetValue(Id, out var item) || !item)
@@ -102,7 +102,7 @@ public class NumVarBlock : LocalBlock
             });
     }
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         if (PType == 0) return;
         if (!Vars.TryGetValue(Id, out var item) || !item)
@@ -172,7 +172,7 @@ public class StringVarBlock : LocalBlock
             });
     }
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         if (PType == 0) return;
         if (!Vars.TryGetValue(Id, out var item) || !item)

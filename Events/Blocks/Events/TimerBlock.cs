@@ -30,7 +30,7 @@ public class TimerBlock : ToggleableBlock
         _te.Restart();
     }
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         _te = new GameObject("[Architect] Timer Block").AddComponent<TimerEvent>();
         _te.Block = this;

@@ -9,7 +9,7 @@ public class StartBlock : ScriptBlock
     protected override Color Color => Color.green;
     protected override string Name => "On Room Load";
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         new GameObject("[Architect] Start Block").AddComponent<StartEvent>().Block = this;
     }

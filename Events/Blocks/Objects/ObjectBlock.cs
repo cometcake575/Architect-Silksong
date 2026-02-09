@@ -114,7 +114,7 @@ public class ObjectBlock : ScriptBlock
         TypeId = data["object_type"];
     }
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         if (!PlacementManager.Objects.TryGetValue(TargetId, out _referencedObject)) return;
         _reference = _referencedObject.AddComponent<ObjectBlockReference>();

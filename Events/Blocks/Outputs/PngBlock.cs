@@ -17,8 +17,8 @@ public class PngBlock : ScriptBlock
     public string Url;
     public bool Point;
     public float Ppu;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var obj = new GameObject("[Architect] Custom PNG");
         obj.SetActive(false);

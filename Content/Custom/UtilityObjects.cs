@@ -110,7 +110,7 @@ public static class UtilityObjects
                 if (config)
                     try
                     {
-                        point = ObjectUtils.GetGameObjectFromArray(o.scene.GetRootGameObjects(), config.objectPath);
+                        point = ObjectUtils.FindGameObject(config.objectPath);
                     }
                     catch (ArgumentException) { }
 

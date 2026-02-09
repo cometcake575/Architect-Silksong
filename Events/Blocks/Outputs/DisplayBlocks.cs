@@ -52,7 +52,7 @@ public class TextBlock : ScriptBlock
     
     public bool Decorators;
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         _display = new GameObject("[Architect] Text Display").AddComponent<TextDisplay>();
         _display.Block = this;
@@ -91,7 +91,7 @@ public class ChoiceBlock : ScriptBlock
 
     private ChoiceDisplay _display;
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         _display = new GameObject("[Architect] Text Display").AddComponent<ChoiceDisplay>();
         _display.Block = this;
@@ -128,7 +128,7 @@ public class NeedolinBlock : ScriptBlock
         Delay = 1;
     }
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         _collection = ScriptableObject.CreateInstance<LocalisedTextCollection>();
         _collection.data = new LocalisedTextCollectionData(new LocalisedString("ArchitectMod", Text));

@@ -20,8 +20,8 @@ public class DelayBlock : ScriptBlock
     protected override void Reset() => Delay = 0;
 
     private DelayObj _delay;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var obj = new GameObject("[Architect] Delay Block");
         _delay = obj.AddComponent<DelayObj>();
@@ -55,8 +55,8 @@ public class WaitUntilBlock : ScriptBlock
     protected override string Name => "Wait Until";
 
     private DelayObj _delay;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var obj = new GameObject("[Architect] Wait Until Block");
         _delay = obj.AddComponent<DelayObj>();
@@ -95,8 +95,8 @@ public class LoopBlock : ScriptBlock
     protected override void Reset() => Delay = 0;
 
     private DelayObj _delay;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var obj = new GameObject("[Architect] Delay Block");
         _delay = obj.AddComponent<DelayObj>();

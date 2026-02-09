@@ -11,7 +11,7 @@ public class EnemyHook : MonoBehaviour
     
     private void Start()
     {
-        var obj = ObjectUtils.GetGameObjectFromArray(gameObject.scene.GetRootGameObjects(), path);
+        var obj = ObjectUtils.FindGameObject(path);
         if (obj) hm = obj.GetComponent<HealthManager>();
 
         if (!hm) return;

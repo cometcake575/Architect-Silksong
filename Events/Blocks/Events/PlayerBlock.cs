@@ -36,7 +36,7 @@ public class PlayerBlock : ToggleableBlock
     protected override Color Color => Color.green;
     protected override string Name => "Player Listener";
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         var te = new GameObject("[Architect] Player Block").AddComponent<PlayerEvent>();
         te.Block = this;

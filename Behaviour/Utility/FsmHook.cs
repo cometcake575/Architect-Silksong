@@ -30,7 +30,7 @@ public class FsmHook : MonoBehaviour
         _setup = true;
         if (!PlacementManager.Objects.TryGetValue(targetId, out var target))
         {
-            var o = ObjectUtils.GetGameObjectFromArray(gameObject.scene.GetRootGameObjects(), targetId);
+            var o = ObjectUtils.FindGameObject(targetId);
             if (!o) return;
             target = o;
         }

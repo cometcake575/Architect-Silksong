@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Architect.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Architect.Utils;
@@ -40,6 +41,18 @@ public static class ObjectUtils
     public static string GetPath(this Transform current) {
         if (!current.parent) return current.name;
         return current.parent.GetPath() + "/" + current.name;
+    }
+
+    public static GameObject FindGameObject(string path)
+    {
+        for (var i = 0; i < SceneManager.loadedSceneCount; i++)
+        {
+            var scene = SceneManager.GetSceneAt(i);
+            var obj = GetGameObjectFromArray(scene.GetRootGameObjects(), path);
+            if (obj) return obj;
+        }
+
+        return null;
     }
     
     internal static GameObject GetGameObjectFromArray(GameObject[] objects, string objName)

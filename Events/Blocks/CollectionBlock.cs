@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -6,68 +7,180 @@ using UnityEngine.UI;
 
 namespace Architect.Events.Blocks;
 
-public abstract class CollectionBlock<T>(int maxChildren = -1) : ScriptBlock 
+public abstract class CollectionBlock<T> : ScriptBlock
     where T : CollectionBlock<T>.ChildBlock, new()
 {
-    public int MaxChildren = maxChildren;
-    public List<ChildBlock> Children = [];
+    protected ChildrenGroup Children = new();
 
+    protected abstract string ChildName { get; }
+    protected virtual int MaxChildren => -1;
+    protected abstract bool NeedsGap { get; }
+    
     protected override Dictionary<string, string> SerializeExtraData()
     {
         Dictionary<string, string> d = [];
-        d["children"] = JsonConvert.SerializeObject(Children);
+        d["children"] = JsonConvert.SerializeObject(Children.Blocks);
         return d;
     }
 
     protected override void DeserializeExtraData(Dictionary<string, string> data)
     {
-        Children = JsonConvert.DeserializeObject<List<ChildBlock>>(data["children"], Sbc);
+        Children = new ChildrenGroup
+        {
+            Blocks = JsonConvert.DeserializeObject<List<ChildBlock>>(data["children"], Sbc)
+        };
     }
 
     protected override void SetupBlock(bool newBlock, int width, int height)
     {
         base.SetupBlock(newBlock, width, height);
-        
         if (!BlockObject) return;
-        var img = UIUtils.MakeImage(
-            "Lower Seg",
-            BlockObject,
-            new Vector2(0, 10),
-            new Vector2(0.5f, 0.5f),
-            new Vector2(0.5f, 0.5f),
-            new Vector2(width, height));
-        img.sprite = FlowchartBlock;
-        img.type = Image.Type.Sliced;
-        img.color = Color;
-        
-        #region Test
-        var o = new T
-        {
-            Type = "Random Trigger",
-            Position = Position
-        };
-        Children.Add(o);
-        #endregion
 
-        foreach (var child in Children)
+        var addArea = new GameObject("Add Area");
+        addArea.transform.SetParent(BlockObject.transform, false);
+        var addTrans = addArea.RemoveOffset();
+
+        var (btn, btnImg, _) = UIUtils.MakeButtonWithImage("Add Button", addArea,
+            Vector2.zero,
+            new Vector2(0.5f, 0),
+            new Vector2(0.5f, 0), 80, 80, false);
+        btnImg.sprite = AddSprite;
+        btn.onClick.AddListener(() =>
+        {
+            if (MaxChildren > 0 && Children.Blocks.Count >= MaxChildren) return;
+            if (ScriptManager.BlockTypes[ChildName]() is not ChildBlock child) return;
+
+            child.Group = Children;
+            ScriptManager.Blocks[child.BlockId] = child;
+            child.SetupBlock(true);
+            Children.Blocks.Add(child);
+
+            foreach (var cfg in child.CurrentConfig.Values) cfg.Setup(child);
+
+            if (!child.BlockObject) return;
+
+            child.BlockObject.transform.SetParent(BlockObject.transform, true);
+            Children.OrderChildren();
+        });
+
+        Children.AddBlock = addTrans;
+        Children.MaxChildren = MaxChildren;
+        Children.Height = height;
+        Children.Parent = this;
+        Children.NeedsGap = NeedsGap;
+    }
+
+    public override void Setup(bool visual, bool newBlock = false)
+    {
+        base.Setup(visual, newBlock);
+        
+        foreach (var child in Children.Blocks)
         {
             ScriptManager.Blocks[child.BlockId] = child;
             child.Group = Children;
-            child.SetupBlock(newBlock);
-            if (!child.BlockObject) continue;
-            child.BlockObject.transform.parent = BlockObject.transform;
+            
+            if (visual && BlockObject)
+            {
+                child.SetupBlock(newBlock);
+                if (!child.BlockObject) return;
+                child.BlockObject.transform.SetParent(BlockObject.transform, true);
+            }
+            foreach (var cfg in child.CurrentConfig.Values) cfg.Setup(child);
+        }
+        if (visual) Children.OrderChildren();
+        else foreach (var child in Children.Blocks) child.SetupReference();
+    }
+
+    public override void Delete()
+    {
+        foreach (var child in Children.Blocks.ToArray()) child.Delete();
+        base.Delete();
+    }
+
+    public override void LateSetup()
+    {
+        base.LateSetup();
+        
+        foreach (var child in Children.Blocks)
+        {
+            child.LateSetup();
         }
     }
 
     public abstract class ChildBlock : ScriptBlock
     {
         protected override string Name => null;
-        public List<ChildBlock> Group;
+        public ChildrenGroup Group;
+        public int BlockHeight;
+
+        protected override void SetupBlock(bool newBlock, int width, int height)
+        {
+            if (ConfigCount >= 3) height += 25; 
+            base.SetupBlock(newBlock, width, height);
+            BlockInstance.overrideDrag = Group.Parent.BlockInstance;
+            BlockHeight = height;
+
+            if (Group.NeedsGap)
+            {
+                var img = UIUtils.MakeImage(
+                    "Connector",
+                    BlockObject,
+                    new Vector2(25, 40),
+                    new Vector2(0, 1),
+                    new Vector2(0, 1),
+                    new Vector2(50, 170));
+                img.sprite = FlowchartBlock;
+                img.type = Image.Type.Sliced;
+                img.color = Color;
+            }
+        }
 
         public override void Delete()
         {
             Group.Remove(this);
             base.Delete();
+        }
+    }
+
+    public class ChildrenGroup
+    {
+        public ScriptBlock Parent;
+        public List<ChildBlock> Blocks = [];
+        public bool NeedsGap;
+        public IEnumerable<T> Children => Blocks.Where(o => o is T).Cast<T>();
+        
+        public RectTransform AddBlock;
+        public int MaxChildren;
+        public int Height;
+
+        public void Remove(ChildBlock block)
+        {
+            Blocks.Remove(block);
+            OrderChildren();
+        }
+
+        public void OrderChildren()
+        {
+            float y = -Height;
+            var ng = NeedsGap && Blocks.Count > 0;
+            var i = 0;
+            foreach (var o in Blocks)
+            {
+                if (ng)
+                {
+                    if (i > 0) y -= 37.5f;
+                    y -= 40;
+                    y -= o.BlockHeight / 2f;
+                }
+                if (o.BlockObject) o.BlockObject.transform.localPosition = new Vector3(0, y + (NeedsGap ? 12.5f : 0));
+                if (ng) y -= o.BlockHeight / 2f;
+                else y -= o.BlockHeight;
+                i++;
+            }
+            AddBlock.SetLocalPositionY(y + (ng ? 84 : 122.5f));
+            AddBlock.SetAsLastSibling();
+            
+            if (MaxChildren > 0) AddBlock.gameObject.SetActive(Blocks.Count < MaxChildren);
         }
     }
 }

@@ -13,8 +13,8 @@ public class KeyBlock : ToggleableBlock
 
     public KeyCode Key = KeyCode.None;
     public PlayerAction PlayerAction = null;
-    
-    protected override void SetupReference()
+
+    public override void SetupReference()
     {
         var te = new GameObject("[Architect] Key Listener Block").AddComponent<KeyEvent>();
         te.Block = this;

@@ -22,7 +22,7 @@ public class AnimatorBlock : ScriptBlock
 
     private AnimPlayer _player;
 
-    protected override void SetupReference()
+    public override void SetupReference()
     {
         _player = new GameObject("[Architect] Anim Player Block").AddComponent<AnimPlayer>();
         _player.Block = this;

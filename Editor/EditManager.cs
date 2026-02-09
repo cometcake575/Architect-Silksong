@@ -471,6 +471,11 @@ public static class EditManager
         if (!IsEditing) PlayerData.instance.isInvincible = false;
         else
         {
+            var roarS = GameManager.instance.gameCams.gameObject.transform.Find("Roar Wave Emitter Small");
+            if (roarS) roarS.transform.position = new Vector3(-99999, -99999);
+            var roar = GameManager.instance.gameCams.gameObject.transform.Find("Roar Wave Emitter");
+            if (roar) roar.transform.position = new Vector3(-99999, -99999);
+            
             ScreenFaderUtils.SetColour(Color.clear);
             GameCameras.instance.HUDIn();
         }

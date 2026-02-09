@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Architect.Prefabs;
 using BepInEx;
@@ -28,7 +29,7 @@ public class SpawnPrefabBlock : ScriptBlock
     {
         if (Prefab.IsNullOrWhiteSpace()) return;
 
-        var prefab = new GameObject("[Architect] Prefab Spawner")
+        var prefab = new GameObject($"[Architect] Prefab Spawner {Guid.NewGuid()}")
         {
             transform = { position = new Vector3(
                 GetVariable<float>("X") + OffsetX, 

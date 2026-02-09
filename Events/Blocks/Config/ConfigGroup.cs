@@ -27,6 +27,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> RandomTrigger =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<RandomEventBlock.TriggerBlock>("Weight", "random_trigger_chance", 
+                (b, f) => b.Chance = Mathf.Max(f.GetValue(), 0))
+                .WithDefaultValue(1)
+        )
+    ];
+    
     public static readonly List<ConfigType> Raycast =
     [
         ConfigurationManager.RegisterConfigType(
@@ -206,10 +215,66 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> ShopItem =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ShopBlock.ShopItemBlock>("Item ID", "shop_item_id", 
+                (b, f) => b.ItemId = f.GetValue())
+                .WithDefaultValue("Rosary_Set_Small")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ShopBlock.ShopItemBlock>("Name", "shop_item_name", 
+                (b, f) => b.ItemName = f.GetValue())
+                .WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ShopBlock.ShopItemBlock>("Description", "shop_item_desc", 
+                (b, f) => b.ItemDesc = f.GetValue())
+                .WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<ShopBlock.ShopItemBlock>("Cost", "shop_item_cost", 
+                (b, f) => b.Cost = f.GetValue())
+                .WithDefaultValue(80)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<ShopBlock.ShopItemBlock>("Currency", "shop_item_currency", 
+                (b, f) => 
+                    b.Currency = f.GetValue() == 0 ? CurrencyType.Money : CurrencyType.Shard)
+                .WithDefaultValue(0).WithOptions("Rosaries", "Shards")
+        )
+    ];
+    
+    public static readonly List<ConfigType> TravelUI =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<TravelBlock>("Title", "travel_ui_list_name", 
+                (b, f) => b.Title = f.GetValue())
+                .WithDefaultValue("Sample Text")
+        )
+    ];
+    
+    public static readonly List<ConfigType> TravelUITarget =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<TravelBlock.TravelLoc>("Name", "travel_ui_name", 
+                    (b, f) => b.ListName = f.GetValue())
+                .WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TravelBlock.TravelLoc>("X Pos", "travel_ui_x", 
+                (b, f) => b.XPos = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TravelBlock.TravelLoc>("Y Pos", "travel_ui_y", 
+                (b, f) => b.YPos = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> TravelList =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<TravelBlock>("Title", "travel_list_name", 
+            new StringConfigType<LegacyTravelBlock>("Title", "travel_list_name", 
                 (b, f) => b.Title = f.GetValue())
                 .WithDefaultValue("Sample Text")
         )

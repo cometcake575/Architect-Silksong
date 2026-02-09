@@ -12,6 +12,10 @@ public static class OperatorBlocks
         
         ScriptManager.RegisterProcessBlock<CounterBlock>("Counter", ConfigGroup.Counter);
         ScriptManager.RegisterProcessBlock<IfBlock>("If");
+        
+        ScriptManager.RegisterProcessBlock<RandomEventBlock>("Random Event");
+        ScriptManager.RegisterHiddenBlock<RandomEventBlock.TriggerBlock>("Random Trigger", ConfigGroup.RandomTrigger);
+        
         ScriptManager.RegisterProcessBlock<CompareBlock>("Compare", ConfigGroup.Compare);
         ScriptManager.RegisterProcessBlock<StringCompareBlock>("Compare Text", ConfigGroup.StringCompare);
         ScriptManager.RegisterProcessBlock<ConstantNumBlock>("Constant Num", ConfigGroup.ConstantNum);
