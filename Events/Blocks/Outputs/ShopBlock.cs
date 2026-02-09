@@ -96,7 +96,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
             Item.setExtraPlayerDataInts = [];
             Item.displayName = new LocalisedString("ArchitectMod", ItemName);
             Item.description = new LocalisedString("ArchitectMod", ItemDesc);
-            Item.currencyType = CurrencyType.Money;
+            Item.currencyType = Currency;
             Item.cost = Cost;
             Item.onPurchase = new UnityEvent();
             Item.onPurchase.AddListener(() =>

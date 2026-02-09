@@ -17,10 +17,11 @@ public class RandomEventBlock : CollectionBlock<RandomEventBlock.TriggerBlock>
 
     protected override void Trigger(string trigger)
     {
-        var sum = Children.Children.Sum(b => b.Chance);
+        var ec = Children.Children.Where(b => b.Enabled).ToArray();
+        var sum = ec.Sum(b => b.Chance);
         if (sum <= 0) return;
         var value = Random.Range(0, sum);
-        foreach (var child in Children.Children)
+        foreach (var child in ec)
         {
             value -= child.Chance;
             if (value <= 0)
@@ -36,7 +37,14 @@ public class RandomEventBlock : CollectionBlock<RandomEventBlock.TriggerBlock>
         protected override Color Color => DefaultColor;
 
         public float Chance;
+        public bool Enabled = true;
 
+        protected override void Trigger(string trigger)
+        {
+            Enabled = trigger == "Enable";
+        }
+
+        protected override IEnumerable<string> Inputs => ["Disable", "Enable"];
         protected override IEnumerable<string> Outputs => ["OnTrigger"];
     }
 }

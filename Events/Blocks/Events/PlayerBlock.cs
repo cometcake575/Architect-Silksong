@@ -21,6 +21,7 @@ public class PlayerBlock : ToggleableBlock
         "OnDamage",
         "OnDeath",
         "OnHeal",
+        "OnHealFail",
         "NeedolinStart",
         "NeedolinStop"
     ];

@@ -71,13 +71,20 @@ public class PlayerHook : MonoBehaviour
                 PlayerEvent("Attack");
             });
 
-        typeof(HeroController).Hook(nameof(HeroController.AddHealth),
-            (Action<HeroController, int> orig, HeroController self, int amount) =>
+        typeof(HeroController).Hook(nameof(HeroController.BindCompleted),
+            (Action<HeroController> orig, HeroController self) =>
             {
-                orig(self, amount);
+                orig(self);
                 PlayerEvent("OnHeal");
             });
 
+        typeof(HeroController).Hook(nameof(HeroController.BindInterrupted),
+            (Action<HeroController> orig, HeroController self) =>
+            {
+                orig(self);
+                PlayerEvent("OnHealFail");
+            });
+        
         typeof(PlayerData).Hook(nameof(PlayerData.TakeHealth),
             (Action<PlayerData, int, bool, bool> orig, PlayerData self, int amount,
                 bool hasBlue, bool breakMask) =>
