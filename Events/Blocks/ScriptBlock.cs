@@ -465,10 +465,14 @@ public abstract class ScriptBlock
 
         private Vector2 _offset;
 
+        private bool _isGroupDragging;
+        private List<(ScriptBlockInstance inst, Vector2 offset)> _groupOffsets;
+        private Vector2 _groupStartMouse;
+
         private void Update()
         {
             if (text) text.text = Block.Name;
-            img.color = Block.Color;
+            img.color = ScriptManager.IsSelected(Block.BlockId) ? Color.Lerp(Block.Color, Color.cyan, 0.35f) : Block.Color;
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -478,6 +482,18 @@ public abstract class ScriptBlock
                 overrideDrag.OnDrag(eventData);
                 return;
             }
+
+            if (_isGroupDragging && _groupOffsets != null)
+            {
+                foreach (var (inst, offset) in _groupOffsets)
+                {
+                    if (!inst) continue;
+                    inst.transform.position = eventData.position + offset;
+                    if (inst.Block != null) inst.Block.Position = inst.transform.localPosition;
+                }
+                return;
+            }
+
             transform.position = eventData.position + _offset;
             Block.Position = transform.localPosition;
         }
@@ -489,8 +505,29 @@ public abstract class ScriptBlock
                 overrideDrag.OnBeginDrag(eventData);
                 return;
             }
+
+            if (ScriptManager.IsSelected(Block.BlockId) && ScriptManager.SelectedBlockIds.Count > 1)
+            {
+                _isGroupDragging = true;
+                _groupOffsets = new List<(ScriptBlockInstance, Vector2)>();
+                _groupStartMouse = eventData.position;
+
+                foreach (var id in ScriptManager.SelectedBlockIds)
+                {
+                    if (!ScriptManager.Blocks.TryGetValue(id, out var b)) continue;
+                    if (b?.BlockInstance == null) continue;
+                    var inst = b.BlockInstance;
+                    var offset = (Vector2)inst.transform.position - _groupStartMouse;
+                    _groupOffsets.Add((inst, offset));
+                    inst.transform.SetAsLastSibling();
+                }
+                return;
+            }
+
             _offset = (Vector2)transform.position - eventData.position;
             transform.SetAsLastSibling();
+            _isGroupDragging = false;
+            _groupOffsets = null;
         }
 
         public override void Delete()
