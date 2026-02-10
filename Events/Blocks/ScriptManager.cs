@@ -85,6 +85,21 @@ public static class ScriptManager
     
     public static readonly Dictionary<(string, string, string, string), GameObject> Links = [];
 
+    public static readonly HashSet<string> SelectedBlockIds = new();
+
+    public static void ClearSelection()
+    {
+        SelectedBlockIds.Clear();
+    }
+
+    public static void SetSelection(IEnumerable<string> ids)
+    {
+        SelectedBlockIds.Clear();
+        foreach (var id in ids) SelectedBlockIds.Add(id);
+    }
+
+    public static bool IsSelected(string blockId) => SelectedBlockIds.Contains(blockId);
+
     public class Start : MonoBehaviour
     {
         public Image img;

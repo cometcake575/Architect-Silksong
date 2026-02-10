@@ -271,18 +271,165 @@ public static class ScriptEditorUI
             col.b >= 0.9f ? -0.1f : 0.1f);
     }
 
-    public class BackgroundDrag : MonoBehaviour, IDragHandler, IBeginDragHandler
+    public class BackgroundDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IPointerDownHandler, IPointerUpHandler
     {
         private Vector2 _offset;
         
-        public void OnDrag(PointerEventData eventData)
+        private Image _selectionImage;
+        private RectTransform _selectionRect;
+        private RectTransform _uiParentRect;
+        private Vector2 _selectStartLocal;
+        private Vector2 _selectStartScreen;
+        private bool _isSelecting;
+
+        private void Awake()
         {
-            ScriptParent.transform.position = eventData.position + _offset;
+            _uiParentRect = transform.parent as RectTransform;
+
+            var selectionGameObject = new GameObject("Selection Rectangle");
+            selectionGameObject.transform.SetParent(_uiParentRect, false);
+
+            _selectionRect = selectionGameObject.AddComponent<RectTransform>();
+
+            _selectionRect.anchorMin = Vector2.zero;
+            _selectionRect.anchorMax = Vector2.zero;
+            _selectionRect.pivot = Vector2.zero;
+            _selectionRect.anchoredPosition = Vector2.zero;
+            _selectionRect.sizeDelta = Vector2.zero;
+            _selectionRect.localScale = Vector3.one;
+
+            _selectionImage = selectionGameObject.AddComponent<Image>();
+            _selectionImage.sprite = UIUtils.Square;
+            _selectionImage.color = Settings.ScriptEditorSelectionColor.Value;
+            _selectionImage.raycastTarget = false;
+
+            var outline = selectionGameObject.AddComponent<Outline>();
+            outline.effectColor = Settings.ScriptEditorSelectionOutlineColor.Value;
+            outline.effectDistance = new Vector2(1.5f, 1.5f);
+            outline.useGraphicAlpha = true;
+
+            selectionGameObject.transform.SetAsLastSibling();
+
+            selectionGameObject.SetActive(false);
         }
         
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                ScriptManager.ClearSelection();
+                return;
+            }
+
+            if (eventData.button != PointerEventData.InputButton.Right) return;
+            if (_uiParentRect == null) return;
+
+            _selectStartScreen = eventData.position;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _uiParentRect, eventData.position, eventData.pressEventCamera, out _selectStartLocal))
+            {
+                _isSelecting = false;
+                return;
+            }
+
+            _isSelecting = true;
+
+            var parentRect = _uiParentRect.rect;
+            var pivotOffset = new Vector2(parentRect.width * _uiParentRect.pivot.x, parentRect.height * _uiParentRect.pivot.y);
+            var bottomLeftStart = _selectStartLocal + pivotOffset;
+
+            _selectionRect.anchoredPosition = bottomLeftStart;
+            _selectionRect.sizeDelta = Vector2.zero;
+            _selectionImage.gameObject.SetActive(true);
+            // keep rectangle above everything while dragging
+            _selectionRect.transform.SetAsLastSibling();
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
-            _offset = (Vector2)ScriptParent.transform.position - eventData.position;
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                _offset = (Vector2)ScriptParent.transform.position - eventData.position;
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Right && _isSelecting && _uiParentRect != null)
+            {
+                if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                        _uiParentRect, eventData.position, eventData.pressEventCamera, out var currentLocal))
+                    return;
+
+                var parentRect = _uiParentRect.rect;
+                var pivotOffset = new Vector2(parentRect.width * _uiParentRect.pivot.x, parentRect.height * _uiParentRect.pivot.y);
+                var startBL = _selectStartLocal + pivotOffset;
+                var currBL = currentLocal + pivotOffset;
+
+                var min = Vector2.Min(startBL, currBL);
+                var max = Vector2.Max(startBL, currBL);
+                var size = max - min;
+
+                _selectionRect.anchoredPosition = min;
+                _selectionRect.sizeDelta = size;
+                _selectionRect.transform.SetAsLastSibling();
+                return;
+            }
+
+            if (eventData.button == PointerEventData.InputButton.Left && !_isSelecting)
+            {
+                ScriptParent.transform.position = eventData.position + _offset;
+            }
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (eventData.button != PointerEventData.InputButton.Right) return;
+            if (!_isSelecting) return;
+
+            var endScreen = eventData.position;
+            var sMin = Vector2.Min(_selectStartScreen, endScreen);
+            var sMax = Vector2.Max(_selectStartScreen, endScreen);
+            var selectionRect = new Rect(sMin, sMax - sMin);
+
+            if (selectionRect.width < 4f && selectionRect.height < 4f)
+            {
+                ScriptManager.ClearSelection();
+            }
+            else
+            {
+                var selectedIds = new List<string>();
+                foreach (var pair in ScriptManager.Blocks)
+                {
+                    var block = pair.Value;
+                    if (block?.BlockObject == null) continue;
+                    var rt = block.BlockObject.GetComponent<RectTransform>();
+                    if (!rt) continue;
+
+                    var bCorners = new Vector3[4];
+                    rt.GetWorldCorners(bCorners);
+                    var bMin = new Vector2(float.MaxValue, float.MaxValue);
+                    var bMax = new Vector2(float.MinValue, float.MinValue);
+                    for (var i = 0; i < 4; i++)
+                    {
+                        var bsp = RectTransformUtility.WorldToScreenPoint(null, bCorners[i]);
+                        bMin = Vector2.Min(bMin, bsp);
+                        bMax = Vector2.Max(bMax, bsp);
+                    }
+
+                    var blockRect = new Rect(bMin, bMax - bMin);
+
+                    if (selectionRect.Overlaps(blockRect, true))
+                    {
+                        selectedIds.Add(block.BlockId);
+                    }
+                }
+
+                ScriptManager.SetSelection(selectedIds);
+            }
+
+            _isSelecting = false;
+            _selectionImage.gameObject.SetActive(false);
         }
 
         private void Update()
