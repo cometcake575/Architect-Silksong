@@ -29,12 +29,15 @@ public class CustomMateriumEntry : SpriteItem
         if (i != -1) l.Insert(i, _item);
         else l.Add(_item);
         
+        MateriumItemManager.Instance.masterList.UpdateDictionary();
+        
         base.Register();
     }
 
     public override void Unregister()
     {
         MateriumItemManager.Instance.masterList.Remove(_item);
+        MateriumItemManager.Instance.masterList.UpdateDictionary();
     }
 
     protected override void OnReadySprite()

@@ -111,7 +111,11 @@ public class ObjectAnchor : PreviewableBehaviour
             {
                 var sp = parent.GetComponent<SplineObjects.SplinePoint>();
                 if (sp && sp.spline) SetupSpline(sp);
-                else transform.parent.SetParent(parent.transform, true);
+                else
+                {
+                    var eh = parent.GetComponent<EnemyHook>();
+                    transform.parent.SetParent(eh ? eh.hm.transform : parent.transform, true);
+                }
             }
         }
 

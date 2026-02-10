@@ -21,8 +21,7 @@ public static class UtilityObjects
     public static void Init()
     {
         Categories.Utility.Add(CreateItem());
-        Categories.Utility.Add(CreateEnemyHook());
-        Categories.Utility.Add(CreateFsmHook());
+        Categories.Utility.Add(CreateWalkArea());
         Categories.Utility.Add(CreateVoider());
         Categories.Utility.Add(CreatePlasmifier());
         Categories.Utility.Add(CreateShielder());
@@ -36,6 +35,9 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateEnemyDamager());
         Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateFakePerformance());
+        
+        Categories.Utility.Add(CreateEnemyHook());
+        Categories.Utility.Add(CreateFsmHook());
         
         Categories.Utility.Add(CreateCocoonSpawn());
         
@@ -191,6 +193,23 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.Item)
             .WithReceiverGroup(ReceiverGroup.Item)
             .WithBroadcasterGroup(BroadcasterGroup.Item);
+    }
+
+    private static PlaceableObject CreateWalkArea()
+    {
+        var wa = new GameObject("Walk Area");
+        Object.DontDestroyOnLoad(wa);
+        wa.SetActive(false);
+
+        var bc = wa.AddComponent<BoxCollider2D>();
+        bc.isTrigger = true;
+        bc.size = new Vector2(3.2f, 3.2f);
+
+        wa.AddComponent<WalkArea>();
+        
+        return new CustomObject("Walk Area", "walk_area", wa, 
+                "Forces the player to walk (unless sprinting)",
+                sprite:ResourceUtils.LoadSpriteResource("walk_area", FilterMode.Point, ppu:64));
     }
 
     private static PlaceableObject CreateRoar()
