@@ -2002,7 +2002,10 @@ public static class VanillaObjects
 
         Categories.Attacks.Add(new PreloadObject("Throwing Bell", "throwing_bell",
             ("localpoolprefabs_assets_areasong", "Assets/Prefabs/Enemies/Fungus 1 + 2/Throwing Bell.prefab"),
-            notSceneBundle: true));
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
 
         Categories.Misc.Add(new PreloadObject("Pin Pilgrim NPC", "pin_pilgrim_npc",
             ("Belltown", "Pin Pilgrim"),

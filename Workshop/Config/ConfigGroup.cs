@@ -66,6 +66,31 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> MateriumEntry =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMateriumEntry>("Item Name", "materium_display_name", (item, value) =>
+            {
+                item.ItemName = value.GetValue();
+            }).WithDefaultValue("Sample Name")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMateriumEntry>("Description", "materium_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            }).WithDefaultValue("Sample Description")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new NoteConfigType<CustomMateriumEntry>("A vanilla entry (list can be found in the guide)", "materium_before_note")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMateriumEntry>("Add Before", "materium_before", (item, value) =>
+            {
+                item.InsertBefore = value.GetValue();
+            })
+        )
+    ];
+    
     public static readonly List<ConfigType> JournalEntrySprites =
     [
         ConfigurationManager.RegisterConfigType(

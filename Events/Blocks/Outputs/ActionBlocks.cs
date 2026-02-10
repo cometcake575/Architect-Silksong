@@ -21,6 +21,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<QuestBlock>("Quest Control", ConfigGroup.QuestControl);
         ScriptManager.RegisterInputBlock<JournalEntryBlock>("Journal Control", ConfigGroup.EntryControl);
         ScriptManager.RegisterInputBlock<ToolBlock>("Tool Control", ConfigGroup.ToolControl);
+        ScriptManager.RegisterInputBlock<ItemBlock>("Item Control", ConfigGroup.ItemControl);
         ScriptManager.RegisterInputBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);

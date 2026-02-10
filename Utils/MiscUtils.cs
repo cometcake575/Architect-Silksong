@@ -27,6 +27,7 @@ public static class MiscUtils
     {
         if (CollectableItemManager.Instance.masterList.dictionary.TryGetValue(name, out var i1)) return i1;
         if (CollectableRelicManager.Instance.masterList.dictionary.TryGetValue(name, out var i2)) return i2;
+        if (MateriumItemManager.Instance.masterList.dictionary.TryGetValue(name, out var i3)) return i3;
         return ToolItemManager.Instance.toolItems.dictionary.GetValueOrDefault(name);
     }
 }

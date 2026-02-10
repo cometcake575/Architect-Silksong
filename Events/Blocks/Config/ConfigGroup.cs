@@ -203,6 +203,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> ItemControl =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ItemBlock>("Item ID", "item_id", 
+                (b, f) => b.ItemName = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> Transition =
     [
         ConfigurationManager.RegisterConfigType(

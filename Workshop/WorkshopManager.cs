@@ -54,6 +54,11 @@ public static class WorkshopManager
             new Vector2(-100, -300),
             ConfigGroup.Scene);
         
+        Register<CustomMateriumEntry>("Material",
+            new Vector2(-300, -375),
+            ConfigGroup.MateriumEntry,
+            ConfigGroup.SpriteItem);
+        
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,
                 CollectableItemManager self, Func<CollectableItem, bool> predicate) =>
