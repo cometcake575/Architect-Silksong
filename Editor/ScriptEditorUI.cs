@@ -300,11 +300,11 @@ public static class ScriptEditorUI
 
             _selectionImage = selectionGameObject.AddComponent<Image>();
             _selectionImage.sprite = UIUtils.Square;
-            _selectionImage.color = new Color(0f, 0.5f, 1f, 0.12f);
+            _selectionImage.color = Settings.ScriptEditorSelectionColor.Value;
             _selectionImage.raycastTarget = false;
 
             var outline = selectionGameObject.AddComponent<Outline>();
-            outline.effectColor = new Color(0f, 0.5f, 1f, 0.8f);
+            outline.effectColor = Settings.ScriptEditorSelectionOutlineColor.Value;
             outline.effectDistance = new Vector2(1.5f, 1.5f);
             outline.useGraphicAlpha = true;
 

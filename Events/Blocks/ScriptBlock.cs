@@ -7,6 +7,7 @@ using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using Architect.Prefabs;
+using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
 using JetBrains.Annotations;
@@ -472,7 +473,7 @@ public abstract class ScriptBlock
         private void Update()
         {
             if (text) text.text = Block.Name;
-            img.color = ScriptManager.IsSelected(Block.BlockId) ? Color.Lerp(Block.Color, Color.cyan, 0.35f) : Block.Color;
+            img.color = ScriptManager.IsSelected(Block.BlockId) ? Color.Lerp(Block.Color, Settings.ScriptEditorBlockSelectedLerpColor.Value, 0.35f) : Block.Color;
         }
 
         public void OnDrag(PointerEventData eventData)

@@ -42,6 +42,10 @@ public static class Settings
     
     public static ConfigEntry<Color> EditorBackgroundColour;
 
+    public static ConfigEntry<Color> ScriptEditorSelectionColor;
+    public static ConfigEntry<Color> ScriptEditorSelectionOutlineColor;
+    public static ConfigEntry<Color> ScriptEditorBlockSelectedLerpColor;
+
     public static void Init(ConfigFile config)
     {
         ToggleEditor = new Keybind(config.Bind(
@@ -266,6 +270,27 @@ public static class Settings
             "EditorBackgroundColour",
             new Color(0.1f, 0.1f, 0.1f),
             "The background colour of the script editor"
+        );
+
+        ScriptEditorSelectionColor = config.Bind(
+             "Options",
+             "ScriptEditorSelectionColor",
+             new Color(0f, 0.5f, 1f, 0.12f),
+             "The color of the selection box in the script editor"
+        );
+
+        ScriptEditorSelectionOutlineColor = config.Bind(
+            "Options",
+            "ScriptEditorSelectionOutlineColor",
+            new Color(0f, 0.5f, 1f, 0.8f),
+            "The color of the outline of the selection box in the script editor"
+        );
+
+        ScriptEditorBlockSelectedLerpColor = config.Bind(
+            "Options",
+            "ScriptEditorBlockSelectedLerpColor",
+            Color.cyan,
+            "The color thats used to lerp the color of selected blocks"
         );
     }
 
