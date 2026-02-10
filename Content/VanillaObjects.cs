@@ -1869,6 +1869,13 @@ public static class VanillaObjects
             }))
             .WithConfigGroup(ConfigGroup.Decorations)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable);
+
+        Categories.Misc.Add(new PreloadObject("Hornet Cocoon", "hornet_cocoon",
+            ("herodynamic_assets_all", "Assets/Prefabs/Heroes/Hornet Cocoon Corpse.prefab"),
+            preloadAction: o => 
+                o.transform.GetChild(1).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>(),
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Cocoon));
     }
 
     private static void AddMemoriumObjects()

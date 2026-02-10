@@ -90,6 +90,35 @@ public static class ConfigGroup
                 o.AddComponent<MiscFixers.ColorLock>();
             }))
     ]);
+    
+    public static readonly List<ConfigType> Cocoon = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "cocoon_mode", (o, value) =>
+            {
+                switch (value.GetValue())
+                {
+                    case 1:
+                        o.LocateMyFSM("Break").GetState("Return Currency").DisableAction(0);
+                        break;
+                    case 2:
+                        o.LocateMyFSM("Break").enabled = false;
+                        o.transform.GetChild(1).gameObject.SetActive(true);
+                        o.transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
+                        o.transform.GetChild(1).GetChild(2).gameObject.SetActive(false);
+                        o.transform.GetChild(1).GetChild(3).gameObject.SetActive(false);
+                        break;
+                }
+            }).WithDefaultValue(0).WithOptions("Normal", "Fake", "Unbreakable")),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Return Currency/Silk", "cocoon_items", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    o.LocateMyFSM("Break").GetState("Return Currency").DisableAction(0);
+                }
+            }).WithDefaultValue(true))
+    ]);
 
     public static readonly List<ConfigType> Item = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
@@ -1438,6 +1467,12 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Give Silk", "give_silk",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).doNotGiveSilk = !value.GetValue(); })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Increment Journal", "enemy_increment_journal",
+                (o, value) => {
+                {
+                    o.GetComponentInChildren<HealthManager>(true).WillAwardJournalKill = value.GetValue();
+                } })),
         Invincible
     ]);
 
