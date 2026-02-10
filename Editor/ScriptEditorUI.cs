@@ -286,10 +286,10 @@ public static class ScriptEditorUI
         {
             _uiParentRect = transform.parent as RectTransform;
 
-            var selGo = new GameObject("Selection Rectangle");
-            selGo.transform.SetParent(_uiParentRect, false);
+            var selectionGameObject = new GameObject("Selection Rectangle");
+            selectionGameObject.transform.SetParent(_uiParentRect, false);
 
-            _selectionRect = selGo.AddComponent<RectTransform>();
+            _selectionRect = selectionGameObject.AddComponent<RectTransform>();
 
             _selectionRect.anchorMin = Vector2.zero;
             _selectionRect.anchorMax = Vector2.zero;
@@ -298,19 +298,19 @@ public static class ScriptEditorUI
             _selectionRect.sizeDelta = Vector2.zero;
             _selectionRect.localScale = Vector3.one;
 
-            _selectionImage = selGo.AddComponent<Image>();
+            _selectionImage = selectionGameObject.AddComponent<Image>();
             _selectionImage.sprite = UIUtils.Square;
             _selectionImage.color = new Color(0f, 0.5f, 1f, 0.12f);
             _selectionImage.raycastTarget = false;
 
-            var outline = selGo.AddComponent<Outline>();
+            var outline = selectionGameObject.AddComponent<Outline>();
             outline.effectColor = new Color(0f, 0.5f, 1f, 0.8f);
             outline.effectDistance = new Vector2(1.5f, 1.5f);
             outline.useGraphicAlpha = true;
 
-            selGo.transform.SetAsLastSibling();
+            selectionGameObject.transform.SetAsLastSibling();
 
-            selGo.SetActive(false);
+            selectionGameObject.SetActive(false);
         }
         
         public void OnPointerDown(PointerEventData eventData)
