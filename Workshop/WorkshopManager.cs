@@ -26,8 +26,7 @@ public static class WorkshopManager
             new Vector2(-300, -150),
             ConfigGroup.CustomItem, 
             ConfigGroup.SpriteItem,
-            ConfigGroup.ItemUsing,
-            ConfigGroup.ItemUse);
+            ConfigGroup.UsableItem);
 
         Register<CustomTool>("Tool",
             new Vector2(-300, -225),

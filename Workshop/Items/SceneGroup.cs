@@ -1,5 +1,4 @@
 using Architect.Utils;
-using TeamCherry.Localization;
 
 namespace Architect.Workshop.Items;
 
@@ -14,7 +13,7 @@ public class SceneGroup : SpriteItem
         Background = new SaveSlotBackgrounds.AreaBackground
         {
             BackgroundImage = ArchitectPlugin.BlankSprite,
-            NameOverride = new LocalisedString("ArchitectMod", GroupName)
+            NameOverride = (LocalStr)GroupName
         };
         
         SceneUtils.SceneGroups.Add(Id, this);

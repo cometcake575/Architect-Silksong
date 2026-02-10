@@ -1,6 +1,6 @@
 using Architect.Storage;
+using Architect.Utils;
 using BepInEx;
-using TeamCherry.Localization;
 using TeamCherry.SharedUtils;
 using UnityEngine;
 
@@ -10,9 +10,9 @@ public class CustomQuest : SpriteItem
 {
     public bool MainQuest;
     
-    public string ItemName = string.Empty;
-    public string ItemDesc = string.Empty;
-    public string TypeName = string.Empty;
+    public LocalStr ItemName = string.Empty;
+    public LocalStr ItemDesc = string.Empty;
+    public LocalStr TypeName = string.Empty;
 
     public Color Color = Color.white;
 
@@ -37,7 +37,7 @@ public class CustomQuest : SpriteItem
     public override void Register()
     {
         _type = QuestType.Create(
-            new LocalisedString("ArchitectMod", TypeName),
+            TypeName,
             null,
             Color,
             null,
@@ -78,8 +78,8 @@ public class CustomQuest : SpriteItem
         _quest.overrideParagraphSpacing = new OverrideFloat();
         _quest.overrideParagraphSpacingShort = new OverrideFloat();
         
-        _quest.displayName = new LocalisedString("ArchitectMod", ItemName);
-        _quest.inventoryDescription = new LocalisedString("ArchitectMod", ItemDesc);
+        _quest.displayName = ItemName;
+        _quest.inventoryDescription = ItemDesc;
 
         QuestManager.Instance.masterList.Add(_quest);
         

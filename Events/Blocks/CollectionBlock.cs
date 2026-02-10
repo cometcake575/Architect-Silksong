@@ -163,6 +163,7 @@ public abstract class CollectionBlock<T> : ScriptBlock
         {
             float y = -Height;
             var ng = NeedsGap && Blocks.Count > 0;
+            if (!NeedsGap) y += 25;
             var i = 0;
             foreach (var o in Blocks)
             {
@@ -177,7 +178,7 @@ public abstract class CollectionBlock<T> : ScriptBlock
                 else y -= o.BlockHeight;
                 i++;
             }
-            AddBlock.SetLocalPositionY(y + (ng ? 84 : 122.5f));
+            AddBlock.SetLocalPositionY(y + (ng ? 84 : NeedsGap ? 122.5f : 197.5f));
             AddBlock.SetAsLastSibling();
             
             if (MaxChildren > 0) AddBlock.gameObject.SetActive(Blocks.Count < MaxChildren);

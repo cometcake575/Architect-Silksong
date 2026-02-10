@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Architect.Storage;
+using Architect.Utils;
 using BepInEx;
-using TeamCherry.Localization;
 using UnityEngine;
 
 namespace Architect.Workshop.Items;
@@ -12,8 +12,8 @@ public class CustomTool : SpriteItem
 
     public static readonly List<string> List = [];
 
-    public string ItemName = string.Empty;
-    public string ItemDesc = string.Empty;
+    public LocalStr ItemName = string.Empty;
+    public LocalStr ItemDesc = string.Empty;
     public ToolItemType ItemType = ToolItemType.Red;
     
     public string HIconUrl = string.Empty;
@@ -44,8 +44,8 @@ public class CustomTool : SpriteItem
         _tool.usageOptions.FsmEventName = "";
         _tool.name = Id;
         _tool.type = ItemType;
-        _tool.displayName = new LocalisedString("ArchitectMod", ItemName);
-        _tool.description = new LocalisedString("ArchitectMod", ItemDesc.Replace("<br>", "\n"));
+        _tool.displayName = ItemName;
+        _tool.description = ItemDesc;
         
         _tool.alternateUnlockedTest = new PlayerDataTest();
 

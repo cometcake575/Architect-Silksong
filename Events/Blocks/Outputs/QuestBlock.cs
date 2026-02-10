@@ -7,7 +7,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class QuestBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Accept", "Complete", "SilentComplete"];
+    protected override IEnumerable<string> Inputs => ["Offer", "Accept", "Complete", "SilentComplete"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Accepted", "Boolean"),
         Space,
@@ -38,6 +38,18 @@ public class QuestBlock : ScriptBlock
         var completion = quest.Completion;
         switch (trigger)
         {
+            case "Offer":
+                yield return HeroController.instance.FreeControl();
+                HeroController.instance.RelinquishControl();
+                
+                QuestYesNoBox.Open(() =>
+                {
+                    ArchitectPlugin.Instance.StartCoroutine(RegainControl());
+                }, () =>
+                {
+                    ArchitectPlugin.Instance.StartCoroutine(RegainControl());
+                }, true, quest, true);
+                break;
             case "Accept":
                 yield return HeroController.instance.FreeControl();
                 HeroController.instance.RelinquishControl();
@@ -46,10 +58,10 @@ public class QuestBlock : ScriptBlock
                 completion.IsCompleted = false;
                 quest.Completion = completion;
                 
-                quest.ShowQuestAccepted(() =>
+                quest.BeginQuest(() =>
                 {
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
-                }, false);
+                });
                 break;
             case "Complete":
                 yield return HeroController.instance.FreeControl();

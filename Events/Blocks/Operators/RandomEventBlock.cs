@@ -10,25 +10,38 @@ public class RandomEventBlock : CollectionBlock<RandomEventBlock.TriggerBlock>
     protected override Color Color => DefaultColor;
     protected override string Name => "Random Event";
     
-    protected override IEnumerable<string> Inputs => ["Trigger"];
+    protected override IEnumerable<string> Inputs => ["Trigger", "DisableAll", "EnableAll"];
 
     protected override string ChildName => "Random Trigger";
     protected override bool NeedsGap => false;
 
     protected override void Trigger(string trigger)
     {
-        var ec = Children.Children.Where(b => b.Enabled).ToArray();
-        var sum = ec.Sum(b => b.Chance);
-        if (sum <= 0) return;
-        var value = Random.Range(0, sum);
-        foreach (var child in ec)
+        switch (trigger)
         {
-            value -= child.Chance;
-            if (value <= 0)
+            case "Trigger":
             {
-                child.Event("OnTrigger");
+                var ec = Children.Children.Where(b => b.Enabled).ToArray();
+                var sum = ec.Sum(b => b.Chance);
+                if (sum <= 0) return;
+                var value = Random.Range(0, sum);
+                foreach (var child in ec)
+                {
+                    value -= child.Chance;
+                    if (value <= 0)
+                    {
+                        child.Event("OnTrigger");
+                        break;
+                    }
+                }
                 break;
             }
+            case "DisableAll":
+                foreach (var c in Children.Children) c.Enabled = false;
+                break;
+            case "EnableAll":
+                foreach (var c in Children.Children) c.Enabled = true;
+                break;
         }
     }
 

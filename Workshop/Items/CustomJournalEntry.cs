@@ -1,6 +1,6 @@
 using Architect.Storage;
+using Architect.Utils;
 using BepInEx;
-using TeamCherry.Localization;
 using UnityEngine;
 
 namespace Architect.Workshop.Items;
@@ -13,9 +13,9 @@ public class CustomJournalEntry : SpriteItem
     public bool LPoint;
     public float LPpu = 100;
     
-    public string ItemName = string.Empty;
-    public string ItemDesc = string.Empty;
-    public string ItemHDesc = string.Empty;
+    public LocalStr ItemName = string.Empty;
+    public LocalStr ItemDesc = string.Empty;
+    public LocalStr ItemHDesc = string.Empty;
 
     public string InsertBefore = string.Empty;
 
@@ -32,9 +32,9 @@ public class CustomJournalEntry : SpriteItem
 
         _record.killsRequired = KillsRequired;
 
-        _record.displayName = new LocalisedString("ArchitectMod", ItemName);
-        _record.description = new LocalisedString("ArchitectMod", ItemDesc);
-        _record.notes = new LocalisedString("ArchitectMod", ItemHDesc);
+        _record.displayName = ItemName;
+        _record.description = ItemDesc;
+        _record.notes = ItemHDesc;
 
         var l = EnemyJournalManager.Instance.recordList.List;
         var i = l.FindIndex(o => o.name == InsertBefore);

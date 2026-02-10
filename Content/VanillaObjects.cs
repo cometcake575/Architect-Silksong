@@ -950,7 +950,11 @@ public static class VanillaObjects
         
         Categories.Interactable.Add(new PreloadObject("Verdania Gate", "verdania_gate",
                 ("Clover_05c", "Clover Gate (1)"),
-                preloadAction: o => o.transform.GetChild(3).gameObject.SetActive(false))
+                preloadAction: o =>
+                    {
+                        o.transform.GetChild(3).gameObject.SetActive(false);
+                        o.RemoveComponent<PersistentBoolItem>();
+                    })
             .WithReceiverGroup(ReceiverGroup.Gates));
     }
 

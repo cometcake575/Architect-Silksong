@@ -1,6 +1,5 @@
 using Architect.Events.Blocks.Config;
 using Architect.Events.Blocks.Objects;
-using Architect.Events.Blocks.Operators;
 
 namespace Architect.Events.Blocks.Outputs;
 

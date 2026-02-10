@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GlobalEnums;
 using JetBrains.Annotations;
+using TeamCherry.Localization;
 using UnityEngine;
 
 namespace Architect.Utils;
@@ -25,6 +26,27 @@ public static class MiscUtils
     public static SavedItem GetSavedItem(string name)
     {
         if (CollectableItemManager.Instance.masterList.dictionary.TryGetValue(name, out var i1)) return i1;
+        if (CollectableRelicManager.Instance.masterList.dictionary.TryGetValue(name, out var i2)) return i2;
         return ToolItemManager.Instance.toolItems.dictionary.GetValueOrDefault(name);
+    }
+}
+
+public class LocalStr(string s)
+{
+    public readonly string Content = s;
+        
+    public static implicit operator LocalisedString(LocalStr s)
+    {
+        return new LocalisedString("ArchitectMod", s.Content);
+    }
+        
+    public static implicit operator string(LocalStr s)
+    {
+        return s.Content;
+    }
+
+    public static implicit operator LocalStr(string s)
+    {
+        return new LocalStr(s);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Architect.Workshop.Items;
 using Architect.Workshop.Types;
@@ -25,34 +26,6 @@ public static class ConfigGroup
             {
                 item.Ppu = value.GetValue();
             }).WithDefaultValue(100)
-        )
-    ];
-    
-    public static readonly List<ConfigType> ItemUsing =
-    [
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomItem>("Using Audio URL", "wav_url1", (item, value) =>
-            {
-                item.WavURL1 = value.GetValue();
-            })
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomItem>("Volume", "wav_volume1", (item, value) =>
-            {
-                item.Volume1 = value.GetValue();
-            }).WithDefaultValue(1)
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomItem>("Min Pitch", "wav_min_pitch1", (item, value) =>
-            {
-                item.MinPitch1 = value.GetValue();
-            }).WithDefaultValue(0.8f)
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomItem>("Max Pitch", "wav_max_pitch1", (item, value) =>
-            {
-                item.MaxPitch1 = value.GetValue();
-            }).WithDefaultValue(1.2f)
         )
     ];
     
@@ -115,8 +88,53 @@ public static class ConfigGroup
         )
     ];
     
-    public static readonly List<ConfigType> ItemUse =
+    public static readonly List<ConfigType> UsableItem =
     [
+        ConfigurationManager.RegisterConfigType(
+            new NoteConfigType<CustomItem>("Only apply to Usable items", "usable_item_node")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomItem>("Use Action", "item_consume_desc", (item, value) =>
+            {
+                item.UseType = value.GetValue();
+            }).WithDefaultValue("Break")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomItem>("Consume on Use", "item_consume_use", (item, value) =>
+            {
+                item.Consume = value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomItem>("Use Event", "item_onconsume", (item, value) =>
+            {
+                item.UseEvent = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomItem>("Using Audio URL", "wav_url1", (item, value) =>
+            {
+                item.WavURL1 = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomItem>("Volume", "wav_volume1", (item, value) =>
+            {
+                item.Volume1 = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomItem>("Min Pitch", "wav_min_pitch1", (item, value) =>
+            {
+                item.MinPitch1 = value.GetValue();
+            }).WithDefaultValue(0.8f)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomItem>("Max Pitch", "wav_max_pitch1", (item, value) =>
+            {
+                item.MaxPitch1 = value.GetValue();
+            }).WithDefaultValue(1.2f)
+        ),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomItem>("Used Audio URL", "wav_url2", (item, value) =>
             {
@@ -153,43 +171,25 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomItem>("Description", "item_desc", (item, value) =>
             {
-                item.ItemDesc = value.GetValue();
+                item.ItemDesc = value.GetValue().Replace("<br>", "\n");;
             }).WithDefaultValue("Sample Description")
         ),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomItem>("Use Description", "item_udesc", (item, value) =>
             {
-                item.UseDesc = value.GetValue();
+                item.UseDesc = value.GetValue().Replace("<br>", "\n");
             }).WithDefaultValue("Sample Use Description")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomItem>("Item Type", "item_consume", (item, value) =>
+            {
+                item.ItemType = Enum.Parse<CustomItem.CustomItemType>(value.GetStringValue());
+            }).WithOptions("Normal", "Usable", "Memento").WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType<CustomItem>("Max Amount", "item_max", (item, value) =>
             {
                 item.MaxAmount = value.GetValue();
-            })
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomItem>("Usable", "item_consume", (item, value) =>
-            {
-                item.CanUse = value.GetValue();
-            }).WithDefaultValue(false)
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomItem>("Use Action", "item_consume_desc", (item, value) =>
-            {
-                item.UseType = value.GetValue();
-            }).WithDefaultValue("Break")
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomItem>("Consume on Use", "item_consume_use", (item, value) =>
-            {
-                item.Consume = value.GetValue();
-            }).WithDefaultValue(true)
-        ),
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomItem>("Use Event", "item_onconsume", (item, value) =>
-            {
-                item.UseEvent = value.GetValue();
             })
         )
     ];
@@ -204,7 +204,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomTool>("Description", "tool_desc", (item, value) =>
             {
-                item.ItemDesc = value.GetValue();
+                item.ItemDesc = value.GetValue().Replace("<br>", "\n");
             }).WithDefaultValue("Sample Description")
         ),
         ConfigurationManager.RegisterConfigType(
