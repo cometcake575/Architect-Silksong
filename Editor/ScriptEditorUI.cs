@@ -27,7 +27,10 @@ public static class ScriptEditorUI
     
     private static GameObject _globalBlocks;
     private static GameObject _globalLines;
-    
+
+    private static GameObject _localComments;
+    private static GameObject _globalComments;
+
     private static Transform _blockTransformSource;
     
     private static Image _bgImg;
