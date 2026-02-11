@@ -2695,6 +2695,19 @@ public static class ConfigGroup
                     }).WithDefaultValue(1.5f))
     ]);
 
+    public static readonly List<ConfigType> BlackStrand = GroupUtils.Merge(Generic, [
+        ZOffset,
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Require Act 3", "require_act_3_blackstrand",
+                    (o, value) => 
+                    {
+                        if (value.GetValue()) return;
+                        o.RemoveComponent<DeactivateIfPlayerdataFalse>();
+                    })
+                .WithDefaultValue(true).WithPriority(-1)
+        )
+    ]);
+
     private static ChoiceConfigType MakePersistenceConfigType(string name, string id,
         Action<GameObject, PersistentBoolItem> action = null)
     {
