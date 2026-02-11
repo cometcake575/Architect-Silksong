@@ -1777,6 +1777,12 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixSummonedSaviour)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
+
+        Categories.Effects.Add(new PreloadObject("Black Thread Strand", "black_thread_strand",
+                ("Song_19_Entrance", "Black Thread States/Black Thread World/black_thread_strand"),
+                postSpawnAction: MiscFixers.FixBlackStrand,
+                sprite: ResourceUtils.LoadSpriteResource("black_thread_strand", ppu: 377.5f)))
+                .WithConfigGroup(ConfigGroup.BlackStrand);
         
         Categories.Misc.Add(new PreloadObject("Greymoor Lamp", "greymoor_lamp",
                 ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakable)
