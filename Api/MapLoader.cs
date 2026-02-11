@@ -35,7 +35,7 @@ public static class MapLoader
     
     public static LevelData GetModData(string scene)
     {
-        LevelData levelData = new([], [], []);
+        LevelData levelData = new([], [], [], []);
 
         void TryLoadMap(Func<LevelData> loader)
         {
