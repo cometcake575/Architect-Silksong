@@ -1329,4 +1329,9 @@ public static class MiscFixers
     {
         public SilkPossession sp;
     }
+
+        public static void FixBlackStrand(GameObject obj)
+    {
+        obj.transform.SetPositionZ(0.009f);
+    }
 }
