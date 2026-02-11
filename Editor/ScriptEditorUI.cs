@@ -322,7 +322,7 @@ public static class ScriptEditorUI
             }
 
             if (eventData.button != PointerEventData.InputButton.Right) return;
-            if (_uiParentRect == null) return;
+            if (!_uiParentRect) return;
 
             _selectStartScreen = eventData.position;
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -355,30 +355,34 @@ public static class ScriptEditorUI
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (eventData.button == PointerEventData.InputButton.Right && _isSelecting && _uiParentRect != null)
+            switch (eventData.button)
             {
-                if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                        _uiParentRect, eventData.position, eventData.pressEventCamera, out var currentLocal))
+                case PointerEventData.InputButton.Right when _isSelecting && _uiParentRect:
+                {
+                    if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                            _uiParentRect, eventData.position, eventData.pressEventCamera, out var currentLocal))
+                        return;
+
+                    var parentRect = _uiParentRect.rect;
+                    var pivotOffset = new Vector2(parentRect.width * _uiParentRect.pivot.x, parentRect.height * _uiParentRect.pivot.y);
+                    var startBL = _selectStartLocal + pivotOffset;
+                    var currBL = currentLocal + pivotOffset;
+
+                    var min = Vector2.Min(startBL, currBL);
+                    var max = Vector2.Max(startBL, currBL);
+                    var size = max - min;
+
+                    _selectionRect.anchoredPosition = min;
+                    _selectionRect.sizeDelta = size;
+                    _selectionRect.transform.SetAsLastSibling();
                     return;
-
-                var parentRect = _uiParentRect.rect;
-                var pivotOffset = new Vector2(parentRect.width * _uiParentRect.pivot.x, parentRect.height * _uiParentRect.pivot.y);
-                var startBL = _selectStartLocal + pivotOffset;
-                var currBL = currentLocal + pivotOffset;
-
-                var min = Vector2.Min(startBL, currBL);
-                var max = Vector2.Max(startBL, currBL);
-                var size = max - min;
-
-                _selectionRect.anchoredPosition = min;
-                _selectionRect.sizeDelta = size;
-                _selectionRect.transform.SetAsLastSibling();
-                return;
-            }
-
-            if (eventData.button == PointerEventData.InputButton.Left && !_isSelecting)
-            {
-                ScriptParent.transform.position = eventData.position + _offset;
+                }
+                case PointerEventData.InputButton.Left when !_isSelecting:
+                    ScriptParent.transform.position = eventData.position + _offset;
+                    break;
+                case PointerEventData.InputButton.Middle:
+                default:
+                    break;
             }
         }
 
@@ -392,7 +396,7 @@ public static class ScriptEditorUI
             var sMax = Vector2.Max(_selectStartScreen, endScreen);
             var selectionRect = new Rect(sMin, sMax - sMin);
 
-            if (selectionRect.width < 4f && selectionRect.height < 4f)
+            if (selectionRect is { width: < 4f, height: < 4f })
             {
                 ScriptManager.ClearSelection();
             }
@@ -402,7 +406,7 @@ public static class ScriptEditorUI
                 foreach (var pair in ScriptManager.Blocks)
                 {
                     var block = pair.Value;
-                    if (block?.BlockObject == null) continue;
+                    if (block == null || !block.BlockObject || !block.BlockObject.activeInHierarchy) continue;
                     var rt = block.BlockObject.GetComponent<RectTransform>();
                     if (!rt) continue;
 

@@ -85,7 +85,7 @@ public static class ScriptManager
     
     public static readonly Dictionary<(string, string, string, string), GameObject> Links = [];
 
-    public static readonly HashSet<string> SelectedBlockIds = new();
+    public static readonly HashSet<string> SelectedBlockIds = [];
 
     public static void ClearSelection()
     {

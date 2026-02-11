@@ -1330,8 +1330,35 @@ public static class MiscFixers
         public SilkPossession sp;
     }
 
-        public static void FixBlackStrand(GameObject obj)
+    public static void FixBlackStrand(GameObject obj)
     {
+        obj.transform.SetRotation2D(45);
         obj.transform.SetPositionZ(0.009f);
+    }
+
+    public static void FixSilkfly(GameObject obj)
+    {
+        obj.RemoveComponent<RandomScale>();
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Pause").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Spawn Buddies").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        var s = obj.AddComponent<Silkfly>();
+        fsm.GetState("Start").AddAction(() =>
+        {
+            var target = new GameObject("[Architect] Silkfly Target")
+            {
+                transform =
+                {
+                    position = obj.transform.position + new Vector3(s.xOffset, s.yOffset)
+                }
+            };
+            fsm.FsmVariables.FindFsmGameObject("Correct Gate").Value = target;
+        }, 0);
+    }
+
+    public class Silkfly : MonoBehaviour
+    {
+        public float xOffset = 5;
+        public float yOffset;
     }
 }

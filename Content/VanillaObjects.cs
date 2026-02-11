@@ -1436,6 +1436,13 @@ public static class VanillaObjects
             });
         AddSolid("Organ Platform 3", "organ_plat_3", ("Organ_01", "organ_lift_broken_drop/lift_bottom_broken"),
             preloadAction: o => o.transform.GetChild(3).gameObject.SetActive(false));
+
+        Categories.Misc.Add(new PreloadObject("Silkfly", "silkfly",
+            ("localpoolprefabs_assets_areadustmaze", "Assets/Prefabs/Hornet Enemies/Silkfly Mistmaze.prefab"),
+            notSceneBundle: true,
+            postSpawnAction: MiscFixers.FixSilkfly)
+            .WithConfigGroup(ConfigGroup.Silkfly)
+            .WithReceiverGroup(ReceiverGroup.Silkfly));
     }
 
     private static void AddStepsObjects()
@@ -1780,9 +1787,10 @@ public static class VanillaObjects
 
         Categories.Effects.Add(new PreloadObject("Black Thread Strand", "black_thread_strand",
                 ("Song_19_Entrance", "Black Thread States/Black Thread World/black_thread_strand"),
-                postSpawnAction: MiscFixers.FixBlackStrand,
+                preloadAction: MiscFixers.FixBlackStrand,
                 sprite: ResourceUtils.LoadSpriteResource("black_thread_strand", ppu: 377.5f)))
-                .WithConfigGroup(ConfigGroup.BlackStrand);
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.BlackStrand);
         
         Categories.Misc.Add(new PreloadObject("Greymoor Lamp", "greymoor_lamp",
                 ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakable)

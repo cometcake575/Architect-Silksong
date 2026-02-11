@@ -38,6 +38,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Silkfly = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("silkfly_fly", "Fly", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("NEEDOLIN");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> ThreadEffect = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_thread", "Activate", o =>
         {
