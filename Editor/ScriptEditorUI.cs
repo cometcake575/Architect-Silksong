@@ -73,10 +73,14 @@ public static class ScriptEditorUI
         
         GlobalParent = CreateBlankParent("Global Script", scripts, 0);
         LocalParent = CreateBlankParent("Local Script", scripts, 0);
-        
+
+        _localComments = CreateBlankParent("Local Comments", LocalParent, 20);
+        _localComments.transform.SetAsFirstSibling();
         _localBlocks = CreateBlankParent("Local Blocks", LocalParent, 20);
         _localLines = CreateBlankParent("Local Lines", LocalParent, 20);
-        
+
+        _globalComments = CreateBlankParent("Global Comments", GlobalParent, 20);
+        _globalComments.transform.SetAsFirstSibling();
         _globalBlocks = CreateBlankParent("Global Blocks", GlobalParent, 20);
         _globalLines = CreateBlankParent("Global Lines", GlobalParent, 20);
         
