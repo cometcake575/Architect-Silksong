@@ -432,8 +432,17 @@ public static class ScriptEditorUI
             _selectionImage.gameObject.SetActive(false);
         }
 
-        private void Update()
-        {
+        private void Update() {
+            if (_isSelecting && _selectionImage != null && _selectionImage.gameObject.activeSelf) {
+                if (Settings.CreateNewComment.IsPressed) {
+                    CreateCommentFromSelection();
+
+                    _isSelecting = false;
+                    _selectionImage.gameObject.SetActive(false);
+                    return;
+                }
+            }
+
             if (Input.mouseScrollDelta.y == 0) return;
             
             Deletable.DeleteButton.SetActive(false);
@@ -447,6 +456,258 @@ public static class ScriptEditorUI
                 Mathf.Clamp(_blockTransformSource.localScale.x + Input.mouseScrollDelta.y / 40, 0.1f, 2), 
                 Mathf.Clamp(_blockTransformSource.localScale.y + Input.mouseScrollDelta.y / 40, 0.1f, 2));
             ScriptParent.transform.SetParent(par, true);
+        }
+
+        private void CreateCommentFromSelection() {
+            if (_selectionRect == null) return;
+
+            var scriptParentObj = ScriptParent;
+            if (scriptParentObj == null) return;
+
+            var scriptRt = scriptParentObj.GetComponent<RectTransform>();
+            if (scriptRt == null) return;
+
+            var commentsParentObj = ScriptManager.IsLocal ? _localComments : _globalComments;
+            if (commentsParentObj == null) commentsParentObj = scriptParentObj;
+
+            var commentsRt = commentsParentObj.GetComponent<RectTransform>();
+            if (commentsRt == null) commentsRt = scriptRt;
+
+            var corners = new Vector3[4];
+            _selectionRect.GetWorldCorners(corners);
+
+            var worldBL = corners[0];
+            var worldTR = corners[2];
+            var worldCenter = (worldBL + worldTR) * 0.5f;
+
+            var commentObj = new GameObject("Comment");
+            var rt = commentObj.AddComponent<RectTransform>();
+
+            commentObj.transform.SetParent(commentsParentObj.transform, false);
+
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.localRotation = Quaternion.identity;
+            rt.localScale = Vector3.one;
+
+            Vector2 localCenter;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                commentsRt,
+                RectTransformUtility.WorldToScreenPoint(null, worldCenter),
+                null,
+                out localCenter
+            );
+
+            rt.anchoredPosition = localCenter;
+
+            Vector2 localBL;
+            Vector2 localTR;
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                commentsRt,
+                RectTransformUtility.WorldToScreenPoint(null, worldBL),
+                null,
+                out localBL
+            );
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                commentsRt,
+                RectTransformUtility.WorldToScreenPoint(null, worldTR),
+                null,
+                out localTR
+            );
+
+            rt.sizeDelta = new Vector2(
+                Mathf.Abs(localTR.x - localBL.x),
+                Mathf.Abs(localTR.y - localBL.y)
+            );
+
+            commentObj.transform.SetAsFirstSibling();
+
+            //Background Image (basically comment background)
+
+            var img = commentObj.AddComponent<Image>();
+            img.sprite = UIUtils.Square;
+            img.color = new Color(0f, 0f, 0f, 0.25f);
+            img.raycastTarget = false;
+
+            var outline = commentObj.AddComponent<Outline>();
+            outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
+            outline.effectDistance = new Vector2(2f, 2f);
+
+            //Comment Title
+
+            var titleLabel = UIUtils.MakeLabel(
+                "Comment Title",
+                commentObj,
+                Vector2.zero,
+                Vector2.zero,
+                Vector2.zero
+            );
+
+            titleLabel.textComponent.text = "Comment";
+            titleLabel.textComponent.alignment = TextAnchor.MiddleCenter;
+            titleLabel.textComponent.color = Color.white;
+
+            var labelRt = titleLabel.GetComponent<RectTransform>();
+
+            labelRt.anchorMin = new Vector2(0.5f, 1f);
+            labelRt.anchorMax = new Vector2(0.5f, 1f);
+
+            labelRt.pivot = new Vector2(0.5f, 0f);
+
+            float headerRatio = 0.25f;
+            float headerHeight = rt.rect.height * headerRatio;
+
+            labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
+
+            labelRt.anchoredPosition = new Vector2(0f, headerHeight * 0.1f);
+            titleLabel.textComponent.fontSize =
+                Mathf.RoundToInt(headerHeight * 0.6f);
+
+            titleLabel.textComponent.raycastTarget = true;
+            titleLabel.transform.SetAsLastSibling();
+
+            var titleBtn = titleLabel.gameObject.AddComponent<Button>();
+            titleBtn.onClick.AddListener(() => StartEditingCommentTitle(titleLabel, commentObj));
+
+            //close button
+
+            var closeBtnObj = new GameObject("CloseButton");
+            closeBtnObj.transform.SetParent(commentObj.transform, false);
+
+            var closeRt = closeBtnObj.AddComponent<RectTransform>();
+
+            float btnSize = rt.rect.height * 0.15f;
+
+            closeRt.sizeDelta = new Vector2(btnSize, btnSize);
+            closeRt.anchorMin = new Vector2(1f, 1f);
+            closeRt.anchorMax = new Vector2(1f, 1f);
+            closeRt.pivot = new Vector2(1f, 1f);
+            closeRt.anchoredPosition = new Vector2(-btnSize * 0.2f, -btnSize * 0.2f);
+
+            var closeBtnImage = closeBtnObj.AddComponent<Image>();
+            closeBtnImage.sprite = UIUtils.Square;
+            closeBtnImage.color = new Color(0.8f, 0.2f, 0.2f);
+
+            var closeBtn = closeBtnObj.AddComponent<Button>();
+            closeBtn.onClick.AddListener(() => {
+                GameObject.Destroy(commentObj);
+            });
+
+            var xLabel = UIUtils.MakeLabel("X Label", closeBtnObj, Vector2.zero, Vector2.zero, Vector2.zero);
+            xLabel.textComponent.text = "X";
+            xLabel.textComponent.fontSize = Mathf.RoundToInt(btnSize * 0.6f);
+            xLabel.textComponent.color = Color.white;
+
+            var xLabelRt = xLabel.GetComponent<RectTransform>();
+            xLabelRt.anchorMin = Vector2.zero;
+            xLabelRt.anchorMax = Vector2.one;
+            xLabelRt.offsetMin = Vector2.zero;
+            xLabelRt.offsetMax = Vector2.zero;
+            xLabelRt.pivot = new Vector2(0.5f, 0.5f);
+
+            xLabel.textComponent.alignment = TextAnchor.MiddleCenter;
+            xLabel.textComponent.raycastTarget = false;
+
+            //Color button
+
+            var colorBtnObj = new GameObject("ColorButton");
+            colorBtnObj.transform.SetParent(commentObj.transform, false);
+
+            var colorRt = colorBtnObj.AddComponent<RectTransform>();
+            float cBtnSize = rt.rect.height * 0.1f;
+            colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
+            colorRt.anchorMin = new Vector2(0f, 1f);
+            colorRt.anchorMax = new Vector2(0f, 1f);
+            colorRt.pivot = new Vector2(0f, 1f);
+            colorRt.anchoredPosition = new Vector2(cBtnSize * 0.1f, -cBtnSize * 0.1f);
+
+            var colorImg = colorBtnObj.AddComponent<Image>();
+            colorImg.sprite = UIUtils.Square;
+            colorImg.color = img.color;
+
+            var colorBtn = colorBtnObj.AddComponent<Button>();
+            colorBtn.onClick.AddListener(() => {
+                var colors = new Color[] {
+                    new Color(0f,0f,0f,0.25f),
+                    new Color(0.1f,0.1f,0.3f,0.25f),
+                    new Color(0.3f,0.1f,0.1f,0.25f),
+                    new Color(0.1f,0.3f,0.1f,0.25f)
+                };
+                int current = Array.IndexOf(colors, img.color);
+                int next = (current + 1) % colors.Length;
+                img.color = colors[next];
+                colorImg.color = colors[(next + 1) % colors.Length];
+            });
+        }
+
+        private void StartEditingCommentTitle(UIUtils.Label titleLabel, GameObject commentObj) {
+            titleLabel.gameObject.SetActive(false);
+
+            var inputObj = new GameObject("TitleInput");
+            inputObj.transform.SetParent(commentObj.transform, false);
+
+            var rt = inputObj.AddComponent<RectTransform>();
+            var titleRt = titleLabel.GetComponent<RectTransform>();
+            rt.anchorMin = titleRt.anchorMin;
+            rt.anchorMax = titleRt.anchorMax;
+            rt.pivot = titleRt.pivot;
+            rt.sizeDelta = titleRt.sizeDelta;
+            rt.anchoredPosition = titleRt.anchoredPosition;
+
+            var inputField = inputObj.AddComponent<InputField>();
+
+            var textObj = new GameObject("Text");
+            textObj.transform.SetParent(inputObj.transform, false);
+
+            var textRt = textObj.AddComponent<RectTransform>();
+            textRt.anchorMin = Vector2.zero;
+            textRt.anchorMax = Vector2.one;
+            textRt.offsetMin = Vector2.zero;
+            textRt.offsetMax = Vector2.zero;
+
+            var textComponent = textObj.AddComponent<Text>();
+            textComponent.text = titleLabel.textComponent.text;
+            textComponent.font = titleLabel.textComponent.font;
+            textComponent.fontSize = titleLabel.textComponent.fontSize;
+            textComponent.alignment = titleLabel.textComponent.alignment;
+            textComponent.color = titleLabel.textComponent.color;
+            textComponent.raycastTarget = true;
+
+            inputField.textComponent = textComponent;
+            inputField.text = titleLabel.textComponent.text;
+            inputField.contentType = InputField.ContentType.Standard;
+            inputField.lineType = InputField.LineType.SingleLine;
+            inputField.characterLimit = 100;
+
+            var placeholderObj = new GameObject("Placeholder");
+            placeholderObj.transform.SetParent(inputObj.transform, false);
+
+            var placeholderRt = placeholderObj.AddComponent<RectTransform>();
+            placeholderRt.anchorMin = Vector2.zero;
+            placeholderRt.anchorMax = Vector2.one;
+            placeholderRt.offsetMin = Vector2.zero;
+            placeholderRt.offsetMax = Vector2.zero;
+
+            var placeholder = placeholderObj.AddComponent<Text>();
+            placeholder.text = "Enter title...";
+            placeholder.font = titleLabel.textComponent.font;
+            placeholder.fontSize = titleLabel.textComponent.fontSize;
+            placeholder.color = new Color(1, 1, 1, 0.5f);
+            placeholder.alignment = titleLabel.textComponent.alignment;
+
+            inputField.placeholder = placeholder;
+
+            Canvas.ForceUpdateCanvases();
+            inputField.Select();
+            inputField.ActivateInputField();
+
+            inputField.onEndEdit.AddListener(newText => {
+                titleLabel.textComponent.text = newText;
+                titleLabel.gameObject.SetActive(true);
+                GameObject.Destroy(inputObj);
+            });
         }
     }
 }

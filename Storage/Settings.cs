@@ -33,6 +33,8 @@ public static class Settings
     public static Keybind Lock;
     public static Keybind TileChanger;
 
+    public static Keybind CreateNewComment;
+
     public static ConfigEntry<bool> LegacyEventSystem;
     public static ConfigEntry<bool> TestMode;
     public static ConfigEntry<bool> ShowRespawnPoint;
@@ -228,6 +230,13 @@ public static class Settings
             "Lock",
             KeyCode.None,
             "Locks an object in place so it cannot be edited until unlocked"
+        ));
+
+        CreateNewComment = new Keybind(config.Bind(
+            "ToolHotkeys",
+            "CreateNewComment",
+            KeyCode.C,
+            "Creates a new comment block from the selection in the script editor"
         ));
         
         TestMode = config.Bind(
