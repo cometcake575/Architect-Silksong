@@ -2403,10 +2403,17 @@ public static class VanillaObjects
 
         Categories.Hazards.Add(new PreloadObject("Bone Boulder", "bone_boulder",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone_Boulder"),
-            preloadAction: MiscFixers.FixRotation)
+            preloadAction: MiscFixers.FixRotation,
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Break").AddAction(() => o.BroadcastEvent("OnBreak"), 0);
+                fsm.GetState("Deactivate").AddAction(() => o.BroadcastEvent("OnBreak"), 0);
+            })
             .WithConfigGroup(ConfigGroup.Hazards)
-            .WithReceiverGroup(ReceiverGroup.Dropper));
-
+            .WithReceiverGroup(ReceiverGroup.Dropper)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        
         Categories.Interactable.Add(new PreloadObject("Bone Lever", "bone_lever",
                 ("Mosstown_01", "Bone Lever"), postSpawnAction: InteractableFixers.FixLever)
             .WithBroadcasterGroup(BroadcasterGroup.Levers)

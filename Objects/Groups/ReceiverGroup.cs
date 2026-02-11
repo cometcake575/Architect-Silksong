@@ -88,6 +88,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> FsmHook = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("fsm_set_state", "SetState", o =>
+        {
+            o.GetComponent<FsmHook>().SetState();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Dust = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("dust_on", "Emit", o =>
         {

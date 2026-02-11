@@ -279,6 +279,8 @@ public static class UtilityObjects
                 "The FSMSeer mod can be used to see FSM names and states.",
                 sprite:ResourceUtils.LoadSpriteResource("fsm_hook", FilterMode.Point, ppu:64))
             .WithConfigGroup(ConfigGroup.FsmHook)
+            .WithReceiverGroup(ReceiverGroup.FsmHook)
+            .WithBroadcasterGroup(BroadcasterGroup.FsmHook)
             .WithOutputGroup(OutputGroup.FsmHook);
     }
 

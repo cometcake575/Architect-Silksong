@@ -1331,6 +1331,12 @@ public static class ConfigGroup
                 {
                     o.GetComponent<FsmHook>().fsmName = value.GetValue();
                 }
+            )),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Target State", "fsm_hook_target", 
+                (o, value) => 
+                {
+                    o.GetComponent<FsmHook>().stateName = value.GetValue();
+                }
             ))
     ]);
 

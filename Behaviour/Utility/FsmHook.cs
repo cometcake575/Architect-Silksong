@@ -9,20 +9,23 @@ public class FsmHook : MonoBehaviour
 {
     public string targetId;
     public string fsmName;
+    public string stateName;
 
     private PlayMakerFSM _fsm;
     
     private bool _setup;
 
+    private string _state = string.Empty;
+
     public string GetState()
     {
-        return _fsm ? _fsm.ActiveStateName : "";
+        return _state;
     }
 
-    public void SetState(string state)
+    public void SetState()
     {
         if (!_fsm) return;
-        _fsm.SetState(state);
+        _fsm.SetState(stateName);
     }
 
     private void Setup()
@@ -40,5 +43,17 @@ public class FsmHook : MonoBehaviour
     private void Update()
     {
         if (!_setup) Setup();
+        if (_fsm)
+        {
+            if (_state != _fsm.ActiveStateName)
+            {
+                _state = _fsm.ActiveStateName;
+                gameObject.BroadcastEvent("OnChange");
+                if (_state == stateName)
+                {
+                    gameObject.BroadcastEvent("OnTarget");
+                }
+            }
+        }
     }
 }
