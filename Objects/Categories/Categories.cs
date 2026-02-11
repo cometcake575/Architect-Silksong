@@ -7,9 +7,11 @@ public static class Categories
     public static readonly List<AbstractCategory> AllCategories = [];
     
     /** Miscellaneous objects like benches or items that give free silk */
-    public static readonly Category Misc = RegisterCategory("Miscellaneous", 8);
+    public static readonly Category Misc = RegisterCategory("Miscellaneous", 9);
+    /** NPCs that can be talked to */
+    public static readonly Category Npcs = RegisterCategory("Npcs", 7);
     /** Effects such as particles */
-    public static readonly Category Effects = RegisterCategory("Effects", 7);
+    public static readonly Category Effects = RegisterCategory("Effects", 8);
     /** Hazards taken from enemy attacks */
     public static readonly Category Attacks = RegisterCategory("Attacks", 6);
     /** Things that do damage */

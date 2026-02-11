@@ -40,6 +40,7 @@ public static class StorageManager
         Directory.CreateDirectory(DataPath + "Scenes/");
         Directory.CreateDirectory(DataPath + "Prefabs/");
         Directory.CreateDirectory(DataPath + "Assets/");
+        Directory.CreateDirectory(DataPath + "Backups/");
         Directory.CreateDirectory(DataPath + "ModAssets/");
         
         typeof(GameManager).Hook(nameof(GameManager.SaveGame), 
@@ -308,6 +309,38 @@ public static class StorageManager
         var plural = CustomAssetManager.Failed == 1 ? "" : "s";
         status.text = "Download Complete" + (CustomAssetManager.Failed == 0 ? "" : 
             $"\n{CustomAssetManager.Failed} asset{plural} could not be downloaded");
+    }
+
+    public static void MakeBackup()
+    {
+        try
+        {
+            var backupId = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
+            var path = DataPath + $"Backups/{backupId}";
+            Directory.CreateDirectory($"{path}/Scenes");
+            Directory.CreateDirectory($"{path}/Prefabs");
+
+            foreach (var file in Directory.GetFiles(DataPath + "Scenes/"))
+            {
+                if (!file.EndsWith(".architect.json")) continue;
+                File.Copy(file, path + "/Scenes/" + Path.GetFileName(file));
+            }
+
+            foreach (var file in Directory.GetFiles(DataPath + "Prefabs/"))
+            {
+                if (!file.EndsWith(".architect.json")) continue;
+                File.Copy(file, path + "/Prefabs/" + Path.GetFileName(file));
+            }
+
+            if (File.Exists(DataPath + "workshop.json"))
+            {
+                File.Copy(DataPath + "workshop.json", path + "/workshop.json");
+            }
+        }
+        catch
+        {
+            //
+        }
     }
 
     public static void SaveApiKey([CanBeNull] string key)

@@ -279,6 +279,12 @@ public static class ConfigGroup
             {
                 item.Point = !value.GetValue();
             }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SceneGroup>("Hide Void Overlay", "scene_group_no_void", (item, value) =>
+            {
+                item.DisableAct3Bg = value.GetValue();
+            }).WithDefaultValue(false)
         )
     ];
     

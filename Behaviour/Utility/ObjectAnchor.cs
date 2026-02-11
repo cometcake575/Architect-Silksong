@@ -76,8 +76,12 @@ public class ObjectAnchor : PreviewableBehaviour
         if (overrideTarget) target = overrideTarget;
         else if (!PlacementManager.Objects.TryGetValue(targetId, out target))
         {
-            if (isAPreview) _setup = false;
-            return;
+            target = ObjectUtils.FindGameObject(targetId);
+            if (!target)
+            {
+                if (isAPreview) _setup = false;
+                return;
+            }
         }
 
         if (!isAPreview)

@@ -3085,6 +3085,11 @@ public static class EnemyFixers
     public static void FixRegularTrobbio(GameObject obj)
     {
         var fsm = FixTrobbio(obj, _flares, _floor, _bursts);
+
+        fsm.GetState("Death Air").AddAction(() =>
+        {
+            fsm.fsm.globalTransitions = [];
+        }, 0);
         
         var wr = fsm.GetState("Wait Refight");
         wr.DisableAction(0);

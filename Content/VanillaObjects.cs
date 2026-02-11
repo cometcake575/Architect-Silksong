@@ -337,10 +337,11 @@ public static class VanillaObjects
 
     private static void AddUnderworksObjects()
     {
-        Categories.Misc.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
+        Categories.Npcs.Add(new PreloadObject("Twelfth Architect NPC", "twelfth_architect",
                 ("Under_17", "Architect Scene/Chair/pillar E/pillar D/pillar C/pillar B/pillar A/seat/Architect NPC"),
                 preloadAction: MiscFixers.FixArchitect)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
         
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
             ("Under_19", "lava_crumble_plat"))
@@ -390,10 +391,11 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.JunkPipe));
 
-        Categories.Misc.Add(new PreloadObject("Loam NPC", "loam_npc",
+        Categories.Npcs.Add(new PreloadObject("Loam NPC", "loam_npc",
             ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
             preloadAction: MiscFixers.FixLoam)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
         
         AddSolid("Underworks Platform 1", "under_plat_1", ("Under_05", "dock_metal_grate_floor_set (1)"),
             preloadAction: MiscFixers.FocusFirstChild);
@@ -902,10 +904,11 @@ public static class VanillaObjects
                 postSpawnAction: InteractableFixers.FixCloverStatue)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
 
-        Categories.Misc.Add(new PreloadObject("Green Prince NPC", "green_prince",
+        Categories.Npcs.Add(new PreloadObject("Green Prince NPC", "green_prince",
             ("Song_04", "Black Thread States/Normal World/Scene States/Green Prince Stand Song_04"), 
             postSpawnAction: MiscFixers.FixBasicNpc)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
         Categories.Misc.Add(new PreloadObject("Lily Pad / Nuphar", "lilypad",
             ("Clover_04b", "Lilypad Trap Setter/Lilypad Plat (1)"),
@@ -1295,6 +1298,12 @@ public static class VanillaObjects
         AddEnemy("Pinstress", "pinstress_boss", 
             ("Peak_07", "Pinstress Control/Pinstress Scene/Pinstress Boss"),
             postSpawnAction: EnemyFixers.FixPinstress);*/
+
+        Categories.Npcs.Add(new PreloadObject("Mask Maker NPC", "mask_maker_npc",
+                ("Peak_Mask_Maker", "Peak Mask Maker"), 
+                postSpawnAction: MiscFixers.FixMaskMaker)
+            .WithConfigGroup(ConfigGroup.MaskMaker)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
     }
 
     private static void AddBileObjects()
@@ -1599,20 +1608,23 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
-        Categories.Misc.Add(new PreloadObject("Gilly NPC", "gilly_npc",
+        Categories.Npcs.Add(new PreloadObject("Gilly NPC", "gilly_npc",
                 ("Ant_17", "Gilly"), 
                 postSpawnAction: MiscFixers.FixGilly)
-            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
-        Categories.Misc.Add(new PreloadObject("Wandering Seth NPC", "seth_npc",
+        Categories.Npcs.Add(new PreloadObject("Wandering Seth NPC", "seth_npc",
                 ("Coral_10", "Seth Stand NPC"), 
                 postSpawnAction: MiscFixers.FixSeth)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
-        Categories.Misc.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
+        Categories.Npcs.Add(new PreloadObject("Garmond and Zaza NPC (Ally)", "garmond_zaza",
                 ("Song_17", "Garmond Fight Scene/Garmond Fighter"),
                 postSpawnAction: MiscFixers.FixGarmond)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
         AddEnemy("Garmond and Zaza (Boss)", "garmond_zaza_boss",
             ("Library_09", "Black Thread States/Normal World/Scene Control/Garmond Scene/Garmond Fighter"),
@@ -1723,13 +1735,14 @@ public static class VanillaObjects
                 postSpawnAction: EnemyFixers.FixShakra)
             .WithConfigGroup(ConfigGroup.ShakraBoss);
 
-        Categories.Misc.Add(new PreloadObject("Shakra NPC (Ally)", "shakra",
+        Categories.Npcs.Add(new PreloadObject("Shakra NPC (Ally)", "shakra",
                 ("Shellwood_01",
                     "Black Thread States/Black Thread World/Shakra Guard Scene/Scene Folder/Mapper StandGuard NPC"),
                 postSpawnAction: MiscFixers.FixShakra)
-            .WithConfigGroup(ConfigGroup.Shakra));
+            .WithConfigGroup(ConfigGroup.Shakra)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
-        Categories.Misc.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
+        Categories.Npcs.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
             postSpawnAction: MiscFixers.FixSecondSentinelAlly));
 
@@ -1738,29 +1751,33 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixSecondSentinelBoss)
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
 
-        Categories.Misc.Add(new PreloadObject("Pilgrim Preacher", "pilgrim_preacher",
+        Categories.Npcs.Add(new PreloadObject("Pilgrim Preacher", "pilgrim_preacher",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Simple NPC Tall"),
                 postSpawnAction: MiscFixers.FixPreacher)
-            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
-        Categories.Misc.Add(new PreloadObject("Caretaker NPC", "caretaker",
+        Categories.Npcs.Add(new PreloadObject("Caretaker NPC", "caretaker",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Caretaker"),
                 preloadAction: MiscFixers.FixCaretaker)
-            .WithConfigGroup(ConfigGroup.Caretaker).DoFlipX());
+            .WithConfigGroup(ConfigGroup.Caretaker)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
-        Categories.Misc.Add(new PreloadObject("Sherma NPC", "sherma_1",
+        Categories.Npcs.Add(new PreloadObject("Sherma NPC", "sherma_1",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 2/Sherma Enclave NPC"),
                 preloadAction: MiscFixers.FixSherma)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
-        Categories.Misc.Add(new PreloadObject("Caretaker Sherma NPC", "sherma_2",
+        Categories.Npcs.Add(new PreloadObject("Caretaker Sherma NPC", "sherma_2",
                 ("Song_Enclave",
                     "Black Thread States/Black Thread World/Enclave Act 3/Sherma Caretaker"),
                 preloadAction: MiscFixers.FixShermaCaretaker)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
         Categories.Platforming.Add(new PreloadObject("Updraft", "updraft_region",
                 ("Ant_19", "Updraft Region (1)"),
@@ -2028,19 +2045,21 @@ public static class VanillaObjects
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
 
-        Categories.Misc.Add(new PreloadObject("Pin Pilgrim NPC", "pin_pilgrim_npc",
+        Categories.Npcs.Add(new PreloadObject("Pin Pilgrim NPC", "pin_pilgrim_npc",
             ("Belltown", "Pin Pilgrim"),
             preloadAction: MiscFixers.FixPinPilgrim)
-            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
         /*Categories.Misc.Add(new PreloadObject("Pavo", "pavo_normal",
             ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter NPC"),
             postSpawnAction: MiscFixers.FixBasicNpc)
             .WithConfigGroup(ConfigGroup.Npcs));*/
-        Categories.Misc.Add(new PreloadObject("Sad Pavo", "pavo_sad",
+        Categories.Npcs.Add(new PreloadObject("Sad Pavo", "pavo_sad",
             ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter Act3"),
             postSpawnAction: MiscFixers.FixSadPavo)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
         /*AddEnemy("Widow", "widow",
             ("Belltown_Shrine", "Black Thread States Thread Only Variant/Normal World/Boss Scene/Spinner Boss"),
@@ -2513,6 +2532,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .DoFlipX();
+
+        Categories.Npcs.Add(new PreloadObject("Forge Daughter", "forge_daughter_npc",
+            ("Room_Forge", "_NPCs/Forge Daughter"),
+            preloadAction: MiscFixers.FixForgeDaughter)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
+            .WithConfigGroup(ConfigGroup.Npcs).DoFlipX());
     }
 
     private static void AddFieldsObjects()
@@ -2643,10 +2668,11 @@ public static class VanillaObjects
             .WithInputGroup(InputGroup.FleaCounter)
             .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
         
-        Categories.Misc.Add(new PreloadObject("Fleamaster NPC", "fleamaster_npc",
+        Categories.Npcs.Add(new PreloadObject("Fleamaster NPC", "fleamaster_npc",
             ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Flea Games Host NPC"),
             preloadAction: MiscFixers.FixFleamaster)
-            .WithConfigGroup(ConfigGroup.Npcs));
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
         
         /*
         Categories.Misc.Add(new PreloadObject("Juggle Flea", "juggle_flea",
@@ -2830,18 +2856,20 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Trap)
             .WithConfigGroup(ConfigGroup.Hazards));
 
-        Categories.Misc.Add(new PreloadObject("Pilby NPC", "pilby_death",
+        Categories.Npcs.Add(new PreloadObject("Pilby NPC", "pilby_death",
             ("Bonetown", "Black Thread States/Normal World/Bonetown Resident"),
             preloadAction: EnemyFixers.KeepActive,
             postSpawnAction: MiscFixers.FixPilby))
             .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
             .WithReceiverGroup(ReceiverGroup.Pilby);
 
-        Categories.Misc.Add(new PreloadObject("Flick NPC", "flick_npc",
+        Categories.Npcs.Add(new PreloadObject("Flick NPC", "flick_npc",
             ("Bonetown", 
                 "Black Thread States/Normal World/RestBench Control/Bench Getting Repaired/Fixer Pilgrim Bench Repair"),
             postSpawnAction: MiscFixers.FixFlick))
-            .WithConfigGroup(ConfigGroup.Npcs);
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs);
 
         Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
             ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),

@@ -110,6 +110,12 @@ public abstract class ScriptBlock
         
         var ext = SerializeExtraData();
         if (ext.ContainsKey("object")) ext["object"] += idAddition;
+        if (ext.ContainsKey("children"))
+        {
+            var blocks = JsonConvert.DeserializeObject<List<ScriptBlock>>(ext["children"], Sbc);
+            for (var b = 0; b < blocks.Count; b++) blocks[b] = blocks[b].Clone(idAddition);
+            ext["children"] = JsonConvert.SerializeObject(blocks);
+        }
         clone.DeserializeExtraData(ext);
         
         return clone;

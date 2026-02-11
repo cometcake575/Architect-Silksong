@@ -123,6 +123,13 @@ public static class MiscFixers
             });
         #endregion
         
+        typeof(BasicNPC).Hook(nameof(BasicNPC.OnEndDialogue),
+            (Action<BasicNPC> orig, BasicNPC self) =>
+            {
+                self.gameObject.BroadcastEvent("OnFinish");
+                orig(self);
+            });
+        
         typeof(MatchHeroFacing).Hook(nameof(MatchHeroFacing.DoMatch),
             (Action<MatchHeroFacing> orig, MatchHeroFacing self) =>
             {
@@ -552,6 +559,12 @@ public static class MiscFixers
         obj.AddComponent<BasicNpcFix>();
     }
 
+    public static void FixForgeDaughter(GameObject obj)
+    {
+        obj.transform.SetPositionZ(0.006f);
+        obj.AddComponent<ForgeDaughter>();
+    }
+
     public static void FixSadPavo(GameObject obj)
     {
         EnemyFixers.KeepActive(obj);
@@ -661,6 +674,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[1];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("Dialogue End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -673,6 +687,8 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -688,6 +704,28 @@ public static class MiscFixers
             var dialogue = (RunDialogue) state.actions[1];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            
+            fsm.GetState("End Convo").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+        }
+    }
+    
+    public class ForgeDaughter : Npc
+    {
+        private void Start()
+        {
+            transform.Find("Shop Prompt").gameObject.SetActive(false);
+            
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Demo?").AddAction(() => fsm.SendEvent("TRUE"), 0);
+            fsm.GetState("Talk State Demo").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                
+            var state = fsm.GetState("Repeat Demo");
+            state.DisableAction(1);
+            var dialogue = (RunDialogue) state.actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+            
+            fsm.GetState("End Convo").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -714,6 +752,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[2];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -726,6 +765,8 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -738,6 +779,35 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+        }
+    }
+    
+    public class MaskMaker : Npc
+    {
+        public string unmasked = "Sample Text";
+        
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Masked State?").AddAction(() => fsm.SendEvent("ALREADY MET"), 0);
+            fsm.GetState("Unmasked State?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+
+            var mr = fsm.GetState("Already Met");
+            mr.DisableAction(0);
+            mr.DisableAction(1);
+            var md = (RunDialogue)mr.actions[2];
+            md.Sheet = "ArchitectMod";
+            md.Key = text;
+
+            var ur = fsm.GetState("Unmasked Repeat");
+            ur.DisableAction(0);
+            ur.DisableAction(1);
+            var ud = (RunDialogue)ur.actions[2];
+            ud.Sheet = "ArchitectMod";
+            ud.Key = unmasked;
+            
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -751,6 +821,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -765,6 +836,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat PR").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -779,6 +851,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[2];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End Dlg").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -798,7 +871,11 @@ public static class MiscFixers
             dialogue.Key = text;
             
             fsm.GetState("Shop Up").AddAction(() => fsm.SendEvent("SHOP CLOSED"), 0);
-            fsm.GetState("Will Leave?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("Will Leave?").AddAction(() =>
+            {
+                gameObject.BroadcastEvent("OnFinish");
+                fsm.SendEvent("FINISHED");
+            }, 0);
         }
     }
     
@@ -817,6 +894,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue) fsm.GetState("Lv1 Meet").actions[1];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -833,6 +911,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Intro").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -882,6 +961,7 @@ public static class MiscFixers
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[2];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
+            fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
 
@@ -1228,6 +1308,11 @@ public static class MiscFixers
     {
         EnemyFixers.KeepActive(obj);
         obj.AddComponent<Gilly>();
+    }
+
+    public static void FixMaskMaker(GameObject obj)
+    {
+        obj.AddComponent<MaskMaker>();
     }
 
     public static void FixWater(GameObject obj)

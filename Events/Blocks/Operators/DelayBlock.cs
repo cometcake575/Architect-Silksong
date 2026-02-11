@@ -37,9 +37,10 @@ public class DelayBlock : ScriptBlock
     private IEnumerator DelayedEvent()
     {
         var delay = Delay;
+        var d = _delay;
         delay += GetVariable<float>("Extra Delay");
         yield return new WaitForSeconds(delay);
-        Event("Out");
+        if (d) Event("Out");
     }
 }
 
@@ -70,8 +71,9 @@ public class WaitUntilBlock : ScriptBlock
 
     private IEnumerator DelayedEvent()
     {
+        var d = _delay;
         yield return new WaitUntil(() => GetVariable<bool>("Check"));
-        Event("Out");
+        if (d) Event("Out");
     }
 }
 
@@ -115,10 +117,12 @@ public class LoopBlock : ScriptBlock
 
     private IEnumerator DelayedEvent()
     {
+        var d = _delay;
         var times = Mathf.RoundToInt(GetVariable<float>("Times"));
         for (_currentTime = 0; _currentTime < times; _currentTime++)
         {
             if (Delay > 0) yield return new WaitForSeconds(Delay);
+            if (!d) yield break;
             Event("Out");
         }
     }

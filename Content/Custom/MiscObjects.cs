@@ -22,7 +22,8 @@ public static class MiscObjects
         
         Categories.Effects.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
             .WithConfigGroup(ConfigGroup.Mp4)
-            .WithReceiverGroup(ReceiverGroup.Playable));
+            .WithReceiverGroup(ReceiverGroup.Playable)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable));
         
         Categories.Effects.AddStart(CreateAsset<WavObject>("WAV", "custom_wav", false, false)
             .WithConfigGroup(ConfigGroup.Wav)

@@ -397,6 +397,14 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> MaskMaker = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Unmasked Dialogue", "mask_maker_unmasked_text", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.MaskMaker>().unmasked = value.GetValue();
+            }).WithDefaultValue("Sample Text").WithPriority(-1))
+    ]);
+
     public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>
@@ -427,7 +435,7 @@ public static class ConfigGroup
             new ChoiceConfigType("Border Type", "camera_border_type", (o, value) =>
             {
                 o.GetComponent<CameraBorder>().type = value.GetValue();
-            }).WithOptions("Left", "Right", "Top", "Bottom").WithDefaultValue(0)),
+            }).WithOptions("Left", "Right", "Top", "Bottom", "Lock").WithDefaultValue(4)),
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Active Mode", "camera_border_mode", (o, value) =>
             {
@@ -2167,6 +2175,11 @@ public static class ConfigGroup
             new FloatConfigType("Playback Speed", "mp4_speed",
                 (o, value) => { o.GetComponent<VideoPlayer>().playbackSpeed = value.GetValue(); })
                 .WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Light Reflection", "mp4_glow",
+                    (o, value) => { o.GetComponentInChildren<Mp4Object>().glow = value.GetValue(); })
+                .WithDefaultValue(false)
+                .WithPriority(-2)),
         AlphaColour
     ]);
 

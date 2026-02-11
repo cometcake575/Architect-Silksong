@@ -62,6 +62,9 @@ public class CameraBorder : MonoBehaviour
                     if (position.y < bord.transform.position.y) position.y = bord.transform.position.y;
                     break;
                 }
+                case 4:
+                    position = bord.transform.position;
+                    break;
             }
         }
 

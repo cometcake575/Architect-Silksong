@@ -5,6 +5,7 @@ namespace Architect.Workshop.Items;
 public class SceneGroup : SpriteItem
 {
     public string GroupName = string.Empty;
+    public bool DisableAct3Bg;
 
     public SaveSlotBackgrounds.AreaBackground Background;
     
@@ -13,7 +14,8 @@ public class SceneGroup : SpriteItem
         Background = new SaveSlotBackgrounds.AreaBackground
         {
             BackgroundImage = ArchitectPlugin.BlankSprite,
-            NameOverride = (LocalStr)GroupName
+            NameOverride = (LocalStr)GroupName,
+            Act3OverlayOptOut = DisableAct3Bg
         };
         
         SceneUtils.SceneGroups.Add(Id, this);

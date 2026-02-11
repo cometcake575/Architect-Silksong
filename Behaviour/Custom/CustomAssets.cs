@@ -101,6 +101,7 @@ public class Mp4Object : MonoBehaviour, IPlayable
 {
     public string url;
     public bool playOnStart = true;
+    public bool glow;
     private VideoPlayer _player;
 
     private bool _shouldPlay = true;
@@ -111,7 +112,9 @@ public class Mp4Object : MonoBehaviour, IPlayable
     private void Awake()
     {
         if (string.IsNullOrEmpty(url)) return;
+        if (!glow) GetComponent<SpriteRenderer>().material = MiscFixers.SpriteMaterial;
         _player = gameObject.GetComponent<VideoPlayer>();
+        _player.loopPointReached += _ => gameObject.BroadcastEvent("OnFinish"); 
         CustomAssetManager.DoLoadVideo(_player, transform.GetScaleX(), url);
     }
 
@@ -197,7 +200,6 @@ public class WavObject : SoundMaker, IPlayable
             sound = clip;
             sound.LoadAudioData();
         });
-        
     }
 
     public void Play()
