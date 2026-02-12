@@ -71,34 +71,16 @@ public static class OutputGroup
         ))
     ];
 
-    public static readonly List<OutputType> LastJudge =
-    [
-        EventManager.RegisterOutputType
-        (
-            new OutputType("hp", "Health", "Number", o =>
-            {
-                var hm = o.GetComponentInChildren<HealthManager>();
-                return hm ? hm.hp : 0;
-            })
-        ),
-        EventManager.RegisterOutputType
-        (
-            new OutputType("enemy_self", "Self", "Enemy", o =>
-            {
-                var hm = o.GetComponentInChildren<HealthManager>();
-                return hm;
-            })
-        ),
+    public static readonly List<OutputType> LastJudge = GroupUtils.Merge(Enemies, [
         EventManager.RegisterOutputType
         (
             new OutputType
             ("censer_x", "Censer X", "Number",
                 o =>
                 {
-                    var thurible = o.transform.Find("Censer Slam");
-                    var realThurible = thurible.transform.Find("censer sphere");
-                    var tx = realThurible != null ? realThurible.GetComponent<Transform>() : null;
-                    return tx.position.x;
+                    var fsm = o.LocateMyFSM("Control");
+                    var censer = fsm.FsmVariables.FindFsmGameObject("Censer Throw");
+                    return censer.value ? censer.value.transform.GetPositionX() : 0f;
                 }
             )
         ),
@@ -108,12 +90,11 @@ public static class OutputGroup
             ("censer_y", "Censer Y", "Number",
                 o =>
                 {
-                    var thurible = o.transform.Find("Censer Slam");
-                    var realThurible = thurible.transform.Find("censer sphere");
-                    var ty = realThurible != null ? realThurible.GetComponent<Transform>() : null;
-                    return ty.position.y;
+                    var fsm = o.LocateMyFSM("Control");
+                    var censer = fsm.FsmVariables.FindFsmGameObject("Censer Throw");
+                    return censer.value ? censer.value.transform.GetPositionY() : 0f;
                 }
             )
         )
-    ];
+    ]);
 }
