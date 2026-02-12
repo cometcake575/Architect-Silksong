@@ -711,7 +711,9 @@ public static class UtilityObjects
                 point,
                 sprite: SquareDamager,
                 description: "Damages enemies inside the zone with configurable damage and damage types.")
-            .WithConfigGroup(ConfigGroup.EnemyDamager);
+            .WithConfigGroup(ConfigGroup.EnemyDamager)
+            .WithReceiverGroup(ReceiverGroup.EnemyDamager)
+            .WithInputGroup(InputGroup.EnemyDamager);
     }
 
     private static PlaceableObject CreateInteraction()

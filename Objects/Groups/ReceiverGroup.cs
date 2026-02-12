@@ -135,6 +135,14 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> EnemyDamager = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("set_enemy_damager", "SetDamage", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<DamageEnemies>().damageDealt = (int)b.GetVariable<float>("New Damage");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Activatable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("grow_pod", "Grow", o =>
         {

@@ -45,6 +45,7 @@ public class ObjectAnchor : PreviewableBehaviour
     private float _pauseRemaining;
 
     private bool _setup;
+    private bool _checkSetup;
 
     private Vector3 _startPos;
     private PositionConstraint _constraint;
@@ -76,9 +77,11 @@ public class ObjectAnchor : PreviewableBehaviour
         if (overrideTarget) target = overrideTarget;
         else if (!PlacementManager.Objects.TryGetValue(targetId, out target))
         {
+            if (_checkSetup) return;
             target = ObjectUtils.FindGameObject(targetId);
             if (!target)
             {
+                _checkSetup = true;
                 if (isAPreview) _setup = false;
                 return;
             }

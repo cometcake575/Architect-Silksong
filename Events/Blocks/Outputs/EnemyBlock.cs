@@ -6,7 +6,7 @@ namespace Architect.Events.Blocks.Outputs;
 public class EnemyBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Damage", "Heal", "CappedHeal", "Set"];
-    protected override IEnumerable<(string, string)> InputVars => [("Target", "Enemy")];
+    protected override IEnumerable<(string, string)> InputVars => [("Target", "Enemy"), ("Multiplier", "Number")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
     protected override Color Color => DefaultColor;
@@ -34,7 +34,7 @@ public class EnemyBlock : ScriptBlock
                         Source = target.gameObject,
                         AttackType = AttackType,
                         NailElement = NailElements.None,
-                        DamageDealt = Health,
+                        DamageDealt = (int)(Health * GetVariable<float>("Multiplier", 1)),
                         ToolDamageFlags = ToolDamageFlags.None,
                         SpecialType = SpecialTypes.None,
                         SlashEffectOverrides = [],
