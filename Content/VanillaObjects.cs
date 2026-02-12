@@ -1474,7 +1474,8 @@ public static class VanillaObjects
         AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
             postSpawnAction:EnemyFixers.FixLastJudge)
             .WithConfigGroup(ConfigGroup.LastJudge)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
+            .WithBroadcasterGroup(BroadcasterGroup.LastJudge)
+            .WithOutputGroup(OutputGroup.LastJudge);
 
         Categories.Misc.Add(new PreloadObject("Judge Statue", "judge_statue",
                 ("Coral_32", "fossil_judge_break_leanRight"), postSpawnAction: MiscFixers.FixBreakable)
