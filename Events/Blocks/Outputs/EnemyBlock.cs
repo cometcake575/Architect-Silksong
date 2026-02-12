@@ -13,6 +13,7 @@ public class EnemyBlock : ScriptBlock
     protected override string Name => "Enemy Control";
 
     public int Health;
+    public string AnimationNamel;
     public AttackTypes AttackType;
 
     protected override void Reset()
@@ -44,13 +45,13 @@ public class EnemyBlock : ScriptBlock
                     });
                 break;
             case "Heal":
-                target.hp += Health;
+                target.hp += (int)(Health * GetVariable<float>("Multiplier", 1));
                 break;
             case "Set":
-                target.hp = Health;
+                target.hp = (int)(Health * GetVariable<float>("Multiplier", 1));
                 break;
             case "CappedHeal":
-                target.AddHP(Health, target.initHp);
+                target.AddHP((int)(Health * GetVariable<float>("Multiplier", 1)), target.initHp);
                 break;
         }
     }

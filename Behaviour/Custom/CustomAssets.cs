@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Behaviour.Fixers;
+using Architect.Behaviour.Utility;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.Video;
 
 namespace Architect.Behaviour.Custom;
@@ -16,7 +19,7 @@ public interface IPlayable
     public void Reset();
 }
 
-public class PngObject : MonoBehaviour, IPlayable
+public class PngObject : PreviewableBehaviour, IPlayable
 {
     private SpriteRenderer _renderer;
     private Sprite[] _sprites;
@@ -94,6 +97,94 @@ public class PngObject : MonoBehaviour, IPlayable
     {
         frame = 0;
         _renderer.sprite = _sprites[0];
+    }
+}
+
+public class UIPngObject : PngObject
+{
+    public float xOffset;
+    
+    public float yOffset;
+
+    public int anchorTo;
+
+    private static readonly int UiLayer = LayerMask.NameToLayer("UI");
+
+    private PositionConstraint _constraint;
+    private SpriteRenderer _sr;
+    private GameObject _par;
+
+    public void Start()
+    {
+        gameObject.layer = UiLayer;
+        var anchor = GameCameras.instance.hudCamera.transform
+            .Find("In-game").Find("Anchor TL").Find("Hud Canvas Offset").Find("Hud Canvas");
+
+        if (isAPreview && transform.parent)
+        {
+            _par = transform.parent.gameObject;
+            transform.parent = null;
+        }
+        _constraint = gameObject.AddComponent<PositionConstraint>();
+        _constraint.constraintActive = true;
+        
+        var source = new ConstraintSource
+        {
+            sourceTransform = anchor,
+            weight = 1
+        };
+        
+        _constraint.AddSource(source);
+
+        _sr = GetComponent<SpriteRenderer>();
+        _sr.sortingLayerName = "Over";
+        
+        UpdatePos();
+    }
+
+    private bool _previewing;
+
+    private void UpdatePos()
+    {
+        var offset = new Vector2(xOffset + 10.3535f, yOffset - 6.81f);
+        
+        switch (anchorTo)
+        {
+            case 1:
+                offset.x += 0.94f * PlayerData.instance.maxHealth;
+                break;
+            case 2:
+                if (!ToolItemManager.Instance) return;
+                if (ToolItemManager.Instance.boundAttackTools == null) return;
+                
+                var hc = GameCameras.instance.hudCamera.transform
+                    .Find("In-game").Find("Anchor TL").Find("Hud Canvas Offset").Find("Hud Canvas");
+                var spool = hc.Find("Tool Icons");
+                offset.x += 1.02f * 
+                            ToolItemManager.Instance.boundAttackTools.Count(o => o) 
+                            + spool.transform.GetPositionX();
+                break;
+        }
+
+        _constraint.translationOffset = offset;
+    }
+    
+    private void LateUpdate()
+    {
+        if (anchorTo != 0) UpdatePos();
+        if (isAPreview)
+        {
+            if (!_par)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            if (_previewing != Settings.Preview.IsPressed)
+            {
+                _previewing = !_previewing;
+                _sr.enabled = _previewing;
+            }
+        }
     }
 }
 

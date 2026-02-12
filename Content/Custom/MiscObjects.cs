@@ -30,10 +30,21 @@ public static class MiscObjects
             .WithReceiverGroup(ReceiverGroup.Wav)
             .WithInputGroup(InputGroup.Wav));
         
+        Categories.Effects.AddStart(CreateAsset<UIPngObject>("PNG (HUD)", "custom_png_ui", true, false,
+                "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
+                "Broadcasts 'OnFinish' when the animation ends.\n\n" +
+                "Renders on the HUD, can be used inside of a prefab and\n" +
+                "made to appear in every room using the Spawn Prefab block.", true)
+            .WithConfigGroup(ConfigGroup.PngUI)
+            .WithReceiverGroup(ReceiverGroup.Png)
+            .WithBroadcasterGroup(BroadcasterGroup.Finishable)
+            .WithInputGroup(InputGroup.Png)
+            .WithOutputGroup(OutputGroup.Png));
+        
         Categories.Effects.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
                 "Broadcasts 'OnFinish' when the animation ends.")
-            .WithConfigGroup(ConfigGroup.Png)
+            .WithConfigGroup(ConfigGroup.PhysicalPng)
             .WithReceiverGroup(ReceiverGroup.Png)
             .WithBroadcasterGroup(BroadcasterGroup.Finishable)
             .WithInputGroup(InputGroup.Png)
@@ -287,7 +298,7 @@ public static class MiscObjects
     }
 
     private static PlaceableObject CreateAsset<T>(string name, string id, bool addRenderer, 
-        bool addVideo, string extDesc = "") where T : MonoBehaviour
+        bool addVideo, string extDesc = "", bool preview = false) where T : MonoBehaviour
     {
         var asset = new GameObject("Custom Asset");
 
@@ -304,7 +315,8 @@ public static class MiscObjects
                 description:
                 $"Places a custom {name} in the game.\n\n" +
                 "URL should be a direct download anyone can access\n" +
-                "in order to work with the level sharer." + extDesc)
+                "in order to work with the level sharer." + extDesc,
+                preview: preview)
             .WithRotationGroup(RotationGroup.All);
     }
 

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using BepInEx;
 using GlobalEnums;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
 using Math = System.Math;
 
@@ -17,6 +16,7 @@ public class HpBlock : ScriptBlock
         "TakeHazard"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Amount", "Number"),
+        ("MaxAmount", "Number"),
         ("Lifeblood", "Number")
     ];
 
@@ -58,7 +58,13 @@ public class HpBlock : ScriptBlock
 
     protected override object GetValue(string id)
     {
-        return id == "Amount" ? PlayerData.instance.health : PlayerData.instance.healthBlue;
+        return id switch
+        {
+            "Amount" => PlayerData.instance.health,
+            "MaxAmount" => PlayerData.instance.maxHealth,
+            "Lifeblood" => PlayerData.instance.healthBlue,
+            _ => 0
+        };
     }
 }
 

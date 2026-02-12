@@ -852,6 +852,16 @@ public static class ConfigGroup
         }))
     ]);
 
+    private static readonly ConfigType RenderLayer = ConfigurationManager.RegisterConfigType(
+        new IntConfigType("Render Layer", "obj_layer",
+                (o, value) =>
+                {
+                    foreach (var comp in o.GetComponentsInChildren<Renderer>())
+                        comp.sortingOrder = value.GetValue();
+                },
+                (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
+            .WithDefaultValue(0));
+        
     private static readonly ConfigType ZOffset =
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Z Offset", "obj_z",
@@ -870,15 +880,7 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(
-            new IntConfigType("Render Layer", "obj_layer",
-                (o, value) =>
-                {
-                    foreach (var comp in o.GetComponentsInChildren<Renderer>())
-                        comp.sortingOrder = value.GetValue();
-                },
-                (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
-                .WithDefaultValue(0)),
+        RenderLayer,
         ZOffset
     ]);
 
@@ -2044,7 +2046,8 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
-    public static readonly List<ConfigType> Png = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [
+    public static readonly List<ConfigType> Png =
+    [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("PNG URL", "png_url",
                 (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
@@ -2123,7 +2126,31 @@ public static class ConfigGroup
                 {
                     o.GetComponentInChildren<PngObject>().playing = value.GetValue();
                 }).WithDefaultValue(true).WithPriority(-2))
-    ]));
+    ];
+
+    public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [])));
+
+    public static readonly List<ConfigType> PngUI = GroupUtils.Merge(Png, [
+        RenderLayer,
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Offset", "ui_png_x",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<UIPngObject>().xOffset = value.GetValue();
+                }).WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Offset", "ui_png_y",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<UIPngObject>().yOffset = value.GetValue();
+                }).WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Shift With", "ui_png_anchor",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<UIPngObject>().anchorTo = value.GetValue();
+                }).WithOptions("None", "LastMask", "LastTool").WithDefaultValue(0).WithPriority(-1))
+    ]);
 
     private static readonly ConfigType WavUrl = ConfigurationManager.RegisterConfigType(
         new StringConfigType("WAV URL", "wav_url",
