@@ -309,6 +309,13 @@ public static class EnemyFixers
         var fr = fsm.GetState("Flame Roar 1");
         fr.DisableAction(3);
         fr.DisableAction(4);
+
+        fsm.GetState("Throw Antic").AddAction(() => obj.BroadcastEvent("CenserThrow"), 0);
+        fsm.GetState("Censer Slam").AddAction(() => obj.BroadcastEvent("CenserSlam"), 0);
+        fsm.GetState("Spin Antic").AddAction(() => obj.BroadcastEvent("Swing"), 0);
+        fsm.GetState("Stomp Regular").AddAction(() => obj.BroadcastEvent("Slam"), 0);
+        fsm.GetState("Stomp Flames").AddAction(() => obj.BroadcastEvent("FireSlam"), 0);
+        fsm.GetState("Charge").AddAction(() => obj.BroadcastEvent("FlameCharge"), 0);
         
         obj.GetComponent<HealthManager>().IsInvincible = false;
 
