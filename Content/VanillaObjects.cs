@@ -1304,6 +1304,11 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.FixMaskMaker)
             .WithConfigGroup(ConfigGroup.MaskMaker)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
+
+        Categories.Npcs.Add(new PreloadObject("Fayforn (Ground)", "fayforn_npc",
+                ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
+                postSpawnAction: MiscFixers.FixBasicNpc, sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
+            .WithConfigGroup(ConfigGroup.Fayforn));
     }
 
     private static void AddBileObjects()
