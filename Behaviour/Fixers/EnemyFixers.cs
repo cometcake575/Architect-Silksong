@@ -3010,14 +3010,6 @@ public static class EnemyFixers
         obj.transform.SetRotation2D(0);
         obj.RemoveComponent<EnemyEdgeControl>();
     }
-
-    public static void FixGnat(GameObject obj)
-    {
-        var ede = obj.GetComponent<EnemyDeathEffects>();
-        ede.PreInstantiate();
-        var fsm = ede.GetInstantiatedCorpse(AttackTypes.Generic).LocateMyFSM("Custom Corpse");
-        fsm.GetState("Spawn 2").actions[1].enabled = false;
-    }
     
     public static void FixTormentedTrobbio(GameObject obj)
     {

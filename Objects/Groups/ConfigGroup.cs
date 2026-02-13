@@ -73,6 +73,7 @@ public static class ConfigGroup
             new BoolConfigType("Visible", "is_visible", (o, value) =>
             {
                 if (value.GetValue()) return;
+                o.RemoveComponent<MiscFixers.ColorLock>();
                 
                 foreach (var renderer in o.GetComponentsInChildren<tk2dSprite>(true))
                 {
@@ -86,8 +87,8 @@ public static class ConfigGroup
                     col.a = 0;
                     renderer.color = col;
                 }
-
-                o.AddComponent<MiscFixers.ColorLock>();
+                
+                o.AddComponent<MiscFixers.ColorLock>().permanent = true;
             }))
     ]);
     
@@ -2046,8 +2047,7 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
-    public static readonly List<ConfigType> Png =
-    [
+    public static readonly List<ConfigType> Png = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("PNG URL", "png_url",
                 (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
@@ -2126,7 +2126,7 @@ public static class ConfigGroup
                 {
                     o.GetComponentInChildren<PngObject>().playing = value.GetValue();
                 }).WithDefaultValue(true).WithPriority(-2))
-    ];
+    ]);
 
     public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [])));
 

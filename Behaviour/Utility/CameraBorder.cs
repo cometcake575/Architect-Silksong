@@ -63,7 +63,8 @@ public class CameraBorder : MonoBehaviour
                     break;
                 }
                 case 4:
-                    position = bord.transform.position;
+                    position.x = bord.transform.GetPositionX();
+                    position.y = bord.transform.GetPositionY();
                     break;
             }
         }

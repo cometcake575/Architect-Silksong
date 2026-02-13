@@ -81,6 +81,7 @@ public class ObjectColourer : MonoBehaviour
     public IEnumerator DoApply(float fadeTime, Color color, bool forceAlpha)
     {
         var lk = target.GetOrAddComponent<MiscFixers.ColorLock>();
+        if (lk.permanent) yield break;
         lk.enabled = false;
 
         foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))

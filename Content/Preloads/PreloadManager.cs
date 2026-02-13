@@ -106,6 +106,15 @@ public static class PreloadManager
         if (asset.Handle.OperationException != null) yield break;
 
         var foundObject = asset.Handle.Result;
+        if (preload.IsNotSceneBundle && foundObject.GetComponent<HealthManager>())
+        {
+            var active = foundObject.activeSelf;
+            foundObject.SetActive(false);
+            var p = foundObject;
+            foundObject = Object.Instantiate(foundObject);
+            Object.DontDestroyOnLoad(foundObject);
+            if (active) p.SetActive(true);
+        }
         preload.OnPreload(foundObject);
         _count++;
         _status.text = $"{_count} / {_totalCount}";

@@ -213,7 +213,10 @@ public static class MiscFixers
             });
     }
 
-    public class ColorLock : MonoBehaviour;
+    public class ColorLock : MonoBehaviour
+    {
+        public bool permanent;
+    }
 
     private delegate string ToStringOrig(ref LocalisedString self, bool allowBlankText);
     

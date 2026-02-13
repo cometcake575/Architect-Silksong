@@ -199,6 +199,7 @@ public static class SceneUtils
         
         var scene = SceneManager.CreateScene(sceneName);
         var sm = CreateSceneManager();
+        sm.AddComponent<SceneBorderRemover>();
         SceneManager.MoveGameObjectToScene(sm, scene);
         SceneManager.MoveGameObjectToScene(CreateManager(), scene);
         var (tm, rd) = CreateTileMap(info);

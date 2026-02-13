@@ -2186,10 +2186,8 @@ public static class VanillaObjects
         AddEnemy("Crawling Shellwood Gnat", "shellwood_gnat", 
             ("Shellwood_01", "Shellwood Goomba")).DoFlipX();
         
-        // TODO Figure out why vanilla ones in Mosstown_03 (shellwood) are broken
         AddEnemy("Flying Shellwood Gnat", "shellwood_gnat_fly",
-            ("Shellwood_01", "Shellwood Goomba Flyer (1)"),
-            postSpawnAction: EnemyFixers.FixGnat);
+            ("Shellwood_01", "Shellwood Goomba Flyer (1)"));
         
         AddEnemy("Shellwood Gnat Core", "shellwood_gnat_core", 
             ("localpoolprefabs_assets_areashellwood.bundle", "Assets/Prefabs/Hornet Enemies/Shellwood Gnat.prefab"), 
