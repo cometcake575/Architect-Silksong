@@ -405,6 +405,19 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text").WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> Fayforn = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Feathers", "makes_snow", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                var featherChild = o.transform.Find("feather_loop");
+                if (featherChild != null)
+                {
+                    UnityEngine.Object.Destroy(featherChild.gameObject);
+                }
+            }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>
