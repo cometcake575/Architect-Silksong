@@ -171,6 +171,18 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
+    public static readonly List<ConfigType> Bell = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Extra Length", "bell_chain_length", (o, value) =>
+            {
+                o.transform.GetChild(0).GetChild(0).transform.position += new Vector3(0, value.GetValue());
+                o.transform.GetChild(0).GetChild(2).GetComponent<HingeJoint2D>().connectedAnchor +=
+                    new Vector2(0, value.GetValue() / 2);
+                o.transform.GetChild(0).GetChild(3).GetComponent<HingeJoint2D>().connectedAnchor +=
+                    new Vector2(0, value.GetValue() / 2);
+            }))
+    ]);
+
     public static readonly List<ConfigType> JellyEgg = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Regen Time", "egg_regen", (o, value) =>
@@ -404,19 +416,6 @@ public static class ConfigGroup
             {
                 o.GetComponent<MiscFixers.MaskMaker>().unmasked = value.GetValue();
             }).WithDefaultValue("Sample Text").WithPriority(-1))
-    ]);
-
-    public static readonly List<ConfigType> Fayforn = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Feathers", "makes_snow", (o, value) =>
-            {
-                if (value.GetValue()) return;
-                var featherChild = o.transform.Find("feather_loop");
-                if (featherChild != null)
-                {
-                    UnityEngine.Object.Destroy(featherChild.gameObject);
-                }
-            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
@@ -889,6 +888,20 @@ public static class ConfigGroup
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
 
+    public static readonly List<ConfigType> Fayforn = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Feather Effect", "makes_snow", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                var featherChild = o.transform.Find("feather_loop");
+                if (featherChild)
+                {
+                    Object.Destroy(featherChild.gameObject);
+                }
+            }).WithDefaultValue(true)),
+        ZOffset
+    ]);
+
     public static readonly List<ConfigType> BlurPlane = GroupUtils.Merge(Generic, [
         ZOffset
     ]);
@@ -938,7 +951,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> BreakableDecor = GroupUtils.Merge(Decorations, [IsBreakable]);
 
-    public static readonly List<ConfigType> WispLanterns = GroupUtils.Merge(PersistentBreakable, [IsBreakable]);
+    public static readonly List<ConfigType> WispLanterns = GroupUtils.Merge(Bell, GroupUtils.Merge(PersistentBreakable, [IsBreakable]));
 
     public static readonly List<ConfigType> BreakableWall = GroupUtils.Merge(PersistentBreakable, [
         ConfigurationManager.RegisterConfigType(new IntConfigType("Required Hits", "breakable_hits", (o, value) =>
@@ -1318,6 +1331,20 @@ public static class ConfigGroup
                     };
                 }
             ).WithDefaultValue(0).WithOptions("Walk", "Run", "Sprint"))
+    ]);
+
+    public static readonly List<ConfigType> BellBench = GroupUtils.Merge(Benches, [
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Range", "bench_range", 
+                (o, value) => 
+                {
+                    o.transform.GetChild(1).SetScaleX(o.transform.GetChild(1).GetScaleX() * value.GetValue()); 
+                    o.transform.GetChild(2).SetScaleX(o.transform.GetChild(2).GetScaleX() * value.GetValue()); 
+                    o.transform.GetChild(3).SetScaleX(o.transform.GetChild(3).GetScaleX() * value.GetValue()); 
+                    o.transform.GetChild(4).SetScaleX(o.transform.GetChild(4).GetScaleX() * value.GetValue());
+                    var bc = o.GetComponent<BoxCollider2D>();
+                    bc.size = bc.size.Where(x: bc.size.x * value.GetValue()); 
+                }
+            ))
     ]);
 
     public static readonly List<ConfigType> ObjectSpinner = GroupUtils.Merge(Generic, [

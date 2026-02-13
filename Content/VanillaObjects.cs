@@ -1307,7 +1307,7 @@ public static class VanillaObjects
 
         Categories.Npcs.Add(new PreloadObject("Fayforn (Ground)", "fayforn_npc",
                 ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
-                postSpawnAction: MiscFixers.FixBasicNpc, sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
+                sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
             .WithConfigGroup(ConfigGroup.Fayforn));
     }
 
@@ -1474,7 +1474,8 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         Categories.Platforming.Add(new PreloadObject("Bell of Judgement", "hang_bell",
-            ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite));
+            ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite)
+            .WithConfigGroup(ConfigGroup.Bell));
 
         AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
             postSpawnAction:EnemyFixers.FixLastJudge)
@@ -1582,7 +1583,7 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixBench,
                 postSpawnAction: MiscFixers.AddBenchEvent,
                 preview: true)
-            .WithConfigGroup(ConfigGroup.Benches)
+            .WithConfigGroup(ConfigGroup.BellBench)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
         
         /*Categories.Misc.AddStart(new PreloadObject("Sack Bench", "sack_bench",
@@ -2092,8 +2093,13 @@ public static class VanillaObjects
 
     private static void AddWispObjects()
     {
+        Categories.Platforming.Add(new PreloadObject("Sprintmaster Bounce Pod", "sprintmaster_pod",
+            ("Sprintmaster_Cave", "Race Group/Tracks/Track 2/Sprintmaster Bounce Pod (4)"))
+            .WithConfigGroup(ConfigGroup.Bell));
+        
         Categories.Platforming.Add(new PreloadObject("Wisp Bounce Pod", "wisp_bounce_pod",
-            ("Wisp_02", "Wisp Bounce Pod")));
+            ("Wisp_02", "Wisp Bounce Pod"))
+            .WithConfigGroup(ConfigGroup.Bell));
 
         Categories.Hazards.Add(new PreloadObject("Wispfire Lantern", "wisp_flame_lantern",
                 ("Wisp_02", "Wisp Farmers/Wisp Flame Lantern"), 
