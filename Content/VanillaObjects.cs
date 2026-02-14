@@ -1240,6 +1240,29 @@ public static class VanillaObjects
                 ("Peak_05", "chair_lift_ring/Harpoon Ring Citadel"), postSpawnAction: MiscFixers.FixRing).DoFlipX()
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
+        Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
+                ("Hang_08", "Harpoon Ring VerticalRide"),
+                preloadAction: o =>
+                {
+                    o.transform.SetRotation2D(0);
+                },
+                postSpawnAction: MiscFixers.FixRing).DoFlipX()
+            .WithRotateAction((o, r) =>
+            {
+                o.transform.SetRotation2D(r - 38.0005f);
+            })
+            .WithConfigGroup(ConfigGroup.VerticalRing)
+            .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
+
+        Categories.Platforming.Add(new PreloadObject("Horizontal Moving Ring", "harpoon_ring_h",
+                ("Cog_08", "Harpoon Ring Rail Slider"),
+                preloadAction: o =>
+                {
+                    o.transform.SetRotation2D(0);
+                },
+                postSpawnAction: MiscFixers.FixRing).DoFlipX())
+            .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings);
+
         Categories.Misc.Add(new PreloadObject("Coldshard", "snow_chunk",
                 ("Bellway_Peak_02", "Snowflake Chunk (82)"), 
                 preloadAction: o =>
@@ -1309,6 +1332,18 @@ public static class VanillaObjects
                 ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
                 sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
             .WithConfigGroup(ConfigGroup.Fayforn));
+
+        Categories.Effects.Add(new PreloadObject("Feather Effect", "feather_effect",
+                ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
+                postSpawnAction: o =>
+                {
+                    o.RemoveComponent<PlayMakerFSM>();
+                    o.RemoveComponent<AnimatorLookAnimNPC>();
+                    o.RemoveComponent<NoiseResponder>();
+                    o.RemoveComponent<AudioSource>();
+                    foreach (var i in (int[])[0, 1, 2, 3, 4, 6, 7]) o.transform.GetChild(i).gameObject.SetActive(false);
+                },
+                sprite: ResourceUtils.LoadSpriteResource("feather_effect", ppu:68.75f)));
     }
 
     private static void AddBileObjects()
@@ -1348,12 +1383,7 @@ public static class VanillaObjects
             ("Shadow_02", "plank_plat (4)"), preloadAction: MiscFixers.FixBilePlat);
         AddSolid("Bilewater Platform 2", "swamp_plat_2",
             ("Shadow_26", "gloom_lift_destroy/gloom_lift_set/gloom_plat_lift destroy"));
-
-        /*
-        Categories.Effects.Add(new PreloadObject("Maggots", "maggot_effect",
-            ("Shadow_18", "maggot_pool (1)/swamp_maggot_animated0000 (10)"), preloadAction: MiscFixers.FixDecoration)
-            .WithConfigGroup(ConfigGroup.Decorations));*/
-
+        
         Categories.Platforming.Add(new PreloadObject("Muck Pod", "swap_bounce_pod",
             ("Shadow_02", "Swamp Bounce Pod")).DoFlipX());
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",

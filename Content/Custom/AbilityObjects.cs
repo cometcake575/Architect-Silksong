@@ -57,6 +57,7 @@ public static class AbilityObjects
         Categories.Abilities.Add(MakeAbilityBinding("Frost", "frost"));
         Categories.Abilities.Add(MakeAbilityBinding("Needle", "needle", "Locks the needle damage to 5"));
         Categories.Abilities.Add(MakeAbilityBinding("Attack", "attack"));
+        Categories.Abilities.Add(MakeAbilityBinding("Jump", "jump"));
         // Categories.Abilities.Add(MakeAbilityBinding("Tool", "tools"));
         SetupBindingHooks();
         
@@ -324,6 +325,9 @@ public static class AbilityObjects
         
         typeof(HeroController).Hook(nameof(HeroController.IsFacingNearSlideableWall),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "wall_jump"));
+        
+        typeof(HeroController).Hook(nameof(HeroController.CanJump),
+            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "jump"));
         
         typeof(HeroController).Hook(nameof(HeroController.CanPlayNeedolin),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "needolin"));

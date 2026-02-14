@@ -6,6 +6,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class ToolBlock : ScriptBlock
 {
+    //protected override IEnumerable<string> Inputs => ["UnequipAll"];
     protected override IEnumerable<string> Outputs => ["OnUse"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Equipped", "Boolean")
@@ -13,7 +14,7 @@ public class ToolBlock : ScriptBlock
 
     private static readonly Color DefaultColor = new(0.6f, 0.2f, 0.9f);
     protected override Color Color => DefaultColor;
-    protected override string Name => "Custom Tool Control";
+    protected override string Name => "Tool Control";
 
     protected override void Reset()
     {
@@ -49,6 +50,15 @@ public class ToolBlock : ScriptBlock
         {
             Events.Remove(this);
         }
+    }
+
+    protected override void Trigger(string trigger)
+    {
+        ToolItemManager.AutoEquip(
+            ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID),
+            false,
+            true
+        );
     }
 
     public static void DoBroadcast(string tool)

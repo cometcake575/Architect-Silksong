@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -61,7 +59,7 @@ namespace Architect.Editor {
                         case "color":
                             var colorData = serializer.Deserialize<ColorData>(reader);
                             if (colorData != null) {
-                                color = new Color(colorData.r, colorData.g, colorData.b, colorData.a);
+                                color = new Color(colorData.R, colorData.G, colorData.B, colorData.A);
                             }
                             break;
                         case "position":
@@ -71,7 +69,7 @@ namespace Architect.Editor {
                             size = serializer.Deserialize<Vector2>(reader);
                             break;
                         case "isLocal":
-                            isLocal = reader.Value is bool b && b;
+                            isLocal = reader.Value is true;
                             break;
                     }
 
@@ -81,17 +79,12 @@ namespace Architect.Editor {
                 return new Comment(title, color, position, size, isLocal);
             }
 
-            private class ColorData {
-                public float r, g, b, a;
-
-                public ColorData() { }
-
-                public ColorData(Color color) {
-                    r = color.r;
-                    g = color.g;
-                    b = color.b;
-                    a = color.a;
-                }
+            private class ColorData(Color color)
+            {
+                public readonly float R = color.r;
+                public readonly float G = color.g;
+                public readonly float B = color.b;
+                public readonly float A = color.a;
             }
         }
     }

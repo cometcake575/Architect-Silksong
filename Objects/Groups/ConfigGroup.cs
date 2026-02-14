@@ -138,6 +138,15 @@ public static class ConfigGroup
                 }
             }).WithDefaultValue(true))
     ]);
+    
+    public static readonly List<ConfigType> VerticalRing = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Move Distance", "vertical_ring_distance", (o, value) =>
+            {
+                o.transform.GetChild(3).SetLocalPositionY(value.GetValue());
+            }).WithDefaultValue(5))
+    ]);
 
     public static readonly List<ConfigType> Item = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
