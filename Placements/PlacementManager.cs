@@ -183,6 +183,10 @@ public static class PlacementManager
         foreach (var block in _globalData.ScriptBlocks) block.LateSetup();
 
         ScriptManager.IsLocal = wasLocal;
+        
+        if (EditManager.IsEditing) {
+            ScriptEditorUI.LoadComments();
+        }
     }
 
     public static void Init()

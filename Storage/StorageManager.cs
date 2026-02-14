@@ -78,7 +78,8 @@ public static class StorageManager
 
         if (level.Placements.IsNullOrEmpty() &&
             level.TilemapChanges.IsNullOrEmpty() &&
-            level.ScriptBlocks.IsNullOrEmpty())
+            level.ScriptBlocks.IsNullOrEmpty() &&
+            level.Comments.IsNullOrEmpty())
         {
             if (scene.StartsWith("Prefab_")) PrefabsCategory.Remove(scene.Replace("Prefab_", ""));
             return;
@@ -100,7 +101,7 @@ public static class StorageManager
         var path = GetScenePath(scene);
 
         return File.Exists(path) ? DeserializeLevel(File.ReadAllText(path)) : 
-            new LevelData([], [], []);
+            new LevelData([], [], [], []);
     }
 
     public static void LoadWorkshopData()
