@@ -87,7 +87,9 @@ public class ArchitectClientAddon : ClientAddon
             {
                 var scene = StorageManager.LoadScene(packet.SceneName);
                 scene.ScriptBlocks.Clear();
+                scene.Comments.Clear();
                 scene.ScriptBlocks.AddRange(levelData.ScriptBlocks);
+                scene.Comments.AddRange(levelData.Comments);
                 StorageManager.SaveScene(packet.SceneName, scene);
             }
             else
