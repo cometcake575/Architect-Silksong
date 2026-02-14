@@ -41,6 +41,24 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
     
+    public static readonly List<ConfigType> ObjectLayerer = [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Target ID", "layerer_target", (o, value) =>
+            {
+                o.GetComponent<Layerer>().target = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Set Layer", "layerer_name", (o, value) =>
+            {
+                o.GetComponent<Layerer>().layer = LayerMask.NameToLayer(value.GetValue());
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Set Layer", "layerer_recursive", (o, value) =>
+            {
+                o.GetComponent<Layerer>().recursive = value.GetValue();
+            }).WithDefaultValue(true))
+    ];
+    
     public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic,
     [
         ConfigurationManager.RegisterConfigType(

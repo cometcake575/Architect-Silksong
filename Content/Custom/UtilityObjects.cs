@@ -27,6 +27,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateShielder());
         
         Categories.Utility.Add(CreateObjectAnchor());
+        Categories.Utility.Add(CreateObjectLayerer());
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());
         Categories.Utility.Add(CreateObjectSpawner());
@@ -585,6 +586,23 @@ public static class UtilityObjects
             .WithReceiverGroup(ReceiverGroup.ObjectAnchor)
             .WithOutputGroup(OutputGroup.ObjectAnchor)
             .WithBroadcasterGroup(BroadcasterGroup.ObjectAnchor);
+    }
+
+    private static PlaceableObject CreateObjectLayerer()
+    {
+        var layerer = new GameObject("Object Layer Changer");
+        layerer.SetActive(false);
+        Object.DontDestroyOnLoad(layerer);
+        
+        layerer.AddComponent<Layerer>();
+
+        return new CustomObject("Object Layer Changer", "object_layerer",
+                layerer,
+                sprite: ResourceUtils.LoadSpriteResource("object_layerer", FilterMode.Point),
+                description: "Changes the layer of the target object, affecting things like collision.",
+                preview: true)
+            .WithConfigGroup(ConfigGroup.ObjectLayerer)
+            .WithReceiverGroup(ReceiverGroup.ObjectLayerer);
     }
 
     private static PlaceableObject CreateObjectMover()

@@ -55,12 +55,19 @@ public static class ReceiverGroup
     ]);
     
     public static readonly List<EventReceiverType> AbilityCrystal = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("crystal_clear", "ClearAll", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("crystal_clear", "ClearAll", _ =>
         {
             AbilityObjects.ActiveCrystals.Clear();
             AbilityObjects.RefreshCrystalUI();
         }))
     ]);
+    
+    public static readonly List<EventReceiverType> ObjectLayerer = [
+        EventManager.RegisterReceiverType(new EventReceiverType("layerer_apply", "Apply", o =>
+        {
+            o.GetComponent<Layerer>().Apply();
+        }))
+    ];
     
     public static readonly List<EventReceiverType> MagmaRocks = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("magma_go", "Away", o =>
