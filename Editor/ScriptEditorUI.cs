@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
+using Object = UnityEngine.Object;
 
 namespace Architect.Editor;
 
@@ -409,42 +410,48 @@ public static class ScriptEditorUI
             }
             else
             {
-                var selectedIds = new List<string>();
-                foreach (var pair in ScriptManager.Blocks)
-                {
-                    var block = pair.Value;
-                    if (block == null || !block.BlockObject || !block.BlockObject.activeInHierarchy) continue;
-                    var rt = block.BlockObject.GetComponent<RectTransform>();
-                    if (!rt) continue;
-
-                    var bCorners = new Vector3[4];
-                    rt.GetWorldCorners(bCorners);
-                    var bMin = new Vector2(float.MaxValue, float.MaxValue);
-                    var bMax = new Vector2(float.MinValue, float.MinValue);
-                    for (var i = 0; i < 4; i++)
-                    {
-                        var bsp = RectTransformUtility.WorldToScreenPoint(null, bCorners[i]);
-                        bMin = Vector2.Min(bMin, bsp);
-                        bMax = Vector2.Max(bMax, bsp);
-                    }
-
-                    var blockRect = new Rect(bMin, bMax - bMin);
-
-                    if (selectionRect.Overlaps(blockRect, true))
-                    {
-                        selectedIds.Add(block.BlockId);
-                    }
-                }
-
-                ScriptManager.SetSelection(selectedIds);
+                DoSelection(selectionRect);
             }
 
             _isSelecting = false;
             _selectionImage.gameObject.SetActive(false);
         }
 
+        public static void DoSelection(Rect selectionRect)
+        {
+            var selectedIds = new List<string>();
+            foreach (var pair in ScriptManager.Blocks)
+            {
+                var block = pair.Value;
+                if (block == null || !block.BlockObject || !block.BlockObject.activeInHierarchy) continue;
+                var rt = block.BlockObject.GetComponent<RectTransform>();
+                if (!rt) continue;
+
+                var bCorners = new Vector3[4];
+                rt.GetWorldCorners(bCorners);
+                var bMin = new Vector2(float.MaxValue, float.MaxValue);
+                var bMax = new Vector2(float.MinValue, float.MinValue);
+                for (var i = 0; i < 4; i++)
+                {
+                    var bsp = RectTransformUtility.WorldToScreenPoint(null, bCorners[i]);
+                    bMin = Vector2.Min(bMin, bsp);
+                    bMax = Vector2.Max(bMax, bsp);
+                }
+
+                var blockRect = new Rect(bMin, bMax - bMin);
+
+                ArchitectPlugin.Logger.LogInfo(selectionRect);
+                if (selectionRect.Overlaps(blockRect, true))
+                {
+                    selectedIds.Add(block.BlockId);
+                }
+            }
+
+            ScriptManager.SetSelection(selectedIds);
+        }
+
         private void Update() {
-            if (_isSelecting && _selectionImage != null && _selectionImage.gameObject.activeSelf) {
+            if (_isSelecting && _selectionImage && _selectionImage.gameObject.activeSelf) {
                 if (Settings.CreateNewComment.IsPressed) {
                     CreateCommentFromSelection();
 
@@ -470,19 +477,19 @@ public static class ScriptEditorUI
         }
 
         private void CreateCommentFromSelection() {
-            if (_selectionRect == null) return;
+            if (!_selectionRect) return;
 
             var scriptParentObj = ScriptParent;
-            if (scriptParentObj == null) return;
+            if (!scriptParentObj) return;
 
             var scriptRt = scriptParentObj.GetComponent<RectTransform>();
-            if (scriptRt == null) return;
+            if (!scriptRt) return;
 
             var commentsParentObj = ScriptManager.IsLocal ? _localComments : _globalComments;
-            if (commentsParentObj == null) commentsParentObj = scriptParentObj;
+            if (!commentsParentObj) commentsParentObj = scriptParentObj;
 
             var commentsRt = commentsParentObj.GetComponent<RectTransform>();
-            if (commentsRt == null) commentsRt = scriptRt;
+            if (!commentsRt) commentsRt = scriptRt;
 
             var corners = new Vector3[4];
             _selectionRect.GetWorldCorners(corners);
@@ -501,31 +508,27 @@ public static class ScriptEditorUI
             rt.localRotation = Quaternion.identity;
             rt.localScale = Vector3.one;
 
-            Vector2 localCenter;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 commentsRt,
                 RectTransformUtility.WorldToScreenPoint(null, worldCenter),
                 null,
-                out localCenter
+                out var localCenter
             );
 
             rt.anchoredPosition = localCenter;
-
-            Vector2 localBL;
-            Vector2 localTR;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 commentsRt,
                 RectTransformUtility.WorldToScreenPoint(null, worldBL),
                 null,
-                out localBL
+                out var localBL
             );
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 commentsRt,
                 RectTransformUtility.WorldToScreenPoint(null, worldTR),
                 null,
-                out localTR
+                out var localTR
             );
 
             rt.sizeDelta = new Vector2(
@@ -548,8 +551,7 @@ public static class ScriptEditorUI
             var img = commentObj.AddComponent<Image>();
             img.sprite = UIUtils.Square;
             img.color = commentData.Color;
-            img.raycastTarget = false;
-
+            
             var outline = commentObj.AddComponent<Outline>();
             outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
             outline.effectDistance = new Vector2(2f, 2f);
@@ -575,8 +577,8 @@ public static class ScriptEditorUI
 
             labelRt.pivot = new Vector2(0.5f, 0f);
 
-            float headerRatio = 0.25f;
-            float headerHeight = rt.rect.height * headerRatio;
+            const float headerRatio = 0.25f;
+            var headerHeight = rt.rect.height * headerRatio;
 
             labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
 
@@ -588,7 +590,7 @@ public static class ScriptEditorUI
             titleLabel.transform.SetAsLastSibling();
 
             var titleBtn = titleLabel.gameObject.AddComponent<Button>();
-            titleBtn.onClick.AddListener(() => StartEditingCommentTitle(titleLabel, commentObj));
+            titleBtn.onClick.AddListener(() => StartEditingCommentTitleStatic(titleLabel, commentObj));
 
             //close button
 
@@ -597,7 +599,7 @@ public static class ScriptEditorUI
 
             var closeRt = closeBtnObj.AddComponent<RectTransform>();
 
-            float btnSize = rt.rect.height * 0.15f;
+            var btnSize = rt.rect.height * 0.15f;
 
             closeRt.sizeDelta = new Vector2(btnSize, btnSize);
             closeRt.anchorMin = new Vector2(1f, 1f);
@@ -613,10 +615,10 @@ public static class ScriptEditorUI
             closeBtn.onClick.AddListener(() => {
                 var comment = commentObj.GetComponent<CommentData>()?.Comment;
                 if (comment != null) {
-                    var levelData = comment.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
-                    levelData.Comments.Remove(comment);
+                    var level = comment.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
+                    level.Comments.Remove(comment);
                 }
-                GameObject.Destroy(commentObj);
+                Destroy(commentObj);
             });
 
             var xLabel = UIUtils.MakeLabel("X Label", closeBtnObj, Vector2.zero, Vector2.zero, Vector2.zero);
@@ -640,9 +642,9 @@ public static class ScriptEditorUI
             colorBtnObj.transform.SetParent(commentObj.transform, false);
 
             var colorRt = colorBtnObj.AddComponent<RectTransform>();
-            float cBtnSize = rt.rect.height * 0.1f;
-            colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
+            var cBtnSize = rt.rect.height * 0.1f;
             colorRt.anchorMin = new Vector2(0f, 1f);
+            colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
             colorRt.anchorMax = new Vector2(0f, 1f);
             colorRt.pivot = new Vector2(0f, 1f);
             colorRt.anchoredPosition = new Vector2(cBtnSize * 0.1f, -cBtnSize * 0.1f);
@@ -654,25 +656,23 @@ public static class ScriptEditorUI
             var colorBtn = colorBtnObj.AddComponent<Button>();
             colorBtn.onClick.AddListener(() => {
                 var colors = new Color[] {
-                    new Color(0f,0f,0f,0.25f),
-                    new Color(0.1f,0.1f,0.3f,0.25f),
-                    new Color(0.3f,0.1f,0.1f,0.25f),
-                    new Color(0.1f,0.3f,0.1f,0.25f)
+                    new(0f,0f,0f,0.25f),
+                    new(0.1f,0.1f,0.3f,0.25f),
+                    new(0.3f,0.1f,0.1f,0.25f),
+                    new(0.1f,0.3f,0.1f,0.25f)
                 };
-                int current = Array.IndexOf(colors, img.color);
-                int next = (current + 1) % colors.Length;
+                var current = Array.IndexOf(colors, img.color);
+                var next = (current + 1) % colors.Length;
                 img.color = colors[next];
                 colorImg.color = colors[(next + 1) % colors.Length];
-                
-                var comment = commentObj.GetComponent<CommentData>()?.Comment;
+
+                var cd = commentObj.GetComponent<CommentData>();
+                if (!cd) return;
+                var comment = cd.Comment;
                 if (comment != null) {
                     comment.Color = img.color;
                 }
             });
-        }
-
-        private void StartEditingCommentTitle(UIUtils.Label titleLabel, GameObject commentObj) {
-            StartEditingCommentTitleStatic(titleLabel, commentObj);
         }
     }
 
@@ -742,20 +742,20 @@ public static class ScriptEditorUI
             titleLabel.gameObject.SetActive(true);
             
             var commentData = commentObj.GetComponent<CommentData>();
-            if (commentData != null && commentData.Comment != null) {
+            if (commentData && commentData.Comment != null) {
                 commentData.Comment.Title = newText;
             }
             
-            GameObject.Destroy(inputObj);
+            Object.Destroy(inputObj);
         });
     }
 
     public static void LoadComments() {
         foreach (Transform child in _localComments.transform) {
-            if (child.name == "Comment") GameObject.Destroy(child.gameObject);
+            if (child.name == "Comment") Object.Destroy(child.gameObject);
         }
         foreach (Transform child in _globalComments.transform) {
-            if (child.name == "Comment") GameObject.Destroy(child.gameObject);
+            if (child.name == "Comment") Object.Destroy(child.gameObject);
         }
 
         foreach (var comment in PlacementManager.GetLevelData().Comments) {
@@ -818,8 +818,8 @@ public static class ScriptEditorUI
             labelRt.anchorMax = new Vector2(0.5f, 1f);
             labelRt.pivot = new Vector2(0.5f, 0f);
 
-            float headerRatio = 0.25f;
-            float headerHeight = rt.rect.height * headerRatio;
+            const float headerRatio = 0.25f;
+            var headerHeight = rt.rect.height * headerRatio;
 
             labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
 
@@ -839,7 +839,7 @@ public static class ScriptEditorUI
 
             var closeRt = closeBtnObj.AddComponent<RectTransform>();
 
-            float btnSize = rt.rect.height * 0.15f;
+            var btnSize = rt.rect.height * 0.15f;
 
             closeRt.sizeDelta = new Vector2(btnSize, btnSize);
             closeRt.anchorMin = new Vector2(1f, 1f);
@@ -858,7 +858,7 @@ public static class ScriptEditorUI
                     var levelData = comment.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
                     levelData.Comments.Remove(comment);
                 }
-                GameObject.Destroy(commentObj);
+                Object.Destroy(commentObj);
             });
 
             var xLabel = UIUtils.MakeLabel("X Label", closeBtnObj, Vector2.zero, Vector2.zero, Vector2.zero);
@@ -895,13 +895,13 @@ public static class ScriptEditorUI
             var colorBtn = colorBtnObj.AddComponent<Button>();
             colorBtn.onClick.AddListener(() => {
                 var colors = new Color[] {
-                    new Color(0f,0f,0f,0.25f),
-                    new Color(0.1f,0.1f,0.3f,0.25f),
-                    new Color(0.3f,0.1f,0.1f,0.25f),
-                    new Color(0.1f,0.3f,0.1f,0.25f)
+                    new(0f,0f,0f,0.25f),
+                    new(0.1f,0.1f,0.3f,0.25f),
+                    new(0.3f,0.1f,0.1f,0.25f),
+                    new(0.1f,0.3f,0.1f,0.25f)
                 };
-                int current = Array.IndexOf(colors, img.color);
-                int next = (current + 1) % colors.Length;
+                var current = Array.IndexOf(colors, img.color);
+                var next = (current + 1) % colors.Length;
                 img.color = colors[next];
                 colorImg.color = colors[(next + 1) % colors.Length];
                 

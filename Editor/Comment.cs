@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Architect.Editor {
     [JsonConverter(typeof(CommentConverter))]
@@ -79,17 +80,48 @@ namespace Architect.Editor {
                 return new Comment(title, color, position, size, isLocal);
             }
 
+            // ReSharper disable FieldCanBeMadeReadOnly.Local
             private class ColorData(Color color)
             {
-                public readonly float R = color.r;
-                public readonly float G = color.g;
-                public readonly float B = color.b;
-                public readonly float A = color.a;
+                public float R = color.r;
+                public float G = color.g;
+                public float B = color.b;
+                public float A = color.a;
             }
         }
     }
 
-    internal class CommentData : MonoBehaviour {
+    internal class CommentData : MonoBehaviour, IPointerDownHandler {
+        
         public Comment Comment;
+        private float _time;
+
+        public void Select()
+        {
+            var rt = (RectTransform)transform;
+            
+            var bCorners = new Vector3[4];
+            rt.GetWorldCorners(bCorners);
+            var bMin = new Vector2(float.MaxValue, float.MaxValue);
+            var bMax = new Vector2(float.MinValue, float.MinValue);
+            for (var i = 0; i < 4; i++)
+            {
+                var bsp = RectTransformUtility.WorldToScreenPoint(null, bCorners[i]);
+                bMin = Vector2.Min(bMin, bsp);
+                bMax = Vector2.Max(bMax, bsp);
+            }
+            var selectionRect = new Rect(bMin, bMax - bMin);
+            
+            ScriptEditorUI.BackgroundDrag.DoSelection(selectionRect);
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (Time.realtimeSinceStartup - _time < 0.5f)
+            {
+                Select();
+            }
+            _time = Time.realtimeSinceStartup;
+        }
     }
 }
