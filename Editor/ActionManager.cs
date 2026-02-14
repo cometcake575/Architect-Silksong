@@ -292,7 +292,7 @@ public class ResetRoom : IEdit
 
     public static void Execute(string scene)
     {
-        StorageManager.SaveScene(scene, new LevelData([], [], []));
+        StorageManager.SaveScene(scene, new LevelData([], [], [], []));
     }
 
     public IEdit Undo() => null;

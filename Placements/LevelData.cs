@@ -1,4 +1,5 @@
 using Architect.Events.Blocks;
+using Architect.Editor;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,13 +8,15 @@ using System.Linq;
 namespace Architect.Placements;
 
 [JsonConverter(typeof(LevelDataConverter))]
-public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilemapChanges, List<ScriptBlock> scriptBlocks)
+public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilemapChanges, List<ScriptBlock> scriptBlocks, List<Comment> comments)
 {
     public readonly List<ObjectPlacement> Placements = placements;
 
     public readonly List<(int, int)> TilemapChanges = tilemapChanges;
 
     public readonly List<ScriptBlock> ScriptBlocks = scriptBlocks;
+
+    public readonly List<Comment> Comments = comments;
 
     public void ToggleTile((int, int) pos)
     {
@@ -25,6 +28,7 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
         Placements.AddRange(levelData.Placements);
         TilemapChanges.AddRange(levelData.TilemapChanges.Where(t => !TilemapChanges.Contains(t)));
         ScriptBlocks.AddRange(levelData.ScriptBlocks);
+        Comments.AddRange(levelData.Comments);
     }
 
     public void Clear()
@@ -32,6 +36,7 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
         Placements.Clear();
         TilemapChanges.Clear();
         ScriptBlocks.Clear();
+        Comments.Clear();
     }
 
     public class LevelDataConverter : JsonConverter<LevelData>
@@ -48,6 +53,12 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
             writer.WritePropertyName("script"); 
             serializer.Serialize(writer, value.ScriptBlocks);
             
+            if (value.Comments.Count > 0)
+            {
+                writer.WritePropertyName("comments");
+                serializer.Serialize(writer, value.Comments);
+            }
+            
             writer.WriteEndObject();
         }
 
@@ -59,12 +70,14 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
                 return new LevelData(
                     serializer.Deserialize<List<ObjectPlacement>>(reader), 
                     [], 
+                    [],
                     []);
             }
 
             List<ObjectPlacement> placements = [];
             List<(int, int)> tiles = [];
             List<ScriptBlock> scriptBlocks = [];
+            List<Comment> comments = [];
             
             while (reader.Read())
             {
@@ -83,12 +96,16 @@ public class LevelData(List<ObjectPlacement> placements, List<(int, int)> tilema
                         reader.Read();
                         scriptBlocks = serializer.Deserialize<List<ScriptBlock>>(reader);
                         break;
+                    case "comments":
+                        reader.Read();
+                        comments = serializer.Deserialize<List<Comment>>(reader) ?? [];
+                        break;
                 }
             }
 
             placements.RemoveAll(o => o == null);
 
-            return new LevelData(placements, tiles, scriptBlocks);
+            return new LevelData(placements, tiles, scriptBlocks, comments);
         }
     }
 }
