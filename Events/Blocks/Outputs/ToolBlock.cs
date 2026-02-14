@@ -6,7 +6,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class ToolBlock : ScriptBlock
 {
-    //protected override IEnumerable<string> Inputs => ["UnequipAll"];
+    protected override IEnumerable<string> Inputs => ["ActReset"];
     protected override IEnumerable<string> Outputs => ["OnUse"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Equipped", "Boolean")
