@@ -88,12 +88,16 @@ public class CustomQuest : SpriteItem
         RefreshGSprite();
         
         QuestManager.IncrementVersion();
+        
+        WorkshopManager.CustomItems.Add(this);
     }
 
     public override void Unregister()
     {
         QuestManager.Instance.masterList.Remove(_quest);
         QuestManager.IncrementVersion();
+        
+        WorkshopManager.CustomItems.Remove(this);
     }
 
     protected override void OnReadySprite()

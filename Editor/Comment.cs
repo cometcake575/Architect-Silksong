@@ -1,4 +1,5 @@
 ﻿using System;
+using Architect.Events.Blocks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -117,6 +118,12 @@ namespace Architect.Editor {
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                ScriptManager.ClearSelection();
+                return;
+            }
+            
             if (Time.realtimeSinceStartup - _time < 0.5f)
             {
                 Select();

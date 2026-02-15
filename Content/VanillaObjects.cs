@@ -2001,6 +2001,16 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Levers)
             .WithConfigGroup(ConfigGroup.Levers));
 
+        Categories.Interactable.Add(new PreloadObject("Reusable Cog Lever", "reusable_cog_lever",
+                ("Cog_09", "puzzle cylinders/Cog_Choir_Cylinder/Anim Offset/Cog 1/puzzle cog lever"),
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(3).SetAsFirstSibling();
+                    o.transform.SetPositionZ(-0.46f);
+                },
+                postSpawnAction: InteractableFixers.FixReusableCogLever)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+
         AddEnemy("Cogwork Choirbug", "song_auto_1",
             ("Cog_04", "Black Thread States Thread Only Variant/Normal World/Song Automaton 01")).DoFlipX();
         

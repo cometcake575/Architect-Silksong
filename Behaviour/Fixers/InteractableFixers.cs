@@ -64,6 +64,15 @@ public static class InteractableFixers
         });
     }
 
+    public static void FixReusableCogLever(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Hit").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnActivate");
+        });
+    }
+
     public static void FixCogLeverPreload(GameObject obj)
     {
         obj.transform.GetChild(3).SetAsFirstSibling();

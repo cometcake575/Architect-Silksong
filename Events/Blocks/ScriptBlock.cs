@@ -539,6 +539,16 @@ public abstract class ScriptBlock
 
         public override void Delete()
         {
+            if (!ScriptManager.SelectedBlockIds.IsNullOrEmpty())
+            {
+                foreach (var id in ScriptManager.SelectedBlockIds.ToArray())
+                {
+                    if (!ScriptManager.Blocks.TryGetValue(id, out var block)) continue;
+                    block.Delete();
+                }
+                ScriptManager.SelectedBlockIds.Clear();
+                return;
+            }
             Block.Delete();
         }
     }

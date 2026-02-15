@@ -440,7 +440,6 @@ public static class ScriptEditorUI
 
                 var blockRect = new Rect(bMin, bMax - bMin);
 
-                ArchitectPlugin.Logger.LogInfo(selectionRect);
                 if (selectionRect.Overlaps(blockRect, true))
                 {
                     selectedIds.Add(block.BlockId);
@@ -793,8 +792,7 @@ public static class ScriptEditorUI
             var img = commentObj.AddComponent<Image>();
             img.sprite = UIUtils.Square;
             img.color = commentData.Color;
-            img.raycastTarget = false;
-
+            
             var outline = commentObj.AddComponent<Outline>();
             outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
             outline.effectDistance = new Vector2(2f, 2f);

@@ -13,6 +13,9 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<CounterBlock>("Counter", ConfigGroup.Counter);
         ScriptManager.RegisterProcessBlock<IfBlock>("If");
         
+        ScriptManager.RegisterProcessBlock<OrderBlock>("Ordered Events");
+        ScriptManager.RegisterHiddenBlock<OrderBlock.TriggerBlock>("Order Trigger");
+        
         ScriptManager.RegisterProcessBlock<RandomEventBlock>("Random Event");
         ScriptManager.RegisterHiddenBlock<RandomEventBlock.TriggerBlock>("Random Trigger", ConfigGroup.RandomTrigger);
         

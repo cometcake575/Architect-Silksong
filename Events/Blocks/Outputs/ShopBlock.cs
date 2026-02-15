@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +43,18 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
     
     protected override void Trigger(string trigger)
     {
+        foreach (var child in Children.Children) child.Shop = this;
+            
         ArchitectPlugin.Instance.StartCoroutine(Coroutine());
+    }
+
+    public void Refresh()
+    {
+        _shopOwner.stock = Children.Children
+            .Where(i => i.GetVariable<bool>("Available", true) && i.Item)
+            .Select(i => i.Item)
+            .ToArray();
+        _shopOwner.SpawnUpdateShop();
     }
 
     private IEnumerator Coroutine()
@@ -52,11 +62,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
         yield return HeroController.instance.FreeControl(_ => !GameManager.instance.isPaused);
         HeroController.instance.RelinquishControl();
         
-        _shopOwner.stock = Children.Children
-            .Where(i => i.GetVariable<bool>("Available", true) && i.Item)
-            .Select(i => i.Item)
-            .ToArray();
-        _shopOwner.SpawnUpdateShop();
+        Refresh();
         _shopOwner.gameObject.SetActive(true);
         var sc = _shopOwner.ShopObject.LocateMyFSM("shop_control");
         sc.SendEvent("SHOP UP");
@@ -73,6 +79,8 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
         public string ItemDesc = string.Empty;
         public CurrencyType Currency = CurrencyType.Money;
         public int Cost = 80;
+
+        public ShopBlock Shop;
 
         protected override void Reset()
         {
@@ -102,6 +110,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
             Item.onPurchase.AddListener(() =>
             {
                 Event("OnPurchase");
+                Shop?.Refresh();
             });
         }
 
