@@ -12,6 +12,7 @@ public static class ActionBlocks
         LegacyTravelBlock.Init();
         TravelBlock.Init();
         ShopBlock.Init();
+        QuestboardBlock.Init();
         SetLightingBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
@@ -44,6 +45,9 @@ public static class ActionBlocks
         
         ScriptManager.RegisterInputBlock<ShopBlock>("Shop");
         ScriptManager.RegisterHiddenBlock<ShopBlock.ShopItemBlock>("Shop Item", ConfigGroup.ShopItem);
+        
+        ScriptManager.RegisterInputBlock<QuestboardBlock>("Quest Board");
+        ScriptManager.RegisterHiddenBlock<QuestboardBlock.QuestBlock>("Quest Item", ConfigGroup.QuestItem);
         
         ScriptManager.RegisterHiddenBlock<LegacyTravelBlock>("Travel List", ConfigGroup.TravelList);
         ScriptManager.RegisterHiddenBlock<TravelLoc>("Travel", ConfigGroup.Travel);

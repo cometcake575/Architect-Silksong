@@ -12,6 +12,7 @@ public class CustomQuest : SpriteItem
     
     public LocalStr ItemName = string.Empty;
     public LocalStr ItemDesc = string.Empty;
+    public LocalStr WallDesc = string.Empty;
     public LocalStr TypeName = string.Empty;
 
     public Color Color = Color.white;
@@ -80,6 +81,7 @@ public class CustomQuest : SpriteItem
         
         _quest.displayName = ItemName;
         _quest.inventoryDescription = ItemDesc;
+        _quest.wallDescription = WallDesc;
 
         QuestManager.Instance.masterList.Add(_quest);
         

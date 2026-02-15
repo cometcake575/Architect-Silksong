@@ -187,6 +187,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> QuestItem =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<QuestboardBlock.QuestBlock>("Quest ID", "quest_item_id", 
+                (b, f) => b.QuestName = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> EntryControl =
     [
         ConfigurationManager.RegisterConfigType(

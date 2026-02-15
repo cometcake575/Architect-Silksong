@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
@@ -13,6 +14,7 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using TeamCherry.Localization;
+using tk2dRuntime.TileMap;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -184,6 +186,8 @@ public static class SceneUtils
         }
     }
 
+    private static bool _doneTilemapYet;
+
     public static IEnumerator LoadScene(string sceneName)
     {
         var current = GameManager.instance.sceneName;
@@ -199,7 +203,6 @@ public static class SceneUtils
         
         var scene = SceneManager.CreateScene(sceneName);
         var sm = CreateSceneManager();
-        sm.AddComponent<SceneBorderRemover>();
         SceneManager.MoveGameObjectToScene(sm, scene);
         SceneManager.MoveGameObjectToScene(CreateManager(), scene);
         var (tm, rd) = CreateTileMap(info);
@@ -219,7 +222,7 @@ public static class SceneUtils
         col.isTrigger = true;
 
         var gs = 0f;
-        if (GameManager.instance.IsFirstLevelForPlayer)
+        if (!_doneTilemapYet)
         {
             gs = HeroController.instance.rb2d.gravityScale;
             HeroController.instance.rb2d.gravityScale = 0;
@@ -230,7 +233,7 @@ public static class SceneUtils
         yield return new WaitForSeconds(0.2f);
         UIManager.instance.AudioGoToGameplay(0);
 
-        if (GameManager.instance.IsFirstLevelForPlayer)
+        if (!_doneTilemapYet)
         {
             Object.Destroy(tm);
             
@@ -241,6 +244,8 @@ public static class SceneUtils
             map.ForceBuild();
             
             HeroController.instance.rb2d.gravityScale = gs;
+
+            _doneTilemapYet = true;
         }
 
         yield return new WaitForSeconds(0.8f);
@@ -286,6 +291,22 @@ public static class SceneUtils
         Tilemap.width = scene.TilemapWidth;
         Tilemap.height = scene.TilemapHeight;
 
+        Tilemap.layers[0].width = scene.TilemapWidth;
+        Tilemap.layers[0].height = scene.TilemapHeight;
+
+        Tilemap.layers[0].numRows = Mathf.CeilToInt(scene.TilemapWidth / 32f);
+        Tilemap.layers[0].numColumns = Mathf.CeilToInt(scene.TilemapHeight / 32f);
+
+        var nsc = new List<SpriteChunk>();
+        for (var row = 0; row < Tilemap.layers[0].numRows; row++)
+        {
+            for (var col = 0; col < Tilemap.layers[0].numColumns; col++)
+            {
+                nsc.Add(new SpriteChunk());
+            }
+        }
+        Tilemap.layers[0].spriteChannel.chunks = nsc.ToArray();
+        
         Tilemap.Build();
 
         tm.AddComponent<TilemapLateLoader>().scene = scene.Id;

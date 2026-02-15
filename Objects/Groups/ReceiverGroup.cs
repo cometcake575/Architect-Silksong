@@ -635,6 +635,14 @@ public static class ReceiverGroup
                 SilkGeneration = HitSilkGeneration.None,
                 Multiplier = 1
             });
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("enemy_invul", "MakeInvulnerable", o =>
+        {
+            o.GetOrAddComponent<ConfigGroup.EnemyInvulnerabilityMarker>();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("enemy_vul", "MakeVulnerable", o =>
+        {
+            o.RemoveComponent<ConfigGroup.EnemyInvulnerabilityMarker>();
         }))
     ]);
     

@@ -302,6 +302,12 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Description")
         ),
         ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomQuest>("Board Description", "quest_board_desc", (item, value) =>
+            {
+                item.WallDesc = value.GetValue();
+            }).WithDefaultValue("Sample Board Description")
+        ),
+        ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomQuest>("Quest Category", "quest_display_type", (item, value) =>
             {
                 item.TypeName = value.GetValue();

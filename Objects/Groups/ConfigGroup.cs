@@ -1900,7 +1900,7 @@ public static class ConfigGroup
                     attackType, specialType));
     }
 
-    private class EnemyInvulnerabilityMarker : MonoBehaviour;
+    public class EnemyInvulnerabilityMarker : MonoBehaviour;
 
     public static readonly List<ConfigType> Wakeable = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
