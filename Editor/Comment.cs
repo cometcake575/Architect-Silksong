@@ -118,11 +118,7 @@ namespace Architect.Editor {
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.button == PointerEventData.InputButton.Left)
-            {
-                ScriptManager.ClearSelection();
-                return;
-            }
+            if (eventData.button == PointerEventData.InputButton.Left) ScriptManager.ClearSelection();
             
             if (Time.realtimeSinceStartup - _time < 0.5f)
             {
