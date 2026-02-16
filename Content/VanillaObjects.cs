@@ -2649,11 +2649,6 @@ public static class VanillaObjects
 
     private static void AddWormwaysObjects()
     {
-        Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
-                ("Crawl_09", "Area_States/Infected/Health Cocoon"))
-            .WithConfigGroup(ConfigGroup.LifebloodCocoons)
-            .WithReceiverGroup(ReceiverGroup.LifebloodCocoons));
-
         AddEnemy("Cragglite", "cragglite", ("Crawl_04", "Little Crabs/Crabs/Small Crab"))
             .WithRotationGroup(RotationGroup.Four)
             .DoFlipX();
@@ -2703,6 +2698,19 @@ public static class VanillaObjects
                 postSpawnAction: EnemyFixers.FixZango)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .WithConfigGroup(ConfigGroup.Bosses);
+
+        Categories.Misc.Add(new PreloadObject("Lifeblood Pustule", "life_pustule",
+            ("Crawl_03", "PUSTULE_States/Active/pustule_set_small (1)/PUSTULE")));
+        
+        Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
+                ("Crawl_09", "Area_States/Infected/Health Cocoon"))
+            .WithConfigGroup(ConfigGroup.LifebloodCocoons)
+            .WithReceiverGroup(ReceiverGroup.LifebloodCocoons));
+
+        AddSolid("Wormways Platform 1", "worm_plat_1", ("Crawl_03", "bone_plat_02 (4)"));
+        
+        AddSolid("Weavenest Platform 1", "weave_plat_1", ("Crawl_05", "Group/bone_plat_01 (3)"));
+        AddSolid("Weavenest Platform 2", "weave_plat_2", ("Crawl_05", "Crest_shrine_corner_plat (2)"));
     }
 
     private static void AddFleaObjects()

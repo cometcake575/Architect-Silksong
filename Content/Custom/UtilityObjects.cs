@@ -487,7 +487,7 @@ public static class UtilityObjects
         vignetteDisabler.AddComponent<VignetteDisabler>();
 
         return new CustomObject("Disable Vignette", "vignette_disabler", vignetteDisabler,
-            description:"Disables the Vignette effect.", preview: true,
+            description:"Disables the Vignette effect.",
             sprite:ResourceUtils.LoadSpriteResource("vignette_disabler", FilterMode.Point));
     }
 

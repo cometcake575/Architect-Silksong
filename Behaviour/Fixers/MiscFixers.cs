@@ -728,7 +728,7 @@ public static class MiscFixers
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
             
-            fsm.GetState("End Convo").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+            fsm.GetState("End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     

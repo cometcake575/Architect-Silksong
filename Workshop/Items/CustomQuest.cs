@@ -58,7 +58,6 @@ public class CustomQuest : SpriteItem
             var q = ScriptableObject.CreateInstance<Quest>();
             q.questType = _type;
             _quest = q;
-            
         }
         
         _quest.name = Id;

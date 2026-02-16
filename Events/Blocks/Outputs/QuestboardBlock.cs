@@ -47,23 +47,19 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
         bo.transform.position = new Vector3(-9999, -9999);
         bo.SetActive(true);
 
-        _finishedSetup = false;
         _qbi = bo.GetComponent<QuestBoardInteractable>();
         _qbi.questList = ScriptableObject.CreateInstance<QuestBoardList>();
+        _qbi.questBoard = Object.Instantiate(_qbi.questBoardPrefab);
+
+        var qib = _qbi.questBoard;
+        qib.BoardClosed += _ => HeroController.instance.RegainControl();
+        qib.GetAvailableQuestsFunc = _qbi.GetDisplayedQuests;
+        
+        _qbi.questBoardPrefab = null;
     }
-
-    private bool _finishedSetup;
-
+    
     protected override void Trigger(string trigger)
     {
-        if (!_finishedSetup)
-        {
-            var qib = _qbi.questBoard;
-            qib.BoardClosed += _ => HeroController.instance.RegainControl();
-            qib.QuestAccepted += () => HeroController.instance.RegainControl();
-            _finishedSetup = true;
-        }
-
         _qbi.name = Guid.NewGuid().ToString();
         ArchitectPlugin.Instance.StartCoroutine(Coroutine());
     }
