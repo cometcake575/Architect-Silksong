@@ -19,6 +19,8 @@ public class TriggerZone : MonoBehaviour
     public int layer;
     public bool usingLayer;
 
+    public bool inside;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         switch (mode)
@@ -43,6 +45,7 @@ public class TriggerZone : MonoBehaviour
         }
 
         EventManager.BroadcastEvent(gameObject, "ZoneEnter");
+        inside = true;
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -68,6 +71,7 @@ public class TriggerZone : MonoBehaviour
         }
 
         EventManager.BroadcastEvent(gameObject, "ZoneExit");
+        inside = false;
     }
 
     private void OnEnable()

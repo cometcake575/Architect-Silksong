@@ -595,8 +595,40 @@ public static class EnemyFixers
         obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Idle Patrol").value = true;
     }
 
+    public class Karaka : MonoBehaviour
+    {
+        public bool stayIdle;
+        private PlayMakerFSM _fsm;
+        private AlertRange _range;
+        private FsmState _state;
+        private FsmTransition[] _transitions;
+
+        private void Start()
+        {
+            if (stayIdle)
+            {
+                _fsm = gameObject.LocateMyFSM("Control");
+                _range = transform.Find("Far Range").GetComponent<AlertRange>();
+                _state = _fsm.GetState("Idle");
+                _transitions = _state.transitions;
+                _state.transitions = [];
+            }
+        }
+        
+        private void Update()
+        {
+            if (_range && _range.IsHeroInRange())
+            {
+                _state.transitions = _transitions;
+                _range = null;
+                _fsm.SendEvent("FINISHED");
+            }
+        }
+    }
+    
     public static void FixKaraka(GameObject obj)
     {
+        obj.AddComponent<Karaka>();
         FixSpearSpawned(obj);
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Init").AddAction(() => fsm.SendEvent("FINISHED"), 4);

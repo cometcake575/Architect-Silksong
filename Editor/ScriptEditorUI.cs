@@ -442,6 +442,7 @@ public static class ScriptEditorUI
 
                 if (selectionRect.Overlaps(blockRect, true))
                 {
+                    if (block is LinkedBlock linked) linked.AddExtraIds(selectedIds);
                     selectedIds.Add(block.BlockId);
                 }
             }

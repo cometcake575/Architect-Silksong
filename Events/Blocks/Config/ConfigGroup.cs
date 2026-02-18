@@ -258,6 +258,14 @@ public static class ConfigGroup
                 (b, f) => 
                     b.Currency = f.GetValue() == 0 ? CurrencyType.Money : CurrencyType.Shard)
                 .WithDefaultValue(0).WithOptions("Rosaries", "Shards")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ShopBlock.ShopItemBlock>("Req. Item", "shop_item_requirement", 
+                (b, f) => b.ReqItem = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<ShopBlock.ShopItemBlock>("Req. Amount", "shop_item_requirement_cost", 
+                (b, f) => b.ReqItemAmount = f.GetValue()).WithDefaultValue(1)
         )
     ];
     

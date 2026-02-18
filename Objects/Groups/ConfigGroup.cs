@@ -1635,6 +1635,18 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
     
+    public static readonly List<ConfigType> Karaka = GroupUtils.Merge(Enemies,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Idle", "karaka_idle", (o, value) =>
+            {
+                if (value.GetValue())
+                {
+                    o.GetComponent<EnemyFixers.Karaka>().stayIdle = true;
+                }
+            }).WithDefaultValue(true))
+    ]);
+    
     public static readonly List<ConfigType> Aknid = GroupUtils.Merge(Enemies,
     [
         ConfigurationManager.RegisterConfigType(

@@ -468,6 +468,7 @@ public static class EditManager
                      .SelectMany(o => o.GetComponentsInChildren<TransitionPoint>())) 
             o.gameObject.SetActive(false);
         IsEditing = !IsEditing;
+        HeroController.instance.ExitUpdraft();
         if (!IsEditing) PlayerData.instance.isInvincible = false;
         else
         {

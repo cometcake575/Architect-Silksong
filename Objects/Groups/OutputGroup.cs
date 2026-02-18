@@ -43,6 +43,14 @@ public static class OutputGroup
         )
     ];
 
+    public static readonly List<OutputType> TriggerZone =
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("trigger_inside", "Inside", "Boolean", 
+                o => o.GetComponent<TriggerZone>().inside)
+        )
+    ];
+
     public static readonly List<OutputType> Png =
     [
         EventManager.RegisterOutputType(

@@ -79,6 +79,8 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
         public string ItemDesc = string.Empty;
         public CurrencyType Currency = CurrencyType.Money;
         public int Cost = 80;
+        public string ReqItem = string.Empty;
+        public int ReqItemAmount = 1;
 
         public ShopBlock Shop;
 
@@ -105,6 +107,8 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
             Item.displayName = new LocalisedString("ArchitectMod", ItemName);
             Item.description = new LocalisedString("ArchitectMod", ItemDesc);
             Item.currencyType = Currency;
+            Item.requiredItemAmount = ReqItemAmount;
+            Item.requiredItem = MiscUtils.GetSavedItem(ReqItem) as CollectableItem;
             Item.cost = Cost;
             Item.onPurchase = new UnityEvent();
             Item.onPurchase.AddListener(() =>

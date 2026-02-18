@@ -150,7 +150,8 @@ public static class VanillaObjects
 
         AddEnemy("Karaka", "coral_warrior",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 2/Coral Warrior (1)"),
-            postSpawnAction: EnemyFixers.FixKaraka);
+            postSpawnAction: EnemyFixers.FixKaraka)
+            .WithConfigGroup(ConfigGroup.Karaka);
 
         AddEnemy("Corrcrust Karaka", "corrcrust_karaka",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 4/Wave 3/Coral Bubble Brute"),
@@ -726,7 +727,8 @@ public static class VanillaObjects
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
         
-        AddEnemy("Barnak", "swamp_barnacle", ("Aqueduct_03", "Swamp Barnacle (1)")).DoFlipX();
+        AddEnemy("Barnak", "swamp_barnacle", ("Aqueduct_03", "Swamp Barnacle (1)"))
+            .WithConfigGroup(ConfigGroup.HideBody).DoFlipX();
         AddEnemy("Ductsucker", "swamp_ductsucker", ("Aqueduct_03", "Swamp Ductsucker"),
             postSpawnAction: EnemyFixers.FixDuctsucker);
 
@@ -1389,6 +1391,12 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Crumbling Moss", "moss_crumble_plat",
                 ("Shadow_02", "moss_crumble_plat"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
+
+        Categories.Misc.Add(new PreloadObject("Maggot Sack", "maggot_sack",
+            ("Shadow_18", "maggot_sack_break (1)"),
+            postSpawnAction: MiscFixers.FixBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor));
         
         Categories.Effects.Add(new PreloadObject("Maggot Effect", "maggot_effect",
                 ("localpoolprefabs_assets_shared.bundle", "Assets/Prefabs/Effects/hero_maggoted_effect.prefab"), 
@@ -1452,6 +1460,11 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.CloseableGates)
             .WithReceiverGroup(ReceiverGroup.BattleGate)
             .WithRotationGroup(RotationGroup.Four));
+
+        Categories.Misc.Add(new PreloadObject("Body Sack", "body_sack",
+            ("Shadow_27", "Breakable Hang Sack 2"),
+            postSpawnAction: MiscFixers.FixBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
     private static void AddMistObjects()
@@ -1526,6 +1539,14 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(f, f));
             })
             .WithConfigGroup(ConfigGroup.Decorations);
+
+        Categories.Hazards.Add(new PreloadObject("Sandcarvers", "sandcarver_group",
+            ("Coral_11", "Sand Centipede Attacker (10)"), preloadAction: o =>
+            {
+                o.GetComponent<SpriteRenderer>().color = Color.white;
+                o.transform.SetPositionZ(-0.0054f);
+                o.transform.SetRotation2D(0);
+            }, postSpawnAction: HazardFixers.FixCarvers));
     }
 
     private static void AddMiscObjects()
@@ -2253,13 +2274,18 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(f, f));
             })
             .WithConfigGroup(ConfigGroup.Decorations);
-        
+
+        Categories.Misc.Add(new PreloadObject("Pond Skipper Body", "pond_skipper_body",
+            ("Belltown_Room_shellwood", "shell_hang_rope"), postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.Bell)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
         /*AddEnemy("Sister Splinter", "sister_splinter",
             ("Shellwood_18", "Boss Scene Parent/Boss Scene/Splinter Queen"),
             postSpawnAction: EnemyFixers.FixSisterSplinter)
             .WithBroadcasterGroup(BroadcasterGroup.SisterSplinter)
             .WithConfigGroup(ConfigGroup.Bosses);*/
-        
+
         /*AddEnemy("Shrine Guardian Seth", "seth_boss", ("Shellwood_22", "Boss Scene/Seth"),
             postSpawnAction: EnemyFixers.FixSeth)
             .WithConfigGroup(ConfigGroup.Bosses)

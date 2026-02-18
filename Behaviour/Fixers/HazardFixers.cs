@@ -15,6 +15,7 @@ public static class HazardFixers
     private static GameObject _lavaBox;
     private static GameObject _coalRegion;
     private static GameObject _tendrilDamager;
+    private static GameObject _carverDamager;
     private static GameObject _cradleSpikes;
     private static GameObject _voltHazard;
 
@@ -38,6 +39,9 @@ public static class HazardFixers
         
         PreloadManager.RegisterPreload(new BasicPreload("Abyss_07", "Abyss Tendril Hero Damager", 
             o => _tendrilDamager = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_11", "Sand Centipede Hero Damager", 
+            o => _carverDamager = o));
         
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_03", "Coal Region", 
             o => _coalRegion = o));
@@ -323,7 +327,18 @@ public static class HazardFixers
     {
         if (_currentTendrilDamager) return;
         _currentTendrilDamager = Object.Instantiate(_tendrilDamager, obj.transform);
+        _currentTendrilDamager.name = "[Architect] " + _currentTendrilDamager.name;
         _currentTendrilDamager.SetActive(true);
+    }
+
+    private static GameObject _currentCarverDamager;
+
+    public static void FixCarvers(GameObject obj)
+    {
+        if (_currentCarverDamager) return;
+        _currentCarverDamager = Object.Instantiate(_carverDamager, obj.transform);
+        _currentCarverDamager.name = "[Architect] " + _currentCarverDamager.name;
+        _currentCarverDamager.SetActive(true);
     }
 
     public static void FixCradleSpikes(GameObject obj)

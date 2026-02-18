@@ -684,6 +684,7 @@ public static class UtilityObjects
                              "a trigger layer can be set to only detect specific objects.")
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
             .WithReceiverGroup(ReceiverGroup.TriggerZone)
+            .WithOutputGroup(OutputGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZones);
     }
 

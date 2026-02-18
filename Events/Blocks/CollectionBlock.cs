@@ -7,7 +7,12 @@ using UnityEngine.UI;
 
 namespace Architect.Events.Blocks;
 
-public abstract class CollectionBlock<T> : ScriptBlock
+public abstract class LinkedBlock : ScriptBlock
+{
+    public abstract void AddExtraIds(List<string> ids);
+}
+
+public abstract class CollectionBlock<T> : LinkedBlock
     where T : CollectionBlock<T>.ChildBlock, new()
 {
     protected ChildrenGroup Children = new();
@@ -107,7 +112,12 @@ public abstract class CollectionBlock<T> : ScriptBlock
         }
     }
 
-    public abstract class ChildBlock : ScriptBlock
+    public override void AddExtraIds(List<string> ids)
+    {
+        ids.AddRange(Children.Blocks.Select(child => child.BlockId));
+    }
+
+    public abstract class ChildBlock : LinkedBlock
     {
         protected override string Name => null;
         public ChildrenGroup Group;
@@ -139,6 +149,12 @@ public abstract class CollectionBlock<T> : ScriptBlock
         {
             Group.Remove(this);
             base.Delete();
+        }
+
+        public override void AddExtraIds(List<string> ids)
+        {
+            ids.Add(Group.Parent.BlockId);
+            foreach (var child in Group.Children) ids.Add(child.BlockId);
         }
     }
 
