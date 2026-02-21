@@ -1,9 +1,11 @@
-﻿using Architect.Behaviour.Fixers;
+﻿using System;
+using Architect.Behaviour.Fixers;
 using Architect.Content;
 using Architect.Content.Custom;
 using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Events.Blocks.Operators;
 using Architect.Multiplayer;
 using Architect.Objects.Categories;
 using Architect.Placements;
@@ -13,16 +15,17 @@ using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
 using BepInEx.Logging;
+using Silksong.DataManager;
 using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.16.9")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.17.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("io.github.hk-speedrunning.quickwarp", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
-public class ArchitectPlugin : BaseUnityPlugin
+public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>
 {
     internal static ArchitectPlugin Instance;
 
@@ -78,6 +81,15 @@ public class ArchitectPlugin : BaseUnityPlugin
         PreloadManager.Init();
 
         StorageManager.MakeBackup();
+
+        typeof(GameManager).Hook(nameof(GameManager.ResetSemiPersistentItems),
+            (Action<GameManager> orig, GameManager self) =>
+            {
+                BoolVarBlock.SemiVars.Clear();
+                NumVarBlock.SemiVars.Clear();
+                StringVarBlock.SemiVars.Clear();
+                orig(self);
+            });
     }
     
     private void Update()
@@ -91,4 +103,6 @@ public class ArchitectPlugin : BaseUnityPlugin
         SharerManager.Update();
         AbilityObjects.Update();
     }
+
+    public ArchitectData SaveData { get; set; }
 }

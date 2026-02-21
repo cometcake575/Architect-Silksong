@@ -48,16 +48,30 @@ public static class WorkshopManager
         
         Register<SceneGroup>("Scene Group",
             new Vector2(-300, -300),
-            ConfigGroup.SceneGroup);
+            ConfigGroup.SceneGroup,
+            ConfigGroup.SceneGroupIcon/*,
+            ConfigGroup.SceneGroupMap,
+            ConfigGroup.SceneGroupMapPos,
+            ConfigGroup.SceneGroupMapDirIn,
+            ConfigGroup.SceneGroupMapDirOut*/);
         
         Register<CustomScene>("Scene",
             new Vector2(-100, -300),
-            ConfigGroup.Scene);
+            ConfigGroup.Scene/*,
+            ConfigGroup.SceneMap*/);
         
         Register<CustomMateriumEntry>("Material",
             new Vector2(-300, -375),
             ConfigGroup.MateriumEntry,
             ConfigGroup.SpriteItem);
+        
+        /*Register<CustomMapIcon>("Map Icon",
+            new Vector2(-100, -375),
+            ConfigGroup.MapIcon,
+            ConfigGroup.SpriteItem,
+            ConfigGroup.MapIconLabel)*/;
+        
+        SceneGroup.Init();
         
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,

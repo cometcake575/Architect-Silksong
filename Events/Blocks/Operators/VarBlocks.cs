@@ -11,8 +11,8 @@ public class BoolVarBlock : LocalBlock
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Boolean")];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
 
-    private static readonly Dictionary<string, PersistentBoolItem> Vars = [];
     private static readonly Dictionary<string, bool> TempVars = [];
+    public static readonly Dictionary<string, bool> SemiVars = [];
     
     private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
     protected override Color Color => DefaultColor;
@@ -20,8 +20,6 @@ public class BoolVarBlock : LocalBlock
 
     public string Id = "";
     public int PType;
-
-    private PersistentBoolItem _pbi;
 
     public static void Init()
     {
@@ -33,44 +31,33 @@ public class BoolVarBlock : LocalBlock
             });
     }
 
-    public override void SetupReference()
-    {
-        if (PType == 0) return;
-        if (!Vars.TryGetValue(Id, out var item) || !item)
-        {
-            var o = new GameObject("[Architect] Variable Block");
-            o.SetActive(false);
-            _pbi = o.AddComponent<PersistentBoolItem>();
-            _pbi.itemData = new PersistentBoolItem.PersistentBoolData
-            {
-                ID = Id,
-                SceneName = "All",
-                IsSemiPersistent = PType == 1
-            };
-            o.SetActive(true);
-            Vars[Id] = _pbi;
-        }
-        else _pbi = item;
-    }
-
     protected override void Trigger(string trigger)
     {
         var val = GetVariable<bool>("New Value");
-        if (PType == 0)
+        switch (PType)
         {
-            TempVars[Id] = val;
-            return;
+            case 0:
+                TempVars[Id] = val;
+                break;
+            case 1:
+                SemiVars[Id] = val;
+                break;
+            case 2:
+                ArchitectData.Instance.BoolVariables[Id] = val;
+                break;
         }
-        _pbi.itemData.Value = val;
     }
 
     protected override object GetValue(string id)
     {
-        if (PType == 0)
+        return PType switch
         {
-            return TempVars.ContainsKey(Id) && TempVars[Id];
-        }
-        return _pbi.itemData.Value;
+            0 => TempVars.ContainsKey(Id) && TempVars[Id],
+            1 => SemiVars.ContainsKey(Id) && SemiVars[Id],
+            2 => ArchitectData.Instance.BoolVariables.ContainsKey(Id) &&
+                 ArchitectData.Instance.BoolVariables[Id],
+            _ => false
+        };
     }
 }
 
@@ -80,8 +67,8 @@ public class NumVarBlock : LocalBlock
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Number")];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
-    private static readonly Dictionary<string, PersistentIntItem> Vars = [];
     private static readonly Dictionary<string, float> TempVars = [];
+    public static readonly Dictionary<string, float> SemiVars = [];
     
     private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
     protected override Color Color => DefaultColor;
@@ -89,9 +76,7 @@ public class NumVarBlock : LocalBlock
 
     public string Id = "";
     public int PType;
-
-    private PersistentIntItem _pii;
-
+    
     public static void Init()
     {
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
@@ -102,45 +87,32 @@ public class NumVarBlock : LocalBlock
             });
     }
 
-    public override void SetupReference()
-    {
-        if (PType == 0) return;
-        if (!Vars.TryGetValue(Id, out var item) || !item)
-        {
-            var o = new GameObject("[Architect] Variable Block");
-            o.SetActive(false);
-            _pii = o.AddComponent<PersistentIntItem>();
-            _pii.itemData = new PersistentIntItem.PersistentIntData
-            {
-                ID = Id,
-                SceneName = "All",
-                IsSemiPersistent = PType == 1
-            };
-            o.SetActive(true);
-            Vars[Id] = _pii;
-        }
-        else _pii = item;
-    }
-
     protected override void Trigger(string trigger)
     {
         var val = GetVariable<float>("New Value");
-        if (PType == 0)
+        switch (PType)
         {
-            TempVars[Id] = val;
-            return;
+            case 0:
+                TempVars[Id] = val;
+                break;
+            case 1:
+                SemiVars[Id] = val;
+                break;
+            case 2:
+                ArchitectData.Instance.FloatVariables[Id] = val;
+                break;
         }
-        _pii.itemData.Value = Mathf.RoundToInt(val * 1000);
     }
 
     protected override object GetValue(string id)
     {
-        if (PType == 0)
+        return PType switch
         {
-            if (TempVars.TryGetValue(Id, out var value)) return value;
-            return 0;
-        }
-        return _pii.itemData.Value / 1000f;
+            0 => TempVars.GetValueOrDefault(Id, 0),
+            1 => SemiVars.GetValueOrDefault(Id, 0),
+            2 => ArchitectData.Instance.FloatVariables.GetValueOrDefault(Id, 0),
+            _ => 0
+        };
     }
 }
 
@@ -150,8 +122,8 @@ public class StringVarBlock : LocalBlock
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Text")];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Text")];
 
-    private static readonly Dictionary<string, PersistentItem<string>> Vars = [];
     private static readonly Dictionary<string, string> TempVars = [];
+    public static readonly Dictionary<string, string> SemiVars = [];
     
     private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
     protected override Color Color => DefaultColor;
@@ -159,9 +131,7 @@ public class StringVarBlock : LocalBlock
 
     public string Id = "";
     public int PType;
-
-    private PersistentItem<string> _pii;
-
+    
     public static void Init()
     {
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
@@ -172,40 +142,37 @@ public class StringVarBlock : LocalBlock
             });
     }
 
-    public override void SetupReference()
-    {
-        if (PType == 0) return;
-        if (!Vars.TryGetValue(Id, out var item) || !item)
-        {
-            var o = new GameObject("[Architect] Variable Block");
-            o.SetActive(false);
-            _pii = o.AddComponent<PersistentItem<string>>();
-            _pii.itemData = new PersistentItemData<string>
-            {
-                ID = Id,
-                SceneName = "All",
-                IsSemiPersistent = PType == 1
-            };
-            o.SetActive(true);
-            Vars[Id] = _pii;
-        }
-        else _pii = item;
-    }
-
     protected override void Trigger(string trigger)
     {
         var val = GetVariable<string>("New Value");
-        if (PType == 0)
+        switch (PType)
         {
-            TempVars[Id] = val;
-            return;
+            case 0:
+                TempVars[Id] = val;
+                break;
+            case 1:
+                SemiVars[Id] = val;
+                break;
+            case 2:
+                ArchitectData.Instance.StringVariables[Id] = val;
+                break;
         }
+    }
 
-        _pii.itemData.Value = val;
+    public static string GetVar(string id)
+    {
+        return TempVars.GetValueOrDefault(id,
+            SemiVars.GetValueOrDefault(id, ArchitectData.Instance.StringVariables.GetValueOrDefault(id, "null")));
     }
 
     protected override object GetValue(string id)
     {
-        return PType == 0 ? TempVars.GetValueOrDefault(Id, "") : _pii.itemData.Value;
+        return PType switch
+        {
+            0 => TempVars.GetValueOrDefault(Id, ""),
+            1 => SemiVars.GetValueOrDefault(Id, ""),
+            2 => ArchitectData.Instance.StringVariables.GetValueOrDefault(Id, ""),
+            _ => ""
+        };
     }
 }

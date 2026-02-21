@@ -7,6 +7,7 @@ public class CounterBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["In", "Reset"];
     protected override IEnumerable<string> Outputs => ["Out"];
+    protected override IEnumerable<(string, string)> OutputVars => [("Count", "Number")];
 
     private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
     protected override Color Color => DefaultColor;
@@ -19,6 +20,8 @@ public class CounterBlock : ScriptBlock
     {
         _count = 0;
     }
+
+    protected override object GetValue(string id) => _count;
 
     protected override void Trigger(string trigger)
     {

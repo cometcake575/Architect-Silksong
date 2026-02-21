@@ -281,6 +281,7 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource("fsm_hook", FilterMode.Point, ppu:64))
             .WithConfigGroup(ConfigGroup.FsmHook)
             .WithReceiverGroup(ReceiverGroup.FsmHook)
+            .WithInputGroup(InputGroup.FsmHook)
             .WithBroadcasterGroup(BroadcasterGroup.FsmHook)
             .WithOutputGroup(OutputGroup.FsmHook);
     }
@@ -722,6 +723,8 @@ public static class UtilityObjects
 
         var de = point.AddComponent<DamageEnemies>();
         de.damageDealt = 5;
+
+        point.AddComponent<EnemyDamager>();
         
         point.SetActive(false);
         Object.DontDestroyOnLoad(point);
@@ -729,10 +732,25 @@ public static class UtilityObjects
         return new CustomObject("Enemy Damager", "enemy_damager",
                 point,
                 sprite: SquareDamager,
-                description: "Damages enemies inside the zone with configurable damage and damage types.")
+                description: "Damages enemies inside the zone with configurable damage and damage types.",
+                postSpawnAction: o =>
+                {
+                    o.GetComponent<DamageEnemies>().DamagedEnemyHealthManager += manager =>
+                    {
+                        o.GetComponent<EnemyDamager>().last = manager;
+                        o.BroadcastEvent("OnDamage");
+                    };
+                })
             .WithConfigGroup(ConfigGroup.EnemyDamager)
             .WithReceiverGroup(ReceiverGroup.EnemyDamager)
+            .WithBroadcasterGroup(BroadcasterGroup.EnemyDamager)
+            .WithOutputGroup(OutputGroup.EnemyDamager)
             .WithInputGroup(InputGroup.EnemyDamager);
+    }
+
+    public class EnemyDamager : MonoBehaviour
+    {
+        public HealthManager last;
     }
 
     private static PlaceableObject CreateInteraction()

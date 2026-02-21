@@ -99,6 +99,14 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("fsm_set_state", "SetState", o =>
         {
             o.GetComponent<FsmHook>().SetState();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("fsm_clear_transitions", "WipeTransitions", o =>
+        {
+            o.GetComponent<FsmHook>().ClearEvents();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("fsm_send_event", "SendEvent", (o, b) =>
+        {
+            o.GetComponent<FsmHook>().SendEvent(b.GetVariable<string>("Event"));
         }))
     ]);
     
@@ -113,6 +121,7 @@ public static class ReceiverGroup
     {
         foreach (var s in o.GetComponentsInChildren<ParticleSystem>()) s.Play();
         yield return new WaitForSeconds(o.GetComponent<MiscFixers.Dust>().time);
+        if (!o) yield break;
         foreach (var s in o.GetComponentsInChildren<ParticleSystem>()) s.Stop();
         o.BroadcastEvent("OnFinish");
     }

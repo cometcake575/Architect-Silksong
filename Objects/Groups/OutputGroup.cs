@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Architect.Behaviour.Utility;
+using Architect.Content.Custom;
 using Architect.Events;
 using Architect.Events.Vars;
 using UnityEngine;
@@ -24,6 +25,17 @@ public static class OutputGroup
             {
                 var hm = o.GetComponentInChildren<HealthManager>();
                 return hm;
+            })
+        )
+    ];
+
+    public static readonly List<OutputType> EnemyDamager =
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("enemy_self", "LastDamaged", "Enemy", o =>
+            {
+                var hm = o.GetComponent<UtilityObjects.EnemyDamager>();
+                return hm.last;
             })
         )
     ];
@@ -64,6 +76,10 @@ public static class OutputGroup
         EventManager.RegisterOutputType(
             new OutputType("fsm_hoo_state", "State", "Text",
                 o => o.GetComponent<FsmHook>().GetState())
+        ),
+        EventManager.RegisterOutputType(
+            new OutputType("fsm_hook_time", "Time", "Number",
+                o => o.GetComponent<FsmHook>().GetTime())
         )
     ];
 

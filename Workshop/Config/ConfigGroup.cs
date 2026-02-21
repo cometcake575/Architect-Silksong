@@ -55,9 +55,7 @@ public static class ConfigGroup
                 item.KillsRequired = value.GetValue();
             }).WithDefaultValue(1)
         ),
-        ConfigurationManager.RegisterConfigType(
-            new NoteConfigType<CustomJournalEntry>("A vanilla entry (list can be found in the guide)", "journal_before_note")
-        ),
+        (NoteConfigType) "A vanilla entry (list can be found in the guide)",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomJournalEntry>("Add Before", "journal_before", (item, value) =>
             {
@@ -80,9 +78,7 @@ public static class ConfigGroup
                 item.Desc = value.GetValue();
             }).WithDefaultValue("Sample Description")
         ),
-        ConfigurationManager.RegisterConfigType(
-            new NoteConfigType<CustomMateriumEntry>("A vanilla entry (list can be found in the guide)", "materium_before_note")
-        ),
+        (NoteConfigType) "A vanilla entry (list can be found in the guide)",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomMateriumEntry>("Add Before", "materium_before", (item, value) =>
             {
@@ -113,11 +109,71 @@ public static class ConfigGroup
         )
     ];
     
-    public static readonly List<ConfigType> UsableItem =
+    public static readonly List<ConfigType> MapIcon =
     [
         ConfigurationManager.RegisterConfigType(
-            new NoteConfigType<CustomItem>("Only apply to Usable items", "usable_item_node")
+            new StringConfigType<CustomMapIcon>("Scene ID", "map_icon_scene", (item, value) =>
+            {
+                item.Scene = value.GetValue();
+            })
         ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomMapIcon>("Visibility Mode", "map_icon_visual_mode", (item, value) =>
+            {
+                item.Mode = value.GetValue();
+            }).WithOptions("Both", "Quick Map", "Inventory Map").WithDefaultValue(0)
+        )
+    ];
+    
+    public static readonly List<ConfigType> MapIconLabel =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMapIcon>("Text", "map_icon_text", (item, value) =>
+            {
+                item.Text = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Font Size", "map_icon_font_size", (item, value) =>
+            {
+                item.FontSize = value.GetValue();
+            }).WithDefaultValue(12)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Text Offset X", "map_icon_text_x", (item, value) =>
+            {
+                item.Offset.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Text Offset Y", "map_icon_text_y", (item, value) =>
+            {
+                item.Offset.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Text Colour R", "map_icon_text_r", (item, value) =>
+            {
+                item.Colour.r = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Text Colour G", "map_icon_text_g", (item, value) =>
+            {
+                item.Colour.g = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Text Colour B", "map_icon_text_b", (item, value) =>
+            {
+                item.Colour.b = value.GetValue();
+            }).WithDefaultValue(1)
+        )
+    ];
+    
+    public static readonly List<ConfigType> UsableItem =
+    [
+        (NoteConfigType) "Only apply to Usable items",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomItem>("Use Action", "item_consume_desc", (item, value) =>
             {
@@ -196,7 +252,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomItem>("Description", "item_desc", (item, value) =>
             {
-                item.ItemDesc = value.GetValue().Replace("<br>", "\n");;
+                item.ItemDesc = value.GetValue().Replace("<br>", "\n");
             }).WithDefaultValue("Sample Description")
         ),
         ConfigurationManager.RegisterConfigType(
@@ -261,13 +317,56 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> SceneMap = [
+        (NoteConfigType) "Only applies if the scene's group has a map",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SpriteItem>("Full Room URL", "scene_full_map_url", (item, value) =>
+            {
+                item.IconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SpriteItem>("Anti Aliasing", "scene_full_map_antialias", (item, value) =>
+            {
+                item.Point = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SpriteItem>("Pixels Per Unit", "scene_full_map_ppu", (item, value) =>
+            {
+                item.Ppu = value.GetValue();
+            }).WithDefaultValue(100)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomScene>("Empty Room URL", "scene_empty_map_url", (item, value) =>
+            {
+                item.EIconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomScene>("Anti Aliasing", "scene_empty_map_antialias", (item, value) =>
+            {
+                item.EPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Pixels Per Unit", "scene_empty_map_ppu", (item, value) =>
+            {
+                item.EPpu = value.GetValue();
+            }).WithDefaultValue(100)
+        )
+    ];
+    
     public static readonly List<ConfigType> SceneGroup = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<SceneGroup>("Area Name", "scene_group_name", (item, value) =>
             {
                 item.GroupName = value.GetValue();
             })
-        ),
+        )
+    ];
+    
+    public static readonly List<ConfigType> SceneGroupIcon = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<SpriteItem>("Save Icon URL", "scene_group_url", (item, value) =>
             {
@@ -285,6 +384,160 @@ public static class ConfigGroup
             {
                 item.DisableAct3Bg = value.GetValue();
             }).WithDefaultValue(false)
+        )
+    ];
+    
+    public static readonly List<ConfigType> SceneGroupMap = [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SceneGroup>("Has Map", "scene_group_map", (item, value) =>
+            {
+                item.HasMapZone = value.GetValue();
+            }).WithDefaultValue(false)
+        ),
+        (NoteConfigType) "The map is unlocked when this global variable is true (if set)",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Required Variable", "scene_group_map_var", (item, value) =>
+            {
+                item.Variable = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Map Icon URL", "scene_group_map_url", (item, value) =>
+            {
+                item.MapUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SceneGroup>("Anti Aliasing", "scene_group_map_antialias", (item, value) =>
+            {
+                item.MPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Pixels Per Unit", "scene_group_map_ppu", (item, value) =>
+            {
+                item.MPpu = value.GetValue();
+            }).WithDefaultValue(100)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Map Colour R", "scene_group_map_cr", (item, value) =>
+            {
+                item.MapColour.r = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Map Colour G", "scene_group_map_cg", (item, value) =>
+            {
+                item.MapColour.g = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Map Colour B", "scene_group_map_cb", (item, value) =>
+            {
+                item.MapColour.b = value.GetValue();
+            }).WithDefaultValue(1)
+        )
+    ];
+    
+    public static readonly List<ConfigType> SceneGroupMapPos = [
+        (NoteConfigType) "The position of the map, label and zoomed in map",
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Map X", "scene_group_map_px", (item, value) =>
+            {
+                item.MapPos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Map Y", "scene_group_map_py", (item, value) =>
+            {
+                item.MapPos.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Label Offset X", "scene_group_map_lx", (item, value) =>
+            {
+                item.LabelPos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Label Offset Y", "scene_group_map_ly", (item, value) =>
+            {
+                item.LabelPos.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Zoom X", "scene_group_map_zx", (item, value) =>
+            {
+                item.ZoomPos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Zoom Y", "scene_group_map_zy", (item, value) =>
+            {
+                item.ZoomPos.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Area Radius", "scene_group_map_radius", (item, value) =>
+            {
+                item.Radius = value.GetValue();
+            }).WithDefaultValue(0.2f)
+        )
+    ];
+    
+    public static readonly List<ConfigType> SceneGroupMapDirIn = [
+        (NoteConfigType) "Make other maps lead to this one",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Enter Below", "scene_group_map_b", (item, value) =>
+            {
+                item.OverwriteEnter[(int)InventoryItemManager.SelectionDirection.Down] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Enter Above", "scene_group_map_a", (item, value) =>
+            {
+                item.OverwriteEnter[(int)InventoryItemManager.SelectionDirection.Up] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Enter Left", "scene_group_map_l", (item, value) =>
+            {
+                item.OverwriteEnter[(int)InventoryItemManager.SelectionDirection.Left] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Enter Right", "scene_group_map_r", (item, value) =>
+            {
+                item.OverwriteEnter[(int)InventoryItemManager.SelectionDirection.Right] = value.GetValue();
+            })
+        )
+    ];
+    
+    public static readonly List<ConfigType> SceneGroupMapDirOut = [
+        (NoteConfigType) "Make this map lead to others",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Exit Below", "scene_group_map_b2", (item, value) =>
+            {
+                item.OverwriteExit[(int)InventoryItemManager.SelectionDirection.Down] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Exit Above", "scene_group_map_a2", (item, value) =>
+            {
+                item.OverwriteExit[(int)InventoryItemManager.SelectionDirection.Up] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Exit Left", "scene_group_map_l2", (item, value) =>
+            {
+                item.OverwriteExit[(int)InventoryItemManager.SelectionDirection.Left] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SceneGroup>("Exit Right", "scene_group_map_r2", (item, value) =>
+            {
+                item.OverwriteExit[(int)InventoryItemManager.SelectionDirection.Right] = value.GetValue();
+            })
         )
     ];
     
@@ -341,9 +594,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> UseToolSprites =
     [
-        ConfigurationManager.RegisterConfigType(
-            new NoteConfigType<CustomTool>("Only apply to Red and Skill tools", "tool_sprite_type_info")
-        ),
+        (NoteConfigType)"Only apply to Red and Skill tools",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomTool>("HUD Icon URL", "png_tool_ui_url", (item, value) =>
             {
@@ -384,9 +635,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> RedTools =
     [
-        ConfigurationManager.RegisterConfigType(
-            new NoteConfigType<CustomTool>("Only apply to Red tools", "tool_red_info")
-        ),
+        (NoteConfigType) "Only apply to Red tools",
         ConfigurationManager.RegisterConfigType(
             new IntConfigType<CustomTool>("Max Amount", "tool_red_max", (item, value) =>
             {

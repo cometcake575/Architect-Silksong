@@ -20,6 +20,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Npcs = ["OnFinish"];
     
+    public static readonly List<string> EnemyDamager = ["OnDamage"];
+    
     public static readonly List<string> FsmHook = ["OnChange", "OnTarget"];
     
     public static readonly List<string> Snitchfly = GroupUtils.Merge(Enemies, ["OnFlee"]);

@@ -150,8 +150,15 @@ public static class PlacementManager
                 {
                     foreach (var (x, y) in ext.TilemapChanges)
                     {
-                        if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                        else map.ClearTile(x, y, 0);
+                        try
+                        {
+                            if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                            else map.ClearTile(x, y, 0);
+                        }
+                        catch (Exception)
+                        {
+                            // Out of bounds
+                        }
                     }
                 }
                 
@@ -159,8 +166,15 @@ public static class PlacementManager
                 {
                     foreach (var (x, y) in _levelData.TilemapChanges)
                     {
-                        if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-                        else map.ClearTile(x, y, 0);
+                        try
+                        {
+                            if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                            else map.ClearTile(x, y, 0);
+                        }
+                        catch (Exception)
+                        {
+                            // Out of bounds
+                        }
                     }
 
                     map.Build();

@@ -45,6 +45,10 @@ public static class EnemyFixers
     private static GameObject _tfloor;
     private static GameObject _tbursts;
     
+    // Squirm
+    private static GameObject _squirmSingArea;
+    private static GameObject _squirmArea;
+    
     // Khann
     private static readonly List<string> Spears = [
         "Long Spear",
@@ -120,6 +124,13 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
             "Grand Stage Scene/Boss Scene Trobbio/Trapdoor Bursts",
             o => _bursts = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_36", 
+            "Judge Children Sing Trigger",
+            o => _squirmSingArea = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_36", 
+            "Judge Children Trigger",
+            o => _squirmArea = o));
         
         PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
             "Grand Stage Scene/Boss Scene TormentedTrobbio/Flare Glitter",
@@ -1266,6 +1277,16 @@ public static class EnemyFixers
         }
     }
 
+    public class GrandReed : Wakeable
+    {
+        public override void DoWake()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Rest").AddAction(() => fsm.SendEvent("WAKE"), 0);
+            fsm.SendEvent("WAKE");
+        }
+    }
+
     public static void FixZango(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
@@ -2393,6 +2414,10 @@ public static class EnemyFixers
 
         ((StartRoarEmitter)fsm.GetState("Roar").actions[5]).stunHero = false;
         fsm.GetState("Revisit").DisableAction(1);
+
+        var roarEnd = fsm.GetState("Roar End");
+        roarEnd.DisableAction(0);
+        roarEnd.DisableAction(1);
     }
 
     public static void FixPharlidDiver(GameObject obj)
@@ -3609,5 +3634,19 @@ public static class EnemyFixers
         
         fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
         fsm.GetState("Set Intro Pos").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
+    public static void FixSquirm(GameObject obj)
+    {
+        obj.GetComponent<tk2dSpriteAnimator>().Play("Idle");
+        obj.GetComponent<BoxCollider2D>().enabled = true;
+
+        Object.Instantiate(_squirmArea);
+        Object.Instantiate(_squirmSingArea);
+    }
+
+    public static void FixGrandReed(GameObject obj)
+    {
+        obj.AddComponent<GrandReed>();
     }
 }

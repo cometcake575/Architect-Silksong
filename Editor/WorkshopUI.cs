@@ -370,15 +370,25 @@ public static class WorkshopUI
         _configParent.transform.SetParent(_configArea.transform, false);
         _configParent.RemoveOffset();
 
-        var y = (2 * item.Config.Length + item.Config.SelectMany(o => o).Count() - 3) * 6;
+        var ic = item.Config.Length > 4 ? item.Config[..3] : item.Config;
+        
+        var y = (2 * ic.Length + ic.SelectMany(o => o).Count() - 3) * 6;
+
+        var g = 0;
+        var x = 0;
         foreach (var configGroup in item.Config)
         {
+            if (g == 3)
+            {
+                y = (2 * (item.Config.Length - 3) + item.Config[3..].SelectMany(o => o).Count() - 3) * 6;
+                x += 200;
+            }
             foreach (var configType in configGroup)
             {
                 var txt = UIUtils.MakeLabel(
                     "Config Title",
                     _configParent,
-                    new Vector3(100, y),
+                    new Vector3(x + 100, y),
                     new Vector2(0, 0.5f),
                     new Vector2(0, 0.5f)).textComponent;
                 txt.text = configType.Name;
@@ -389,12 +399,12 @@ public static class WorkshopUI
                     "Config Apply",
                     "Apply",
                     _configParent, 
-                    new Vector2(220, y),
+                    new Vector2(x + 220, y),
                     new Vector2(0, 0.5f),
                     new Vector2(0, 0.5f));
                 btn.interactable = false;
                 
-                var inp = configType.CreateInput(_configParent, btn, new Vector3(155, y), 
+                var inp = configType.CreateInput(_configParent, btn, new Vector3(x + 155, y), 
                     (isNew ?
                         configType.GetDefaultValue() :
                         item.CurrentConfig.GetValueOrDefault(configType.Id))?.SerializeValue());
@@ -421,6 +431,7 @@ public static class WorkshopUI
             }
 
             y -= 24;
+            if (item.Config.Length > 4) g++;
         }
     }
 }

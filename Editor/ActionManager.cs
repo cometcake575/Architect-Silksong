@@ -198,11 +198,19 @@ public class ToggleTile(List<(int, int)> tiles, bool empty) : IEdit, IScheduledE
         if (!map) return;
         foreach (var (x, y) in tiles)
         {
-            if (empty) map.ClearTile(x, y, 0);
-            else map.SetTile(x, y, 0, 0);
-            
+            try
+            {
+                if (empty) map.ClearTile(x, y, 0);
+                else map.SetTile(x, y, 0, 0);
+            }
+            catch (Exception)
+            {
+                // Out of bounds
+            }
+
             PlacementManager.GetLevelData().ToggleTile((x, y));
         }
+
         map.Build();
     }
     
@@ -282,9 +290,17 @@ public class ResetRoom : IEdit
         if (!map) return;
         foreach (var (x, y) in data.TilemapChanges)
         {
-            if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
-            else map.ClearTile(x, y, 0);
+            try
+            {
+                if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
+                else map.ClearTile(x, y, 0);
+            }
+            catch (Exception)
+            {
+                // Out of bounds
+            }
         }
+
         map.Build();
         
         data.TilemapChanges.Clear();

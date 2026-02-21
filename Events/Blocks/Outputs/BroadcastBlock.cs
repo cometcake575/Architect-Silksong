@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Events.Blocks.Events;
@@ -28,7 +29,7 @@ public class BroadcastBlock : LocalBlock
     public static void DoBroadcast(string eventName)
     {
         foreach (var e in ReceiveBlock.RcEvent.Events
-                     .Where(e => e.Block.EventName == eventName))
+                     .Where(e => e.Block.EventName.Equals(eventName, StringComparison.InvariantCultureIgnoreCase)))
         {
             e.Block.Event("OnReceive");
         }

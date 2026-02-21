@@ -1902,6 +1902,17 @@ public static class ConfigGroup
                 }).WithOptions("Phase 1", "Phase 2", "Phase 3").WithDefaultValue(0))
     ]);
 
+    public static readonly List<ConfigType> LastClaw = GroupUtils.Merge(Bosses, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Throw Attack", "lc_throw",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    var choice = o.LocateMyFSM("Control").GetState("Attack Choice");
+                    choice.actions[4].enabled = true;
+                }).WithDefaultValue(false))
+    ]);
+
     static ConfigGroup()
     {
         typeof(HealthManager).Hook(nameof(HealthManager.IsBlockingByDirection),

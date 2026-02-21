@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,6 +7,7 @@ using System.Text.RegularExpressions;
 using Architect.Behaviour.Custom;
 using Architect.Content.Preloads;
 using Architect.Editor;
+using Architect.Events.Blocks.Operators;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using GlobalSettings;
@@ -138,7 +140,8 @@ public static class MiscFixers
 
         typeof(LocalisedString).Hook(nameof(LocalisedString.ToString),
             (ToStringOrig orig, ref LocalisedString self, bool allowBlankText) =>
-                self.Sheet == "ArchitectMod" ? self.Key : orig(ref self, allowBlankText), typeof(bool));
+                self.Sheet == "ArchitectMod" ? SubstituteVars(self.Key) : 
+                    orig(ref self, allowBlankText), typeof(bool));
 
         typeof(DialogueBox).Hook(nameof(DialogueBox.ParseTextForDialogueLines),
             (Func<string, List<DialogueBox.DialogueLine>> orig, string text) =>
@@ -211,6 +214,16 @@ public static class MiscFixers
                 var water = self.GetComponent<Water>();
                 return water ? water.abyss : orig(self);
             });
+    }
+
+    private static string SubstituteVars(string txt)
+    {
+        return Regex.Replace(txt, @"\[\[(.*?)\]\]", match =>
+        {
+            var key = match.Groups[1].Value;
+            ArchitectPlugin.Logger.LogInfo(key);
+            return StringVarBlock.GetVar(key);
+        });
     }
 
     public class ColorLock : MonoBehaviour
@@ -372,7 +385,8 @@ public static class MiscFixers
     
     public static void FixBreakable(GameObject obj)
     {
-        obj.GetComponentInChildren<Breakable>().onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
+        var brk = obj.GetComponentInChildren<Breakable>();
+        brk.onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
     }
     
     public static void FixLamp(GameObject obj)
@@ -1448,5 +1462,39 @@ public static class MiscFixers
     {
         public float xOffset = 5;
         public float yOffset;
+    }
+
+    public static void FixPondSkipperBody(GameObject obj)
+    {
+        obj.AddComponent<PsBody>();
+    }
+
+    public class PsBody : MonoBehaviour
+    {
+        private void OnDisable()
+        {
+            ArchitectPlugin.Instance.StartCoroutine(Reactivate());
+        }
+
+        private IEnumerator Reactivate()
+        {
+            yield return null;
+            if (!this) yield break;
+            gameObject.SetActive(true);
+            gameObject.BroadcastEvent("OnBreak");
+            Destroy(gameObject);
+        }
+    }
+
+    public static void FixSilkeaterCocoon(GameObject obj)
+    {
+        obj.transform.GetChild(3).gameObject.AddComponent<SilkCocoon>().obj = obj;
+    }
+
+    public class SilkCocoon : MonoBehaviour
+    {
+        public GameObject obj;
+        
+        private void OnEnable() => obj.BroadcastEvent("OnBreak");
     }
 }

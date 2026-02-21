@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Editor;
@@ -39,10 +40,18 @@ public class TileChangerObject() : ToolObject("tile_changer", Storage.Settings.T
         if (first) _lastEmpty = empty;
         else if (_lastEmpty != empty) return;
 
-        if (empty) map.SetTile(x, y, 0, 0);
-        else map.ClearTile(x, y, 0);
-        map.Build();
-        
+        try
+        {
+            if (empty) map.SetTile(x, y, 0, 0);
+            else map.ClearTile(x, y, 0);
+            map.Build();
+        }
+        catch (Exception)
+        {
+            // Out of bounds
+            return;
+        }
+
         TileFlips.Add(pos);
     }
 

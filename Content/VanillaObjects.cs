@@ -327,7 +327,9 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Velocity));
 
         Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
-            ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1")));
+            ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1"),
+            postSpawnAction: MiscFixers.FixSilkeaterCocoon)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
@@ -517,8 +519,10 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixForumEnemy).DoFlipX();
         AddEnemy("Grand Reed", "song_reed_grand",
             ("Hang_07", "Black Thread States/Normal World/Unscaler/Song Reed Grand (1)"),
+            preloadAction: EnemyFixers.FixGrandReed,
             postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(3))
-            .DoFlipX();
+            .WithConfigGroup(ConfigGroup.Wakeable)
+            .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX();
         
         var sphere = new GameObject("Thread Storm");
         sphere.SetActive(false);
@@ -1508,6 +1512,14 @@ public static class VanillaObjects
                 ("Coral_34", "Harpoon Ring Pinstress Rope (4)"), postSpawnAction: MiscFixers.FixRing).DoFlipX()
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
+        Categories.Platforming.Add(new PreloadObject("Bell of Judgement", "hang_bell",
+            ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite)
+            .WithConfigGroup(ConfigGroup.Bell));
+
+        /*
+        AddEnemy("Squirm", "squirm", ("Coral_36", "Judge Child (1)"),
+            postSpawnAction: EnemyFixers.FixSquirm);*/
+
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
                 preloadAction: EnemyFixers.FixJudge,
                 postSpawnAction: o => o.LocateMyFSM("Control").GetState("Shield Block")
@@ -1515,10 +1527,6 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Judge)
             .WithBroadcasterGroup(BroadcasterGroup.Judge)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
-
-        Categories.Platforming.Add(new PreloadObject("Bell of Judgement", "hang_bell",
-            ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite)
-            .WithConfigGroup(ConfigGroup.Bell));
 
         AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
             postSpawnAction:EnemyFixers.FixLastJudge)
@@ -2276,7 +2284,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Decorations);
 
         Categories.Misc.Add(new PreloadObject("Pond Skipper Body", "pond_skipper_body",
-            ("Belltown_Room_shellwood", "shell_hang_rope"), postSpawnAction: MiscFixers.FixBreakable)
+            ("Belltown_Room_shellwood", "shell_hang_rope"), postSpawnAction: MiscFixers.FixPondSkipperBody)
             .WithConfigGroup(ConfigGroup.Bell)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
@@ -2329,7 +2337,8 @@ public static class VanillaObjects
             ("Memory_Ant_Queen", "Boss Scene/Battle Scene/Wave 4/Bone Hunter Fly Chief"),
             preloadAction: EnemyFixers.FixLastClawPreload,
             postSpawnAction: EnemyFixers.FixLastClaw)
-            .WithScaleAction(EnemyFixers.ScaleLastClaw);
+            .WithScaleAction(EnemyFixers.ScaleLastClaw)
+            .WithConfigGroup(ConfigGroup.LastClaw);
         
         AddEnemy("Skarrsinger Karmelita", "karmelita",
             ("Memory_Ant_Queen", "Boss Scene/Hunter Queen Boss"),

@@ -713,6 +713,22 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Pd =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PersistentBoolBlock>("Scene ID", "ped_bool_scene", 
+                (b, f) => b.Group = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<PersistentBoolBlock>("Data ID", "ped_bool_type", 
+                (b, f) => b.Data = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<PersistentBoolBlock>("Value", "ped_bool", 
+                (b, f) => b.Value = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> PdBool =
     [
         ConfigurationManager.RegisterConfigType(

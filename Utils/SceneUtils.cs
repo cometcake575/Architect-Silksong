@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
@@ -162,7 +161,46 @@ public static class SceneUtils
                 }
                 return orig(self, currentSaveStats);
             }, typeof(SaveStats));
+        
+        typeof(InventoryMapManager).Hook(nameof(InventoryMapManager.GetStartSelectable),
+            (Func<InventoryMapManager, InventoryItemSelectable> orig, InventoryMapManager self) =>
+            {
+                if (CustomScenes.TryGetValue(GameManager.instance.sceneName, out var scene)
+                    && SceneGroups.TryGetValue(scene.Group, out var group)
+                    && group.HasMap()) return group.MapZone;
+                return orig(self);
+            });
+        
+        typeof(GameMap).Hook(nameof(GameMap.TryOpenQuickMap),
+            (TryOpenQuickMap orig, GameMap self, out string displayName) =>
+            {
+                displayName = string.Empty;
+                
+                if (CustomScenes.TryGetValue(GameManager.instance.sceneName, out var scene))
+                {
+                    if (!SceneGroups.TryGetValue(scene.Group, out var group) || !group.HasMap()) return false;
+                    
+                    var corpseScene = PlayerData.instance.HeroCorpseScene;
+                    if (CustomScenes.TryGetValue(corpseScene, out var cs)
+                        && SceneGroups.TryGetValue(cs.Group, out var cg) && cg == group)
+                        self.shadeMarker.SetActive(true);
+                    
+                    self.DisableAllAreas();
+                    self.EnableUnlockedAreas(MapZone.NONE);
+                    displayName = group.GroupName;
+                    self.transform.localScale = new Vector3(1.4725f, 1.4725f, 1f);
+                    self.transform.SetPosition2D(group.ZoomPos);
+                    self.SetDisplayNextArea(true, MapZone.NONE);
+                    self.SetupMapMarkers();
+                    return true;
+                }
+
+                var o = orig(self, out displayName);
+                return o;
+            });
     }
+    
+    public delegate bool TryOpenQuickMap(GameMap self, out string displayName);
 
     private static IEnumerator RedirectLoad(
         Func<SceneLoad, IEnumerator> orig,
@@ -294,6 +332,10 @@ public static class SceneUtils
         Tilemap.layers[0].width = scene.TilemapWidth;
         Tilemap.layers[0].height = scene.TilemapHeight;
 
+        GameManager.instance.tilemap = Tilemap;
+        GameManager.instance.sceneWidth = scene.TilemapWidth;
+        GameManager.instance.sceneHeight = scene.TilemapHeight;
+
         Tilemap.layers[0].numRows = Mathf.CeilToInt(scene.TilemapWidth / 32f);
         Tilemap.layers[0].numColumns = Mathf.CeilToInt(scene.TilemapHeight / 32f);
 
@@ -328,8 +370,15 @@ public static class SceneUtils
             {
                 foreach (var (x, y) in ExtTilemapChanges)
                 {
-                    if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
-                    else Tilemap.ClearTile(x, y, 0);
+                    try
+                    {
+                        if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
+                        else Tilemap.ClearTile(x, y, 0);
+                    }
+                    catch (Exception)
+                    {
+                        // Out of bounds
+                    }
                 }
             }
 
@@ -337,8 +386,15 @@ public static class SceneUtils
             {
                 foreach (var (x, y) in TilemapChanges)
                 {
-                    if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
-                    else Tilemap.ClearTile(x, y, 0);
+                    try
+                    {
+                        if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
+                        else Tilemap.ClearTile(x, y, 0);
+                    }
+                    catch (Exception)
+                    {
+                        // Out of bounds
+                    }
                 }
             }
             

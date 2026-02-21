@@ -1,4 +1,3 @@
-using System;
 using Architect.Utils;
 using Architect.Workshop.Items;
 using UnityEngine;
@@ -6,11 +5,9 @@ using UnityEngine.UI;
 
 namespace Architect.Workshop.Types;
 
-public class NoteConfigType<T>(
-    string name, 
-    string id)
-    : ConfigType<T, NoteConfigValue<T>>(name, id, (_, _) => { })
-    where T : WorkshopItem
+public class NoteConfigType(
+    string name)
+    : ConfigType<WorkshopItem, NoteConfigValue>(name, string.Empty, (_, _) => { })
 {
     public override ConfigValue GetDefaultValue()
     {
@@ -24,13 +21,17 @@ public class NoteConfigType<T>(
 
     public override ConfigValue Deserialize(string data)
     {
-        return new NoteConfigValue<T>(this, data);
+        return new NoteConfigValue(this, data);
+    }
+        
+    public static implicit operator NoteConfigType(string s)
+    {
+        return new NoteConfigType(s);
     }
 }
 
-public class NoteConfigValue<T>(NoteConfigType<T> type, string value) :
-    ConfigValue<NoteConfigType<T>>(type) 
-    where T : WorkshopItem
+public class NoteConfigValue(NoteConfigType type, string value) :
+    ConfigValue<NoteConfigType>(type)
 {
     public override string SerializeValue()
     {
