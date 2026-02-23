@@ -282,6 +282,8 @@ public static class StorageManager
         CustomAssetManager.Downloaded = 0;
         CustomAssetManager.Failed = 0;
         var downloadCount = downloads.Count + blockDownloads.Count + workshopDownloads.Count;
+        status.text = "Downloading Assets...\n" +
+                      $"0/{downloadCount}";
         
         foreach (var config in downloads.Values)
         {

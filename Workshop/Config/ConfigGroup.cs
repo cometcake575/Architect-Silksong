@@ -112,7 +112,7 @@ public static class ConfigGroup
     public static readonly List<ConfigType> MapIcon =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomMapIcon>("Scene ID", "map_icon_scene", (item, value) =>
+            new StringConfigType<CustomMapIcon>("Custom Scene ID", "map_icon_scene", (item, value) =>
             {
                 item.Scene = value.GetValue();
             })
@@ -121,7 +121,19 @@ public static class ConfigGroup
             new ChoiceConfigType<CustomMapIcon>("Visibility Mode", "map_icon_visual_mode", (item, value) =>
             {
                 item.Mode = value.GetValue();
-            }).WithOptions("Both", "Quick Map", "Inventory Map").WithDefaultValue(0)
+            }).WithOptions("Both", "Quick Map", "Inventory").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Offset X", "map_icon_x", (item, value) =>
+            {
+                item.Pos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMapIcon>("Offset Y", "map_icon_y", (item, value) =>
+            {
+                item.Pos.y = value.GetValue();
+            }).WithDefaultValue(0)
         )
     ];
     
@@ -137,7 +149,7 @@ public static class ConfigGroup
             new FloatConfigType<CustomMapIcon>("Font Size", "map_icon_font_size", (item, value) =>
             {
                 item.FontSize = value.GetValue();
-            }).WithDefaultValue(12)
+            }).WithDefaultValue(6.2f)
         ),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomMapIcon>("Text Offset X", "map_icon_text_x", (item, value) =>
@@ -304,13 +316,13 @@ public static class ConfigGroup
             }).WithDefaultValue("None")
         ),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<CustomScene>("Tilemap Width", "scene_tilemap_width", (item, value) =>
+            new IntConfigType<CustomScene>("Scene Width", "scene_tilemap_width", (item, value) =>
             {
                 item.TilemapWidth = value.GetValue();
             }).WithDefaultValue(500)
         ),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<CustomScene>("Tilemap Height", "scene_tilemap_height", (item, value) =>
+            new IntConfigType<CustomScene>("Scene Height", "scene_tilemap_height", (item, value) =>
             {
                 item.TilemapHeight = value.GetValue();
             }).WithDefaultValue(500)
@@ -320,7 +332,19 @@ public static class ConfigGroup
     public static readonly List<ConfigType> SceneMap = [
         (NoteConfigType) "Only applies if the scene's group has a map",
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<SpriteItem>("Full Room URL", "scene_full_map_url", (item, value) =>
+            new FloatConfigType<CustomScene>("Map X Offset", "scene_map_x", (item, value) =>
+            {
+                item.MapPos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Map Y Offset", "scene_map_y", (item, value) =>
+            {
+                item.MapPos.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SpriteItem>("Full Map URL", "scene_full_map_url", (item, value) =>
             {
                 item.IconUrl = value.GetValue();
             })
@@ -454,13 +478,13 @@ public static class ConfigGroup
             }).WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<SceneGroup>("Label Offset X", "scene_group_map_lx", (item, value) =>
+            new FloatConfigType<SceneGroup>("Title Offset X", "scene_group_map_lx", (item, value) =>
             {
                 item.LabelPos.x = value.GetValue();
             }).WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<SceneGroup>("Label Offset Y", "scene_group_map_ly", (item, value) =>
+            new FloatConfigType<SceneGroup>("Title Offset Y", "scene_group_map_ly", (item, value) =>
             {
                 item.LabelPos.y = value.GetValue();
             }).WithDefaultValue(0)
@@ -475,6 +499,18 @@ public static class ConfigGroup
             new FloatConfigType<SceneGroup>("Zoom Y", "scene_group_map_zy", (item, value) =>
             {
                 item.ZoomPos.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Area Label X", "scene_group_map_alx", (item, value) =>
+            {
+                item.AreaNamePos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SceneGroup>("Area Label Y", "scene_group_map_aly", (item, value) =>
+            {
+                item.AreaNamePos.y = value.GetValue();
             }).WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Content.Preloads;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
 using GlobalEnums;
 using MonoMod.RuntimeDetour;
+using TMProOld;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -19,6 +21,7 @@ public class SceneGroup : SpriteItem
     public Vector2 MapPos;
     public Vector2 LabelPos;
     public Vector2 ZoomPos;
+    public Vector2 AreaNamePos;
 
     public string Variable = string.Empty;
 
@@ -45,8 +48,73 @@ public class SceneGroup : SpriteItem
 
     private static InventoryWideMap _wideMap;
 
+    public static GameObject MapSegmentPrefab;
+    public static GameObject MapIconPrefab;
+    private static GameObject _areaTextPrefab;
+    
+    public delegate bool HasMapForScene(GameMap self, string sceneName, out bool hasSceneSprite);
+    
     public static void Init()
     {
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "maps_assets_all", 
+            "Assets/Prefabs/UI/Map/Game_Map_Hornet.prefab", o =>
+            {
+                var ms = o.transform.Find("Tut").Find("Tut_02").gameObject;
+                ms.SetActive(false);
+                MapSegmentPrefab = Object.Instantiate(ms);
+                ms.SetActive(true);
+                Object.DontDestroyOnLoad(MapSegmentPrefab);
+
+                var an = o.transform.Find("Tut").Find("Area Name (2)").gameObject;
+                an.SetActive(false);
+                _areaTextPrefab = Object.Instantiate(an);
+                an.SetActive(true);
+                Object.DontDestroyOnLoad(_areaTextPrefab);
+
+                var na = o.transform.Find("Tut").Find("Tut_01").Find("Next Area Up (2)").gameObject;
+                na.SetActive(false);
+                MapIconPrefab = Object.Instantiate(na);
+                na.SetActive(true);
+                Object.DontDestroyOnLoad(MapIconPrefab);
+            }, notSceneBundle: true));
+        
+        typeof(GameMap).Hook(nameof(GameMap.SetupMap),
+            (Action<GameMap, bool> orig, GameMap self, bool pinsOnly) =>
+            {
+                orig(self, pinsOnly);
+                var pd = PlayerData.instance;
+                foreach (var (name, scene) in SceneUtils.CustomScenes)
+                {
+                    if (!scene.Gms) continue;
+                    if ((scene.Gms.isMapped || pd.scenesVisited.Contains(name)) && 
+                        SceneUtils.SceneGroups.TryGetValue(scene.Group, out var group) && group.HasMapZone &&
+                        !CollectableItemManager.IsInHiddenMode())
+                    {
+                        scene.Gms.spriteRenderer.color = group.MapColour;
+                        if (pd.hasQuill && !pinsOnly)
+                        {
+                            scene.Gms.initialColor = group.MapColour;
+                            scene.Gms.hasBeenSet = false;
+                            scene.Gms.SetMapped();
+                        }
+                    }
+                    else scene.Gms.SetNotMapped();
+                }
+            });
+        
+        typeof(GameMap).Hook(nameof(GameMap.HasMapForScene),
+            (HasMapForScene orig, GameMap self, string sceneName, out bool hasSceneSprite) =>
+            {
+                if (SceneUtils.CustomScenes.TryGetValue(sceneName, out var scene)
+                    && SceneUtils.SceneGroups.TryGetValue(scene.Group, out var group))
+                {
+                    hasSceneSprite = group.HasMapZone && scene.Gms && scene.Gms.BoundsSprite;
+                    return group.HasMapZone;
+                }
+                return orig(self, sceneName, out hasSceneSprite);
+            });
+        
         typeof(InventoryItemWideMapZone)
             .Hook(nameof(InventoryItemWideMapZone.GetNextSelectable),
                 (Func<InventoryItemWideMapZone, InventoryItemManager.SelectionDirection, InventoryItemSelectable> orig,
@@ -104,10 +172,7 @@ public class SceneGroup : SpriteItem
                 {
                     ArchitectPlugin.Logger.LogInfo("Setting up WideMap");
                     _wideMap = self;
-                    foreach (var group in SceneUtils.SceneGroups.Values)
-                    {
-                        group.RegisterMap();
-                    }
+                    foreach (var group in SceneUtils.SceneGroups.Values) group.RegisterMap();
                 }
 
                 orig(self);
@@ -255,9 +320,24 @@ public class SceneGroup : SpriteItem
             transform =
             {
                 parent = gm.transform,
-                localPosition = ZoomPos
+                localPosition = ZoomPos,
+                localScale = Vector3.one
             }
         };
+        
+        var atp = Object.Instantiate(_areaTextPrefab, FocusMapObject.transform);
+        
+        atp.SetActive(true);
+        atp.name = "Area Name";
+        atp.transform.localPosition = AreaNamePos;
+        
+        atp.GetComponent<SetTextMeshProGameText>().text = (LocalStr)GroupName;
+        atp.GetComponent<TextMeshPro>().color = MapColour;
+        
+        foreach (var scene in SceneUtils.CustomScenes.Values.Where(s => s.Group == Id))
+            scene.TrySetupMap();
+        
+        FocusMapObject.SetActive(false);
     }
     
     public override void Register()

@@ -108,7 +108,7 @@ public class UIPngObject : PngObject
 
     public int anchorTo;
 
-    private static readonly int UiLayer = LayerMask.NameToLayer("UI");
+    private static readonly int UILayer = LayerMask.NameToLayer("UI");
 
     private PositionConstraint _constraint;
     private SpriteRenderer _sr;
@@ -116,7 +116,7 @@ public class UIPngObject : PngObject
 
     public void Start()
     {
-        gameObject.layer = UiLayer;
+        gameObject.layer = UILayer;
         var anchor = GameCameras.instance.hudCamera.transform
             .Find("In-game").Find("Anchor TL").Find("Hud Canvas Offset").Find("Hud Canvas");
 

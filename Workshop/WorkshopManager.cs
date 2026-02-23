@@ -49,27 +49,27 @@ public static class WorkshopManager
         Register<SceneGroup>("Scene Group",
             new Vector2(-300, -300),
             ConfigGroup.SceneGroup,
-            ConfigGroup.SceneGroupIcon/*,
+            ConfigGroup.SceneGroupIcon,
             ConfigGroup.SceneGroupMap,
             ConfigGroup.SceneGroupMapPos,
             ConfigGroup.SceneGroupMapDirIn,
-            ConfigGroup.SceneGroupMapDirOut*/);
+            ConfigGroup.SceneGroupMapDirOut);
         
         Register<CustomScene>("Scene",
             new Vector2(-100, -300),
-            ConfigGroup.Scene/*,
-            ConfigGroup.SceneMap*/);
+            ConfigGroup.Scene,
+            ConfigGroup.SceneMap);
         
         Register<CustomMateriumEntry>("Material",
             new Vector2(-300, -375),
             ConfigGroup.MateriumEntry,
             ConfigGroup.SpriteItem);
         
-        /*Register<CustomMapIcon>("Map Icon",
+        Register<CustomMapIcon>("Map Icon",
             new Vector2(-100, -375),
             ConfigGroup.MapIcon,
             ConfigGroup.SpriteItem,
-            ConfigGroup.MapIconLabel)*/;
+            ConfigGroup.MapIconLabel);
         
         SceneGroup.Init();
         

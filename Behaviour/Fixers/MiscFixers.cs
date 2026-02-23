@@ -221,7 +221,6 @@ public static class MiscFixers
         return Regex.Replace(txt, @"\[\[(.*?)\]\]", match =>
         {
             var key = match.Groups[1].Value;
-            ArchitectPlugin.Logger.LogInfo(key);
             return StringVarBlock.GetVar(key);
         });
     }

@@ -138,6 +138,38 @@ public static class VanillaObjects
                 }, 5);
             }).DoFlipX();
 
+        Categories.Hazards.Add(new PreloadObject("Coral Crust S", "coral_crust_s",
+            ("Arborium_06", "Coral Crust Wall Small"),
+            postSpawnAction: o =>
+            {
+                foreach (Transform child in o.transform.GetChild(1)) child.gameObject.SetActive(false);
+                HazardFixers.FixCoralCrust(o);
+            })
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithRotationGroup(RotationGroup.All)
+            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+        Categories.Hazards.Add(new PreloadObject("Coral Crust M", "coral_crust_m",
+            ("Arborium_06", "Coral Crust Wall Mid (1)"),
+            postSpawnAction: o =>
+            {
+                foreach (Transform child in o.transform.GetChild(0)) child.gameObject.SetActive(false);
+                HazardFixers.FixCoralCrust(o);
+            })
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithRotationGroup(RotationGroup.All)
+            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+        Categories.Hazards.Add(new PreloadObject("Coral Crust L", "coral_crust_l",
+            ("Arborium_06", "Coral Crust Wall Tall (3)"),
+            postSpawnAction: o =>
+            {
+                o.transform.GetChild(1).gameObject.SetActive(true);
+                foreach (Transform child in o.transform.GetChild(0)) child.gameObject.SetActive(false);
+                HazardFixers.FixCoralCrust(o);
+            })
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithRotationGroup(RotationGroup.All)
+            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+
         AddEnemy("Kai", "coral_swimmer_fat",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 3/Wave 5 - fish1/Coral Swimmer Fat (1)"),
             postSpawnAction: EnemyFixers.FixSpearSpawned);
@@ -1721,6 +1753,21 @@ public static class VanillaObjects
         
         Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
             ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
+
+        Categories.Interactable.Add(new PreloadObject("Needolin Gate", "weaver_gate",
+            ("Weave_04", "top set/Song_Gate_set (2)"),
+            preloadAction: o =>
+            {
+                o.transform.SetLocalPositionZ(3.7316f);
+                
+                for (var i = 3; i <= 16; i++) o.transform.GetChild(i).gameObject.SetActive(false);
+                o.transform.GetChild(18).gameObject.SetActive(false);
+                for (var i = 20; i <= 24; i++) o.transform.GetChild(i).gameObject.SetActive(false);
+                o.transform.GetChild(31).gameObject.SetActive(false);
+                o.transform.GetChild(32).gameObject.SetActive(false);
+
+                o.transform.GetChild(19).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+            }).WithConfigGroup(ConfigGroup.NeedolinGate));
         
         AddEnemy("Servitor Ignim", "servitor_small", ("Weave_04", "Weaver Servitor (2)"),
             preloadAction: EnemyFixers.FixServitorIgnim);
@@ -2735,7 +2782,14 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses);
 
         Categories.Misc.Add(new PreloadObject("Lifeblood Pustule", "life_pustule",
-            ("Crawl_03", "PUSTULE_States/Active/pustule_set_small (1)/PUSTULE")));
+            ("Crawl_03", "PUSTULE_States/Active/pustule_set_small (1)/PUSTULE"))
+            .WithRotateAction((o, f) =>
+            {
+                o.transform.GetChild(0).SetLocalRotation2D(f);
+            }).WithScaleAction((o, f) =>
+            {
+                o.transform.GetChild(0).SetScaleX(-o.transform.GetChild(0).GetScaleX());
+            }));
         
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))

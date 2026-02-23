@@ -180,16 +180,18 @@ public static class SceneUtils
                 {
                     if (!SceneGroups.TryGetValue(scene.Group, out var group) || !group.HasMap()) return false;
                     
-                    var corpseScene = PlayerData.instance.HeroCorpseScene;
-                    if (CustomScenes.TryGetValue(corpseScene, out var cs)
-                        && SceneGroups.TryGetValue(cs.Group, out var cg) && cg == group)
-                        self.shadeMarker.SetActive(true);
-                    
                     self.DisableAllAreas();
                     self.EnableUnlockedAreas(MapZone.NONE);
                     displayName = group.GroupName;
                     self.transform.localScale = new Vector3(1.4725f, 1.4725f, 1f);
-                    self.transform.SetPosition2D(group.ZoomPos);
+                    self.transform.SetPosition2D(-group.ZoomPos * 1.4725f);
+                    
+                    var corpseScene = PlayerData.instance.HeroCorpseScene;
+                    if (CustomScenes.TryGetValue(corpseScene, out var cs)
+                        && SceneGroups.TryGetValue(cs.Group, out var cg) && cg == group)
+                        self.shadeMarker.SetActive(true);
+                    self.PositionCompassAndCorpse();
+                    
                     self.SetDisplayNextArea(true, MapZone.NONE);
                     self.SetupMapMarkers();
                     return true;
@@ -198,9 +200,39 @@ public static class SceneUtils
                 var o = orig(self, out displayName);
                 return o;
             });
+        
+        typeof(GameMap).Hook(nameof(GameMap.GetSceneInfo),
+            (GetSceneInfo orig,
+                GameMap self,
+                string sceneName,
+                MapZone mapZone,
+                out GameMapScene foundScene,
+                out GameObject foundSceneObj,
+                out Vector2 foundScenePos) =>
+            {
+                if (CustomScenes.TryGetValue(sceneName, out var scene))
+                {
+                    foundScene = scene.Gms;
+                    foundSceneObj = scene.Map;
+                    
+                    var localPosition1 = foundSceneObj.transform.localPosition;
+                    var localPosition2 = foundSceneObj.transform.parent.localPosition;
+                    foundScenePos = (localPosition1 + localPosition2).Where(z: 0);
+                    return;
+                }
+                orig(self, sceneName, mapZone, out foundScene, out foundSceneObj, out foundScenePos);
+            });
     }
     
     public delegate bool TryOpenQuickMap(GameMap self, out string displayName);
+    
+    public delegate void GetSceneInfo(
+        GameMap self,
+        string sceneName,
+        MapZone mapZone,
+        out GameMapScene foundScene,
+        out GameObject foundSceneObj,
+        out Vector2 foundScenePos);
 
     private static IEnumerator RedirectLoad(
         Func<SceneLoad, IEnumerator> orig,

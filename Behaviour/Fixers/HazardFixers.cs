@@ -397,4 +397,20 @@ public static class HazardFixers
     {
         obj.AddComponent<Flintbomb>();
     }
+
+    public static void FixCoralCrust(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
+        {
+            if (!value) return;
+            obj.BroadcastEvent("LoadedBroken");
+        };
+        fsm.GetState("Fully Broken").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("FirstBreak");
+        });
+    }
 }

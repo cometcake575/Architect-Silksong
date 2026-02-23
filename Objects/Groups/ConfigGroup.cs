@@ -231,6 +231,20 @@ public static class ConfigGroup
             }).WithDefaultValue(5))
     ]);
 
+    public static readonly List<ConfigType> NeedolinGate = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Show Strings", "needolin_gate_strings", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    o.transform.GetChild(1).gameObject.SetActive(false);
+                    o.transform.GetChild(2).gameObject.SetActive(false);
+                    o.transform.GetChild(17).gameObject.SetActive(false);
+                    o.transform.GetChild(25).gameObject.SetActive(false);
+                }
+            }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> JunkPipe = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Terrain Collision", "junk_pipe_terrain", (o, value) =>
@@ -1564,6 +1578,17 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Give Silk", "give_silk",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).doNotGiveSilk = !value.GetValue(); })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Can Pogo On", "enemy_can_pogo",
+                (o, value) => { if (!value.GetValue()) o.AddComponent<NonBouncer>(); })),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Recoil Speed", "enemy_recoil_speed",
+                (o, value) =>
+                {
+                    var rc = o.GetComponent<Recoil>();
+                    if (!rc) return;
+                    rc.SetRecoilSpeed(value.GetValue());
+                })),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Increment Journal", "enemy_increment_journal",
                 (o, value) => {
