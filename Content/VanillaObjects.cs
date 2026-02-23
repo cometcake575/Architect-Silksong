@@ -2786,9 +2786,9 @@ public static class VanillaObjects
             .WithRotateAction((o, f) =>
             {
                 o.transform.GetChild(0).SetLocalRotation2D(f);
-            }).WithScaleAction((o, f) =>
+            }).WithFlipAction((o, f) =>
             {
-                o.transform.GetChild(0).SetScaleX(-o.transform.GetChild(0).GetScaleX());
+                if (f) o.transform.GetChild(0).SetScaleX(-o.transform.GetChild(0).GetScaleX());
             }));
         
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
