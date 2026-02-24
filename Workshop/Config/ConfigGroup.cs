@@ -117,6 +117,13 @@ public static class ConfigGroup
                 item.Scene = value.GetValue();
             })
         ),
+        (NoteConfigType) "The icon is unlocked when this global variable is true (if set)",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMapIcon>("Required Variable", "map_icon_reqvar", (item, value) =>
+            {
+                item.ReqVar = value.GetValue();
+            })
+        ),
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<CustomMapIcon>("Visibility Mode", "map_icon_visual_mode", (item, value) =>
             {

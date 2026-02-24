@@ -696,6 +696,14 @@ public static class ConfigGroup
                 o.TakeItem = value.GetValue();
             }).WithDefaultValue(true))
     ];
+
+    public static readonly List<ConfigType> InputDisplay = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<InputBlock>("Text", "input_display_text", (o, value) =>
+            {
+                o.Text = value.GetValue();
+            }).WithDefaultValue("Sample Text"))
+    ];
     
     public static readonly List<ConfigType> ConstantBool =
     [

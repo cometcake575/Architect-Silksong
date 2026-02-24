@@ -8,8 +8,6 @@ namespace Architect.Workshop.Items;
 
 public class CustomScene : SpriteItem
 {
-    private static readonly Sprite Icon = ResourceUtils.LoadSpriteResource("door");
-
     public string Group = "None";
     
     public int TilemapWidth = 500;
@@ -85,6 +83,7 @@ public class CustomScene : SpriteItem
         if (EIconUrl.IsNullOrWhiteSpace())
         {
             Gms.initialState = GameMapScene.States.Hidden;
+            RefreshMap();
             return;
         }
         Gms.initialState = GameMapScene.States.Rough;
@@ -115,6 +114,4 @@ public class CustomScene : SpriteItem
         
         if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.UnregisterScene(Group, Id);
     }
-
-    public override Sprite GetIcon() => Icon;
 }

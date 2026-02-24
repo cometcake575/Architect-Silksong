@@ -2799,7 +2799,8 @@ public static class VanillaObjects
         AddSolid("Wormways Platform 1", "worm_plat_1", ("Crawl_03", "bone_plat_02 (4)"));
         
         AddSolid("Weavenest Platform 1", "weave_plat_1", ("Crawl_05", "Group/bone_plat_01 (3)"));
-        AddSolid("Weavenest Platform 2", "weave_plat_2", ("Crawl_05", "Crest_shrine_corner_plat (2)"));
+        AddSolid("Weavenest Platform 2", "weave_plat_2", ("Crawl_05", "Crest_shrine_corner_plat (2)"),
+            preloadAction: o => o.transform.SetPositionZ(0));
     }
 
     private static void AddFleaObjects()

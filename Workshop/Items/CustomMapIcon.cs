@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Architect.Utils;
+using BepInEx;
 using GlobalEnums;
 using TMProOld;
 using UnityEngine;
@@ -17,6 +18,7 @@ public class CustomMapIcon : SpriteItem
     public float FontSize = 6.2f;
     public Vector2 Offset = Vector2.zero;
     public Color Colour = Color.white;
+    public string ReqVar;
 
     private GameObject _iconObj;
     private SpriteRenderer _renderer;
@@ -53,8 +55,10 @@ public class CustomMapIcon : SpriteItem
 
         if (Mode != 0)
         {
-            _iconObj.transform.GetChild(0).gameObject.AddComponent<MapDisplayHandler>().isQm = Mode == 1;
-            _iconObj.transform.GetChild(1).gameObject.AddComponent<MapDisplayHandler>().isQm = Mode == 1;
+            var mdh1 = _iconObj.transform.GetChild(0).gameObject.AddComponent<MapDisplayHandler>();
+            var mdh2 = _iconObj.transform.GetChild(1).gameObject.AddComponent<MapDisplayHandler>();
+            mdh1.isQm = mdh2.isQm = Mode == 1;
+            mdh1.reqVar = mdh2.reqVar = ReqVar;
         }
 
         _renderer.sprite = Sprite;
@@ -65,6 +69,7 @@ public class CustomMapIcon : SpriteItem
     public class MapDisplayHandler : MonoBehaviour
     {
         public bool isQm;
+        public string reqVar;
         
         private GameMap _gameMap;
         private Renderer _renderer;
@@ -93,7 +98,13 @@ public class CustomMapIcon : SpriteItem
         {
             DisplayOnWorldMapOnly.updateState = isQuickMap ? DisplayOnWorldMapOnly.UpdateState.QuickMap : DisplayOnWorldMapOnly.UpdateState.Normal;
             if (!_renderer) return;
-            _renderer.enabled = isQuickMap == isQm;
+            _renderer.enabled = isQuickMap == isQm && ShouldBeVisible();
+        }
+
+        private bool ShouldBeVisible()
+        {
+            if (reqVar.IsNullOrWhiteSpace()) return true;
+            return ArchitectData.Instance.BoolVariables.TryGetValue(reqVar, out var val) && val;
         }
     }
 

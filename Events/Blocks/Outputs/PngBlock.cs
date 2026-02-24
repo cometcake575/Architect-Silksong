@@ -20,7 +20,8 @@ public class PngBlock : ScriptBlock
 
     public override void SetupReference()
     {
-        var obj = new GameObject("[Architect] Custom PNG");
+        var obj = new GameObject("[Architect] Custom PNG")
+            { transform = { localPosition = new Vector3(-9999, -9999) } };
         obj.SetActive(false);
 
         _renderer = obj.AddComponent<SpriteRenderer>();

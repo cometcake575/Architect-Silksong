@@ -110,6 +110,73 @@ public class ChoiceBlock : ScriptBlock
     }
 }
 
+public class InputBlock : ScriptBlock
+{
+    protected override IEnumerable<string> Inputs => ["Display"];
+    protected override IEnumerable<string> Outputs => ["OnSubmit"];
+    protected override IEnumerable<(string, string)> OutputVars => [("Input", "Text")];
+
+    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Input Display";
+    
+    public string Text;
+
+    private InputDisplay _display;
+
+    public static bool IsActive;
+    
+    public static void Init()
+    {
+        
+    }
+
+    public override void SetupReference()
+    {
+        _display = new GameObject("[Architect] Text Display").AddComponent<InputDisplay>();
+        _display.Block = this;
+    }
+    
+    protected override void Trigger(string trigger)
+    {
+        _display.Display();
+    }
+
+    public class InputDisplay : MonoBehaviour
+    {
+        public InputBlock Block;
+        
+        public void Display()
+        {
+            StartCoroutine(DoDisplay());
+        }
+
+        private IEnumerator DoDisplay()
+        {
+            yield return HeroController.instance.FreeControl(_ => InteractManager.CanInteract);
+            
+            HeroController.instance.RelinquishControl();
+            
+            IsActive = true;
+            DialogueYesNoBox.Open(Submit, Submit, true, Block.Text, CurrencyType.Money, 0);
+        }
+
+        private void Submit()
+        {
+            IsActive = false;
+            if (!this) return;
+            StartCoroutine(RegainControlDelayed());
+            Block.Event("OnSubmit");
+        }
+        
+        private static IEnumerator RegainControlDelayed()
+        {
+            yield return new WaitForSeconds(0.1f);
+            HeroController.instance.RegainControl();
+        }
+    }
+}
+
 public class NeedolinBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display"];

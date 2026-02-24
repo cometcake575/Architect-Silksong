@@ -27,6 +27,7 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<BoolVarBlock>("Variable (Bool)", ConfigGroup.BoolVar);
         ScriptManager.RegisterProcessBlock<NumVarBlock>("Variable (Number)", ConfigGroup.NumVar);
         ScriptManager.RegisterProcessBlock<StringVarBlock>("Variable (Text)", ConfigGroup.StringVar);
+        ScriptManager.RegisterProcessBlock<ConvertBlock>("Convert");
         ScriptManager.RegisterProcessBlock<RandomNumBlock>("Random Number", ConfigGroup.RandomNumber);
         ScriptManager.RegisterProcessBlock<RandomBoolBlock>("Random Bool");
         ScriptManager.RegisterProcessBlock<MathsBlock>("Operation", ConfigGroup.Maths);

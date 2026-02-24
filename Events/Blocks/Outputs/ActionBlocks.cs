@@ -26,6 +26,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
+        // ScriptManager.RegisterInputBlock<InputBlock>("Input Display", ConfigGroup.InputDisplay);
         ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
         ScriptManager.RegisterInputBlock<NeedolinBlock>("Song Display", ConfigGroup.SongDisplay);
         ScriptManager.RegisterProcessBlock<PngBlock>("Custom PNG", ConfigGroup.Png);

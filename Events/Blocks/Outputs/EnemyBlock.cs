@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Outputs;
@@ -7,19 +8,25 @@ public class EnemyBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Damage", "Heal", "CappedHeal", "Set"];
     protected override IEnumerable<(string, string)> InputVars => [("Target", "Enemy"), ("Multiplier", "Number")];
+    protected override IEnumerable<(string, string)> OutputVars => [("Path", "Text")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
     protected override Color Color => DefaultColor;
     protected override string Name => "Enemy Control";
 
     public int Health;
-    public string AnimationNamel;
     public AttackTypes AttackType;
 
     protected override void Reset()
     {
         Health = 1;
         AttackType = AttackTypes.Generic;
+    }
+
+    protected override object GetValue(string id)
+    {
+        var target = GetVariable<HealthManager>("Target");
+        return target ? target.transform.GetPath() : "";
     }
 
     protected override void Trigger(string trigger)
