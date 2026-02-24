@@ -11,6 +11,11 @@ public class EnemyHook : MonoBehaviour
     
     private void Start()
     {
+        DoCheck();
+    }
+
+    public void DoCheck()
+    {
         var obj = ObjectUtils.FindGameObject(path);
         if (obj) hm = obj.GetComponent<HealthManager>();
 

@@ -213,7 +213,7 @@ public static class SceneUtils
                 out GameObject foundSceneObj,
                 out Vector2 foundScenePos) =>
             {
-                if (CustomScenes.TryGetValue(sceneName, out var scene) && scene.Map)
+                if (sceneName != null && CustomScenes.TryGetValue(sceneName, out var scene) && scene.Map)
                 {
                     foundScene = scene.Gms;
                     foundSceneObj = scene.Map;

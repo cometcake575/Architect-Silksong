@@ -626,6 +626,13 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_die", "Die", o =>
         {
             var hm = o.GetComponentInChildren<HealthManager>();
+            if (!hm)
+            {
+                var eh = o.GetComponent<EnemyHook>();
+                if (!eh) return;
+                if (!eh.hm) eh.DoCheck();
+                hm = eh.hm;
+            }
             if (!hm) return;
             var dm = hm.gameObject.GetOrAddComponent<EnemyFixers.DeathMarker>();
             if (Time.time - dm.time < 0.1f) return;
@@ -647,11 +654,29 @@ public static class ReceiverGroup
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_invul", "MakeInvulnerable", o =>
         {
-            o.GetOrAddComponent<ConfigGroup.EnemyInvulnerabilityMarker>();
+            var hm = o.GetComponentInChildren<HealthManager>();
+            if (!hm)
+            {
+                var eh = o.GetComponent<EnemyHook>();
+                if (!eh) return;
+                if (!eh.hm) eh.DoCheck();
+                hm = eh.hm;
+            }
+            if (!hm) return;
+            hm.gameObject.GetOrAddComponent<ConfigGroup.EnemyInvulnerabilityMarker>();
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_vul", "MakeVulnerable", o =>
         {
-            o.RemoveComponent<ConfigGroup.EnemyInvulnerabilityMarker>();
+            var hm = o.GetComponentInChildren<HealthManager>();
+            if (!hm)
+            {
+                var eh = o.GetComponent<EnemyHook>();
+                if (!eh) return;
+                if (!eh.hm) eh.DoCheck();
+                hm = eh.hm;
+            }
+            if (!hm) return;
+            hm.gameObject.RemoveComponent<ConfigGroup.EnemyInvulnerabilityMarker>();
         }))
     ]);
     
