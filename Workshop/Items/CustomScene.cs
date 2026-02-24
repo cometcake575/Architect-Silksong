@@ -67,7 +67,10 @@ public class CustomScene : SpriteItem
 
     private void RefreshMap()
     {
+        if (!Gms) return;
         var pd = PlayerData.instance;
+        Gms.initialSprite = _is;
+        Gms.fullSprite = Sprite;
         Gms.hasBeenSet = false;
         if ((Gms.isMapped || pd.scenesVisited.Contains(Id)) && 
             SceneUtils.SceneGroups.TryGetValue(Group, out var group) && group.HasMapZone && 
@@ -90,21 +93,16 @@ public class CustomScene : SpriteItem
         CustomAssetManager.DoLoadSprite(EIconUrl, EPoint, EPpu, 1, 1, sprites =>
         {
             if (sprites.IsNullOrEmpty()) return;
-            if (Gms)
-            {
-                Gms.initialSprite = sprites[0];
-                RefreshMap();
-            }
+            _is = sprites[0];
+            RefreshMap();
         });
     }
 
+    private Sprite _is;
+
     protected override void OnReadySprite()
     {
-        if (Gms)
-        {
-            Gms.fullSprite = Sprite;
-            RefreshMap();
-        }
+        RefreshMap();
     }
 
     public override void Unregister()
