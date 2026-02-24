@@ -185,13 +185,16 @@ public static class SceneUtils
                     displayName = group.GroupName;
                     self.transform.localScale = new Vector3(1.4725f, 1.4725f, 1f);
                     self.transform.SetPosition2D(-group.ZoomPos * 1.4725f);
-                    
-                    var corpseScene = PlayerData.instance.HeroCorpseScene;
-                    if (CustomScenes.TryGetValue(corpseScene, out var cs)
-                        && SceneGroups.TryGetValue(cs.Group, out var cg) && cg == group)
-                        self.shadeMarker.SetActive(true);
-                    self.PositionCompassAndCorpse();
-                    
+
+                    if (scene.Map.activeInHierarchy)
+                    {
+                        var corpseScene = PlayerData.instance.HeroCorpseScene;
+                        if (CustomScenes.TryGetValue(corpseScene, out var cs)
+                            && SceneGroups.TryGetValue(cs.Group, out var cg) && cg == group)
+                            self.shadeMarker.SetActive(true);
+                        self.PositionCompassAndCorpse();
+                    }
+
                     self.SetDisplayNextArea(true, MapZone.NONE);
                     self.SetupMapMarkers();
                     return true;
@@ -210,7 +213,7 @@ public static class SceneUtils
                 out GameObject foundSceneObj,
                 out Vector2 foundScenePos) =>
             {
-                if (CustomScenes.TryGetValue(sceneName, out var scene))
+                if (CustomScenes.TryGetValue(sceneName, out var scene) && scene.Map)
                 {
                     foundScene = scene.Gms;
                     foundSceneObj = scene.Map;
@@ -218,6 +221,8 @@ public static class SceneUtils
                     var localPosition1 = foundSceneObj.transform.localPosition;
                     var localPosition2 = foundSceneObj.transform.parent.localPosition;
                     foundScenePos = (localPosition1 + localPosition2).Where(z: 0);
+
+                    if (!foundSceneObj.activeInHierarchy) foundSceneObj = null;
                     return;
                 }
                 orig(self, sceneName, mapZone, out foundScene, out foundSceneObj, out foundScenePos);
