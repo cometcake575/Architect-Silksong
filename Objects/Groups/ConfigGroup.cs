@@ -2156,7 +2156,12 @@ public static class ConfigGroup
 
     private static readonly ConfigType PngUrl = ConfigurationManager.RegisterConfigType(
         new StringConfigType("PNG URL", "png_url",
-            (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
+            (o, value) =>
+            {
+                var po = o.GetComponentInChildren<PngObject>();
+                if (!po) po = o.AddComponent<PngObject>();
+                po.url = value.GetValue();
+            }, (o, value, _) =>
             {
                 var prev = o.GetOrAddComponent<PngPreview>();
                 var point = (prev?.point).GetValueOrDefault(true);
@@ -2172,7 +2177,12 @@ public static class ConfigGroup
 
     private static readonly ConfigType Aa = ConfigurationManager.RegisterConfigType(
         new BoolConfigType("Anti Aliasing", "png_antialias",
-                (o, value) => { o.GetComponentInChildren<PngObject>().point = !value.GetValue(); },
+                (o, value) => {
+                {
+                    var po = o.GetComponentInChildren<PngObject>();
+                    if (!po) po = o.AddComponent<PngObject>();
+                    po.point = !value.GetValue();
+                } },
                 (o, value, _) => { o.GetOrAddComponent<PngPreview>().point = !value.GetValue(); })
             .WithDefaultValue(true).WithPriority(-2));
 
