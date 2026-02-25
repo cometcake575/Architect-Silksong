@@ -1137,6 +1137,7 @@ public static class MiscFixers
 
     public static void FixConfetti(GameObject obj)
     {
+        obj.AddComponent<ParticleObject>();
         var system = obj.GetComponent<ParticleSystem>();
         
         var main = system.main;
@@ -1264,6 +1265,7 @@ public static class MiscFixers
 
     public static void FixDecoration(GameObject obj)
     {
+        obj.AddComponent<ParticleObject>();
         obj.transform.SetScale2D(Vector2.one * 5);
         obj.transform.SetPositionZ(0.006f);
     }

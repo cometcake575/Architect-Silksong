@@ -1375,7 +1375,8 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Fayforn));
 
         Categories.Effects.Add(new PreloadObject("Feather Effect", "feather_effect",
-                ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
+            ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
+            preloadAction: o => o.AddComponent<ParticleObject>(),
                 postSpawnAction: o =>
                 {
                     o.RemoveComponent<PlayMakerFSM>();
@@ -1443,6 +1444,7 @@ public static class VanillaObjects
                 description:"Appears when the 'Burst' trigger is run.",
                 notSceneBundle: true, preloadAction: o =>
                 {
+                    o.AddComponent<ParticleObject>();
                     o.RemoveComponent<PlayParticleEffects>();
                     o.RemoveComponent<ParticleSystemAutoDisable>();
                     o.transform.GetChild(1).gameObject.SetActive(false);
@@ -2044,6 +2046,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Fly Swarm Effect", "fly_swarm_effect",
             ("Arborium_02", "ant_tiny_white_bug_swarm"), preloadAction: o =>
             {
+                o.AddComponent<ParticleObject>();
                 o.transform.GetChild(0).localPosition = Vector3.zero;
                 o.transform.GetChild(1).localPosition = Vector3.zero;
                 o.transform.GetChild(2).gameObject.SetActive(false);
