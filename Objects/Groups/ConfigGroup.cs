@@ -955,6 +955,11 @@ public static class ConfigGroup
     public static readonly List<ConfigType> BlurPlane = GroupUtils.Merge(Generic, [
         ZOffset
     ]);
+
+    public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
+        RenderLayer,
+        ZOffset
+    ]);
     
     public static readonly List<ConfigType> Vines = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
@@ -2170,11 +2175,6 @@ public static class ConfigGroup
                 (o, value) => { o.GetComponentInChildren<PngObject>().point = !value.GetValue(); },
                 (o, value, _) => { o.GetOrAddComponent<PngPreview>().point = !value.GetValue(); })
             .WithDefaultValue(true).WithPriority(-2));
-
-    public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
-        RenderLayer,
-        ZOffset
-    ]);
 
     public static readonly List<ConfigType> Particle = GroupUtils.Merge(Decorations, [
         PngUrl,
