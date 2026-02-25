@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Utils;
 using HutongGames.PlayMaker;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class Darkness : MonoBehaviour
 
     private static PlayMakerFSM _fsm;
     private static FsmInt _value;
+
+    public int amount = 1;
 
     public static void Init()
     {
@@ -44,7 +47,7 @@ public class Darkness : MonoBehaviour
 
     private static void Refresh()
     {
-        GameManager.instance.sm.darknessLevel = Mathf.Min(DarknessObjects.Count, 2);
+        GameManager.instance.sm.darknessLevel = Math.Clamp(DarknessObjects.Sum(o => o.amount), 0, 2);
         _value.Value = GameManager.instance.sm.darknessLevel;
         _fsm.SendEvent("RESET");
     }

@@ -43,6 +43,8 @@ public class CustomJournalEntry : SpriteItem
         
         base.Register();
         RefreshLSprite();
+        
+        WorkshopManager.CustomItems.Add(this);
     }
 
     public void RefreshLSprite()
@@ -63,5 +65,7 @@ public class CustomJournalEntry : SpriteItem
     public override void Unregister()
     {
         EnemyJournalManager.Instance.recordList.Remove(_record);
+        
+        WorkshopManager.CustomItems.Remove(this);
     }
 }

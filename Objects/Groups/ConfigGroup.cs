@@ -77,6 +77,15 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
     
+    public static readonly List<ConfigType> Darkness = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Dark Level", "darkness_level", (o, value) =>
+            {
+                o.GetComponent<Darkness>().amount = value.GetValue();
+            }).WithDefaultValue(2))
+    ]);
+    
     public static readonly List<ConfigType> Dust = GroupUtils.Merge(Generic,
     [
         ConfigurationManager.RegisterConfigType(
@@ -945,28 +954,6 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> BlurPlane = GroupUtils.Merge(Generic, [
         ZOffset
-    ]);
-
-    public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
-        RenderLayer,
-        ZOffset
-    ]);
-
-    public static readonly List<ConfigType> Fish = GroupUtils.Merge(Decorations, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Foreground", "fish_fore",
-                (o, value) =>
-                {
-                    if (!value.GetValue()) o.transform.GetChild(1).gameObject.SetActive(false);
-                })
-                .WithDefaultValue(true)),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Background", "fish_back",
-                (o, value) =>
-                {
-                    if (!value.GetValue()) o.transform.GetChild(0).gameObject.SetActive(false);
-                })
-                .WithDefaultValue(true))
     ]);
     
     public static readonly List<ConfigType> Vines = GroupUtils.Merge(Decorations, [
@@ -2162,27 +2149,58 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    private static readonly ConfigType PngUrl = ConfigurationManager.RegisterConfigType(
+        new StringConfigType("PNG URL", "png_url",
+            (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
+            {
+                var prev = o.GetOrAddComponent<PngPreview>();
+                var point = (prev?.point).GetValueOrDefault(true);
+                var ppu = (prev?.ppu).GetValueOrDefault(100);
+                var vcount = (prev?.vcount).GetValueOrDefault(1);
+                var hcount = (prev?.hcount).GetValueOrDefault(1);
+                CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, hcount, vcount,
+                    sprites =>
+                    {
+                        if (o) o.GetComponent<SpriteRenderer>().sprite = sprites[0];
+                    });
+            }).WithPriority(-1));
+
+    private static readonly ConfigType Aa = ConfigurationManager.RegisterConfigType(
+        new BoolConfigType("Anti Aliasing", "png_antialias",
+                (o, value) => { o.GetComponentInChildren<PngObject>().point = !value.GetValue(); },
+                (o, value, _) => { o.GetOrAddComponent<PngPreview>().point = !value.GetValue(); })
+            .WithDefaultValue(true).WithPriority(-2));
+
+    public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
+        RenderLayer,
+        ZOffset
+    ]);
+
+    public static readonly List<ConfigType> Particle = GroupUtils.Merge(Decorations, [
+        PngUrl,
+        Aa
+    ]);
+
+    public static readonly List<ConfigType> Fish = GroupUtils.Merge(Particle, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Foreground", "fish_fore",
+                    (o, value) =>
+                    {
+                        if (!value.GetValue()) o.transform.GetChild(1).gameObject.SetActive(false);
+                    })
+                .WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Background", "fish_back",
+                    (o, value) =>
+                    {
+                        if (!value.GetValue()) o.transform.GetChild(0).gameObject.SetActive(false);
+                    })
+                .WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> Png = GroupUtils.Merge(Generic, [
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType("PNG URL", "png_url",
-                (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
-                {
-                    var prev = o.GetOrAddComponent<PngPreview>();
-                    var point = (prev?.point).GetValueOrDefault(true);
-                    var ppu = (prev?.ppu).GetValueOrDefault(100);
-                    var vcount = (prev?.vcount).GetValueOrDefault(1);
-                    var hcount = (prev?.hcount).GetValueOrDefault(1);
-                    CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, hcount, vcount,
-                        sprites =>
-                        {
-                            if (o) o.GetComponent<SpriteRenderer>().sprite = sprites[0];
-                        });
-                }).WithPriority(-1)),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Anti Aliasing", "png_antialias",
-                    (o, value) => { o.GetComponentInChildren<PngObject>().point = !value.GetValue(); },
-                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().point = !value.GetValue(); })
-                .WithDefaultValue(true).WithPriority(-2)),
+        PngUrl,
+        Aa,
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Pixels Per Unit", "png_ppu",
                     (o, value) => { o.GetComponentInChildren<PngObject>().ppu = value.GetValue(); },

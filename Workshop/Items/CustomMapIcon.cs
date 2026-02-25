@@ -42,33 +42,30 @@ public class CustomMapIcon : SpriteItem
         _iconObj = Object.Instantiate(SceneGroup.MapIconPrefab, scene.Map.transform);
         _iconObj.transform.localPosition = Pos;
         _iconObj.transform.GetChild(0).localPosition = Offset;
-        
+
         _iconObj.GetComponentInChildren<MeshRenderer>().sortingOrder = 100;
-        
+
         _renderer = _iconObj.GetComponentInChildren<SpriteRenderer>();
         _renderer.sortingOrder = 100;
-        
+
         _iconObj.GetComponentInChildren<SetTextMeshProGameText>().text = (LocalStr)Text;
         var tmp = _iconObj.GetComponentInChildren<TextMeshPro>();
         tmp.fontSize = FontSize;
         tmp.color = Colour;
 
-        if (Mode != 0)
-        {
-            var mdh1 = _iconObj.transform.GetChild(0).gameObject.AddComponent<MapDisplayHandler>();
-            var mdh2 = _iconObj.transform.GetChild(1).gameObject.AddComponent<MapDisplayHandler>();
-            mdh1.isQm = mdh2.isQm = Mode == 1;
-            mdh1.reqVar = mdh2.reqVar = ReqVar;
-        }
+        var mdh1 = _iconObj.transform.GetChild(0).gameObject.AddComponent<MapDisplayHandler>();
+        var mdh2 = _iconObj.transform.GetChild(1).gameObject.AddComponent<MapDisplayHandler>();
+        mdh1.mode = Mode;
+        mdh1.reqVar = mdh2.reqVar = ReqVar;
 
         _renderer.sprite = Sprite;
-        
+
         _iconObj.SetActive(true);
     }
 
     public class MapDisplayHandler : MonoBehaviour
     {
-        public bool isQm;
+        public int mode;
         public string reqVar;
         
         private GameMap _gameMap;
@@ -98,7 +95,7 @@ public class CustomMapIcon : SpriteItem
         {
             DisplayOnWorldMapOnly.updateState = isQuickMap ? DisplayOnWorldMapOnly.UpdateState.QuickMap : DisplayOnWorldMapOnly.UpdateState.Normal;
             if (!_renderer) return;
-            _renderer.enabled = isQuickMap == isQm && ShouldBeVisible();
+            _renderer.enabled = (mode == 0 || mode == 1 == isQuickMap) && ShouldBeVisible();
         }
 
         private bool ShouldBeVisible()

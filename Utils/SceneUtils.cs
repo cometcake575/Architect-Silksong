@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
@@ -185,11 +186,11 @@ public static class SceneUtils
                     displayName = group.GroupName;
                     self.transform.localScale = new Vector3(1.4725f, 1.4725f, 1f);
                     self.transform.SetPosition2D(-group.ZoomPos * 1.4725f);
-
+                    
                     if (scene.Map.activeInHierarchy)
                     {
                         var corpseScene = PlayerData.instance.HeroCorpseScene;
-                        if (CustomScenes.TryGetValue(corpseScene, out var cs)
+                        if (corpseScene != null && CustomScenes.TryGetValue(corpseScene, out var cs)
                             && SceneGroups.TryGetValue(cs.Group, out var cg) && cg == group)
                             self.shadeMarker.SetActive(true);
                         self.PositionCompassAndCorpse();
@@ -227,6 +228,12 @@ public static class SceneUtils
                 }
                 orig(self, sceneName, mapZone, out foundScene, out foundSceneObj, out foundScenePos);
             });
+
+        _ = new Hook(typeof(PlayerData).GetProperty(nameof(PlayerData.HasAnyMap))!.GetGetMethod(),
+            (Func<PlayerData, bool> orig, PlayerData self) => 
+                orig(self) || SceneGroups.Values.Any(sg => sg.HasMap()));
+        
+        // TODO Try hook gamemap.calculatemapscrollbounds
     }
     
     public delegate bool TryOpenQuickMap(GameMap self, out string displayName);
@@ -373,8 +380,8 @@ public static class SceneUtils
         GameManager.instance.sceneWidth = scene.TilemapWidth;
         GameManager.instance.sceneHeight = scene.TilemapHeight;
 
-        Tilemap.layers[0].numRows = Mathf.CeilToInt(scene.TilemapWidth / 32f);
-        Tilemap.layers[0].numColumns = Mathf.CeilToInt(scene.TilemapHeight / 32f);
+        Tilemap.layers[0].numColumns = Mathf.CeilToInt(scene.TilemapWidth / 32f);
+        Tilemap.layers[0].numRows = Mathf.CeilToInt(scene.TilemapHeight / 32f);
 
         var nsc = new List<SpriteChunk>();
         for (var row = 0; row < Tilemap.layers[0].numRows; row++)

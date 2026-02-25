@@ -49,11 +49,12 @@ public class CustomScene : SpriteItem
 
             Gms.fullSprite = null;
             Gms.initialSprite = null;
+            Gms.initialState = GameMapScene.States.Rough;
 
             Gms.spriteRenderer = Gms.GetComponent<SpriteRenderer>();
+            Gms.hasSpriteRenderer = true;
             Gms.spriteRenderer.color = group.MapColour;
-
-            RefreshMap();
+            Gms.spriteRenderer.sprite = null;
         
             RefreshSprite();
             RefreshESprite();
@@ -62,6 +63,8 @@ public class CustomScene : SpriteItem
             {
                 icon.Setup();
             }
+
+            RefreshMap();
         }
     }
 
@@ -72,12 +75,10 @@ public class CustomScene : SpriteItem
         Gms.initialSprite = _is;
         Gms.fullSprite = Sprite;
         Gms.hasBeenSet = false;
-        if ((Gms.isMapped || pd.scenesVisited.Contains(Id)) && 
-            SceneUtils.SceneGroups.TryGetValue(Group, out var group) && group.HasMapZone && 
-            !CollectableItemManager.IsInHiddenMode())
-        {
-            if (pd.hasQuill) Gms.SetMapped();
-        } else Gms.SetNotMapped();
+        if ((Gms.isMapped || pd.scenesVisited.Contains(Id)) &&
+            SceneUtils.SceneGroups.TryGetValue(Group, out var group) && group.HasMapZone &&
+            !CollectableItemManager.IsInHiddenMode() && pd.hasQuill) Gms.SetMapped();
+        else Gms.SetNotMapped();
     }
 
     public void RefreshESprite()
@@ -85,11 +86,9 @@ public class CustomScene : SpriteItem
         if (!Gms) return;
         if (EIconUrl.IsNullOrWhiteSpace())
         {
-            Gms.initialState = GameMapScene.States.Hidden;
             RefreshMap();
             return;
         }
-        Gms.initialState = GameMapScene.States.Rough;
         CustomAssetManager.DoLoadSprite(EIconUrl, EPoint, EPpu, 1, 1, sprites =>
         {
             if (sprites.IsNullOrEmpty()) return;

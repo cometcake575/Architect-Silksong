@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ public interface IPlayable
 public class PngObject : PreviewableBehaviour, IPlayable
 {
     private SpriteRenderer _renderer;
-    private Sprite[] _sprites;
+    protected Sprite[] Sprites;
     
     private float _remainingFrameTime;
     
@@ -44,7 +45,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
         if (string.IsNullOrEmpty(url)) return;
         
         _renderer = GetComponent<SpriteRenderer>();
-        if (!glow) _renderer.material = MiscFixers.SpriteMaterial;
+        if (!glow && _renderer) _renderer.material = MiscFixers.SpriteMaterial;
         CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
         _count = Mathf.Max(1, hcount * vcount - dummy);
 
@@ -54,16 +55,15 @@ public class PngObject : PreviewableBehaviour, IPlayable
 
     public void SaveSprites(Sprite[] newSprites)
     {
-        if (!_renderer) return;
-        _sprites = newSprites;
-        _renderer.sprite = _sprites[0];
+        Sprites = newSprites;
+        if (_renderer) _renderer.sprite = Sprites[0];
 
         _remainingFrameTime = frameTime;
     }
 
     private void Update()
     {
-        if (frameTime <= 0 || _count <= 1 || !playing || !_renderer || _sprites == null) return;
+        if (frameTime <= 0 || _count <= 1 || !playing || !_renderer || Sprites == null) return;
         _remainingFrameTime -= Time.deltaTime;
         while (_remainingFrameTime < 0 && frameTime > 0)
         {
@@ -80,15 +80,15 @@ public class PngObject : PreviewableBehaviour, IPlayable
                 }
             }
 
-            _renderer.sprite = _sprites[frame];
+            _renderer.sprite = Sprites[frame];
         }
     }
 
     public void Play()
     {
         playing = true;
-        if (!_renderer || _sprites == null) return;
-        _renderer.sprite = _sprites[frame];
+        if (!_renderer || Sprites == null) return;
+        _renderer.sprite = Sprites[frame];
     }
 
     public void Pause() => playing = false;
@@ -96,7 +96,19 @@ public class PngObject : PreviewableBehaviour, IPlayable
     public void Reset()
     {
         frame = 0;
-        _renderer.sprite = _sprites[0];
+        if (_renderer) _renderer.sprite = Sprites[0];
+    }
+}
+
+public class ParticleObject : PngObject
+{
+    private void Start()
+    {
+        foreach (var psr in GetComponentsInChildren<ParticleSystemRenderer>(true))
+        {
+            if (Sprites.IsNullOrEmpty()) return;
+            psr.material.mainTexture = Sprites[0].texture;
+        }
     }
 }
 

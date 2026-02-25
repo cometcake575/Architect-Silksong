@@ -196,6 +196,8 @@ public class RoomClearerConfig : MonoBehaviour
     public bool removeTilemap = true;
     
     public bool removeOther;
+
+    public bool removeParticles;
 }
 
 public class ObjectRemoverConfig : MonoBehaviour

@@ -1282,7 +1282,7 @@ public static class EnemyFixers
         public override void DoWake()
         {
             var fsm = gameObject.LocateMyFSM("Control");
-            fsm.GetState("Rest").AddAction(() => fsm.SendEvent("WAKE"), 0);
+            fsm.GetState("Rest").AddAction(() => fsm.SendEvent("WAKE"));
             fsm.SendEvent("WAKE");
         }
     }

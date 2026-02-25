@@ -75,6 +75,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateCameraBorder());
         Categories.Utility.Add(CreateCameraRotator());
         Categories.Utility.Add(CreateSceneBorderRemover());
+        Categories.Utility.Add(CreateSceneParticleManager());
         
         Categories.Utility.Add(CreateObjectRemover("collision_remover", "Disable Collider",
                 (disabler, filter) =>
@@ -352,7 +353,7 @@ public static class UtilityObjects
                 description:"Makes the room darker, reducing how far the player can see.\n" +
                             "Placing 2 darkness objects at once will increase the effect.",
                 sprite:ResourceUtils.LoadSpriteResource("darkness"))
-            .WithConfigGroup(ConfigGroup.Generic);
+            .WithConfigGroup(ConfigGroup.Darkness);
     }
 
     private static PlaceableObject CreateMemoryToggle()
@@ -372,6 +373,20 @@ public static class UtilityObjects
                             "and dying does not leave a cocoon.",
                 sprite:ResourceUtils.LoadSpriteResource("memory_toggle", ppu:64))
             .WithConfigGroup(ConfigGroup.MapStateHook);
+    }
+
+    private static PlaceableObject CreateSceneParticleManager()
+    {
+        var spm = new GameObject("Scene Particle Disabler");
+        
+        Object.DontDestroyOnLoad(spm);
+        spm.SetActive(false);
+
+        spm.AddComponent<SceneParticleController>();
+        
+        return new CustomObject("Scene Particle Disabler", "scene_particle_hook", spm,
+                description:"Disables scene specific particles that the Clear Room object cannot.",
+                sprite:ResourceUtils.LoadSpriteResource("scene_particle_remover", ppu:64));
     }
 
     private static PlaceableObject CreateTransitionPoint()

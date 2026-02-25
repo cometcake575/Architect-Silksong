@@ -209,20 +209,22 @@ public class SceneGroup : SpriteItem
             {
                 var result = orig(self, wideMapPieces);
                 var lowest = float.MaxValue;
-                var zoneInfo = self.mapZoneInfo[(int)result.zoomToZone];
-                
                 var a1 = -self.transform.localPosition;
-                
-                foreach (var parent in zoneInfo.Parents)
+                if (result)
                 {
-                    if (parent.Parent)
+                    var zoneInfo = self.mapZoneInfo[(int)result.zoomToZone];
+
+                    foreach (var parent in zoneInfo.Parents)
                     {
-                        for (var index2 = 0; index2 < parent.Parent.transform.childCount; ++index2)
+                        if (parent.Parent)
                         {
-                            var child = parent.Parent.transform.GetChild(index2);
-                            var localScenePos = GameMap.GetLocalScenePos(child);
-                            var num2 = Vector2.Distance(a1, localScenePos);
-                            if (num2 <= lowest) lowest = num2;
+                            for (var index2 = 0; index2 < parent.Parent.transform.childCount; ++index2)
+                            {
+                                var child = parent.Parent.transform.GetChild(index2);
+                                var localScenePos = GameMap.GetLocalScenePos(child);
+                                var num2 = Vector2.Distance(a1, localScenePos);
+                                if (num2 <= lowest) lowest = num2;
+                            }
                         }
                     }
                 }
@@ -338,6 +340,7 @@ public class SceneGroup : SpriteItem
             scene.TrySetupMap();
         
         FocusMapObject.SetActive(false);
+        _mapObject.SetActive(true);
     }
     
     public override void Register()

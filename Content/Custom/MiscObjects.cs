@@ -1,3 +1,4 @@
+using System;
 using Architect.Behaviour.Custom;
 using Architect.Content.Preloads;
 using Architect.Objects.Categories;
@@ -70,6 +71,55 @@ public static class MiscObjects
 
         Categories.Hazards.Add(CreateJellyEgg());
         Categories.Hazards.Add(CreateWhiteSpikes());
+        
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "localpoolprefabs_assets_shared.bundle", 
+            "Assets/Prefabs/Effects/Particle System/Knight Particles_follow.prefab", o =>
+            {
+                Categories.Effects.Add(CreateParticleObject(o, "Bellhart Effect", "default_particles", "default_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Citadel Effect", "song_city_default", "song_city_default"));
+                Categories.Effects.Add(CreateParticleObject(o, "Moss Effect", "moss_particles", "moss_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Marrow Effect", "marrow_particles", "bone_forest_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Wormways Effect", "crawl_particles", "crawl_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Hunter's March Effect", "march_particles", "Hunters_March_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Shellwood Effect", "shellwood_particles", "shellwood_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Greymoor Effect", "greymoor_particles", "greymoor_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Smog Effect", "smog_rise_particles", "smog_rise_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Dust Effect", "dust_particles", "dust_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Sand Effect", "blown_sand_particles", "blown_sand_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Sinner's Road Effect", "dustpen_particles", "dustpen_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Fog Canyon Effect", "fog_canyon_particles", "fog_canyon_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Waterways Effect", "waterways_particles", "waterways_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Honey Effect", "honey_particles", "hive_drip_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Deepnest Effect", "deepnest_particles", "Deepnest Particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Whiteward Effect", "ward_particles", "ward_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Wisp Effect", "wisp_particles", "wisp_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Coral Gorge Effect", "gorge_particles", "coral_gorge_particles"));
+                Categories.Effects.Add(CreateParticleObject(o, "Abyss Effect", "abyss_particles", "abyss particles"));
+            }, notSceneBundle: true));
+    }
+
+    private static PlaceableObject CreateParticleObject(GameObject particles, string name, string id, string path)
+    {
+        var o = Object.Instantiate(particles.transform.Find(path).gameObject);
+        o.SetActive(false);
+        Object.DontDestroyOnLoad(o);
+
+        var fc = o.AddComponent<FollowCamera>();
+        fc.followX = true;
+        fc.followY = true;
+
+        o.AddComponent<ParticleObject>();
+
+        var co = new CustomObject(name, id, o,
+            sprite: ResourceUtils.LoadSpriteResource(id, FilterMode.Point, ppu: 75.5f),
+            description: "Affects the whole room.")
+        {
+            ParentScale = Vector3.one,
+            LossyScale = Vector3.one,
+            Offset = new Vector3(0, 0, -o.transform.GetPositionZ())
+        }.WithConfigGroup(ConfigGroup.Particle);
+        return co;
     }
 
     private static PlaceableObject CreateJellyEgg()

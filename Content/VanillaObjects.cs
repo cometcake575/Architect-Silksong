@@ -747,7 +747,7 @@ public static class VanillaObjects
             {
                 o.transform.SetScale2D(new Vector2(f, f));
             })
-            .WithConfigGroup(ConfigGroup.Decorations);
+            .WithConfigGroup(ConfigGroup.Particle);
     }
 
     private static void AddDuctObjects()
@@ -785,7 +785,7 @@ public static class VanillaObjects
             {
                 o.transform.SetScale2D(new Vector2(f, f));
             })
-            .WithConfigGroup(ConfigGroup.Decorations);
+            .WithConfigGroup(ConfigGroup.Particle);
     }
 
     private static void AddAbyssObjects()
@@ -969,6 +969,9 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixFlyin);
         AddEnemy("Verdanir", "verdanir", ("Clover_04b", "Battle Scene/Return Scene/Grasshopper Slasher"));
         AddEnemy("Escalion", "escalion", ("Clover_04b", "Grasshopper Fly")).DoFlipX();
+
+        AddEnemy("Pendra", "", ("Clover_02c", "Lilypad Plat/Lilypad Fly"));
+        AddEnemy("Pendragor", "", ("Clover_02c", "Lilypad Plat/Lilypad Fly"));
         
         AddSolid("Verdania Platform 1", "verdania_plat_1", ("Clover_21", "Group/clover_gate_outer_0000_1 (53)"),
             preloadAction: o =>
@@ -1353,7 +1356,7 @@ public static class VanillaObjects
             {
                 o.transform.SetScale2D(new Vector2(f, f));
             })
-            .WithConfigGroup(ConfigGroup.Decorations).WithRotationGroup(RotationGroup.All);
+            .WithConfigGroup(ConfigGroup.Particle).WithRotationGroup(RotationGroup.All);
 
         /*
         AddEnemy("Pinstress", "pinstress_boss", 
@@ -1381,7 +1384,8 @@ public static class VanillaObjects
                     o.RemoveComponent<AudioSource>();
                     foreach (var i in (int[])[0, 1, 2, 3, 4, 6, 7]) o.transform.GetChild(i).gameObject.SetActive(false);
                 },
-                sprite: ResourceUtils.LoadSpriteResource("feather_effect", ppu:68.75f)));
+                sprite: ResourceUtils.LoadSpriteResource("feather_effect", ppu:68.75f))
+            .WithConfigGroup(ConfigGroup.Particle));
     }
 
     private static void AddBileObjects()
@@ -1444,7 +1448,8 @@ public static class VanillaObjects
                     o.transform.GetChild(1).gameObject.SetActive(false);
                     o.transform.GetChild(2).gameObject.SetActive(false);
                 }, sprite: ResourceUtils.LoadSpriteResource("maggot_burst", ppu:62.5f)
-                ).WithReceiverGroup(ReceiverGroup.Confetti));
+                ).WithReceiverGroup(ReceiverGroup.Confetti)
+                .WithConfigGroup(ConfigGroup.Particle));
 
         Categories.Hazards.Add(new PreloadObject("Stake Trap", "bilewater_trap",
                 ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
@@ -1570,7 +1575,7 @@ public static class VanillaObjects
                 ("Coral_32", "fossil_judge_break_leanRight"), postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
-        Categories.Effects.Add(new PreloadObject("Sand Effect", "sand_effect",
+        Categories.Effects.Add(new PreloadObject("Sandstorm Effect", "sand_effect",
                 ("Coral_32", "blown_sand_tiled_set"),
                 preloadAction: MiscFixers.FixDecoration,
                 sprite: ResourceUtils.LoadSpriteResource("sand", ppu: 377.5f)))
@@ -2043,7 +2048,8 @@ public static class VanillaObjects
                 o.transform.GetChild(1).localPosition = Vector3.zero;
                 o.transform.GetChild(2).gameObject.SetActive(false);
                 o.transform.GetChild(3).gameObject.SetActive(false);
-            }, sprite: ResourceUtils.LoadSpriteResource("fly_swarm", ppu:62.5f)));
+            }, sprite: ResourceUtils.LoadSpriteResource("fly_swarm", ppu:62.5f))
+            .WithConfigGroup(ConfigGroup.Particle));
     }
     
     private static void AddCogworksObjects()
@@ -2811,6 +2817,7 @@ public static class VanillaObjects
             sprite: ResourceUtils.LoadSpriteResource("confetti_burst", ppu:1500),
             preloadAction: MiscFixers.FixConfetti)
             .WithReceiverGroup(ReceiverGroup.Confetti)
+            .WithConfigGroup(ConfigGroup.Particle)
             .WithRotationGroup(RotationGroup.All));
         
         Categories.Misc.AddStart(new PreloadObject("Score Counter", "flea_counter",
