@@ -1230,8 +1230,8 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Tint Mode", "colourer_mode", (o, value) =>
             {
-                o.GetComponent<ObjectColourer>().directSet = value.GetValue() == 1;
-            }).WithOptions("Multiply", "Set").WithDefaultValue(0))
+                o.GetComponent<ObjectColourer>().mode = value.GetValue();
+            }).WithOptions("Multiply", "Set", "Brighten").WithDefaultValue(0))
     ];
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [

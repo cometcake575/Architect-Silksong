@@ -969,9 +969,6 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixFlyin);
         AddEnemy("Verdanir", "verdanir", ("Clover_04b", "Battle Scene/Return Scene/Grasshopper Slasher"));
         AddEnemy("Escalion", "escalion", ("Clover_04b", "Grasshopper Fly")).DoFlipX();
-
-        AddEnemy("Pendra", "", ("Clover_02c", "Lilypad Plat/Lilypad Fly"));
-        AddEnemy("Pendragor", "", ("Clover_02c", "Lilypad Plat/Lilypad Fly"));
         
         AddSolid("Verdania Platform 1", "verdania_plat_1", ("Clover_21", "Group/clover_gate_outer_0000_1 (53)"),
             preloadAction: o =>
@@ -1715,8 +1712,16 @@ public static class VanillaObjects
                 ("Hang_06b", "new_scene/Reflection_surface"),
                 description: "Reflects objects above itself, can be configured\n" +
                              "in the same way as the Custom PNG for custom mirror shapes.",
-                preloadAction: MiscFixers.FixMirror, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
+                preloadAction: MiscFixers.FixMirrorAndSilhouette, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
+
+        Categories.Effects.Add(new PreloadObject("Silhouette Effect", "silhouette_effect",
+                ("Shadow_02", "Shakra Trail Quest Parent/Active/Tracking Trail (2)/Silhouettes Parent/Silhoutte"),
+                description: "Silhouette effect from tracking, can be configured\n" +
+                             "in the same way as the Custom PNG for custom shapes.",
+                preloadAction: MiscFixers.FixMirrorAndSilhouette,
+                sprite: ResourceUtils.LoadSpriteResource("silhouette", ppu: 155))
+            .WithConfigGroup(ConfigGroup.Png));
 
         Categories.Npcs.Add(new PreloadObject("Gilly NPC", "gilly_npc",
                 ("Ant_17", "Gilly"), 

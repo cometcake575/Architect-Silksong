@@ -1193,11 +1193,12 @@ public static class MiscFixers
         fsm.GetState("Rescue 2").AddAction(() => obj.BroadcastEvent("OnSave"));
     }
 
-    public static void FixMirror(GameObject obj)
+    public static void FixMirrorAndSilhouette(GameObject obj)
     {
         obj.AddComponent<PngObject>();
         obj.transform.SetScale2D(new Vector2(2, 2));
         obj.transform.SetPositionZ(-0.1f);
+        obj.transform.SetRotation2D(0);
     }
 
     public static void FixPilby(GameObject obj)

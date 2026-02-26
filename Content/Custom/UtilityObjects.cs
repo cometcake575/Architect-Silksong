@@ -562,6 +562,8 @@ public static class UtilityObjects
 
     private static PlaceableObject CreateObjectColourer()
     {
+        ObjectColourer.Init();
+        
         var colourer = new GameObject("Object Colourer");
         colourer.SetActive(false);
         Object.DontDestroyOnLoad(colourer);

@@ -14,5 +14,9 @@ public class SceneParticleController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         GameCameras.instance.sceneParticles.DisableParticles();
+        yield return new WaitForSeconds(0.2f);
+        GameCameras.instance.sceneParticles.DisableParticles();
+        yield return new WaitForSeconds(2);
+        GameCameras.instance.sceneParticles.DisableParticles();
     }
 }
