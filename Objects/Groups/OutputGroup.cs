@@ -32,7 +32,7 @@ public static class OutputGroup
     public static readonly List<OutputType> EnemyDamager =
     [
         EventManager.RegisterOutputType(
-            new OutputType("enemy_self", "LastDamaged", "Enemy", o =>
+            new OutputType("enemy_lastdmg", "LastDamaged", "Enemy", o =>
             {
                 var hm = o.GetComponent<UtilityObjects.EnemyDamager>();
                 return hm.last;

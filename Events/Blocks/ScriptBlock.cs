@@ -146,7 +146,7 @@ public abstract class ScriptBlock
             foreach (var (block, trigger) in links.ToArray())
             {
                 if (!ScriptManager.Blocks.TryGetValue(block, out var targetBlock)
-                    || !targetBlock.IsValid)
+                    || !targetBlock.IsValid || !targetBlock.Inputs.Contains(trigger))
                 {
                     links.Remove((block, trigger));
                     continue;
@@ -159,7 +159,7 @@ public abstract class ScriptBlock
         foreach (var (source, (block, trigger)) in VarMap.ToArray())
         {
             if (!ScriptManager.Blocks.TryGetValue(block, out var targetBlock)
-                || !targetBlock.IsValid)
+                || !targetBlock.IsValid || InputVars.All(o => o.Item1 != source))
             {
                 VarMap.Remove(source);
                 continue;
