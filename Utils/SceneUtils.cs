@@ -14,6 +14,7 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using TeamCherry.Localization;
+using TeamCherry.SharedUtils;
 using tk2dRuntime.TileMap;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -185,7 +186,7 @@ public static class SceneUtils
                     self.EnableUnlockedAreas(MapZone.NONE);
                     displayName = group.GroupName;
                     self.transform.localScale = new Vector3(1.4725f, 1.4725f, 1f);
-                    self.transform.SetPosition2D(-group.ZoomPos * 1.4725f);
+                    self.transform.SetPosition2D(group.ZoomPos * -1.4725f);
                     
                     if (scene.Map.activeInHierarchy)
                     {
@@ -233,7 +234,194 @@ public static class SceneUtils
             (Func<PlayerData, bool> orig, PlayerData self) => 
                 orig(self) || SceneGroups.Values.Any(sg => sg.HasMap()));
         
-        // TODO Try hook gamemap.calculatemapscrollbounds
+        typeof(GameMap).Hook(nameof(GameMap.CalculateMapScrollBounds),
+            (Action<GameMap> _, GameMap self) =>
+            {
+                self.CompleteVisibleLocalBoundsNow();
+                if (self.updatePinAreaBounds)
+                    self.CalculatePinAreaBounds();
+                self.panMinX = float.MaxValue;
+                self.panMaxX = float.MinValue;
+                self.panMinY = float.MaxValue;
+                self.panMaxY = float.MinValue;
+                var instance = PlayerData.instance;
+                var mapZone1 = self.displayingCompass ? self.GetCurrentMapZone() : MapZone.NONE;
+                var flag1 = CollectableItemManager.IsInHiddenMode();
+                var flag2 = self.IsLostInAbyssPostMap();
+                var flag3 = flag1 | flag2;
+                var bounds1 = new Bounds();
+                var num = 0;
+                for (var index = 0; index < self.mapZoneInfo.Length; ++index)
+                {
+                    var zoneInfo = self.mapZoneInfo[index];
+                    var mapZone2 = (MapZone)index;
+                    var flag4 = false;
+                    foreach (var parent in zoneInfo.Parents)
+                    {
+                        if (parent.Parent)
+                        {
+                            if (mapZone2 != mapZone1 && !parent.Parent.gameObject.activeSelf)
+                            {
+                                if (!(parent.BoundsAddedByPinGroup == CaravanTroupeHunter.PinGroups.None | flag1 |
+                                      flag2))
+                                {
+                                    var pdBool = CaravanTroupeHunter.PdBools[parent.BoundsAddedByPinGroup];
+                                    if (!instance.GetVariable<bool>(pdBool) ||
+                                        !self.HasRemainingPinFor(parent.BoundsAddedByPinGroup))
+                                        continue;
+                                }
+                                else
+                                    continue;
+                            }
+
+                            foreach (Transform transform in parent.Parent.transform)
+                            {
+                                if (transform.gameObject.activeSelf)
+                                {
+                                    var component = transform.GetComponent<SpriteRenderer>();
+                                    if (component && component.sprite)
+                                    {
+                                        flag4 = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (flag4)
+                                break;
+                        }
+                    }
+
+                    if (flag4)
+                    {
+                        var mapZoomPositionNew = zoneInfo.GetWideMapZoomPositionNew();
+                        if (mapZoomPositionNew.x < self.panMinX)
+                            self.panMinX = mapZoomPositionNew.x;
+                        if (mapZoomPositionNew.x > self.panMaxX)
+                            self.panMaxX = mapZoomPositionNew.x;
+                        if (mapZoomPositionNew.y < self.panMinY)
+                            self.panMinY = mapZoomPositionNew.y;
+                        if (mapZoomPositionNew.y > self.panMaxY)
+                            self.panMaxY = mapZoomPositionNew.y;
+                        var size = zoneInfo.VisibleLocalBounds.size;
+                        var bounds2 = new Bounds(zoneInfo.VisibleLocalBounds.center, size);
+                        if (num == 0)
+                            bounds1 = bounds2;
+                        else
+                            bounds1.Encapsulate(bounds2);
+                        ++num;
+                    }
+                }
+                
+                foreach (var group in SceneGroups.Values.Where(group => group.HasMap()).Distinct())
+                {
+                    foreach (var scene in CustomScenes.Values.Where(o => o.Group == group.Id))
+                    {
+                        var targetPos = group.ZoomPos + scene.MapPos;
+                        if (targetPos.x < self.panMinX)
+                            self.panMinX = targetPos.x;
+                        if (targetPos.x > self.panMaxX)
+                            self.panMaxX = targetPos.x;
+                        if (targetPos.y < self.panMinY)
+                            self.panMinY = targetPos.y;
+                        if (targetPos.y > self.panMaxY)
+                            self.panMaxY = targetPos.y;
+                        
+                        if (!scene.Gms || !scene.Gms.fullSprite) continue;
+                        var bounds = GameMapScene.GetCroppedBounds(scene.Gms.fullSprite);
+                        
+                        var bounds2 = new Bounds(targetPos, bounds.extents * 1.15f);
+                        if (num == 0) bounds1 = bounds2;
+                        else bounds1.Encapsulate(bounds2);
+                        ++num;
+                    }
+                }
+                
+                self.mapBounds = bounds1;
+                var center = self.mapMarkerScrollArea.center;
+                ArrayForEnumAttribute.EnsureArraySize(ref instance.placedMarkers,
+                    typeof(MapMarkerMenu.MarkerTypes));
+                if (!flag3)
+                {
+                    var bounds3 = new Bounds();
+                    var flag5 = false;
+                    if (self.markerParent && self.markerParent != self.transform)
+                        self.markerToGameMapLocal =
+                            self.transform.worldToLocalMatrix * self.markerParent.localToWorldMatrix;
+                    for (var index1 = 0; index1 < self.spawnedMapMarkers.GetLength(0); ++index1)
+                    {
+                        var wrappedVector2List = instance.placedMarkers[index1];
+                        if (wrappedVector2List == null)
+                            instance.placedMarkers[index1] = wrappedVector2List = new WrappedVector2List();
+                        foreach (var vector3 in wrappedVector2List.List
+                                     .Select(t => self.markerToGameMapLocal.MultiplyPoint3x4(t)))
+                        {
+                            if (flag5)
+                            {
+                                bounds3.Encapsulate(vector3);
+                            }
+                            else
+                            {
+                                bounds3 = new Bounds(vector3, Vector3.zero);
+                                flag5 = true;
+                            }
+                        }
+                    }
+
+                    if (flag5)
+                        bounds1.Encapsulate(bounds3);
+                }
+
+                self.MapMarkerBounds = bounds1;
+                self.NoPanBounds = bounds1;
+                var bounds4 = self.ApplyScrollAreaOffset(bounds1);
+                bounds4.center = -bounds4.center + center;
+                self.MapMarkerBounds.center = -self.MapMarkerBounds.center + center;
+                self.NoPanBounds.center = -self.NoPanBounds.center + center;
+                if (num > 1)
+                {
+                    self.panMinX = bounds4.min.x;
+                    self.panMinY = bounds4.min.y;
+                    self.panMaxX = bounds4.max.x;
+                    self.panMaxY = bounds4.max.y;
+                }
+                else
+                {
+                    self.panMinX += center.x;
+                    self.panMaxX += center.x;
+                    self.panMinY += center.y;
+                    self.panMaxY += center.y;
+                }
+
+                self.ZoomedBounds = bounds4;
+            });
+    }
+
+    private static readonly FieldInfo SceneMapStartScale = typeof(InventoryMapManager)
+        .GetField(nameof(InventoryMapManager.SceneMapStartScale), BindingFlags.Public | BindingFlags.Static);
+
+    public static void AdjustMapScale(InventoryWideMap wideMap)
+    {
+        var scale = 1f;
+        
+        foreach (var group in SceneGroups.Values.Where(g => g.HasMapZone && g.MapSprite))
+        {
+            var max = group.MapPos * 1.34f + (Vector2)group.MapSprite.bounds.max;
+            var min = group.MapPos * 1.34f + (Vector2)group.MapSprite.bounds.min;
+            
+            scale = Mathf.Min(
+                scale,
+                6 / Mathf.Abs(max.y), 6 / Mathf.Abs(min.y),
+                10 / Mathf.Abs(max.x), 10 / Mathf.Abs(min.x)
+            );
+        }
+
+        if (wideMap) wideMap.transform.localScale = new Vector3(1.34f * scale, 1.34f * scale, 1);
+        if (GameManager.instance.gameMap && GameManager.instance.gameMap.mapManager)
+        {
+            GameManager.instance.gameMap.mapManager.zoneMapInitialScale = new Vector3(1.34f * scale, 1.34f * scale, 1);
+        }
+        SceneMapStartScale.SetValue(null, new Vector3(0.39f * scale, 0.39f * scale, 1f));
     }
     
     public delegate bool TryOpenQuickMap(GameMap self, out string displayName);

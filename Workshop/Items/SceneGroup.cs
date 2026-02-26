@@ -173,17 +173,24 @@ public class SceneGroup : SpriteItem
                     ArchitectPlugin.Logger.LogInfo("Setting up WideMap");
                     _wideMap = self;
                     foreach (var group in SceneUtils.SceneGroups.Values) group.RegisterMap();
+                    SceneUtils.AdjustMapScale(_wideMap);
                 }
 
                 orig(self);
             });
 
         Vector2 zoomPos = default;
+        var customZoom = false;
         typeof(InventoryItemWideMapZone).Hook(nameof(InventoryItemWideMapZone.Submit),
             (Func<InventoryItemWideMapZone, bool> orig, InventoryItemWideMapZone self) =>
             {
                 var cmz = self.GetComponent<CustomMapZone>();
-                zoomPos = cmz ? cmz.SceneGroup.ZoomPos : default;
+                if (cmz)
+                {
+                    zoomPos = cmz.SceneGroup.ZoomPos;
+                    customZoom = true;
+                }
+                else customZoom = false;
 
                 return orig(self);
             });
@@ -194,13 +201,17 @@ public class SceneGroup : SpriteItem
                 if (zone == GlobalEnums.MapZone.NONE
                     && zoomPos == default
                     && SceneUtils.CustomScenes.TryGetValue(GameManager.instance.sceneName, out var scene)
-                    && SceneUtils.SceneGroups.TryGetValue(scene.Group, out var group)) zoomPos = group.ZoomPos;
+                    && SceneUtils.SceneGroups.TryGetValue(scene.Group, out var group))
+                {
+                    zoomPos = group.ZoomPos;
+                    customZoom = true;
+                }
                 orig(self, zone, animate);
             });
 
         typeof(GameMap).Hook(nameof(GameMap.GetZoomPosition),
             (Func<GameMap, MapZone, Vector2> orig, GameMap self, MapZone zone) =>
-                zoomPos != default ? -zoomPos : orig(self, zone));
+                customZoom ? zoomPos * -1.15f : orig(self, zone));
 
         typeof(GameMap).Hook(nameof(GameMap.GetClosestWideMapZone),
             (Func<GameMap, IEnumerable<InventoryItemWideMapZone>, InventoryItemWideMapZone> orig,
@@ -341,6 +352,9 @@ public class SceneGroup : SpriteItem
         
         FocusMapObject.SetActive(false);
         _mapObject.SetActive(true);
+        
+        GameManager.instance.gameMap.CalculateMapScrollBounds();
+        SceneUtils.AdjustMapScale(_wideMap);
     }
     
     public override void Register()
@@ -367,6 +381,7 @@ public class SceneGroup : SpriteItem
         {
             if (sprites.IsNullOrEmpty()) return;
             MapSprite = sprites[0];
+            SceneUtils.AdjustMapScale(_wideMap);
             if (_mapObject) _mapObject.GetComponent<SpriteRenderer>().sprite = MapSprite;
         });
     }
@@ -391,6 +406,7 @@ public class SceneGroup : SpriteItem
             Object.Destroy(_mapObject);
         }
         if (FocusMapObject) Object.Destroy(FocusMapObject);
+        SceneUtils.AdjustMapScale(_wideMap);
     }
 
     public class CustomMapZone : MonoBehaviour

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Custom;
@@ -179,6 +180,13 @@ public static class EnemyFixers
                 KeepActive(o);
                 _lavaRocks = o;
             }));
+        
+        typeof(iTween).Hook("Launch",
+            (Action<GameObject, Hashtable> orig, GameObject obj, Hashtable table) =>
+            {
+                if (obj.GetComponent<TweenFixer>()) iTween2d.Launch(obj, table);
+                else orig(obj, table);
+            });
 
         AknidMother.InitSounds();
     }
@@ -3649,4 +3657,14 @@ public static class EnemyFixers
     {
         obj.AddComponent<GrandReed>();
     }
+
+    public static void FixPendra(GameObject obj)
+    {
+        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        obj.AddComponent<TweenFixer>();
+        foreach (var col in obj.GetComponentsInChildren<BoxCollider2D>(true))
+            col.isTrigger = false;
+    }
+
+    private class TweenFixer : MonoBehaviour;
 }

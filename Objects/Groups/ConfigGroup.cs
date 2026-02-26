@@ -2261,7 +2261,46 @@ public static class ConfigGroup
                 }).WithDefaultValue(true).WithPriority(-2))
     ]);
 
-    public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [])));
+    public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, 
+        GroupUtils.Merge(Stretchable, 
+        GroupUtils.Merge(Decorations, [
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Colour R", "png_col_r",
+                    (o, value) =>
+                    {
+                        var sr = o.GetComponent<SpriteRenderer>();
+                        var c = sr.color;
+                        c.r = value.GetValue();
+                        sr.color = c;
+                    }).WithDefaultValue(1).WithPriority(-1)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Colour G", "png_col_g",
+                    (o, value) =>
+                    {
+                        var sr = o.GetComponent<SpriteRenderer>();
+                        var c = sr.color;
+                        c.g = value.GetValue();
+                        sr.color = c;
+                    }).WithDefaultValue(1).WithPriority(-1)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Colour B", "png_col_b",
+                    (o, value) =>
+                    {
+                        var sr = o.GetComponent<SpriteRenderer>();
+                        var c = sr.color;
+                        c.b = value.GetValue();
+                        sr.color = c;
+                    }).WithDefaultValue(1).WithPriority(-1)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Colour A", "png_col_a",
+                    (o, value) =>
+                    {
+                        var sr = o.GetComponent<SpriteRenderer>();
+                        var c = sr.color;
+                        c.a = value.GetValue();
+                        sr.color = c;
+                    }).WithDefaultValue(1).WithPriority(-1))
+        ])));
 
     public static readonly List<ConfigType> PngUI = GroupUtils.Merge(Png, [
         RenderLayer,
@@ -2367,7 +2406,7 @@ public static class ConfigGroup
                         }
                         else o.layer = SoftTerrain;
                     })
-                .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Activator").WithDefaultValue(0)),
+                .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Activator").WithDefaultValue(0).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Shape", "trigger_shape",
                     (o, value) =>
@@ -2380,7 +2419,7 @@ public static class ConfigGroup
                         o.GetComponent<SpriteRenderer>().sprite =
                             value.GetValue() == 0 ? TriggerZone.SquareZone : TriggerZone.CircleZone;
                     })
-                .WithOptions("Square", "Circle").WithDefaultValue(0)),
+                .WithOptions("Square", "Circle").WithDefaultValue(0).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Trigger Layer", "trigger_layer",
                 (o, value) =>
@@ -2388,7 +2427,7 @@ public static class ConfigGroup
                     var zone = o.GetComponent<TriggerZone>();
                     zone.layer = value.GetValue();
                     zone.usingLayer = true;
-                }))
+                }).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [

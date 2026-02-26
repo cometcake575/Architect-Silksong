@@ -79,6 +79,7 @@ public class CustomScene : SpriteItem
             SceneUtils.SceneGroups.TryGetValue(Group, out var group) && group.HasMapZone &&
             !CollectableItemManager.IsInHiddenMode() && pd.hasQuill) Gms.SetMapped();
         else Gms.SetNotMapped();
+        GameManager.instance.gameMap.CalculateMapScrollBounds();
     }
 
     public void RefreshESprite()
@@ -110,5 +111,7 @@ public class CustomScene : SpriteItem
         if (Map) Object.Destroy(Map);
         
         if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.UnregisterScene(Group, Id);
+        
+        GameManager.instance.gameMap.CalculateMapScrollBounds();
     }
 }

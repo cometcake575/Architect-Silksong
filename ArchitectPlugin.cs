@@ -20,7 +20,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.18.9")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.18.10")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("io.github.hk-speedrunning.quickwarp", BepInDependency.DependencyFlags.SoftDependency)]

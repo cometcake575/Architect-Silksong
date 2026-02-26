@@ -1000,6 +1000,11 @@ public static class VanillaObjects
                         o.RemoveComponent<PersistentBoolItem>();
                     })
             .WithReceiverGroup(ReceiverGroup.Gates));
+
+        AddEnemy("Pendra", "pendra", ("Clover_05c", "Hornet Dragonfly"),
+            postSpawnAction: EnemyFixers.FixPendra);
+        AddEnemy("Pendragor", "pendragor", ("Clover_18", "Dragonfly Large"),
+            postSpawnAction: EnemyFixers.FixPendra);
     }
 
     private static void AddMoorObjects()
