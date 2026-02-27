@@ -437,6 +437,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Grass = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("grass_burst", "Burst", o =>
+        {
+            o.GetComponentInChildren<ParticleSystem>().Emit(20);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Displayable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("display_text", "Show", o =>
         {

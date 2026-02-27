@@ -1557,9 +1557,9 @@ public static class VanillaObjects
             ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite)
             .WithConfigGroup(ConfigGroup.Bell));
 
-        /*
         AddEnemy("Squirm", "squirm", ("Coral_36", "Judge Child (1)"),
-            postSpawnAction: EnemyFixers.FixSquirm);*/
+            postSpawnAction: EnemyFixers.FixSquirm)
+            .WithConfigGroup(ConfigGroup.Squirm);
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
                 preloadAction: EnemyFixers.FixJudge,
@@ -1722,6 +1722,22 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixMirrorAndSilhouette,
                 sprite: ResourceUtils.LoadSpriteResource("silhouette", ppu: 155))
             .WithConfigGroup(ConfigGroup.Png));
+
+        Categories.Effects.Add(new PreloadObject("Grass Effect", "grass_effect",
+                ("Tut_02", "green_grass_tri (6)/Green Grass A"),
+                sprite: ResourceUtils.LoadSpriteResource("grass_burst", ppu:250),
+                description: "Appears when the 'Burst' trigger is run.",
+                preloadAction: o =>
+                {
+                    o.transform.localScale = Vector3.one * 4;
+                    o.AddComponent<ParticleObject>();
+                    o.RemoveComponent<ParticleSystemAutoRecycle>();
+
+                    var em = o.GetComponent<ParticleSystem>().emission;
+                    em.enabled = false;
+                })
+            .WithConfigGroup(ConfigGroup.Particle)
+            .WithReceiverGroup(ReceiverGroup.Grass));
 
         Categories.Npcs.Add(new PreloadObject("Gilly NPC", "gilly_npc",
                 ("Ant_17", "Gilly"), 
@@ -2126,6 +2142,15 @@ public static class VanillaObjects
                 obj.transform.SetScaleY(-obj.transform.GetScaleY());
                 obj.transform.SetRotation2D(obj.transform.GetRotation2D() + rot - 180);
             }).WithRotationGroup(RotationGroup.Vertical);
+        
+        AddEnemy("Cogworker", "cogworker",
+            ("Cog_07", "Black Thread States/Normal World/Song Automaton Fly (3)"),
+            preloadAction: o =>
+            {
+                var anim = o.GetComponent<tk2dSpriteAnimator>();
+                anim.defaultClipId = anim.GetClipIdByName("Battler");
+            },
+            postSpawnAction: EnemyFixers.FixCogworker);
         
         AddEnemy("Cogwork Clapper", "cog_clapper",
             ("Cog_07", "Black Thread States/Normal World/Repairable Scene/Song Automaton Ball (1)"),

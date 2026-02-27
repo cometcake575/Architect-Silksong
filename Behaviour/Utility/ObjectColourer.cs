@@ -78,7 +78,11 @@ public class ObjectColourer : MonoBehaviour
 
             GameObject t;
             if (target) t = target;
-            else if (!PlacementManager.Objects.TryGetValue(targetId, out t)) return;
+            else if (!PlacementManager.Objects.TryGetValue(targetId, out t))
+            {
+                t = ObjectUtils.FindGameObject(targetId);
+                if (!t) return;
+            }
             
             var prefab = t.GetComponent<Prefab>();
             if (prefab)
@@ -132,7 +136,7 @@ public class ObjectColourer : MonoBehaviour
         if (mode == 2)
         {
             if (!forceAlpha && !useAlphaByDefault) color.a = 1;
-            foreach (var rend in target.GetComponentsInChildren<Renderer>())
+            foreach (var rend in target.GetComponentsInChildren<Renderer>(true))
             {
                 rend.material.shader = FlashShader;
                 var sf = rend.gameObject.GetOrAddComponent<SpriteFlash>();
@@ -195,20 +199,21 @@ public class ObjectColourer : MonoBehaviour
     private IEnumerator FadeRoutine(float fadeTime, SpriteRenderer sr, Color color, bool useAlpha)
     {
         var time = 0f;
-        
-        var start = sr.color;
+
+        var mat = sr.material;
+        var start = mat.color;
         var end = mode == 0 ? start * color : color;
         if (!useAlpha) end.a = start.a;
         
         while (time < fadeTime)
         {
-            if (!sr) yield break;
-            sr.color = Color.Lerp(start, end, time / fadeTime);
+            if (!mat) yield break;
+            mat.color = Color.Lerp(start, end, time / fadeTime);
             time += Time.deltaTime;
             yield return null;
         }
         
-        sr.color = end;
+        mat.color = end;
         _current--;
     }
 

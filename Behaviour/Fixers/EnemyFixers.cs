@@ -3646,11 +3646,34 @@ public static class EnemyFixers
 
     public static void FixSquirm(GameObject obj)
     {
-        obj.GetComponent<tk2dSpriteAnimator>().Play("Idle");
-        obj.GetComponent<BoxCollider2D>().enabled = true;
+        var sa = Object.Instantiate(_squirmArea, obj.transform);
+        var ssa = Object.Instantiate(_squirmSingArea, obj.transform);
+        sa.transform.localPosition = Vector3.zero;
+        ssa.transform.localPosition = Vector3.zero;
 
-        Object.Instantiate(_squirmArea);
-        Object.Instantiate(_squirmSingArea);
+        var ra = obj.GetComponent<RangeAttacker>();
+        ra.appearChance = 1;
+
+        ra.trigger = sa.GetComponent<TrackTriggerObjects>();
+        ra.singRange = ssa.GetComponent<TrackTriggerObjects>();
+        
+        sa.RemoveComponent<Collider2D>();
+        ssa.RemoveComponent<Collider2D>();
+
+        var squirm = obj.AddComponent<Squirm>();
+
+        var c1 = sa.AddComponent<CircleCollider2D>();
+        c1.isTrigger = true;
+        squirm.hideRange = c1;
+        var c2 = ssa.AddComponent<CircleCollider2D>();
+        c2.isTrigger = true;
+        squirm.musicRange = c2;
+    }
+
+    public class Squirm : MonoBehaviour
+    {
+        public CircleCollider2D hideRange;
+        public CircleCollider2D musicRange;
     }
 
     public static void FixGrandReed(GameObject obj)
@@ -3667,4 +3690,12 @@ public static class EnemyFixers
     }
 
     private class TweenFixer : MonoBehaviour;
+
+    public static void FixCogworker(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Batlle Ready").AddAction(() => fsm.SendEvent("BATTLE START"), 0);
+        fsm.GetState("Translate Back").DisableAction(0);
+        fsm.GetState("Fly In").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
 }

@@ -58,7 +58,8 @@ public static class WorkshopManager
         Register<CustomScene>("Scene",
             new Vector2(-100, -300),
             ConfigGroup.Scene,
-            ConfigGroup.SceneMap);
+            ConfigGroup.SceneMap,
+            ConfigGroup.SceneMapColour);
         
         Register<CustomMateriumEntry>("Material",
             new Vector2(-300, -375),

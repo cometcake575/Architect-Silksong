@@ -388,6 +388,33 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> SceneMapColour = [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomScene>("Override Colour", "scene_override_col", (item, value) =>
+            {
+                item.OverrideColour = value.GetValue();
+            }).WithDefaultValue(false)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Colour R", "scene_override_col_r", (item, value) =>
+            {
+                item.MapColour.r = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Colour G", "scene_override_col_g", (item, value) =>
+            {
+                item.MapColour.g = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Colour B", "scene_override_col_b", (item, value) =>
+            {
+                item.MapColour.b = value.GetValue();
+            }).WithDefaultValue(1)
+        )
+    ];
+    
     public static readonly List<ConfigType> SceneGroup = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<SceneGroup>("Area Name", "scene_group_name", (item, value) =>

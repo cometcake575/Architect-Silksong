@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,7 +105,7 @@ public class ParticleObject : PngObject
     {
         foreach (var psr in GetComponentsInChildren<ParticleSystemRenderer>(true))
         {
-            if (Sprites.IsNullOrEmpty()) return;
+            if (Sprites.IsNullOrEmpty() || !psr.material) return;
             psr.material.mainTexture = Sprites[0].texture;
         }
     }

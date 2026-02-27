@@ -1637,6 +1637,19 @@ public static class ConfigGroup
                 o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
             }).WithDefaultValue(false))
     ]);
+
+    public static readonly List<ConfigType> Squirm = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Hide Range", "squirm_hide_range", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.Squirm>().hideRange.radius = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Needolin Range", "squirm_needolin_range", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.Squirm>().musicRange.radius = value.GetValue();
+            }).WithDefaultValue(5))
+    ]);
     
     public static readonly List<ConfigType> Aknids = GroupUtils.Merge(Enemies,
     [

@@ -17,6 +17,9 @@ public class CustomScene : SpriteItem
     public string EIconUrl = string.Empty;
     public bool EPoint;
     public float EPpu = 100;
+
+    public bool OverrideColour;
+    public Color MapColour = Color.white;
     
     public override (string, string)[] FilesToDownload => [
         (IconUrl, "png"),
@@ -53,7 +56,7 @@ public class CustomScene : SpriteItem
 
             Gms.spriteRenderer = Gms.GetComponent<SpriteRenderer>();
             Gms.hasSpriteRenderer = true;
-            Gms.spriteRenderer.color = group.MapColour;
+            Gms.spriteRenderer.color = OverrideColour ? MapColour : group.MapColour;
             Gms.spriteRenderer.sprite = null;
         
             RefreshSprite();
@@ -79,7 +82,7 @@ public class CustomScene : SpriteItem
             SceneUtils.SceneGroups.TryGetValue(Group, out var group) && group.HasMapZone &&
             !CollectableItemManager.IsInHiddenMode() && pd.hasQuill) Gms.SetMapped();
         else Gms.SetNotMapped();
-        GameManager.instance.gameMap.CalculateMapScrollBounds();
+        if (GameManager.instance.gameMap) GameManager.instance.gameMap.CalculateMapScrollBounds();
     }
 
     public void RefreshESprite()
@@ -112,6 +115,6 @@ public class CustomScene : SpriteItem
         
         if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.UnregisterScene(Group, Id);
         
-        GameManager.instance.gameMap.CalculateMapScrollBounds();
+        if (GameManager.instance.gameMap) GameManager.instance.gameMap.CalculateMapScrollBounds();
     }
 }

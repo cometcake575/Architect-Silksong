@@ -318,6 +318,13 @@ public static class AbilityObjects
                                                                           && InputHandler.Instance.inputActions
                                                                               .Dash.WasPressed));
         
+        typeof(HeroController).Hook(nameof(HeroController.GetAirdashed),
+            (Func<HeroController, bool> orig, HeroController self) => orig(self) && ActiveCrystals.GetValueOrDefault("dash", 0) <= 0);
+        
+        typeof(HeroController).Hook(nameof(HeroController.GetCanAirDashCancel),
+            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "dash")
+                                                                      || ActiveCrystals.GetValueOrDefault("dash", 0) > 0);
+        
         typeof(HeroController).Hook(nameof(HeroController.CanHarpoonDash),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "harpoon")
                                                                       || ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0);
@@ -470,6 +477,14 @@ public static class AbilityObjects
                     fsm.GetState("Dash Stab Dir").AddAction(() =>
                     {
                         if (!BindingCheck(true, "attack")) fsm.SendEvent("DO SPRINT SKID");
+                    }, 0);
+                    break;
+                case "Umbrella Float":
+                    fsm.fsmTemplate = null;
+                    var cd = fsm.FsmVariables.FindFsmBool("Can Dash");
+                    fsm.GetState("Float Idle").AddAction(() =>
+                    {
+                        if (ActiveCrystals.GetValueOrDefault("dash", 0) > 0) cd.Value = true;
                     }, 0);
                     break;
             }
