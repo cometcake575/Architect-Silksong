@@ -20,12 +20,13 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.18.12")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.19.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
+[BepInDependency("org.silksong-modding.modmenu")]
 [BepInDependency("io.github.hk-speedrunning.quickwarp", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
-public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>
+public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGlobalDataMod<GlobalArchitectData>
 {
     internal static ArchitectPlugin Instance;
 
@@ -105,4 +106,5 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>
     }
 
     public ArchitectData SaveData { get; set; }
+    public GlobalArchitectData GlobalData { get; set; }
 }

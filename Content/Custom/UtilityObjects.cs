@@ -742,6 +742,8 @@ public static class UtilityObjects
         de.damageDealt = 5;
 
         point.AddComponent<EnemyDamager>();
+
+        point.AddComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
         
         point.SetActive(false);
         Object.DontDestroyOnLoad(point);

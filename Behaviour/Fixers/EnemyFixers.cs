@@ -1511,6 +1511,8 @@ public static class EnemyFixers
             obj.GetComponent<BoxCollider2D>().isTrigger = false;
             fsm.SendEvent("WAKE");
         });
+        
+        fsm.GetState("Action").DisableAction(2);
 
         ((StartRoarEmitter)fsm.GetState("Roar").actions[2]).stunHero = false;
 
@@ -3651,6 +3653,12 @@ public static class EnemyFixers
         sa.transform.localPosition = Vector3.zero;
         ssa.transform.localPosition = Vector3.zero;
 
+        var fsm = obj.AddComponent<PlayMakerFSM>();
+        fsm.fsm = Fsm.NewTempFsm();
+        fsm.fsm.states = [];
+        fsm.AddState("Idle");
+        fsm.fsm.startState = "Idle";
+        
         var ra = obj.GetComponent<RangeAttacker>();
         ra.appearChance = 1;
 
@@ -3697,5 +3705,26 @@ public static class EnemyFixers
         fsm.GetState("Batlle Ready").AddAction(() => fsm.SendEvent("BATTLE START"), 0);
         fsm.GetState("Translate Back").DisableAction(0);
         fsm.GetState("Fly In").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+    }
+
+    public static void FixSlubberlug(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Death Air").DisableAction(5);
+        var pos = obj.transform.position;
+
+        var died = false;
+        fsm.GetState("Death Air").AddAction(() => died = true, 0);
+
+        var dormant = fsm.GetState("Dormant");
+        dormant.AddAction(() =>
+        {
+            if (died) Object.Destroy(obj);
+            obj.transform.GetChild(3).gameObject.SetActive(true);
+            obj.transform.position = pos;
+            fsm.SendEvent("SPAWN");
+        });
+        
+        fsm.GetState("Home Dir").AddAction(() => fsm.SendEvent(Random.value > 0.5f ? "L" : "R"));
     }
 }

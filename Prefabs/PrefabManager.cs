@@ -50,7 +50,7 @@ public static class PrefabManager
         {
             ScriptEditorUI.ToggleParent.SetActive(true);
             EditManager.NoclipPos = _oldPos;
-            GameManager.instance.LoadScene(_oldScene);
+            GameManager.instance.ChangeToScene(_oldScene, "", 0);
         }
         else
         {

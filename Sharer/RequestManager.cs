@@ -473,7 +473,7 @@ public static class RequestManager
         status.text = "Download Complete";
     }
     
-    internal static IEnumerator DownloadLevel(string levelId, Text status)
+    internal static IEnumerator DownloadLevel(string levelId, string levelName, Text status)
     {
         status.text = "Downloading Level...";
 
@@ -513,6 +513,7 @@ public static class RequestManager
         var wData = JsonConvert.DeserializeObject<WorkshopData>(result["workshop"]);
         
         yield return StorageManager.LoadLevelData(data, wData, status);
+        GlobalArchitectData.Instance.CurrentMap = levelName;
 
         PlacementManager.InvalidateScene();
     }

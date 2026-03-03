@@ -234,6 +234,7 @@ public static class StorageManager
         foreach (var file in Directory.GetFiles(DataPath + "Prefabs/")) File.Delete(file);
         foreach (var file in Directory.GetFiles(DataPath + "Assets/")) File.Delete(file);
 
+        GlobalArchitectData.Instance.CurrentMap = "";
         CustomAssetManager.WipeAssets();
     }
 

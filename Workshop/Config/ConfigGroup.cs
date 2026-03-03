@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Architect.Workshop.Items;
 using Architect.Workshop.Types;
+using InControl;
+using UnityEngine;
 
 namespace Architect.Workshop.Config;
 
@@ -312,6 +314,21 @@ public static class ConfigGroup
             {
                 item.ItemType = (ToolItemType)value.GetValue();
             }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill")
+        )
+    ];
+    
+    public static readonly List<ConfigType> Keybind = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomKeybind>("Name", "keybind_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            }).WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomKeybind>("Default Key", "keybind_default", (item, value) =>
+            {
+                if (Enum.TryParse<KeyCode>(value.GetValue(), out var key)) item.Default = key;
+            }).WithDefaultValue("None")
         )
     ];
     

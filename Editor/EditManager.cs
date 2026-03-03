@@ -96,8 +96,6 @@ public static class EditManager
     private static Vector3 _posToLoad;
     private static bool _loadPos;
 
-    private static string _lockArea;
-    
     public static Vector3 NoclipPos;
     
     private static float _lastX;
@@ -499,6 +497,12 @@ public static class EditManager
             NoclipPos = _posToLoad;
 
             if (CoopManager.Instance.IsActive()) CoopManager.Instance.RefreshRoom();
+            
+            GameManager.instance.cameraCtrl.StopFreeze();
+            var lockArea = SceneManager.GetActiveScene().GetRootGameObjects()
+                .SelectMany(o => o.GetComponentsInChildren<CameraLockArea>())
+                .FirstOrDefault(o => o.InsideCount > 0);
+            if (lockArea) lockArea.OnInsideStateChanged(true);
         }
 
         if (HoveredObject != null)
@@ -512,16 +516,6 @@ public static class EditManager
         _groupSelectionBox.gameObject.SetActive(false);
 
         orig(self);
-        
-        if (_lockArea != null)
-        {
-            var areaObj = ObjectUtils
-                .GetGameObjectFromArray(SceneManager.GetActiveScene().GetRootGameObjects(), _lockArea);
-            _lockArea = null;
-            if (!areaObj) return;
-            var area = areaObj.GetComponent<CameraLockArea>();
-            if (area) GameCameras.instance.cameraController.LockToArea(area);
-        }
     }
 
     // Reloads the current scene, in order to refresh objects or update edit mode
@@ -531,14 +525,10 @@ public static class EditManager
         ReloadRequired = false;
         IgnoreControlRelinquished = false;
         
-        _lockArea = GameCameras.instance.cameraController.CurrentLockArea?.transform.GetPath();
-        
         _loadPos = true;
         _posToLoad = HeroController.instance.transform.position;
-        HeroController.instance.transform.parent = null;
-        GameManager.instance.SaveLevelState();
-        GameManager.instance.IsFirstLevelForPlayer = false;
-        GameManager.instance.LoadScene(GameManager.instance.sceneName);
+        
+        GameManager.instance.ChangeToScene(GameManager.instance.sceneName, "", 0);
     }
     #endregion
     

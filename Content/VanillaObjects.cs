@@ -306,6 +306,9 @@ public static class VanillaObjects
     private static void AddRoadObjects()
     {
         AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
+        /*AddEnemy("Slubberlug", "dustroach_pollywog",
+            ("Shadow_13", "Dustroach Pollywog Control/Dustroach Pollywog Pool/Dustroach Pollywog"),
+            postSpawnAction: EnemyFixers.FixSlubberlug);*/
         
         Categories.Attacks.Add(new PreloadObject("Caltrop", "caltrop",
                 ("localpoolprefabs_assets_areadust.bundle", 
@@ -997,6 +1000,10 @@ public static class VanillaObjects
                         o.RemoveComponent<PersistentBoolItem>();
                     })
             .WithReceiverGroup(ReceiverGroup.Gates));
+        
+        Categories.Effects.Add(new PreloadObject("Background Pendra", "pendra_bg",
+            ("Tut_02", "Tiny Dragonfly (3)"))
+            .WithConfigGroup(ConfigGroup.Decorations));
 
         AddEnemy("Pendra", "pendra", ("Clover_05c", "Hornet Dragonfly"),
             postSpawnAction: EnemyFixers.FixPendra);
@@ -1280,7 +1287,9 @@ public static class VanillaObjects
         AddEnemy("Driftlin", "peaks_drifter", ("Peak_05", "Peaks Drifter"));
 
         Categories.Platforming.Add(new PreloadObject("Gold Ring", "harpoon_ring",
-                ("Peak_05", "chair_lift_ring/Harpoon Ring Citadel"), postSpawnAction: MiscFixers.FixRing).DoFlipX()
+                ("Peak_05", "chair_lift_ring/Harpoon Ring Citadel"),
+                preloadAction: o => o.transform.SetLocalPositionZ(0.01f),
+                postSpawnAction: MiscFixers.FixRing).DoFlipX()
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
         Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
@@ -1326,10 +1335,14 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp S", "weaver_heat_lamp",
                 ("Peak_05", "weaver_heat_lamp (2)/Lamp"), preloadAction: MiscFixers.FixLamp)
-            .WithRotationGroup(RotationGroup.Four));
+            .WithRotationGroup(RotationGroup.Four)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Weaver Heat Lamp L", "weaver_heat_lamp_l",
                 ("Bellway_Peak_02", "weaver lamp_roof heat large"), preloadAction: MiscFixers.FixBigLamp)
-            .WithRotationGroup(RotationGroup.Four));
+            .WithRotationGroup(RotationGroup.Four)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Coal Lamp", "coal_lamp",
             ("Peak_05", "coal_lantern_jail_wall_mount/string_cap")));
         
@@ -1539,10 +1552,11 @@ public static class VanillaObjects
         AddSolid("Organ Platform 3", "organ_plat_3", ("Organ_01", "organ_lift_broken_drop/lift_bottom_broken"),
             preloadAction: o => o.transform.GetChild(3).gameObject.SetActive(false));
 
-        Categories.Misc.Add(new PreloadObject("Silkfly", "silkfly",
+        Categories.Interactable.Add(new PreloadObject("Silkfly", "silkfly",
             ("localpoolprefabs_assets_areadustmaze", "Assets/Prefabs/Hornet Enemies/Silkfly Mistmaze.prefab"),
             notSceneBundle: true,
             postSpawnAction: MiscFixers.FixSilkfly)
+            //.WithBroadcasterGroup(BroadcasterGroup.Activatable)
             .WithConfigGroup(ConfigGroup.Silkfly)
             .WithReceiverGroup(ReceiverGroup.Silkfly));
     }
@@ -1967,6 +1981,12 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Vaults Wall Lamp", "vault_w_lamp",
                 ("Library_04", "library_lamp_wall (2)"), postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        Categories.Misc.Add(new PreloadObject("Citadel Lamp", "citadel_lamp",
+                ("Coral_10", "Black Thread States/Normal World/Hornet_way_pole_harp (9)"),
+                postSpawnAction: MiscFixers.FixBreakable)
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));

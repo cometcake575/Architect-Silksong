@@ -22,8 +22,8 @@ public class ConvertBlock : ScriptBlock
         return id switch
         {
             "ToText" => inp,
-            "ToBool" => bool.TryParse(inp, out var b) && b,
-            "ToNum" => float.TryParse(inp, out var f) ? f : 0f,
+            "ToBool" => (bool.TryParse(inp, out var b) || float.TryParse(inp, out var f) && f > 0) && b,
+            "ToNum" => bool.TryParse(inp, out var b) ? b ? 1 : 0 : float.TryParse(inp, out var f) ? f : 0f,
             _ => null
         };
     }

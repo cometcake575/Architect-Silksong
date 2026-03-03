@@ -316,7 +316,7 @@ public class Browse : MenuState
             _downloadSBtn.interactable = false;
             closeBtn.interactable = false;
             SharerManager.ReturnBtn.interactable = false;
-            yield return RequestManager.DownloadLevel(_info.LevelId, _status);
+            yield return RequestManager.DownloadLevel(_info.LevelId, _info.LevelName, _status);
             closeBtn.interactable = true;
             downloadBtn.interactable = true;
             if (_info.HasSave) _downloadSBtn.interactable = true;

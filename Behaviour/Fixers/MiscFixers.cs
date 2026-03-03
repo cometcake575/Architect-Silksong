@@ -10,6 +10,7 @@ using Architect.Editor;
 using Architect.Events.Blocks.Operators;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using BepInEx;
 using GlobalSettings;
 using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
@@ -140,8 +141,14 @@ public static class MiscFixers
 
         typeof(LocalisedString).Hook(nameof(LocalisedString.ToString),
             (ToStringOrig orig, ref LocalisedString self, bool allowBlankText) =>
-                self.Sheet == "ArchitectMod" ? SubstituteVars(self.Key) : 
-                    orig(ref self, allowBlankText), typeof(bool));
+            {
+                return self.Sheet switch
+                {
+                    "ArchitectMod" => SubstituteVars(self.Key),
+                    "ArchitectMap" => GlobalArchitectData.Instance.MapLabel,
+                    _ => orig(ref self, allowBlankText)
+                };
+            }, typeof(bool));
 
         typeof(DialogueBox).Hook(nameof(DialogueBox.ParseTextForDialogueLines),
             (Func<string, List<DialogueBox.DialogueLine>> orig, string text) =>
@@ -390,11 +397,13 @@ public static class MiscFixers
     
     public static void FixLamp(GameObject obj)
     {
+        FixBreakable(obj);
         obj.transform.GetChild(0).GetChild(2).SetAsFirstSibling();
     }
     
     public static void FixBigLamp(GameObject obj)
     {
+        FixBreakable(obj);
         obj.transform.SetPositionZ(0.05f);
         obj.transform.GetChild(0).GetChild(0).GetChild(2).SetAsFirstSibling();
     }
@@ -412,6 +421,7 @@ public static class MiscFixers
     {
         obj.transform.GetChild(0).GetChild(0).Translate(0, -10.13f, 0);
         obj.transform.GetChild(1).GetChild(1).localPosition = Vector3.zero;
+        obj.transform.GetChild(1).GetChild(1).gameObject.RemoveComponent<FollowTransform>();
     }
 
     public static void FixBellSprite(GameObject obj)
@@ -1458,6 +1468,8 @@ public static class MiscFixers
             };
             fsm.FsmVariables.FindFsmGameObject("Correct Gate").Value = target;
         }, 0);
+        
+        // fsm.GetState("").AddAction(() => obj.BroadcastEvent("OnActivate"), 0); // TODO
     }
 
     public class Silkfly : MonoBehaviour

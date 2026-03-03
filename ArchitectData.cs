@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using BepInEx;
+using UnityEngine;
 
 namespace Architect;
 
@@ -10,4 +12,16 @@ public class ArchitectData
     public Dictionary<string, string> StringVariables = [];
     public Dictionary<string, float> FloatVariables = [];
     public Dictionary<string, bool> BoolVariables = [];
+}
+
+public class GlobalArchitectData
+{
+    public static GlobalArchitectData Instance => 
+        ArchitectPlugin.Instance.GlobalData ?? (ArchitectPlugin.Instance.GlobalData = new GlobalArchitectData());
+    
+    public Dictionary<string, KeyCode> Keybinds = new();
+
+    public string CurrentMap = "";
+
+    public string MapLabel => CurrentMap.IsNullOrWhiteSpace() ? "Map Keybinds" : CurrentMap;
 }

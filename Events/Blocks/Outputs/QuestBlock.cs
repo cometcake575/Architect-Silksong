@@ -7,7 +7,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class QuestBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Clear", "Offer", "Update", "Accept", "Complete", "SilentComplete"];
+    protected override IEnumerable<string> Inputs => ["Clear", "Offer", "Update", "Accept", "Complete", "SilentAccept", "SilentComplete"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Accepted", "Boolean"),
         Space,
@@ -80,6 +80,10 @@ public class QuestBlock : ScriptBlock
                 {
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
                 });
+                break;
+            case "SilentAccept":
+                completion.IsAccepted = true;
+                quest.Completion = completion;
                 break;
             case "SilentComplete":
                 quest.SilentlyComplete();

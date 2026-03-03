@@ -153,9 +153,9 @@ public static class WorkshopUI
             }
             if (item != null)
             {
+                item.Unregister();
                 _currentId = _idField.text;
                 item.Id = _idField.text;
-                item.Unregister();
                 item.Register();
                 _saved = true;
                 StorageManager.SaveWorkshopData();
@@ -353,6 +353,7 @@ public static class WorkshopUI
         _saved = !isNew;
         if (isNew)
         {
+            GlobalArchitectData.Instance.CurrentMap = "";
             WorkshopManager.WorkshopData.Items.Add(item);
             item.Register();
         }

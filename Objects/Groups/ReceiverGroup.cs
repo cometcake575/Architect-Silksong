@@ -100,7 +100,11 @@ public static class ReceiverGroup
         {
             o.GetComponent<FsmHook>().SetState();
         })),
-        EventManager.RegisterReceiverType(new EventReceiverType("fsm_clear_transitions", "WipeTransitions", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("fsm_clear_transitions", "WipeAllTransitions", o =>
+        {
+            o.GetComponent<FsmHook>().ClearEvents(true);
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("fsm_remove_transition", "WipeTransitions", o =>
         {
             o.GetComponent<FsmHook>().ClearEvents();
         })),

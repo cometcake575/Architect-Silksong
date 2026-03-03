@@ -5,6 +5,7 @@ using Architect.Events.Blocks.Events;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
+using Architect.Workshop.Items;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Config;
@@ -846,13 +847,14 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     var val = value.GetValue();
-                    if (Enum.TryParse<KeyCode>(val, true, out var key))
+                    if (CustomKeybind.Keybinds.TryGetValue(val, out var keybind))
+                    {
+                        o.Keybind = keybind;
+                    }
+                    else if (Enum.TryParse<KeyCode>(val, true, out var key))
                     {
                         o.Key = key;
-                        return;
-                    }
-
-                    if (InputHandler.Instance.inputActions.actionsByName.TryGetValue(val, out var a))
+                    } else if (InputHandler.Instance.inputActions.actionsByName.TryGetValue(val, out var a))
                     {
                         o.PlayerAction = a;
                     }

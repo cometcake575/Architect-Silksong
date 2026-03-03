@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Workshop.Items;
 using InControl;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class KeyBlock : ToggleableBlock
 
     public KeyCode Key = KeyCode.None;
     public PlayerAction PlayerAction = null;
+    public CustomKeybind Keybind = null;
 
     public override void SetupReference()
     {
@@ -22,6 +24,7 @@ public class KeyBlock : ToggleableBlock
 
     protected override object GetValue(string id)
     {
+        if (Keybind != null) Key = GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(Keybind.Id, Keybind.Default);
         return Input.GetKeyDown(Key) || (PlayerAction?.IsPressed ?? false);
     }
 
@@ -31,6 +34,8 @@ public class KeyBlock : ToggleableBlock
         
         private void Update()
         {
+            if (Block.Keybind != null)
+                Block.Key = GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(Block.Keybind.Id, Block.Keybind.Default);
             if (Input.GetKeyDown(Block.Key) || (Block.PlayerAction?.WasPressed ?? false)) Block.Event("OnPress");
             if (Input.GetKeyUp(Block.Key) || (Block.PlayerAction?.WasReleased ?? false)) Block.Event("OnRelease");
         }

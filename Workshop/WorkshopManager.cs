@@ -29,14 +29,14 @@ public static class WorkshopManager
             ConfigGroup.UsableItem);
 
         Register<CustomTool>("Tool",
-            new Vector2(-300, -225),
+            new Vector2(-300, -187.5f),
             ConfigGroup.CustomTool,
             ConfigGroup.SpriteItem,
             ConfigGroup.UseToolSprites,
             ConfigGroup.RedTools);
 
         Register<CustomJournalEntry>("Journal Entry",
-            new Vector2(-100, -225),
+            new Vector2(-100, -187.5f),
             ConfigGroup.JournalEntry,
             ConfigGroup.SpriteItem,
             ConfigGroup.JournalEntrySprites);
@@ -47,7 +47,7 @@ public static class WorkshopManager
             ConfigGroup.QuestSprites);
         
         Register<SceneGroup>("Scene Group",
-            new Vector2(-300, -300),
+            new Vector2(-300, -225),
             ConfigGroup.SceneGroup,
             ConfigGroup.SceneGroupIcon,
             ConfigGroup.SceneGroupMap,
@@ -56,21 +56,26 @@ public static class WorkshopManager
             ConfigGroup.SceneGroupMapDirOut);
         
         Register<CustomScene>("Scene",
-            new Vector2(-100, -300),
+            new Vector2(-100, -225),
             ConfigGroup.Scene,
             ConfigGroup.SceneMap,
             ConfigGroup.SceneMapColour);
         
         Register<CustomMateriumEntry>("Material",
-            new Vector2(-300, -375),
+            new Vector2(-300, -262.5f),
             ConfigGroup.MateriumEntry,
             ConfigGroup.SpriteItem);
         
         Register<CustomMapIcon>("Map Icon",
-            new Vector2(-100, -375),
+            new Vector2(-100, -262.5f),
             ConfigGroup.MapIcon,
             ConfigGroup.SpriteItem,
             ConfigGroup.MapIconLabel);
+        
+        CustomKeybind.Init();
+        Register<CustomKeybind>("Keybind",
+            new Vector2(-300, -300),
+            ConfigGroup.Keybind);
         
         SceneGroup.Init();
         

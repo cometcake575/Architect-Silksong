@@ -485,7 +485,7 @@ public static class AbilityObjects
                     fsm.GetState("Float Idle").AddAction(() =>
                     {
                         if (ActiveCrystals.GetValueOrDefault("dash", 0) > 0) cd.Value = true;
-                    }, 0);
+                    }, 0, true);
                     break;
             }
         };

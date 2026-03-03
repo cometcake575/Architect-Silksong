@@ -40,13 +40,15 @@ public class CustomMapIcon : SpriteItem
     {
         if (!SceneUtils.CustomScenes.TryGetValue(Scene, out var scene) || !scene.Map) return;
         _iconObj = Object.Instantiate(SceneGroup.MapIconPrefab, scene.Map.transform);
+        
         _iconObj.transform.localPosition = Pos;
+        _iconObj.transform.SetLocalPositionZ(-2.4911f);
         _iconObj.transform.GetChild(0).localPosition = Offset;
 
-        _iconObj.GetComponentInChildren<MeshRenderer>().sortingOrder = 100;
+        _iconObj.GetComponentInChildren<MeshRenderer>().sortingOrder = 11;
 
         _renderer = _iconObj.GetComponentInChildren<SpriteRenderer>();
-        _renderer.sortingOrder = 100;
+        _renderer.sortingOrder = 11;
 
         _iconObj.GetComponentInChildren<SetTextMeshProGameText>().text = (LocalStr)Text;
         var tmp = _iconObj.GetComponentInChildren<TextMeshPro>();

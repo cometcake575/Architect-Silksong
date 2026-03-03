@@ -25,6 +25,7 @@ public class FsmHook : MonoBehaviour
 
     public void SendEvent(string eventName)
     {
+        Setup();
         if (_fsm) _fsm.SendEvent(eventName);
     }
 
@@ -33,20 +34,23 @@ public class FsmHook : MonoBehaviour
         return Time.time - _time;
     }
 
-    public void ClearEvents()
+    public void ClearEvents(bool all = false)
     {
+        Setup();
         if (!_fsm) return;
-        foreach (var state in _fsm.FsmStates) state.transitions = [];
+        foreach (var state in _fsm.FsmStates.Where(state => state.Name == stateName || all)) state.transitions = [];
     }
 
     public void SetState()
     {
+        Setup();
         if (!_fsm) return;
         _fsm.SetState(stateName);
     }
 
     private void Setup()
     {
+        if (_fsm) return;
         _setup = true;
         if (!PlacementManager.Objects.TryGetValue(targetId, out var target) && targetId != "Hero_Hornet")
         {
