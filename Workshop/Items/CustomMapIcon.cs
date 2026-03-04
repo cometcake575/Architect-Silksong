@@ -42,7 +42,7 @@ public class CustomMapIcon : SpriteItem
         _iconObj = Object.Instantiate(SceneGroup.MapIconPrefab, scene.Map.transform);
         
         _iconObj.transform.localPosition = Pos;
-        _iconObj.transform.SetLocalPositionZ(-2.4911f);
+        _iconObj.transform.SetLocalPositionZ(-0.2f);
         _iconObj.transform.GetChild(0).localPosition = Offset;
 
         _iconObj.GetComponentInChildren<MeshRenderer>().sortingOrder = 11;
@@ -59,6 +59,7 @@ public class CustomMapIcon : SpriteItem
         var mdh2 = _iconObj.transform.GetChild(1).gameObject.AddComponent<MapDisplayHandler>();
         mdh1.mode = Mode;
         mdh1.reqVar = mdh2.reqVar = ReqVar;
+        mdh1.gms = mdh2.gms = scene.Gms;
 
         _renderer.sprite = Sprite;
 
@@ -69,6 +70,7 @@ public class CustomMapIcon : SpriteItem
     {
         public int mode;
         public string reqVar;
+        public GameMapScene gms;
         
         private GameMap _gameMap;
         private Renderer _renderer;
@@ -102,6 +104,7 @@ public class CustomMapIcon : SpriteItem
 
         private bool ShouldBeVisible()
         {
+            if (!gms.IsMapped) return false;
             if (reqVar.IsNullOrWhiteSpace()) return true;
             return ArchitectData.Instance.BoolVariables.TryGetValue(reqVar, out var val) && val;
         }

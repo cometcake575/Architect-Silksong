@@ -223,7 +223,7 @@ public static class MiscFixers
             });
     }
 
-    private static string SubstituteVars(string txt)
+    public static string SubstituteVars(string txt)
     {
         return Regex.Replace(txt, @"\[\[(.*?)\]\]", match =>
         {
@@ -839,10 +839,16 @@ public static class MiscFixers
     
     public class Sherma : Npc
     {
+        public int startState;
+        
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Conversation Control");
-            fsm.GetState("Asleep").AddAction(() => fsm.SendEvent("WAKE"), 0);
+            var asleep = fsm.GetState("Asleep");
+            
+            if (startState == 0) asleep.AddAction(() => fsm.SendEvent("WAKE"), 0);
+            else asleep.DisableAction(1);
+            
             fsm.GetState("Choice").AddAction(() => fsm.SendEvent("REPEAT"), 0);
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
@@ -1469,7 +1475,7 @@ public static class MiscFixers
             fsm.FsmVariables.FindFsmGameObject("Correct Gate").Value = target;
         }, 0);
         
-        // fsm.GetState("").AddAction(() => obj.BroadcastEvent("OnActivate"), 0); // TODO
+        fsm.GetState("Leave").AddAction(() => obj.BroadcastEvent("OnActivate"), 0);
     }
 
     public class Silkfly : MonoBehaviour

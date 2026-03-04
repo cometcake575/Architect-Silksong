@@ -19,7 +19,7 @@ public class GlobalArchitectData
     public static GlobalArchitectData Instance => 
         ArchitectPlugin.Instance.GlobalData ?? (ArchitectPlugin.Instance.GlobalData = new GlobalArchitectData());
     
-    public Dictionary<string, KeyCode> Keybinds = new();
+    public Dictionary<string, KeyCode> Keybinds = [];
 
     public string CurrentMap = "";
 

@@ -31,6 +31,7 @@ public static class MiscObjects
             .WithReceiverGroup(ReceiverGroup.Wav)
             .WithInputGroup(InputGroup.Wav));
         
+        UIPngObject.Init();
         Categories.Effects.AddStart(CreateAsset<UIPngObject>("PNG (HUD)", "custom_png_ui", true, false,
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
                 "Broadcasts 'OnFinish' when the animation ends.\n\n" +

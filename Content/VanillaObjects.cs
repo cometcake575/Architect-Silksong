@@ -1556,7 +1556,7 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areadustmaze", "Assets/Prefabs/Hornet Enemies/Silkfly Mistmaze.prefab"),
             notSceneBundle: true,
             postSpawnAction: MiscFixers.FixSilkfly)
-            //.WithBroadcasterGroup(BroadcasterGroup.Activatable)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable)
             .WithConfigGroup(ConfigGroup.Silkfly)
             .WithReceiverGroup(ReceiverGroup.Silkfly));
     }
@@ -1929,7 +1929,7 @@ public static class VanillaObjects
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 2/Sherma Enclave NPC"),
                 preloadAction: MiscFixers.FixSherma)
-            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithConfigGroup(ConfigGroup.Sherma)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs));
 
         Categories.Npcs.Add(new PreloadObject("Caretaker Sherma NPC", "sherma_2",

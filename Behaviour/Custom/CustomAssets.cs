@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,6 +126,29 @@ public class UIPngObject : PngObject
     private SpriteRenderer _sr;
     private GameObject _par;
 
+    private static readonly List<UIPngObject> Pngs = [];
+
+    public bool ignoreHudOut;
+
+    public static void Init()
+    {
+        typeof(GameCameras).Hook(nameof(GameCameras.HUDIn),
+            (Action<GameCameras> orig, GameCameras self) =>
+            {
+                Pngs.RemoveAll(png => !png);
+                foreach (var png in Pngs.Where(png => png._constraint && png.ignoreHudOut)) png._constraint.constraintActive = true;
+                orig(self);
+            });
+        
+        typeof(GameCameras).Hook(nameof(GameCameras.HUDOut),
+            (Action<GameCameras> orig, GameCameras self) =>
+            {
+                Pngs.RemoveAll(png => !png);
+                foreach (var png in Pngs.Where(png => png._constraint && png.ignoreHudOut)) png._constraint.constraintActive = false;
+                orig(self);
+            });
+    }
+
     public void Start()
     {
         gameObject.layer = UILayer;
@@ -137,6 +161,7 @@ public class UIPngObject : PngObject
             transform.parent = null;
         }
         _constraint = gameObject.AddComponent<PositionConstraint>();
+        Pngs.Add(this);
         _constraint.constraintActive = true;
         
         var source = new ConstraintSource
@@ -151,6 +176,11 @@ public class UIPngObject : PngObject
         _sr.sortingLayerName = "Over";
         
         UpdatePos();
+    }
+
+    private void OnEnable()
+    {
+        Pngs.AddIfNotPresent(this);
     }
 
     private bool _previewing;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Architect.Behaviour.Fixers;
 using Architect.Content.Preloads;
 using Architect.Utils;
 using BepInEx;
@@ -87,7 +88,7 @@ public class PowerupGetBlock : ScriptBlock
         }
         else
         {
-            msg.promptButtonSingle.textContainer.textMeshPro.text = ButtonText;
+            msg.promptButtonSingle.textContainer.textMeshPro.text = MiscFixers.SubstituteVars(ButtonText);
         }
 
         msg.promptButtonModifier.gameObject.SetActive(false);

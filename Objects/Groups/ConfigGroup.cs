@@ -476,7 +476,16 @@ public static class ConfigGroup
                 Object.Destroy(o.LocateMyFSM("Attack Enemies"));
             }).WithDefaultValue(true))
     ]);
-
+    
+    public static readonly List<ConfigType> Sherma = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Awake", "sherma_awake", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<MiscFixers.Sherma>().startState = 1;
+            }).WithDefaultValue(true))
+    ]);
+    
     public static readonly List<ConfigType> Caretaker = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Call Out", "caretaker_call", (o, value) =>
@@ -2334,7 +2343,13 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     o.GetOrAddComponent<UIPngObject>().anchorTo = value.GetValue();
-                }).WithOptions("None", "LastMask", "LastTool").WithDefaultValue(0).WithPriority(-1))
+                }).WithOptions("None", "LastMask", "LastTool").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Hide with HUD", "ui_png_hide_with_hud",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<UIPngObject>().ignoreHudOut = !value.GetValue();
+                }).WithDefaultValue(true).WithPriority(-1))
     ]);
 
     private static readonly ConfigType WavUrl = ConfigurationManager.RegisterConfigType(

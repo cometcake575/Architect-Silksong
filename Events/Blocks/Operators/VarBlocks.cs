@@ -162,7 +162,10 @@ public class StringVarBlock : LocalBlock
     public static string GetVar(string id)
     {
         return TempVars.GetValueOrDefault(id,
-            SemiVars.GetValueOrDefault(id, ArchitectData.Instance.StringVariables.GetValueOrDefault(id, "null")));
+            SemiVars.GetValueOrDefault(id, 
+                ArchitectData.Instance.StringVariables.GetValueOrDefault(id, 
+                    GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(id, KeyCode.None)
+                        .ToString())));
     }
 
     protected override object GetValue(string id)
