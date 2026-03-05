@@ -58,7 +58,9 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Breakable = ["OnBreak"];
     
-    public static readonly List<string> BreakableWall = ["OnBreak", "FirstBreak", "LoadedBroken"];
+    public static readonly List<string> PersistentBreakable = ["OnBreak", "FirstBreak", "LoadedBroken"];
+    
+    public static readonly List<string> SilkVines = GroupUtils.Merge(PersistentBreakable, ["OnHit", "OnTempBreak"]);
     
     public static readonly List<string> ActiveDeactivatable = ["OnActivate", "OnDeactivate"];
     

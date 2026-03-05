@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Architect.Events;
+using Architect.Objects.Placeable;
 using Architect.Utils;
 using UnityEngine;
 
@@ -193,5 +194,59 @@ public static class InteractableFixers
         hit.transitions[0].toState = "Idle";
         hit.transitions[0].toFsmState = idle;
         hit.AddAction(() => obj.BroadcastEvent("OnActivate"));
+    }
+
+    public static void FixSilkVinesPreload(GameObject obj)
+    {
+        obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
+        obj.transform.SetPositionZ(0);
+        obj.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(false);
+        for (var i = 1; i <= 4; i++) obj.transform.GetChild(2).GetChild(i).gameObject.SetActive(false);
+    }
+
+    public static void FixSilkVines(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Destroy").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("FirstBreak");
+        }, 0);
+        obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
+        {
+            if (!value) return;
+            EventManager.BroadcastEvent(obj, "OnBreak");
+            EventManager.BroadcastEvent(obj, "LoadedBroken");
+        };
+
+        var vine = obj.transform.GetChild(2).GetChild(0).gameObject.LocateMyFSM("thick_silk_vine");
+        vine.fsmTemplate = null;
+        vine.GetState("Hit Check").AddAction(() => obj.BroadcastEvent("OnHit"), 0);
+        vine.GetState("Break").AddAction(() => obj.BroadcastEvent("OnTempBreak"), 0);
+    }
+
+    public static void FixExplodingWallPreload(GameObject obj)
+    {
+        obj.transform.Find("CamLock").gameObject.SetActive(false);
+        for (var i = 0; i <= 2; i++) obj.transform.Find("wall2").GetChild(i).gameObject.SetActive(false);
+        for (var i = 0; i <= 5; i++) obj.transform.Find("wall3").GetChild(i).gameObject.SetActive(false);
+    }
+
+    public static void FixExplodingWall(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Set PD 2").AddAction(() => fsm.SendEvent("FINISHED"), 1);
+        fsm.GetState("Explode").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("FirstBreak");
+        }, 0);
+        
+        obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
+        {
+            if (!value) return;
+            EventManager.BroadcastEvent(obj, "OnBreak");
+            EventManager.BroadcastEvent(obj, "LoadedBroken");
+        };
     }
 }

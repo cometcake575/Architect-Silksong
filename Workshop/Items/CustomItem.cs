@@ -18,6 +18,8 @@ public class CustomItem : SpriteItem
     public LocalStr UseDesc = string.Empty;
     
     public int MaxAmount = int.MaxValue;
+
+    public bool Hidden;
     
     // Usable
     public LocalStr UseType = "Break";
@@ -36,7 +38,7 @@ public class CustomItem : SpriteItem
         
         _item.Register(this);
         
-        WorkshopManager.CustomItems.Add(this);
+        WorkshopManager.CustomItems.Add(Id, this);
         
         base.Register();
         RefreshAudio1();
@@ -47,7 +49,7 @@ public class CustomItem : SpriteItem
 
     public override void Unregister()
     {
-        WorkshopManager.CustomItems.Remove(this);
+        WorkshopManager.CustomItems.Remove(Id);
         _item.Unregister();
         CollectableItemManager.IncrementVersion();
     }
@@ -146,6 +148,8 @@ public class CustomItem : SpriteItem
             customMaxAmount = item.MaxAmount;
             setExtraPlayerDataBools = [];
             setExtraPlayerDataInts = [];
+
+            isHidden = item.Hidden;
         
             consumeEvent = item.UseEvent;
             consume = item.Consume;

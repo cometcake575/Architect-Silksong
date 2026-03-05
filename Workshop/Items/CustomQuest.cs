@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
@@ -28,6 +30,15 @@ public class CustomQuest : SpriteItem
     public string GIconUrl = string.Empty;
     public bool GPoint;
     public float GPpu = 100;
+
+    public bool HasItem;
+    public string ItemId = string.Empty;
+    public int ItemCount = 1;
+
+    public FullQuestBase.DescCounterTypes DescCounterType = FullQuestBase.DescCounterTypes.Icons;
+    public FullQuestBase.ListCounterTypes ListCounterType = FullQuestBase.ListCounterTypes.Dots;
+    public Color BarColour = Color.white;
+    public LocalStr CollectedDesc = string.Empty;
     
     public override (string, string)[] FilesToDownload => [
         (IconUrl, "png"),
@@ -71,8 +82,31 @@ public class CustomQuest : SpriteItem
         _quest.cancelIfIncomplete = [];
         _quest.hideIfComplete = [];
         _quest.playerDataTest = new PlayerDataTest();
-        
-        _quest.targets = [];
+
+        _quest.descCounterType = DescCounterType;
+        _quest.listCounterType = ListCounterType;
+        _quest.progressBarTint = BarColour;
+        _quest.inventoryCompletableDescription = CollectedDesc;
+        List<FullQuestBase.QuestTarget> targets = [];
+        if (HasItem)
+        {
+            var ic = ItemId.Split(",");
+            var dictionary = ic.Distinct().ToDictionary(i => i, i => ic.Count(o => o == i));
+            foreach (var (i, num) in dictionary)
+            {
+                var item = MiscUtils.GetSavedItem(i) as CollectableItemBasic;
+                if (!item) continue;
+                targets.Add(new FullQuestBase.QuestTarget
+                {
+                    Counter = item,
+                    Count = ItemCount / ic.Length * num,
+                    AltTest = new PlayerDataTest(),
+                    ItemName = item.displayName
+                });
+            }
+        }
+
+        _quest.targets = targets.ToArray();
         
         _quest.overrideFontSize = new OverrideFloat();
         _quest.overrideParagraphSpacing = new OverrideFloat();
@@ -81,7 +115,7 @@ public class CustomQuest : SpriteItem
         _quest.displayName = ItemName;
         _quest.inventoryDescription = ItemDesc;
         _quest.wallDescription = WallDesc;
-
+        
         QuestManager.Instance.masterList.Add(_quest);
         
         base.Register();
@@ -90,15 +124,16 @@ public class CustomQuest : SpriteItem
         
         QuestManager.IncrementVersion();
         
-        WorkshopManager.CustomItems.Add(this);
+        WorkshopManager.CustomQuests.Add(Id, this);
     }
 
     public override void Unregister()
     {
         QuestManager.Instance.masterList.Remove(_quest);
         QuestManager.IncrementVersion();
+        Object.Destroy(_quest);
         
-        WorkshopManager.CustomItems.Remove(this);
+        WorkshopManager.CustomQuests.Remove(Id);
     }
 
     protected override void OnReadySprite()

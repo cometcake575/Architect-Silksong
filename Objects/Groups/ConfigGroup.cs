@@ -1002,6 +1002,17 @@ public static class ConfigGroup
         }).WithDefaultValue(4))
     ]);
 
+    public static readonly List<ConfigType> ExplodingWall = GroupUtils.Merge(PersistentBreakable, [
+        ConfigurationManager.RegisterConfigType(new BoolConfigType("Include Wall", "exploding_wall_wall", (o, value) =>
+        {
+            if (value.GetValue()) return;
+            o.GetComponent<BoxCollider2D>().enabled = false;
+            o.transform.GetChild(1).gameObject.SetActive(false);
+            o.transform.GetChild(2).gameObject.SetActive(false);
+            o.transform.GetChild(3).gameObject.SetActive(false);
+        }).WithDefaultValue(true))
+    ]);
+
     public static readonly List<ConfigType> LifebloodCocoons = GroupUtils.Merge(PersistentBreakable, [
         ConfigurationManager.RegisterConfigType(new IntConfigType("Lifeseed Count", "lifeblood_count", (o, value) =>
         {

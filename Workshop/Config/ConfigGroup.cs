@@ -283,6 +283,12 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Use Description")
         ),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomItem>("Hide in Inventory", "item_hide_inventory", (item, value) =>
+            {
+                item.Hidden = value.GetValue();
+            }).WithDefaultValue(false)
+        ),
+        ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<CustomItem>("Item Type", "item_consume", (item, value) =>
             {
                 item.ItemType = Enum.Parse<CustomItem.CustomItemType>(value.GetStringValue());
@@ -675,6 +681,75 @@ public static class ConfigGroup
             new FloatConfigType<CustomQuest>("Colour B", "quest_b", (item, value) =>
             {
                 item.Color.b = value.GetValue();
+            }).WithDefaultValue(1)
+        )
+    ];
+    
+    public static readonly List<ConfigType> QuestItem = [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomQuest>("Count Items", "quest_req_items", (item, value) =>
+            {
+                item.HasItem = value.GetValue();
+            }).WithDefaultValue(false)
+        ),
+        (NoteConfigType)"Separating IDs with a comma will share the required count across each item type",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomQuest>("Item to Count", "quest_item_id", (item, value) =>
+            {
+                item.ItemId = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomQuest>("Required Count", "quest_item_num", (item, value) =>
+            {
+                item.ItemCount = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomQuest>("Collected Desc", "quest_item_desc_done", (item, value) =>
+            {
+                item.CollectedDesc = value.GetValue();
+            }).WithDefaultValue("Sample Collected Description")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomQuest>("List Counter Type", "quest_item_desc_icon", (item, value) =>
+            {
+                item.ListCounterType = value.GetStringValue() switch
+                {
+                    "Notches" => FullQuestBase.ListCounterTypes.Dots,
+                    "Bar" => FullQuestBase.ListCounterTypes.Bar,
+                    _ => FullQuestBase.ListCounterTypes.None
+                };
+            }).WithOptions("Notches", "Bar", "None").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomQuest>("Desc Counter Type", "quest_item_desc_icon", (item, value) =>
+            {
+                item.DescCounterType = value.GetStringValue() switch
+                {
+                    "Icon" => FullQuestBase.DescCounterTypes.Icons,
+                    "Number" => FullQuestBase.DescCounterTypes.Text,
+                    "Bar" => FullQuestBase.DescCounterTypes.ProgressBar,
+                    _ => FullQuestBase.DescCounterTypes.None
+                };
+            }).WithOptions("Icon", "Number", "Bar", "None").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomQuest>("Counter R", "quest_item_r", (item, value) =>
+            {
+                item.BarColour.r = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomQuest>("Counter G", "quest_item_g", (item, value) =>
+            {
+                item.BarColour.g = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomQuest>("Counter B", "quest_item_b", (item, value) =>
+            {
+                item.BarColour.b = value.GetValue();
             }).WithDefaultValue(1)
         )
     ];

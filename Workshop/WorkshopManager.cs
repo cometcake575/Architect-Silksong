@@ -16,7 +16,10 @@ public static class WorkshopManager
 {
     public static WorkshopData WorkshopData;
     
-    public static readonly List<WorkshopItem> CustomItems = [];
+    public static readonly Dictionary<string, WorkshopItem> CustomItems = [];
+    public static readonly Dictionary<string, WorkshopItem> CustomEntries = [];
+    public static readonly Dictionary<string, WorkshopItem> CustomQuests = [];
+    public static readonly Dictionary<string, WorkshopItem> CustomTools = [];
 
     public static readonly Dictionary<string, (Vector2, Func<string, WorkshopItem>)> WorkshopItems = [];
 
@@ -44,7 +47,8 @@ public static class WorkshopManager
         Register<CustomQuest>("Quest",
             new Vector2(-100, -150),
             ConfigGroup.Quest,
-            ConfigGroup.QuestSprites);
+            ConfigGroup.QuestSprites,
+            ConfigGroup.QuestItem);
         
         Register<SceneGroup>("Scene Group",
             new Vector2(-300, -225),
@@ -85,11 +89,7 @@ public static class WorkshopManager
             {
                 if (Application.isPlaying)
                 {
-                    foreach (var item in CustomItems.ToArray())
-                    {
-                        item.Unregister();
-                        item.Register();
-                    }
+                    RefreshItems();
 
                     var collectables = PlayerData.instance.Collectables;
                     foreach (var name in collectables.GetValidNames()
@@ -134,6 +134,44 @@ public static class WorkshopManager
                 }
                 orig(self, isAutoThrow);
             });
+
+        return;
+
+        void RefreshItems()
+        {
+            foreach (var (id, item) in CustomItems.ToArray())
+            {
+                if (!CollectableItemManager.Instance.masterList.dictionary.ContainsKey(id))
+                {
+                    item.Unregister();
+                    item.Register();
+                }
+            }
+            foreach (var (id, item) in CustomEntries.ToArray())
+            {
+                if (!EnemyJournalManager.Instance.recordList.dictionary.ContainsKey(id))
+                {
+                    item.Unregister();
+                    item.Register();
+                }
+            }
+            foreach (var (id, item) in CustomQuests.ToArray())
+            {
+                if (!QuestManager.Instance.masterList.dictionary.ContainsKey(id))
+                {
+                    item.Unregister();
+                    item.Register();
+                }
+            }
+            foreach (var (id, item) in CustomTools.ToArray())
+            {
+                if (!ToolItemManager.Instance.toolItems.dictionary.ContainsKey(id))
+                {
+                    item.Unregister();
+                    item.Register();
+                }
+            }
+        }
     }
     
     public static void Setup()
@@ -148,7 +186,7 @@ public static class WorkshopManager
         if (WorkshopData != null) foreach (var item in WorkshopData.Items) item.Unregister();
 
         WorkshopData = data;
-        foreach (var item in WorkshopData.Items)
+        foreach (var item in WorkshopData.Items.OrderBy(i => i is CustomQuest ? 1 : 0))
         {
             foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
             item.Register();

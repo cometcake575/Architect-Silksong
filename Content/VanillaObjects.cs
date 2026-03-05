@@ -147,7 +147,7 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.All)
-            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
         Categories.Hazards.Add(new PreloadObject("Coral Crust M", "coral_crust_m",
             ("Arborium_06", "Coral Crust Wall Mid (1)"),
             postSpawnAction: o =>
@@ -157,7 +157,7 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.All)
-            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
         Categories.Hazards.Add(new PreloadObject("Coral Crust L", "coral_crust_l",
             ("Arborium_06", "Coral Crust Wall Tall (3)"),
             postSpawnAction: o =>
@@ -168,7 +168,7 @@ public static class VanillaObjects
             })
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.All)
-            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
 
         AddEnemy("Kai", "coral_swimmer_fat",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 3/Wave 5 - fish1/Coral Swimmer Fat (1)"),
@@ -1662,7 +1662,7 @@ public static class VanillaObjects
             },
             postSpawnAction: MiscFixers.FixBreakableWall)
             .WithConfigGroup(ConfigGroup.BreakableWall)
-            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
 
         Categories.Misc.Add(new PreloadObject("Breakable Wall B", "breakable_wall",
                 ("Aqueduct_03", "Breakable Wall"),
@@ -1675,7 +1675,7 @@ public static class VanillaObjects
                     col2d.size = new Vector2(2.25f, 4.25f);
                 }, postSpawnAction: MiscFixers.FixBreakableWall)
             .WithConfigGroup(ConfigGroup.BreakableWall)
-            .WithBroadcasterGroup(BroadcasterGroup.BreakableWall));
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
         
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),
@@ -2536,6 +2536,14 @@ public static class VanillaObjects
             postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
+        Categories.Interactable.Add(new PreloadObject("Silk Vines", "silk_vines",
+            ("Mosstown_02", "Black Thread States Thread Only Variant/Normal World/Thick Silk Vines"),
+            preloadAction: InteractableFixers.FixSilkVinesPreload,
+            postSpawnAction: InteractableFixers.FixSilkVines)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.SilkVines));
+
         AddEnemy("Caranid", "bone_circler",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Hunting PreScene/Bone Circler"));
 
@@ -2762,6 +2770,13 @@ public static class VanillaObjects
         AddEnemy("Hoker", "spine_floater", ("Bone_East_14", "Spine Floater (9)"),
                 postSpawnAction: MiscFixers.FixHoker)
             .WithConfigGroup(ConfigGroup.Hoker).DoFlipX();
+
+        Categories.Interactable.Add(new PreloadObject("Exploding Wall", "exploding_wall",
+            ("Bone_East_14", "explode_wall (4)"),
+            preloadAction: InteractableFixers.FixExplodingWallPreload,
+            postSpawnAction: InteractableFixers.FixExplodingWall)
+            .WithConfigGroup(ConfigGroup.ExplodingWall)
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
 
         Categories.Attacks.Add(new PreloadObject("Spine", "hoker_spine",
             ("localpoolprefabs_assets_areawilds", "Assets/Prefabs/Hornet Enemies/Spine Floater Spine.prefab"), 

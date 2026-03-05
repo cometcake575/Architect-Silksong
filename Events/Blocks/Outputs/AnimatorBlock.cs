@@ -8,6 +8,7 @@ public class AnimatorBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Start", "Stop"];
     protected override IEnumerable<string> Outputs => ["Stop"];
+    protected override IEnumerable<(string, string)> OutputVars => [("Current", "Text")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
     protected override Color Color => DefaultColor;
@@ -31,6 +32,11 @@ public class AnimatorBlock : ScriptBlock
         _player.takeCtrl = TakeCtrl;
         _player.overrideAnimTime = OverrideAnimTime;
         _player.animTime = AnimTime;
+    }
+
+    protected override object GetValue(string id)
+    {
+        return HeroController.instance.animCtrl.animator.currentClip?.name ?? "";
     }
 
     protected override void Trigger(string id)
