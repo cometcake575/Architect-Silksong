@@ -2,6 +2,7 @@ using System.Linq;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
+using GlobalEnums;
 using UnityEngine;
 
 namespace Architect.Workshop.Items;
@@ -17,6 +18,8 @@ public class CustomScene : SpriteItem
     public string EIconUrl = string.Empty;
     public bool EPoint;
     public float EPpu = 100;
+
+    public EnvironmentTypes Environment = EnvironmentTypes.Dust;
 
     public bool OverrideColour;
     public Color MapColour = Color.white;

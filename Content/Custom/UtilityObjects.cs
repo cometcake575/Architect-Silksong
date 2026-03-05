@@ -264,8 +264,9 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource("enemy_hook", FilterMode.Point, ppu:64))
             .WithConfigGroup(ConfigGroup.EnemyHook)
             .WithBroadcasterGroup(BroadcasterGroup.Enemies)
+            .WithInputGroup(InputGroup.EnemyHook)
             .WithOutputGroup(OutputGroup.EnemyHook)
-            .WithReceiverGroup(ReceiverGroup.Enemies);
+            .WithReceiverGroup(ReceiverGroup.EnemyHook);
     }
 
     private static PlaceableObject CreateFsmHook()

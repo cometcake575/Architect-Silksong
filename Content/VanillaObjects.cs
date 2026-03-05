@@ -1691,6 +1691,22 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.AddBenchEvent, preview: true)
             .WithConfigGroup(ConfigGroup.Benches)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
+
+        Categories.Misc.AddStart(new PreloadObject("Full Bell Bench", "bell_bench_full",
+            ("Bone_East_15", "bell_bench"),
+            preloadAction: o =>
+            {
+                foreach (var r in o.GetComponentsInChildren<SpriteRenderer>())
+                    r.maskInteraction = SpriteMaskInteraction.None;
+                o.transform.Find("frame").gameObject.AddComponent<PlaceableObject.SpriteSource>();
+            },
+            postSpawnAction: o =>
+            {
+                MiscFixers.AddBenchEvent(o);
+                o.transform.Find("bell_toll_machine").name += o.name;
+            })
+            .WithConfigGroup(ConfigGroup.FullBellBench)
+            .WithBroadcasterGroup(BroadcasterGroup.Benches));
         
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
                 ("Bone_East_15", "bell_bench/RestBench"),
@@ -1699,6 +1715,20 @@ public static class VanillaObjects
                 preview: true)
             .WithConfigGroup(ConfigGroup.BellBench)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
+
+        Categories.Effects.Add(new PreloadObject("Environment Region", "enviro_region",
+            ("Bone_East_15", "bell_bench/Enviro Region Simple"),
+            preloadAction: o =>
+            {
+                o.transform.localScale = new Vector3(2, 2, 2);
+                var box = o.GetComponent<BoxCollider2D>();
+                box.offset = Vector2.zero;
+                box.size = Vector2.one;
+            },
+            sprite: ResourceUtils.LoadSpriteResource("environment_region", ppu: 200),
+            description: "Determines the environment,\n" +
+                         "which controls things like ground particles and walking sounds.")
+            .WithConfigGroup(ConfigGroup.EnviroRegion));
         
         /*Categories.Misc.AddStart(new PreloadObject("Sack Bench", "sack_bench",
                 ("Wisp_04", "Fall Bench Group/Breakable Hang Sack 3"),

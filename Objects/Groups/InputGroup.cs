@@ -18,6 +18,8 @@ public static class InputGroup
     public static readonly List<(string, string)> FsmHook = [("Event", "Text")];
     
     public static readonly List<(string, string)> EnemyDamager = [("New Damage", "Number")];
+    
+    public static readonly List<(string, string)> EnemyHook = [("New Enemy", "Enemy")];
 
     public static readonly List<(string, string)> Png =
     [

@@ -691,6 +691,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> EnemyHook = GroupUtils.Merge(Enemies, [
+        EventManager.RegisterReceiverType(new EventReceiverType("enemy_hook_set", "SetEnemy", (o, b) =>
+        {
+            o.GetComponent<EnemyHook>().Set(b.GetVariable<HealthManager>("New Enemy"));
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> FourthChorus = GroupUtils.Merge(Enemies, [
         EventManager.RegisterReceiverType(new EventReceiverType("disable_chorus_plats", "RemovePlats", o =>
         {

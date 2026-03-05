@@ -473,6 +473,8 @@ public static class SceneUtils
         
         var scene = SceneManager.CreateScene(sceneName);
         var sm = CreateSceneManager();
+        sm.GetComponent<CustomSceneManager>().environmentType = info.Environment;
+        
         SceneManager.MoveGameObjectToScene(sm, scene);
         SceneManager.MoveGameObjectToScene(CreateManager(), scene);
         var (tm, rd) = CreateTileMap(info);

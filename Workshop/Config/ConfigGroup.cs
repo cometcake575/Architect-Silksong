@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Architect.Workshop.Items;
 using Architect.Workshop.Types;
+using GlobalEnums;
 using InControl;
 using UnityEngine;
 
@@ -356,6 +357,40 @@ public static class ConfigGroup
             {
                 item.TilemapHeight = value.GetValue();
             }).WithDefaultValue(500)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomScene>("Environment Type", "scene_enviro_type", (item, value) =>
+            {
+                var val = value.GetStringValue();
+                switch (val)
+                {
+                    case "WaterS":
+                        val = "ShallowWater";
+                        break;
+                    case "WaterRun":
+                        val = "RunningWater";
+                        break;
+                }
+                if (!Enum.TryParse<EnvironmentTypes>(val, out var enviro)) return;
+                item.Environment = enviro;
+            }).WithOptions(
+                "Dust",
+                "Grass",
+                "Bone",
+                "WaterS",
+                "Metal",
+                "NoEffect",
+                "Moss",
+                "Sand",
+                "Bell",
+                "WetMetal",
+                "ThinMetal",
+                "Wood",
+                "Silk",
+                "WetWood",
+                "WaterRun",
+                "PeakPuff",
+                "FlowerField").WithDefaultValue(0)
         )
     ];
     

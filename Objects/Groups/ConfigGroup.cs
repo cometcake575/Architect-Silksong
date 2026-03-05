@@ -59,6 +59,42 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ];
     
+    public static readonly List<ConfigType> EnviroRegion = [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Environment Type", "enviro_region_type", (o, value) =>
+            {
+                var val = value.GetStringValue();
+                switch (val)
+                {
+                    case "WaterS":
+                        val = "ShallowWater";
+                        break;
+                    case "WaterRun":
+                        val = "RunningWater";
+                        break;
+                }
+                if (!Enum.TryParse<EnvironmentTypes>(val, out var enviro)) return;
+                o.GetComponent<EnviroRegion>().environmentType = enviro;
+            }).WithOptions(
+                "Dust",
+                "Grass",
+                "Bone",
+                "WaterS",
+                "Metal",
+                "NoEffect",
+                "Moss",
+                "Sand",
+                "Bell",
+                "WetMetal",
+                "ThinMetal",
+                "Wood",
+                "Silk",
+                "WetWood",
+                "WaterRun",
+                "PeakPuff",
+                "FlowerField").WithDefaultValue(0))
+    ];
+    
     public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic,
     [
         ConfigurationManager.RegisterConfigType(
@@ -1361,6 +1397,19 @@ public static class ConfigGroup
                 pos.Value += new Vector3(0, 0, value.GetValue());
             }
         ).WithDefaultValue(0))
+    ]);
+
+    public static readonly List<ConfigType> FullBellBench = GroupUtils.Merge(Benches, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType("Cost", "bell_bench_cost", 
+                (o, value) =>
+                {
+                    var costRef = ScriptableObject.CreateInstance<CostReference>();
+                    costRef.value = value.GetValue();
+                    
+                    o.transform.GetChild(14).gameObject.LocateMyFSM("Unlock Behaviour")
+                        .FsmVariables.FindFsmObject("Cost Reference").Value = costRef;
+                }
+            ).WithDefaultValue(30))
     ]);
 
     public static readonly List<ConfigType> WalkTarget = GroupUtils.Merge(Generic, [
