@@ -1,0 +1,258 @@
+{
+  "audiocuesdynamic_assets_areaabyss": [
+    "Assets/Audio/AtmosCues/Abyss Cocoon.asset",
+    "Assets/Audio/MusicCues/Abyss Ascent.asset",
+    "Assets/Audio/MusicCues/Abyss.asset",
+    "Assets/Audio/MusicCues/Enemy Battle Abyss.asset",
+    "Assets/Audio/MusicCues/LastDivePrologue.asset",
+    "Assets/Audio/MusicCues/LostLace.asset",
+    "Assets/Audio/MusicCues/LostLace2.asset"
+  ],
+  "audiocuesdynamic_assets_areaabyssareadocks": [
+    "Assets/Audio/AtmosCues/Abyss.asset"
+  ],
+  "audiocuesdynamic_assets_areaant": [
+    "Assets/Audio/AtmosCues/Hunters March.asset",
+    "Assets/Audio/MusicCues/Hunter Queen Carmelita.asset",
+    "Assets/Audio/MusicCues/Hunters Trail.asset",
+    "Assets/Audio/Voices/Enemies_Silksong/bone hunter child/ant_child_death.asset",
+    "Assets/Audio/Voices/Enemies_Silksong/bone hunter child/ant_child_sing.asset",
+    "Assets/Audio/Voices/Enemies_Silksong/bone hunter child/ant_child_yelp.asset"
+  ],
+  "audiocuesdynamic_assets_areaantareaboneareacoralareamossareawilds": [
+    "Assets/Audio/MusicCues/RipAndShred.asset"
+  ],
+  "audiocuesdynamic_assets_areaaqueduct": [
+    "Assets/Audio/AtmosCues/Pharloom Chasm.asset",
+    "Assets/Audio/MusicCues/Aqueducts.asset",
+    "Assets/Audio/MusicCues/Pinstress.asset"
+  ],
+  "audiocuesdynamic_assets_areaarborium": [
+    "Assets/Audio/AtmosCues/Arborium.asset",
+    "Assets/Audio/MusicCues/Memorium.asset"
+  ],
+  "audiocuesdynamic_assets_areaarboriumareahangareaunderstoreareaward": [
+    "Assets/Audio/AtmosCues/Halls PreWake.asset",
+    "Assets/Audio/AtmosCues/Halls.asset"
+  ],
+  "audiocuesdynamic_assets_areabell": [
+    "Assets/Audio/MusicCues/BellBattle.asset",
+    "Assets/Audio/MusicCues/Bell_Surrounds.asset",
+    "Assets/Audio/MusicCues/Belltown Act3.asset",
+    "Assets/Audio/MusicCues/Belltown.asset",
+    "Assets/Audio/MusicCues/Belltown_Cursed.asset"
+  ],
+  "audiocuesdynamic_assets_areabellareabellway": [
+    "Assets/Audio/AtmosCues/BellArea.asset"
+  ],
+  "audiocuesdynamic_assets_areabellareabone": [
+    "Assets/Audio/MusicCues/Shrine.asset"
+  ],
+  "audiocuesdynamic_assets_areabellareacoralareashellwoodareaward": [
+    "Assets/Audio/MusicCues/Creepy Boss Main.asset"
+  ],
+  "audiocuesdynamic_assets_areabellareashellwoodareaward": [
+    "Assets/Audio/MusicCues/Creepy Boss Ambient.asset"
+  ],
+  "audiocuesdynamic_assets_areabellareaslab": [
+    "Assets/Audio/MusicCues/Spinner.asset",
+    "Assets/Audio/MusicCues/SpinnerRage.asset"
+  ],
+  "audiocuesdynamic_assets_areabellshrineareaboneareawilds": [
+    "Assets/Audio/AtmosCues/Boneforest.asset"
+  ],
+  "audiocuesdynamic_assets_areabellwayareadocksareasongareawilds": [
+    "Assets/Audio/AtmosCues/Deep Docks.asset"
+  ],
+  "audiocuesdynamic_assets_areabellwayareapeak": [
+    "Assets/Audio/MusicCues/Peak.asset"
+  ],
+  "audiocuesdynamic_assets_areabellwayareapeakareaslab": [
+    "Assets/Audio/AtmosCues/Mountain.asset"
+  ],
+  "audiocuesdynamic_assets_areabone": [
+    "Assets/Audio/MusicCues/Boneforest.asset",
+    "Assets/Audio/MusicCues/Bonetown.asset"
+  ],
+  "audiocuesdynamic_assets_areaboneareadocks": [
+    "Assets/Audio/MusicCues/SongGolem.asset"
+  ],
+  "audiocuesdynamic_assets_areabonearealibrary": [
+    "Assets/Audio/MusicCues/Vaults.asset"
+  ],
+  "audiocuesdynamic_assets_areaboneareashellwoodareaslabareaward": [
+    "Assets/Audio/MusicCues/Enemy Battle Small.asset"
+  ],
+  "audiocuesdynamic_assets_areaclover": [
+    "Assets/Audio/AtmosCues/Cloverland.asset",
+    "Assets/Audio/MusicCues/CloverDancers.asset",
+    "Assets/Audio/MusicCues/Cloverland.asset"
+  ],
+  "audiocuesdynamic_assets_areacloverareacoralareamemoryareaslab": [
+    "Assets/Audio/MusicCues/Memory.asset"
+  ],
+  "audiocuesdynamic_assets_areacloverareatutorialareaweaver": [
+    "Assets/Audio/AtmosCues/Moss Cave.asset"
+  ],
+  "audiocuesdynamic_assets_areacog": [
+    "Assets/Audio/AtmosCues/Cogwork Core.asset",
+    "Assets/Audio/MusicCues/Cogwork Core.asset"
+  ],
+  "audiocuesdynamic_assets_areacogareacradleareasong": [
+    "Assets/Audio/AtmosCues/Citadel Ruined Pipes.asset"
+  ],
+  "audiocuesdynamic_assets_areacoral": [
+    "Assets/Audio/AtmosCues/Blasted Steps.asset",
+    "Assets/Audio/MusicCues/Coral King.asset",
+    "Assets/Audio/MusicCues/Coral Ruins.asset",
+    "Assets/Audio/MusicCues/Coral_Gorge.asset",
+    "Assets/Audio/MusicCues/Coral_River.asset",
+    "Assets/Audio/MusicCues/FinalJudge.asset"
+  ],
+  "audiocuesdynamic_assets_areacoralarealibraryareasong": [
+    "Assets/Audio/MusicCues/Ambience Citadel Surrounds.asset"
+  ],
+  "audiocuesdynamic_assets_areacoralareamemory": [
+    "Assets/Audio/AtmosCues/Coral Tower.asset",
+    "Assets/Audio/MusicCues/Coral Tower Ambient.asset",
+    "Assets/Audio/MusicCues/Coral Tower Battle.asset"
+  ],
+  "audiocuesdynamic_assets_areacoralareamemoryareaslabareatutorial": [
+    "Assets/Audio/AtmosCues/Memory.asset"
+  ],
+  "audiocuesdynamic_assets_areacradle": [
+    "Assets/Audio/MusicCues/Cradle.asset",
+    "Assets/Audio/MusicCues/Silk Boss A.asset",
+    "Assets/Audio/MusicCues/Silk Boss Ambient A.asset",
+    "Assets/Audio/MusicCues/Silk Boss Ambient B.asset",
+    "Assets/Audio/MusicCues/Silk Boss B.asset",
+    "Assets/Audio/MusicCues/SurfaceAscent.asset"
+  ],
+  "audiocuesdynamic_assets_areacradleareasong": [
+    "Assets/Audio/AtmosCues/Cradle.asset"
+  ],
+  "audiocuesdynamic_assets_areacradleareasurface": [
+    "Assets/Audio/AtmosCues/Surface.asset"
+  ],
+  "audiocuesdynamic_assets_areacrawl": [
+    "Assets/Audio/AtmosCues/Crawl.asset",
+    "Assets/Audio/MusicCues/Crawl.asset"
+  ],
+  "audiocuesdynamic_assets_areadocks": [
+    "Assets/Audio/AtmosCues/SurfaceInterior.asset",
+    "Assets/Audio/MusicCues/Deep Docks.asset"
+  ],
+  "audiocuesdynamic_assets_areadocksareawilds": [
+    "Assets/Audio/MusicCues/Deep Deep Docks.asset"
+  ],
+  "audiocuesdynamic_assets_areadust": [
+    "Assets/Audio/AtmosCues/Dustpens.asset",
+    "Assets/Audio/MusicCues/Dustpens.asset",
+    "Assets/Audio/MusicCues/MistMaze.asset"
+  ],
+  "audiocuesdynamic_assets_areadustareaorgan": [
+    "Assets/Audio/AtmosCues/Organ.asset"
+  ],
+  "audiocuesdynamic_assets_areagreymoor": [
+    "Assets/Audio/AtmosCues/Greymoor.asset",
+    "Assets/Audio/MusicCues/Greymoor.asset"
+  ],
+  "audiocuesdynamic_assets_areahang": [
+    "Assets/Audio/AtmosCues/Hanging Garden.asset",
+    "Assets/Audio/MusicCues/CitadelHang.asset"
+  ],
+  "audiocuesdynamic_assets_areahangarealibrary": [
+    "Assets/Audio/MusicCues/Grand Forum Battle.asset"
+  ],
+  "audiocuesdynamic_assets_arealibrary": [
+    "Assets/Audio/AtmosCues/Citadel Undercave.asset",
+    "Assets/Audio/AtmosCues/Library Act3.asset",
+    "Assets/Audio/AtmosCues/Library.asset"
+  ],
+  "audiocuesdynamic_assets_areamemoryareatutorial": [
+    "Assets/Audio/MusicCues/Red Memory.asset"
+  ],
+  "audiocuesdynamic_assets_areamoss": [
+    "Assets/Audio/AtmosCues/Bonebottom Chasm.asset",
+    "Assets/Audio/MusicCues/MossCave Act3.asset"
+  ],
+  "audiocuesdynamic_assets_areaorgan": [
+    "Assets/Audio/MusicCues/MistMaze_Organ.asset",
+    "Assets/Audio/MusicCues/Phantom.asset"
+  ],
+  "audiocuesdynamic_assets_areashellwood": [
+    "Assets/Audio/AtmosCues/Shellwood Underlake.asset",
+    "Assets/Audio/AtmosCues/Shellwood.asset",
+    "Assets/Audio/MusicCues/FlowerBattle.asset",
+    "Assets/Audio/MusicCues/Seth Battle.asset",
+    "Assets/Audio/MusicCues/Shellwood.asset"
+  ],
+  "audiocuesdynamic_assets_areaslab": [
+    "Assets/Audio/AtmosCues/Slab.asset",
+    "Assets/Audio/MusicCues/Cloak Battle.asset",
+    "Assets/Audio/MusicCues/FirstWeaver.asset",
+    "Assets/Audio/MusicCues/Slab.asset"
+  ],
+  "audiocuesdynamic_assets_areasong": [
+    "Assets/Audio/AtmosCues/Citadel Main Act 3.asset",
+    "Assets/Audio/AtmosCues/Citadel Main Unwoken.asset",
+    "Assets/Audio/AtmosCues/Citadel Main.asset",
+    "Assets/Audio/MusicCues/CitadelHalls Act3.asset",
+    "Assets/Audio/MusicCues/CitadelHalls.asset",
+    "Assets/Audio/MusicCues/Enclave.asset",
+    "Assets/Audio/MusicCues/LaceDefeated.asset"
+  ],
+  "audiocuesdynamic_assets_areaswamp": [
+    "Assets/Audio/MusicCues/Shadow.asset"
+  ],
+  "audiocuesdynamic_assets_areaswampareaweaverareawilds": [
+    "Assets/Audio/MusicCues/Weaverlands.asset"
+  ],
+  "audiocuesdynamic_assets_areatutorial": [
+    "Assets/Audio/AtmosCues/None.asset",
+    "Assets/Audio/MusicCues/MossCave.asset",
+    "Assets/Audio/MusicCues/Mosstown.asset"
+  ],
+  "audiocuesdynamic_assets_areaunderstore": [
+    "Assets/Audio/AtmosCues/Understore.asset",
+    "Assets/Audio/MusicCues/Understore.asset"
+  ],
+  "audiocuesdynamic_assets_areaward": [
+    "Assets/Audio/MusicCues/Ward.asset"
+  ],
+  "audiocuesdynamic_assets_areawilds": [
+    "Assets/Audio/AtmosCues/Wilds.asset",
+    "Assets/Audio/MusicCues/Wilds.asset"
+  ],
+  "audiocuesdynamic_assets_areawisp": [
+    "Assets/Audio/MusicCues/Wisp.asset"
+  ],
+  "audiocuesdynamic_assets_battle": [
+    "Assets/Audio/MusicCues/Enemy Battle Grind.asset",
+    "Assets/Audio/MusicCues/Enemy Battle Mid.asset"
+  ],
+  "audiocuesdynamic_assets_blackthread": [
+    "Assets/Audio/MusicCues/Abyss Tension.asset"
+  ],
+  "audiocuesdynamic_assets_boss": [
+    "Assets/Audio/MusicCues/Boss Strive.asset",
+    "Assets/Audio/MusicCues/SmallBattle.asset"
+  ],
+  "audiocuesdynamic_assets_candle": [
+    "Assets/Audio/MusicCues/Chapel.asset"
+  ],
+  "audiocuesdynamic_assets_laceboss": [
+    "Assets/Audio/MusicCues/LaceBattle.asset"
+  ],
+  "audiocuesdynamic_assets_menu": [
+    "Assets/Audio/AtmosCues/MiscWind.asset",
+    "Assets/Audio/MusicCues/Title.asset"
+  ],
+  "audiocuesdynamic_assets_shared": [
+    "Assets/Audio/MusicCues/None.asset"
+  ],
+  "audiocuesdynamic_assets_trobbio": [
+    "Assets/Audio/MusicCues/TormentedTrobbio.asset",
+    "Assets/Audio/MusicCues/Trobbio.asset"
+  ]
+}

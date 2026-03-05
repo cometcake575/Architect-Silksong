@@ -9,6 +9,7 @@ using Architect.Placements;
 using Architect.Storage;
 using Architect.Workshop.Items;
 using GlobalEnums;
+using GlobalSettings;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;

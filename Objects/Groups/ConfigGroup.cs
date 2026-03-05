@@ -130,6 +130,24 @@ public static class ConfigGroup
                 o.GetComponent<MiscFixers.Dust>().time = value.GetValue();
             }).WithDefaultValue(1))
     ]);
+    
+    public static readonly List<ConfigType> AudioPlayer = [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Play on Start", "audio_player_start", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().playOnStart = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "audio_player_cue_type", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().isAtmos = value.GetValue() == 1;
+            }).WithDefaultValue(0).WithOptions("Music", "Atmos")),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Audio Cue", "audio_player_cue", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().cueId = value.GetValue();
+            }).WithDefaultValue("None"))
+    ];
 
     public static readonly List<ConfigType> Visible = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(

@@ -31,6 +31,13 @@ public static class ReceiverGroup
         }, true))
     ];
     
+    public static readonly List<EventReceiverType> AudioPlayer = [
+        EventManager.RegisterReceiverType(new EventReceiverType("audio_player_play", "Play", o =>
+        {
+            o.GetComponent<AudioPlayer>().Play();
+        }))
+    ];
+    
     public static readonly List<EventReceiverType> Wisp = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("wisp_go", "Fire", o =>
         {
