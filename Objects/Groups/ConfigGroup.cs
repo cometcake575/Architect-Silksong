@@ -143,6 +143,11 @@ public static class ConfigGroup
                 o.GetComponent<AudioPlayer>().isAtmos = value.GetValue() == 1;
             }).WithDefaultValue(0).WithOptions("Music", "Atmos")),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Lock", "audio_player_lock", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().lockMusic = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new StringConfigType("Audio Cue", "audio_player_cue", (o, value) =>
             {
                 o.GetComponent<AudioPlayer>().cueId = value.GetValue();

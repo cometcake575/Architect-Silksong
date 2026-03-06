@@ -504,7 +504,6 @@ public static class SceneUtils
         yield return SceneManager.UnloadSceneAsync(current);
 
         yield return new WaitForSeconds(0.2f);
-        UIManager.instance.AudioGoToGameplay(0);
 
         if (!_doneTilemapYet)
         {
@@ -520,11 +519,8 @@ public static class SceneUtils
 
             _doneTilemapYet = true;
         }
-
-        yield return new WaitForSeconds(0.8f);
-        UIManager.instance.AudioGoToGameplay(0);
     }
-
+    
     public static GameObject CreateSceneManager()
     {
         var sm = Object.Instantiate(_sceneManager);
@@ -537,12 +533,12 @@ public static class SceneUtils
         csm.environmentType = EnvironmentTypes.NoEffect;
         csm.actorSnapshot = GameManager.instance.actorSnapshotUnpaused;
         csm.atmosSnapshot = GameManager.instance.noAtmosSnapshot;
-        csm.enviroSnapshot = GameManager.instance.silentSnapshot;
-        csm.musicSnapshot = GameManager.instance.noMusicSnapshot;
+        csm.musicCue = GameManager.instance.noMusicCue;
         csm.darknessLevel = 0;
         
         sm.AddComponent<HazardRespawnMarker>();
         sm.SetActive(true);
+        
         return sm;
     }
 

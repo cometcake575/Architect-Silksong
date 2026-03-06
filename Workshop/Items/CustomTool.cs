@@ -74,6 +74,7 @@ public class CustomTool : SpriteItem
         ToolItemManager.Instance.toolItems.Remove(_tool);
         WorkshopManager.CustomTools.Remove(Id);
         ToolItemManager.IncrementVersion();
+        Object.Destroy(_tool);
     }
 
     public void RefreshHSprite()

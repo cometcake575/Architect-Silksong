@@ -236,6 +236,7 @@ public static class StorageManager
 
         GlobalArchitectData.Instance.CurrentMap = "";
         CustomAssetManager.WipeAssets();
+        WorkshopManager.LoadWorkshop(new WorkshopData());
     }
 
     public static IEnumerator LoadLevelData(Dictionary<string, LevelData> levels, WorkshopData workshop, Text status)

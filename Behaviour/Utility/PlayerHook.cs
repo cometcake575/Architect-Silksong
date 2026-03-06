@@ -99,18 +99,11 @@ public class PlayerHook : MonoBehaviour
             self.OnHazardRespawn += () =>
             {
                 PlayerEvent("OnHazardRespawn");
-                ArchitectPlugin.Instance.StartCoroutine(ReturnSound());
             };
 
             HeroPerformanceRegion.StartedPerforming += () => PlayerEvent("NeedolinStart");
             HeroPerformanceRegion.StoppedPerforming += () => PlayerEvent("NeedolinStop");
         };
-    }
-    
-    private static IEnumerator ReturnSound()
-    {
-        yield return new WaitForSeconds(0.2f);
-        UIManager.instance.AudioGoToGameplay(0);
     }
 
     private static void PlayerEvent(string triggerName)

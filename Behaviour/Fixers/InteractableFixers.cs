@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Architect.Events;
-using Architect.Objects.Placeable;
 using Architect.Utils;
 using UnityEngine;
 
@@ -200,7 +199,11 @@ public static class InteractableFixers
     {
         obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
         obj.transform.SetPositionZ(0);
-        obj.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(false);
+        obj.transform.GetChild(0).gameObject.SetActive(false);
+        obj.transform.GetChild(2).GetChild(0).GetChild(0).gameObject.RemoveComponent<PolygonCollider2D>();
+        obj.transform.GetChild(2).GetChild(0).gameObject.layer = LayerMask.NameToLayer("Terrain");
+        obj.transform.GetChild(2).GetChild(0).GetComponent<PolygonCollider2D>().isTrigger = false;
+        obj.transform.GetChild(2).GetChild(0).gameObject.AddComponent<SteepSlope>();
         for (var i = 1; i <= 4; i++) obj.transform.GetChild(2).GetChild(i).gameObject.SetActive(false);
     }
 
@@ -222,7 +225,13 @@ public static class InteractableFixers
         var vine = obj.transform.GetChild(2).GetChild(0).gameObject.LocateMyFSM("thick_silk_vine");
         vine.fsmTemplate = null;
         vine.GetState("Hit Check").AddAction(() => obj.BroadcastEvent("OnHit"), 0);
-        vine.GetState("Break").AddAction(() => obj.BroadcastEvent("OnTempBreak"), 0);
+        var pc = obj.transform.GetChild(2).GetChild(0).GetComponent<PolygonCollider2D>();
+        vine.GetState("Break").AddAction(() =>
+        {
+            pc.enabled = false;
+            obj.BroadcastEvent("OnTempBreak");
+        }, 0);
+        vine.GetState("Reform").AddAction(() => pc.enabled = true, 0);
     }
 
     public static void FixExplodingWallPreload(GameObject obj)

@@ -1,6 +1,7 @@
 using System;
 using Architect.Utils;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Workshop.Items;
 
@@ -38,6 +39,7 @@ public class CustomMateriumEntry : SpriteItem
     {
         MateriumItemManager.Instance.masterList.Remove(_item);
         MateriumItemManager.Instance.masterList.UpdateDictionary();
+        Object.Destroy(_item);
     }
 
     protected override void OnReadySprite()

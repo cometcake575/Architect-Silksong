@@ -65,7 +65,7 @@ public class CustomJournalEntry : SpriteItem
     public override void Unregister()
     {
         EnemyJournalManager.Instance.recordList.Remove(_record);
-        
         WorkshopManager.CustomEntries.Remove(Id);
+        Object.Destroy(_record);
     }
 }
