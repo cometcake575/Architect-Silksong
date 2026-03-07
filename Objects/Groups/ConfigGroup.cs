@@ -2733,7 +2733,7 @@ public static class ConfigGroup
     
     private static readonly int Speed = Shader.PropertyToID("_Speed");
     
-    public static readonly List<ConfigType> FlowingWater = GroupUtils.Merge(Stretchable,
+    public static readonly List<ConfigType> FlowingWater = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations,
     [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Speed", "water_effect_speed", (o, value) =>
@@ -2744,7 +2744,7 @@ public static class ConfigGroup
                     mat.SetFloat(Speed, mat.GetFloat(Speed) * value.GetValue());
                 }
             }).WithDefaultValue(1))
-    ]);
+    ]));
 
     public static readonly List<ConfigType> PoleRing = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
