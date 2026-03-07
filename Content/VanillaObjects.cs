@@ -1294,29 +1294,20 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
                 ("Hang_08", "Harpoon Ring VerticalRide"),
-                preloadAction: o =>
-                {
-                    o.transform.SetRotation2D(0);
-                },
+                preloadAction: o => { o.transform.SetRotation2D(0); },
                 postSpawnAction: MiscFixers.FixRing).DoFlipX()
-            .WithRotateAction((o, r) =>
-            {
-                o.transform.SetRotation2D(r - 38.0005f);
-            })
+            .WithRotateAction((o, r) => { o.transform.SetRotation2D(r - 38.0005f); })
             .WithConfigGroup(ConfigGroup.VerticalRing)
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
         Categories.Platforming.Add(new PreloadObject("Horizontal Moving Ring", "harpoon_ring_h",
                 ("Cog_08", "Harpoon Ring Rail Slider"),
-                preloadAction: o =>
-                {
-                    o.transform.SetRotation2D(0);
-                },
+                preloadAction: o => { o.transform.SetRotation2D(0); },
                 postSpawnAction: MiscFixers.FixRing).DoFlipX())
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings);
 
         Categories.Misc.Add(new PreloadObject("Coldshard", "snow_chunk",
-                ("Bellway_Peak_02", "Snowflake Chunk (82)"), 
+                ("Bellway_Peak_02", "Snowflake Chunk (82)"),
                 preloadAction: o =>
                 {
                     o.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
@@ -1345,41 +1336,38 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Coal Lamp", "coal_lamp",
             ("Peak_05", "coal_lantern_jail_wall_mount/string_cap")));
-        
+
         Categories.Platforming.Add(new PreloadObject("Slope Area", "slope_area",
-            ("Peak_05", "Slide Surface (2)"), 
-            sprite: ResourceUtils.LoadSpriteResource("slope", FilterMode.Point, ppu:25.6f),
-            preloadAction: o =>
-            {
-                o.GetComponent<PolygonCollider2D>().points =
-                [
-                    new Vector2(-2.5f, -2.5f),
-                    new Vector2(-2.5f, 2.5f),
-                    new Vector2(2.5f, 2.5f),
-                    new Vector2(2.5f, -2.5f)
-                ];
-            }).WithConfigGroup(ConfigGroup.Slope)
+                ("Peak_05", "Slide Surface (2)"),
+                sprite: ResourceUtils.LoadSpriteResource("slope", FilterMode.Point, ppu: 25.6f),
+                preloadAction: o =>
+                {
+                    o.GetComponent<PolygonCollider2D>().points =
+                    [
+                        new Vector2(-2.5f, -2.5f),
+                        new Vector2(-2.5f, 2.5f),
+                        new Vector2(2.5f, 2.5f),
+                        new Vector2(2.5f, -2.5f)
+                    ];
+                }).WithConfigGroup(ConfigGroup.Slope)
             .WithRotationGroup(RotationGroup.All));
 
         Categories.Effects.Add(new PreloadObject("Snow Effect", "snow_effect",
-                ("Peak_05", "peak_storm_set_mid_strength"), 
-                description: "Affects the whole room.\n" + 
+                ("Peak_05", "peak_storm_set_mid_strength"),
+                description: "Affects the whole room.\n" +
                              "Rotate the object to rotate the direction of the storm.",
                 preloadAction: MiscFixers.FixSnow,
                 sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+            .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
             .WithConfigGroup(ConfigGroup.Particle).WithRotationGroup(RotationGroup.All);
 
         /*
-        AddEnemy("Pinstress", "pinstress_boss", 
+        AddEnemy("Pinstress", "pinstress_boss",
             ("Peak_07", "Pinstress Control/Pinstress Scene/Pinstress Boss"),
             postSpawnAction: EnemyFixers.FixPinstress);*/
 
         Categories.Npcs.Add(new PreloadObject("Mask Maker NPC", "mask_maker_npc",
-                ("Peak_Mask_Maker", "Peak Mask Maker"), 
+                ("Peak_Mask_Maker", "Peak Mask Maker"),
                 postSpawnAction: MiscFixers.FixMaskMaker)
             .WithConfigGroup(ConfigGroup.MaskMaker)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
@@ -1390,17 +1378,18 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Fayforn));
 
         Categories.Effects.Add(new PreloadObject("Feather Effect", "feather_effect",
-            ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
-            preloadAction: o => o.AddComponent<ParticleObject>(),
+                ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
+                preloadAction: o => o.AddComponent<ParticleObject>(),
                 postSpawnAction: o =>
                 {
                     o.RemoveComponent<PlayMakerFSM>();
                     o.RemoveComponent<AnimatorLookAnimNPC>();
                     o.RemoveComponent<NoiseResponder>();
                     o.RemoveComponent<AudioSource>();
-                    foreach (var i in (int[])[0, 1, 2, 3, 4, 6, 7]) o.transform.GetChild(i).gameObject.SetActive(false);
+                    foreach (var i in (int[]) [0, 1, 2, 3, 4, 6, 7])
+                        o.transform.GetChild(i).gameObject.SetActive(false);
                 },
-                sprite: ResourceUtils.LoadSpriteResource("feather_effect", ppu:68.75f))
+                sprite: ResourceUtils.LoadSpriteResource("feather_effect", ppu: 68.75f))
             .WithConfigGroup(ConfigGroup.Particle));
     }
 
@@ -1420,6 +1409,46 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixWater)
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Water));
+
+        Categories.Effects.Add(new PreloadObject("Splash Area", "splash_effect",
+            ("Hang_09", "Soft Waterfall Region"),
+            sprite: ResourceUtils.LoadSpriteResource("splash", FilterMode.Point, ppu:25.6f),
+            preloadAction: o =>
+            {
+                var col = o.GetComponent<BoxCollider2D>();
+                col.size = new Vector2(5, 5);
+                col.offset = Vector2.zero;
+            }));
+
+        Categories.Effects.Add(new PreloadObject("Splash Effect", "water_effect",
+            ("Hang_09", "coral_river_chunk/particle_barrel_splash"),
+            preloadAction: o => o.AddComponent<ParticleObject>(),
+            sprite: ResourceUtils.LoadSpriteResource("water_effect", ppu:68.75f))
+            .DoIgnoreScale()
+            .WithConfigGroup(ConfigGroup.Particle));
+
+        Categories.Effects.Add(new PreloadObject("Flowing Water", "flowing_water_effect",
+            ("Hang_09", "coral_river_chunk/river_top/Base"),
+            sprite: ResourceUtils.LoadSpriteResource("water_flow", FilterMode.Point, ppu:215),
+            preloadAction: o =>
+            {
+                o.transform.SetRotation2D(0);
+                o.transform.SetScale2D(new Vector2(3, 3));
+            })
+            .WithConfigGroup(ConfigGroup.FlowingWater)
+            .WithRotationGroup(RotationGroup.All));
+
+        Categories.Effects.Add(new PreloadObject("Falling Water", "waterfall_effect",
+            ("Hang_09", "coral_river_chunk/waterfall/Base"),
+            sprite: ResourceUtils.LoadSpriteResource("water_fall", FilterMode.Point, ppu:215),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(1).gameObject.SetActive(false);
+                o.transform.GetChild(2).gameObject.SetActive(false);
+                o.transform.GetChild(3).gameObject.SetActive(false);
+                o.transform.SetScale2D(new Vector2(3, 3));
+            })
+            .WithConfigGroup(ConfigGroup.FlowingWater));
 
         AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
@@ -1756,7 +1785,8 @@ public static class VanillaObjects
                 ("Hang_06b", "new_scene/Reflection_surface"),
                 description: "Reflects objects above itself, can be configured\n" +
                              "in the same way as the Custom PNG for custom mirror shapes.",
-                preloadAction: MiscFixers.FixMirrorAndSilhouette, sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
+                preloadAction: MiscFixers.FixMirrorAndSilhouette,
+                sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
         Categories.Effects.Add(new PreloadObject("Silhouette Effect", "silhouette_effect",
@@ -1995,7 +2025,8 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Black Thread Strand", "black_thread_strand",
                 ("Song_19_Entrance", "Black Thread States/Black Thread World/black_thread_strand"),
                 preloadAction: MiscFixers.FixBlackStrand,
-                sprite: ResourceUtils.LoadSpriteResource("black_thread_strand", ppu: 377.5f)))
+                sprite: ResourceUtils.LoadSpriteResource("black_thread_strand", ppu: 75.5f)))
+            .DoIgnoreScale()
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.BlackStrand);
         

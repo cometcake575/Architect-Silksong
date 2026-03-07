@@ -200,6 +200,7 @@ public static class InteractableFixers
         obj.RemoveComponent<DeactivateIfPlayerdataTrue>();
         obj.transform.SetPositionZ(0);
         obj.transform.GetChild(0).gameObject.SetActive(false);
+        obj.transform.GetChild(2).GetChild(0).GetChild(0).gameObject.RemoveComponent<SilkPusher>();
         obj.transform.GetChild(2).GetChild(0).GetChild(0).gameObject.RemoveComponent<PolygonCollider2D>();
         obj.transform.GetChild(2).GetChild(0).gameObject.layer = LayerMask.NameToLayer("Terrain");
         obj.transform.GetChild(2).GetChild(0).GetComponent<PolygonCollider2D>().isTrigger = false;

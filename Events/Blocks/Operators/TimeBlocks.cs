@@ -27,13 +27,13 @@ public class TimeBlock : TimeBlockType
     protected override object GetValue(string id)
     {
         var diff = GetNow() - DateTime.UnixEpoch;
-        return id switch
+        return Convert.ToSingle(id switch
         {
             "Days" => diff.TotalDays,
             "Hours" => diff.TotalHours,
             "Minutes" => diff.TotalMinutes,
             _ => diff.TotalSeconds
-        };
+        });
     }
 }
 

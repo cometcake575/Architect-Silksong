@@ -2714,14 +2714,37 @@ public static class ConfigGroup
                 o.RemoveComponent<Collider2D>();
             }).WithDefaultValue(true))
     ]);
+    
+    private static readonly int ReflectionOffset = Shader.PropertyToID("_ReflectionOffset");
 
     public static readonly List<ConfigType> Mirror = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Png, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Alpha Colour", "mirror_alpha", (o, value) =>
             {
                 o.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, value.GetValue() * 1.75f);
-            }).WithDefaultValue(0.75f))
+            }).WithDefaultValue(0.75f)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Reflection Offset", "mirror_offset", (o, value) =>
+            {
+                var mat = o.GetComponent<SpriteRenderer>().material;
+                mat.SetFloat(ReflectionOffset, value.GetValue());
+            }).WithDefaultValue(-4.1f))
     ]));
+    
+    private static readonly int Speed = Shader.PropertyToID("_Speed");
+    
+    public static readonly List<ConfigType> FlowingWater = GroupUtils.Merge(Stretchable,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Speed", "water_effect_speed", (o, value) =>
+            {
+                foreach (var mr in o.GetComponentsInChildren<MeshRenderer>())
+                {
+                    var mat = mr.material;
+                    mat.SetFloat(Speed, mat.GetFloat(Speed) * value.GetValue());
+                }
+            }).WithDefaultValue(1))
+    ]);
 
     public static readonly List<ConfigType> PoleRing = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(

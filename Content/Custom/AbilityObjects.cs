@@ -55,7 +55,7 @@ public static class AbilityObjects
         Categories.Abilities.Add(MakeAbilityBinding("Double Jump", "double_jump"));
         Categories.Abilities.Add(MakeAbilityBinding("Silk Heart", "silk_heart"));
         Categories.Abilities.Add(MakeAbilityBinding("Frost", "frost"));
-        Categories.Abilities.Add(MakeAbilityBinding("Needle", "needle", "Locks the needle damage to 5"));
+        Categories.Abilities.Add(MakeAbilityBinding("Needle", "needle", "Locks the needle damage to 5\n\n"));
         Categories.Abilities.Add(MakeAbilityBinding("Attack", "attack"));
         // Categories.Abilities.Add(MakeAbilityBinding("Tool", "tools"));
         SetupBindingHooks();

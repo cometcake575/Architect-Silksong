@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>3.19.5</Version>
+    <Version>3.19.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
     <PackageReference Include="Silksong.GameLibs" Version="*-*" />
     <PackageReference Include="Silksong.PrepatcherPlugin" Version="1.0.1" />
     <PackageReference Include="Silksong.AssetHelper" Version="1.0.0" />
-    <PackageReference Include="Silksong.SSMP" Version="0.0.5" />
+    <PackageReference Include="Silksong.SSMP" Version="0.0.6" />
     <Reference Include="Patchwork">
       <HintPath>$(SilksongPluginsFolder)/Ashiepaws-Patchwork/Patchwork.dll</HintPath>
     </Reference>

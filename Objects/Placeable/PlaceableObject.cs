@@ -38,6 +38,7 @@ public abstract class PlaceableObject : SelectableObject
     public float ZPosition;
 
     public bool FlipX;
+    public bool IgnoreScale;
     
     private readonly string _name;
     private readonly string _description;
@@ -101,6 +102,12 @@ public abstract class PlaceableObject : SelectableObject
         ParentScale = Prefab.transform.lossyScale;
         if (Sprite) LossyScale = ParentScale;
         else Sprite = RetrieveSprite();
+
+        if (IgnoreScale)
+        {
+            ParentScale = Vector3.one;
+            LossyScale = Vector3.one;
+        }
         
         if (!Sprite) ArchitectPlugin.Logger.LogError($"No sprite found for {_name}");
     }
@@ -143,6 +150,11 @@ public abstract class PlaceableObject : SelectableObject
 
     public PlaceableObject DoFlipX() {
         FlipX = true;
+        return this;
+    }
+
+    public PlaceableObject DoIgnoreScale() {
+        IgnoreScale = true;
         return this;
     }
 
