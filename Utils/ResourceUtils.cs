@@ -19,15 +19,6 @@ public static class ResourceUtils
     {
         return LoadSpriteResource(spritePath, new Vector2(0.5f, 0.5f), filterMode, border, ppu);
     }
-    
-    public static string LoadTextResource(string resourceName)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        using var stream = assembly.GetManifestResourceStream($"Architect.Resources.{resourceName}");
-        if (stream == null) throw new Exception("Resource not found.");
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
-    }
 
     internal static Sprite LoadSpriteResource(
         string spritePath,
@@ -60,6 +51,15 @@ public static class ResourceUtils
         sprite.texture.filterMode = filterMode;
         
         return sprite;
+    }
+    
+    public static string LoadTextResource(string resourceName)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream($"Architect.Resources.{resourceName}");
+        if (stream == null) throw new Exception("Resource not found.");
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 
     [CanBeNull]

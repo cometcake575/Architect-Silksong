@@ -2313,11 +2313,6 @@ public static class ConfigGroup
                 .WithDefaultValue(100)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Light Reflection", "png_glow",
-                    (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
-                .WithDefaultValue(false)
-                .WithPriority(-2)),
-        ConfigurationManager.RegisterConfigType(
             new IntConfigType("Vertical Frame Count", "png_framecount",
                     (o, value) => { o.GetComponentInChildren<PngObject>().vcount = value.GetValue(); },
                     (o, value, _) => { o.GetOrAddComponent<PngPreview>().vcount = value.GetValue(); })
@@ -2369,6 +2364,11 @@ public static class ConfigGroup
     public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, 
         GroupUtils.Merge(Stretchable, 
         GroupUtils.Merge(Decorations, [
+            ConfigurationManager.RegisterConfigType(
+                new BoolConfigType("Light Reflection", "png_glow",
+                        (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
+                    .WithDefaultValue(false)
+                    .WithPriority(-2)),
             ConfigurationManager.RegisterConfigType(
                 new FloatConfigType("Colour R", "png_col_r",
                     (o, value) =>

@@ -222,7 +222,7 @@ public static class EditorUI
                 anchor,
                 anchor
             );
-            if (category is Category { Priority: < 0 }) _legacyCategory = (btn, label); 
+            if (category.GetName() == "Legacy") _legacyCategory = (btn, label); 
             btn.onClick.AddListener(() =>
             {
                 PageIndex = 0;

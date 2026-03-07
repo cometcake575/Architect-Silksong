@@ -1211,8 +1211,7 @@ public static class MiscFixers
 
     public static void FixMirrorAndSilhouette(GameObject obj)
     {
-        obj.AddComponent<PngObject>();
-        obj.transform.SetScale2D(new Vector2(2, 2));
+        obj.AddComponent<PngObject>().ignoreGlow = true;
         obj.transform.SetPositionZ(-0.1f);
         obj.transform.SetRotation2D(0);
     }

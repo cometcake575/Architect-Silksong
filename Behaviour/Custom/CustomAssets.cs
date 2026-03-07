@@ -30,6 +30,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
     public int frame;
     public string url;
     public bool point;
+    public bool ignoreGlow;
     public bool glow = true;
     public float ppu = 100;
     private int _count = 1;
@@ -45,6 +46,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
         if (string.IsNullOrEmpty(url)) return;
         
         _renderer = GetComponent<SpriteRenderer>();
+        if (ignoreGlow) glow = true;
         if (!glow && _renderer) _renderer.material = MiscFixers.SpriteMaterial;
         CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
         _count = Mathf.Max(1, hcount * vcount - dummy);

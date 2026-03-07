@@ -51,6 +51,7 @@ public static class AbilityObjects
         Categories.Abilities.Add(MakeAbilityBinding("Clawline", "harpoon"));
         Categories.Abilities.Add(MakeAbilityBinding("Wall Jump", "wall_jump"));
         Categories.Abilities.Add(MakeAbilityBinding("Silk Soar", "super_jump"));
+        Categories.Abilities.Add(MakeAbilityBinding("Needolin", "needolin"));
         Categories.Abilities.Add(MakeAbilityBinding("Drift", "drift"));
         Categories.Abilities.Add(MakeAbilityBinding("Double Jump", "double_jump"));
         Categories.Abilities.Add(MakeAbilityBinding("Silk Heart", "silk_heart"));

@@ -20,7 +20,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.19.7")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.19.8")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -62,7 +62,6 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         
         EditManager.Init();
         CursorManager.Init();
-        EditorUI.Init();
         
         VanillaObjects.Init();
         SplineObjects.Init();
@@ -91,6 +90,11 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
                 StringVarBlock.SemiVars.Clear();
                 orig(self);
             });
+    }
+
+    private void Start()
+    {
+        EditorUI.Init();
     }
     
     private void Update()

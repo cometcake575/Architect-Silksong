@@ -48,7 +48,8 @@ public class DayBlock : TimeBlockType
         ("OfWeek", "Number"),
         ("Hour", "Number"),
         ("Minute", "Number"),
-        ("Second", "Number")
+        ("Second", "Number"),
+        ("Ms", "Number")
     ];
 
     protected override object GetValue(string id)
@@ -60,7 +61,8 @@ public class DayBlock : TimeBlockType
             "OfWeek" => (int)now.DayOfWeek,
             "Hour" => (int)now.TimeOfDay.TotalHours,
             "Minute" => (int)now.TimeOfDay.TotalMinutes % 60,
-            _ => (int)now.TimeOfDay.TotalSeconds % 60
+            "Second" => (int)now.TimeOfDay.TotalSeconds % 60,
+            _ => (int)now.TimeOfDay.TotalMilliseconds % 1000
         };
     }
 }
