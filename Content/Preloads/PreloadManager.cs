@@ -92,7 +92,7 @@ public static class PreloadManager
 
         while (_count < Preloaded.Count) yield return null;
         
-        EditorUI.CompleteSetup();
+        EditorUI.Setup();
         WorkshopManager.Setup();
         HasPreloaded = true;
         Object.Destroy(_canvasObj);

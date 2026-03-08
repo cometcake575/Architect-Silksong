@@ -73,7 +73,7 @@ public static class EditorUI
     private static AttributeType _currentOption = AttributeType.Config;
     private static EditorType _currentType = EditorType.Map;
     
-    public static void Init()
+    public static void Setup()
     {
         SetupCanvas();
         SetupLabels();
@@ -85,6 +85,12 @@ public static class EditorUI
         SetupHotbar();
 
         RefreshItem();
+        
+        FavouritesCategory.Favourites = StorageManager.LoadFavourites();
+        SavedCategory.Objects = StorageManager.LoadSavedObjects();
+        PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
+        
+        RefreshCurrentPage();
     }
 
     private static void SetupCanvas()
@@ -895,15 +901,6 @@ public static class EditorUI
 
         ScaleText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
         RotationText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
-    }
-
-    public static void CompleteSetup()
-    {
-        FavouritesCategory.Favourites = StorageManager.LoadFavourites();
-        SavedCategory.Objects = StorageManager.LoadSavedObjects();
-        PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
-        
-        RefreshCurrentPage();
     }
 
     public static void RefreshCurrentPage()

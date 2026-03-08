@@ -2051,6 +2051,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        Categories.Misc.Add(new PreloadObject("Verdania Lamp", "verdania_lamp",
+                ("Clover_04b", "break_grey_lamp_harp"),
+                postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
         var explosion = new GameObject("[Architect] Explosion");
         explosion.SetActive(false);
@@ -2402,7 +2408,8 @@ public static class VanillaObjects
                     o.transform.GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>())
             .WithConfigGroup(ConfigGroup.LoreTablets));
 
-        AddEnemy("Pond Skipper", "pond_skater", ("Arborium_05", "Pond Skater"));
+        AddEnemy("Pond Skipper", "pond_skater", ("Arborium_05", "Pond Skater"),
+            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(0));
         AddEnemy("Pondcatcher", "pilgrim_fisher",
             ("Shellwood_01", "Black Thread States/Normal World/Pilgrim Fisher Enemy (1)"));
         AddEnemy("Gahlia", "bloom_puncher", ("Arborium_05", "Bloom Puncher"))
