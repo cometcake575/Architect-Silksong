@@ -29,8 +29,6 @@ public static class WorkshopUI
     
     public static void Init(GameObject workshopUI)
     {
-        WorkshopManager.Init();
-        
         var bg = new GameObject("Background");
         bg.transform.SetParent(workshopUI.transform, false);
         bg.RemoveOffset();

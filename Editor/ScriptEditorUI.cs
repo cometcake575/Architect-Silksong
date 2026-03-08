@@ -42,8 +42,6 @@ public static class ScriptEditorUI
 
     public static void Init(GameObject scriptUI)
     {
-        ScriptManager.Init();
-        
         _bgImg = UIUtils.MakeImage(
             "Background",
             scriptUI,

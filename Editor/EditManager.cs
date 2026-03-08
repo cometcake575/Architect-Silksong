@@ -194,7 +194,8 @@ public static class EditManager
 
         if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
             !_loadPos && !HeroController.instance.cState.dead &&
-            HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION)
+            HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION
+            && !HeroController.instance.transform.parent)
         {
             if (Settings.ToggleEditor.WasPressed) ToggleEditor();
             else if (ReloadRequired) ReloadScene();

@@ -5,6 +5,7 @@ using Architect.Content.Custom;
 using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Events.Blocks;
 using Architect.Events.Blocks.Operators;
 using Architect.Multiplayer;
 using Architect.Objects.Categories;
@@ -13,6 +14,7 @@ using Architect.Prefabs;
 using Architect.Sharer;
 using Architect.Storage;
 using Architect.Utils;
+using Architect.Workshop;
 using BepInEx;
 using BepInEx.Logging;
 using Silksong.DataManager;
@@ -20,7 +22,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.19.8")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.19.9")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -60,6 +62,8 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         ActionManager.Init();
         CoopManager.Init();
         
+        WorkshopManager.Init();
+        ScriptManager.Init();
         EditManager.Init();
         CursorManager.Init();
         

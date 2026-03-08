@@ -286,19 +286,6 @@ public static class ConfigGroup
             }).WithDefaultValue(-1))
     ]);
 
-    public static readonly List<ConfigType> Silkfly = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("X Direction", "silkfly_x", (o, value) =>
-            {
-                o.GetComponent<MiscFixers.Silkfly>().xOffset = value.GetValue();
-            }).WithDefaultValue(5)),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Y Direction", "silkfly_y", (o, value) =>
-            {
-                o.GetComponent<MiscFixers.Silkfly>().yOffset = value.GetValue();
-            }).WithDefaultValue(5))
-    ]);
-
     public static readonly List<ConfigType> NeedolinGate = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Strings", "needolin_gate_strings", (o, value) =>
@@ -1005,6 +992,20 @@ public static class ConfigGroup
                     }
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
+
+    public static readonly List<ConfigType> Silkfly = GroupUtils.Merge(Visible, [
+        ZOffset,
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Direction", "silkfly_x", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Silkfly>().xOffset = value.GetValue();
+            }).WithDefaultValue(5)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Direction", "silkfly_y", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Silkfly>().yOffset = value.GetValue();
+            }).WithDefaultValue(5))
+    ]);
 
     public static readonly List<ConfigType> Fayforn = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
