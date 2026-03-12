@@ -141,11 +141,6 @@ public static class HazardFixers
         obj.transform.localScale *= 2;
     }
 
-    public static void FixZaprockPreload(GameObject obj)
-    {
-        obj.transform.SetRotation2D(0);
-    }
-
     public static void FixZaprock(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");

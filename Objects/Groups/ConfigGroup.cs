@@ -215,6 +215,30 @@ public static class ConfigGroup
                 o.transform.GetChild(3).SetLocalPositionY(value.GetValue());
             }).WithDefaultValue(5))
     ]);
+    
+    public static readonly List<ConfigType> Chest = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Rosary Count S", "chest_rosaries_s", (o, value) =>
+            {
+                o.LocateMyFSM("Chest Control").FsmVariables.FindFsmInt("Geo Small").Value = value.GetValue();
+            }).WithDefaultValue(10)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Rosary Count M", "chest_rosaries_m", (o, value) =>
+            {
+                o.LocateMyFSM("Chest Control").FsmVariables.FindFsmInt("Geo Med").Value = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Rosary Count L", "chest_rosaries_l", (o, value) =>
+            {
+                o.LocateMyFSM("Chest Control").FsmVariables.FindFsmInt("Geo Large").Value = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Shard Count", "chest_shards", (o, value) =>
+            {
+                o.LocateMyFSM("Chest Control").FsmVariables.FindFsmInt("Shards").Value = value.GetValue();
+            }).WithDefaultValue(0))
+    ]);
 
     public static readonly List<ConfigType> Item = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
@@ -506,6 +530,16 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Awake", "zi_awake", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.GetComponent<MiscFixers.Zi>().DoWake();
+            }).WithDefaultValue(true))
+
+    ]);
+
     public static readonly List<ConfigType> MaskMaker = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Unmasked Dialogue", "mask_maker_unmasked_text", (o, value) =>
@@ -594,7 +628,7 @@ public static class ConfigGroup
                 else
                 {
                     if (value.GetValue()) return;
-                    o.LocateMyFSM("BG Control").FsmVariables.FindFsmBool("Start Closed").Value = true;
+                    o.GetComponent<PlayMakerFSM>().FsmVariables.FindFsmBool("Start Closed").Value = true;
                 }
             }).WithDefaultValue(false))
     ]);
@@ -1043,6 +1077,14 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> PersistentBreakable = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Broken", "breakable_stay"))
+    ]);
+
+    public static readonly List<ConfigType> BodySack = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(new BoolConfigType(
+            "Drop Corpse", "corpse_in_bag", (o, value) =>
+            {
+                if (!value.GetValue()) o.RemoveComponentsInChildren<BreakableGenerateCorpse>();
+            }).WithDefaultValue(true))
     ]);
 
     private static readonly ConfigType IsBreakable = ConfigurationManager.RegisterConfigType(new BoolConfigType(
@@ -2455,6 +2497,10 @@ public static class ConfigGroup
                 (o, value) => { o.GetComponent<WavObject>().globalSound = value.GetValue() == 1; })
                 .WithOptions("Local", "Global").WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Volume Type", "wav_volume_mode",
+                (o, value) => { o.GetComponent<WavObject>().isMusic = value.GetValue() == 1; })
+                .WithOptions("Master", "Music").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Loop Sound", "wav_loop",
                 (o, value) => { o.GetComponent<WavObject>().loop = value.GetValue(); })
                 .WithDefaultValue(false)),
@@ -2685,11 +2731,9 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(new BoolConfigType("Collectable", "bead_collectable",
             (o, value) =>
             {
-                if (!value.GetValue())
-                {
-                    o.RemoveComponent<EventRegister>();
-                    o.RemoveComponent<GeoControl>();
-                }
+                if (value.GetValue()) return;
+                o.RemoveComponent<EventRegister>();
+                o.RemoveComponent<GeoControl>();
             }
         ).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Collected", "rosary_stay")

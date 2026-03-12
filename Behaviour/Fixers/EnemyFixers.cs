@@ -2439,16 +2439,29 @@ public static class EnemyFixers
     public static void FixShardillard(GameObject obj)
     {
         KeepActive(obj);
-        obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-        obj.GetComponent<DamageHero>().damageDealt = 1;
+
+        obj.AddComponent<Shardillard>();
         
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("Init").AddAction(() =>
-        {
-            fsm.SetState("Recover");
-        }, 3);
         fsm.GetState("Charge").DisableAction(12);
         fsm.GetState("Terrain Effects").AddAction(() => obj.BroadcastEvent("OnBounce"), 0);
+    }
+
+    public class Shardillard : Wakeable
+    {
+        public override void DoWake()
+        {
+            GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            GetComponent<DamageHero>().damageDealt = 1;
+            
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Init").AddAction(() =>
+            {
+                fsm.SetState("Recover");
+            }, 3);
+            
+            fsm.SendEvent("ALERT");
+        }
     }
 
     public static void FixWingedFurm(GameObject obj)

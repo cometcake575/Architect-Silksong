@@ -56,7 +56,7 @@ public static class VanillaObjects
     {
         Categories.Hazards.Add(new PreloadObject("Voltbeam", "coral_lightning_rock",
                 ("Coral_29", "Zap Worm Lightning (2)"), sprite: ResourceUtils.LoadSpriteResource("glow", ppu: 10.75f),
-                preloadAction: HazardFixers.FixZaprockPreload,
+                preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: HazardFixers.FixZaprock,
                 description: "Works best in small spaces, hitbox is very tall and pink glow extends much further.")
             .WithConfigGroup(ConfigGroup.Zaprock)
@@ -407,6 +407,15 @@ public static class VanillaObjects
         AddEnemy("Drapefly", "drapefly", ("Hang_10", "Citadel Bat"));
         AddEnemy("Drapelord", "drapelord",
             ("Arborium_11", "Merchant Quest Parent/Quest Active/Battle Scene/Wave 1/Citadel Bat Large"));
+
+        Categories.Hazards.Add(new PreloadObject("Steam Vent", "steam_vent",
+                ("Under_07", "steam_vent_short (3)"))
+            .WithRotationGroup(RotationGroup.Four));
+        
+        Categories.Interactable.Add(new PreloadObject("Steam Gate", "steam_gate",
+            ("Under_07", "Battle Scene/Gates/steam_vent_short (2)"))
+            .WithConfigGroup(ConfigGroup.CloseableGates)
+            .WithReceiverGroup(ReceiverGroup.BattleGate));
 
         Categories.Hazards.Add(new PreloadObject("Spiked Grey Cog", "spike_cog_4",
                 ("Under_05", "cog_05_shortcut/before/blocking cogs/Spike Cog 3"), 
@@ -881,6 +890,16 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)
             .WithRotationGroup(RotationGroup.Eight));
 
+        Categories.Interactable.Add(new PreloadObject("Water Effect", "water_effect_anim",
+                ("Clover_02c", "water_components_moss_short 1/caustic_small_000 (13)"),
+                preloadAction: o =>
+                {
+                    o.transform.SetScale2D(new Vector2(5, 5));
+                    o.transform.SetScaleZ(1);
+                    o.transform.SetRotation2D(0);
+                    o.transform.SetPositionZ(0.06f);
+                }).WithConfigGroup(ConfigGroup.Decorations));
+
         Categories.Interactable.Add(new PreloadObject("Clover Plant", "clover_pod_activator",
                 ("Clover_02c", "grove_pod (1)/Clover Bounce Pod Activator"),
                 postSpawnAction: InteractableFixers.FixActivator)
@@ -1294,7 +1313,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
                 ("Hang_08", "Harpoon Ring VerticalRide"),
-                preloadAction: o => { o.transform.SetRotation2D(0); },
+                preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: MiscFixers.FixRing).DoFlipX()
             .WithRotateAction((o, r) => { o.transform.SetRotation2D(r - 38.0005f); })
             .WithConfigGroup(ConfigGroup.VerticalRing)
@@ -1302,7 +1321,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Horizontal Moving Ring", "harpoon_ring_h",
                 ("Cog_08", "Harpoon Ring Rail Slider"),
-                preloadAction: o => { o.transform.SetRotation2D(0); },
+                preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: MiscFixers.FixRing).DoFlipX())
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings);
 
@@ -1335,7 +1354,8 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         Categories.Misc.Add(new PreloadObject("Coal Lamp", "coal_lamp",
-            ("Peak_05", "coal_lantern_jail_wall_mount/string_cap")));
+            ("Peak_05", "coal_lantern_jail_wall_mount/string_cap"))
+            .WithConfigGroup(ConfigGroup.Decorations));
 
         Categories.Platforming.Add(new PreloadObject("Slope Area", "slope_area",
                 ("Peak_05", "Slide Surface (2)"),
@@ -1551,7 +1571,8 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Body Sack", "body_sack",
             ("Shadow_27", "Breakable Hang Sack 2"),
             postSpawnAction: MiscFixers.FixBreakable)
-            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable)
+            .WithConfigGroup(ConfigGroup.BodySack));
     }
 
     private static void AddMistObjects()
@@ -1639,6 +1660,12 @@ public static class VanillaObjects
                 o.transform.SetPositionZ(-0.0054f);
                 o.transform.SetRotation2D(0);
             }, postSpawnAction: HazardFixers.FixCarvers));
+
+        Categories.Npcs.Add(new PreloadObject("Steel Seer Zi", "steel_seer",
+            ("Coral_37", "Room_States/Steel/Steel Sentinel"),
+            preloadAction: MiscFixers.FixZi)
+            .WithConfigGroup(ConfigGroup.SeerZi)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
     }
 
     private static void AddMiscObjects()
@@ -1681,6 +1708,27 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.RuneBomb));
         Object.Instantiate(Effects.BlackThreadEnemyStartEffect, blackThreadEffect.transform)
             .transform.localPosition = Vector3.zero;
+        
+        Categories.Misc.Add(new PreloadObject("Bone Chest", "bone_chest",
+                ("Bone_19", "Bone Chest"),
+                postSpawnAction: MiscFixers.FixChest)
+            .WithConfigGroup(ConfigGroup.Chest)
+            .WithRotationGroup(RotationGroup.Four)
+            .DoFlipX());
+        
+        Categories.Misc.Add(new PreloadObject("Citadel Chest", "song_chest",
+                ("Song_03", "Chest Scene/Chest"),
+                postSpawnAction: MiscFixers.FixChest)
+            .WithConfigGroup(ConfigGroup.Chest)
+            .WithRotationGroup(RotationGroup.Four)
+            .DoFlipX());
+        
+        Categories.Misc.Add(new PreloadObject("Large Citadel Chest", "docks_chest",
+                ("Dock_06_Church", "Black Thread States Thread Only Variant/Normal World/City Shard Chest"),
+                postSpawnAction: MiscFixers.FixChest)
+            .WithConfigGroup(ConfigGroup.Chest)
+            .WithRotationGroup(RotationGroup.Four)
+            .DoFlipX());
         
         Categories.Misc.Add(new PreloadObject("Breakable Wall A", "breakable_wall_2",
             ("Bone_19", "Breakable Wall"),
@@ -2170,10 +2218,6 @@ public static class VanillaObjects
     
     private static void AddCogworksObjects()
     {
-        Categories.Hazards.Add(new PreloadObject("Steam Vent", "steam_vent",
-                ("Under_07", "steam_vent_short (3)"))
-            .WithRotationGroup(RotationGroup.Four));
-
         Categories.Hazards.Add(new PreloadObject("Fan", "fan_hazard", ("Under_03", "fan_hazard"), 
                 preloadAction: HazardFixers.FixFan).WithConfigGroup(ConfigGroup.Hazards));
 
@@ -2463,7 +2507,8 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Decorations);
 
         Categories.Misc.Add(new PreloadObject("Pond Skipper Body", "pond_skipper_body",
-            ("Belltown_Room_shellwood", "shell_hang_rope"), postSpawnAction: MiscFixers.FixPondSkipperBody)
+            ("Belltown_Room_shellwood", "shell_hang_rope"),
+            preloadAction: MiscFixers.FixDisabledBreakable)
             .WithConfigGroup(ConfigGroup.Bell)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
@@ -2511,6 +2556,22 @@ public static class VanillaObjects
         AddEnemy("Skarrgard", "bone_hunter_throw",
             ("Ant_21", "Enemy Control/Normal/Bone Hunter Throw"),
             preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
+
+        Categories.Misc.Add(new PreloadObject("Skarr String S", "ros_str_s",
+            ("Ant_21", "ant_rosary_string"),
+            preloadAction: MiscFixers.FixRotation)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
+        Categories.Misc.Add(new PreloadObject("Skarr String M", "ros_str_m",
+            ("Ant_21", "ant_rosary_string_medium (1)"),
+            preloadAction: MiscFixers.FixRotation)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
+        Categories.Misc.Add(new PreloadObject("Skarr String L", "ros_str_l",
+            ("Ant_21", "ant_rosary_string_large"),
+            preloadAction: MiscFixers.FixRotation)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
 
         AddEnemy("Last Claw", "last_claw",
             ("Memory_Ant_Queen", "Boss Scene/Battle Scene/Wave 4/Bone Hunter Fly Chief"),
@@ -2657,8 +2718,10 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Velocity));
 
         AddEnemy("Shardillard", "shardillard", ("Bone_06", "Shell Fossil Mimic AppearVariant"),
-            preloadAction: o => o.transform.SetRotation2D(0),
+            preloadAction: MiscFixers.FixRotation,
             postSpawnAction: EnemyFixers.FixShardillard)
+            .WithReceiverGroup(ReceiverGroup.Wakeable)
+            .WithConfigGroup(ConfigGroup.Wakeable)
             .WithBroadcasterGroup(BroadcasterGroup.Shardillard).DoFlipX();
 
         Categories.Platforming.Add(new PreloadObject("Magnetite Platform 1", "bone_plat_crumble_1",
@@ -2823,6 +2886,13 @@ public static class VanillaObjects
     {
         AddSolid("Far Fields Platform 1", "fung_plat_float_01", ("Bone_East_15", "fung_plat_float_06"));
         AddSolid("Far Fields Platform 2", "fung_plat_float_02", ("Bone_East_14", "bone_plat_03"));
+
+        Categories.Interactable.Add(new PreloadObject("Falling Exploding Rock", "boom_rock_fall",
+            ("Bone_East_14", "Explode Floor Scene/DropBomb Rock (2)"),
+            preloadAction: o => o.transform.SetPositionZ(0),
+            postSpawnAction: InteractableFixers.FixFallingRock)
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
+            .WithReceiverGroup(ReceiverGroup.FallingRock));
 
         AddEnemy("Brushflit", "brushflit", ("Bone_East_15", "Fields Flock Flyer"),
             preloadAction: EnemyFixers.FixBrushflit)

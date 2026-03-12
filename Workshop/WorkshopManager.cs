@@ -81,6 +81,10 @@ public static class WorkshopManager
             new Vector2(-300, -300),
             ConfigGroup.Keybind);
         
+        Register<CustomCue>("Audio Cue",
+            new Vector2(-100, -300),
+            ConfigGroup.Cue);
+        
         SceneGroup.Init();
         
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),

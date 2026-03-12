@@ -10,8 +10,8 @@ using Architect.Editor;
 using Architect.Events.Blocks.Operators;
 using Architect.Objects.Placeable;
 using Architect.Utils;
-using BepInEx;
 using GlobalSettings;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
@@ -397,13 +397,13 @@ public static class MiscFixers
     
     public static void FixLamp(GameObject obj)
     {
-        FixBreakable(obj);
+        obj.transform.GetChild(0).gameObject.AddComponent<DisablingBreakable>().target = obj;
         obj.transform.GetChild(0).GetChild(2).SetAsFirstSibling();
     }
     
     public static void FixBigLamp(GameObject obj)
     {
-        FixBreakable(obj);
+        obj.transform.GetChild(0).GetChild(0).gameObject.AddComponent<DisablingBreakable>().target = obj;
         obj.transform.SetPositionZ(0.05f);
         obj.transform.GetChild(0).GetChild(0).GetChild(2).SetAsFirstSibling();
     }
@@ -616,6 +616,12 @@ public static class MiscFixers
         obj.AddComponent<Shakra>();
     }
 
+    public static void FixZi(GameObject obj)
+    {
+        obj.transform.SetPositionZ(0.007f);
+        obj.AddComponent<Zi>();
+    }
+
     private static readonly int EnemyLayer = LayerMask.NameToLayer("Enemies");
 
     public static void FixSecondSentinelAlly(GameObject obj)
@@ -793,6 +799,28 @@ public static class MiscFixers
             dialogue.Key = text;
             
             fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+        }
+    }
+    
+    public class Zi : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("State?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            
+            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+            
+            fsm.GetState("End Dlg").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+        }
+
+        public void DoWake()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.SendEvent("SING");
+            fsm.GetState("Inert").AddAction(() => fsm.SendEvent("SING"), 0);
         }
     }
     
@@ -1484,13 +1512,15 @@ public static class MiscFixers
         public float yOffset;
     }
 
-    public static void FixPondSkipperBody(GameObject obj)
+    public static void FixDisabledBreakable(GameObject obj)
     {
-        obj.AddComponent<PsBody>();
+        obj.AddComponent<DisablingBreakable>().target = obj;
     }
 
-    public class PsBody : MonoBehaviour
+    public class DisablingBreakable : MonoBehaviour
     {
+        public GameObject target;
+        
         private void OnDisable()
         {
             ArchitectPlugin.Instance.StartCoroutine(Reactivate());
@@ -1500,8 +1530,11 @@ public static class MiscFixers
         {
             yield return null;
             if (!this) yield break;
-            gameObject.SetActive(true);
-            gameObject.BroadcastEvent("OnBreak");
+            var brk = GetComponentInChildren<Breakable>(true);
+            if (!brk) brk = GetComponentInParent<Breakable>(true);
+            if (!brk.isBroken) yield break;
+            target.SetActive(true);
+            target.BroadcastEvent("OnBreak");
             Destroy(gameObject);
         }
     }
@@ -1516,5 +1549,34 @@ public static class MiscFixers
         public GameObject obj;
         
         private void OnEnable() => obj.BroadcastEvent("OnBreak");
+    }
+
+    public static void FixChest(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Chest Control");
+        fsm.fsmTemplate = null;
+        var spawn = fsm.GetState("Spawn Items");
+        var geoL = fsm.FsmVariables.FindFsmInt("Geo Large");
+        spawn.AddAction(new FlingObjectsFromGlobalPoolV3
+        {
+            GameObjects = new FsmArray
+            {
+                values = [Gameplay.LargeGeoPrefab]
+            },
+            SpawnPoint = fsm.FsmVariables.FindFsmGameObject("Self"),
+            SpawnMin = geoL,
+            SpawnMax = geoL,
+            SpeedMin = 25,
+            SpeedMax = 38,
+            AngleMin = 78,
+            AngleMax = 102,
+            OriginVariationX = 0,
+            OriginVariationY = 0,
+            spreadFrames = 4,
+            Position = new FsmVector3
+            {
+                value = new Vector3(0.25f, 0.25f, 0)
+            }
+        });
     }
 }

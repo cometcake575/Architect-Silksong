@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Utils;
 using BepInEx;
 using Newtonsoft.Json;
@@ -17,6 +18,9 @@ public class AudioPlayer : MonoBehaviour
     public bool lockMusic = true;
     public string cueId;
 
+    public static readonly Dictionary<string, MusicCue> CustomMusicCues = [];
+    public static readonly Dictionary<string, AtmosCue> CustomAtmosCues = [];
+    
     private static readonly Dictionary<string, ManagedAsset<MusicCue>> MusicCues = [];
     private static readonly Dictionary<string, ManagedAsset<AtmosCue>> AtmosCues = [];
 
@@ -87,26 +91,46 @@ public class AudioPlayer : MonoBehaviour
         if (cueId.IsNullOrWhiteSpace()) return;
         StartCoroutine(DoPlay());
     }
+    
+    private static AudioMixerSnapshot NormalSnapshot => field ??=
+        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+            .FirstOrDefault(o => o.name == "Normal" && o.audioMixer && o.audioMixer.name == "Music");
+    
+    private static AudioMixerSnapshot AtmosSnapshot => field ??=
+        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+            .FirstOrDefault(o => o.name == "at All Layers");
 
-    public IEnumerator DoPlay()
+    private IEnumerator DoPlay()
     {
         if (isAtmos)
         {
-            if (!AtmosCues.TryGetValue(cueId, out var cue)) yield break;
-            yield return cue.Load();
+            AtmosCue cue;
+            if (AtmosCues.TryGetValue(cueId, out var asset))
+            {
+                yield return asset.Load();
+                cue = asset.Handle.Result;
+            } else if (!CustomAtmosCues.TryGetValue(cueId, out cue)) yield break;
+
             _isUnlocked = true;
-            AudioManager.Instance.ApplyAtmosCue(cue.Handle.Result, 0);
-            GameManager.instance.sm.atmosCue = cue.Handle.Result;
-            GameManager.instance.sm.atmosSnapshot = cue.Handle.Result.snapshot;
+            AudioManager.Instance.ApplyAtmosCue(cue, 0);
+            AudioManager.TransitionToAtmosOverride(AtmosSnapshot, 0);
+            GameManager.instance.sm.atmosCue = cue;
+            GameManager.instance.sm.atmosSnapshot = cue.snapshot;
         }
         else
         {
-            if (!MusicCues.TryGetValue(cueId, out var cue)) yield break;
-            yield return cue.Load();
+            MusicCue cue;
+            if (MusicCues.TryGetValue(cueId, out var asset))
+            {
+                yield return asset.Load();
+                cue = asset.Handle.Result;
+            } else if (!CustomMusicCues.TryGetValue(cueId, out cue)) yield break;
+            
             _isUnlocked = true;
-            AudioManager.Instance.ApplyMusicCue(cue.Handle.Result, 0, 0, true);
-            GameManager.instance.sm.musicCue = cue.Handle.Result;
-            GameManager.instance.sm.musicSnapshot = cue.Handle.Result.snapshot;
+            AudioManager.Instance.ApplyMusicCue(cue, 0, 0, true);
+            if (!cue.snapshot) AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, 0);
+            GameManager.instance.sm.musicCue = cue;
+            GameManager.instance.sm.musicSnapshot = cue.snapshot;
         }
 
         _isUnlocked = false;

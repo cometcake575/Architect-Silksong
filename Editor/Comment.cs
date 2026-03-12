@@ -92,7 +92,7 @@ namespace Architect.Editor {
         }
     }
 
-    internal class CommentData : MonoBehaviour, IPointerDownHandler {
+    internal class CommentData : MonoBehaviour, IPointerDownHandler, IDragHandler, IBeginDragHandler {
         
         public Comment Comment;
         private float _time;
@@ -125,6 +125,16 @@ namespace Architect.Editor {
                 Select();
             }
             _time = Time.realtimeSinceStartup;
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            ScriptEditorUI.Drag.OnDrag(eventData);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            ScriptEditorUI.Drag.OnBeginDrag(eventData);
         }
     }
 }

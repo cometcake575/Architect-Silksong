@@ -14,6 +14,7 @@ public static class ActionBlocks
         ShopBlock.Init();
         QuestboardBlock.Init();
         SetLightingBlock.Init();
+        SilkBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);

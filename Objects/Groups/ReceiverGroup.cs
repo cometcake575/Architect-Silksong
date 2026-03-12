@@ -45,6 +45,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> FallingRock = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("falling_rock_fall", "Fall", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("STRIKE");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Silkfly = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("silkfly_fly", "Fly", o =>
         {
@@ -433,11 +440,11 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> BattleGate = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("bone_gate_close", "Close", o =>
         {
-            o.LocateMyFSM("BG Control").SendEvent("BG CLOSE");
+            o.GetComponent<PlayMakerFSM>().SendEvent("BG CLOSE");
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("bone_gate_open", "Open", o =>
         {
-            o.LocateMyFSM("BG Control").SendEvent("BG OPEN");
+            o.GetComponent<PlayMakerFSM>().SendEvent("BG OPEN");
         }))
     ]);
     

@@ -71,7 +71,6 @@ public static class CursorManager
             EditManager.CurrentScale);
 
         var play = _cursorObject.GetComponent<VideoPlayer>();
-        ArchitectPlugin.Logger.LogInfo(obj.LossyScale);
         if (ObjectChanged)
         {
             if (play) play.url = "";

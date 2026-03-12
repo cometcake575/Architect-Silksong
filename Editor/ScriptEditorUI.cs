@@ -33,7 +33,8 @@ public static class ScriptEditorUI
     private static GameObject _globalComments;
 
     private static Transform _blockTransformSource;
-    
+
+    public static BackgroundDrag Drag;
     private static Image _bgImg;
     private static Text _bgTxt;
 
@@ -51,7 +52,7 @@ public static class ScriptEditorUI
             new Vector2(10000, 10000));
         _bgImg.color = Settings.EditorBackgroundColour.Value;
         _bgImg.sprite = UIUtils.Square;
-        _bgImg.gameObject.AddComponent<BackgroundDrag>();
+        Drag = _bgImg.gameObject.AddComponent<BackgroundDrag>();
 
         var label = UIUtils.MakeLabel(
             "Architect Text",

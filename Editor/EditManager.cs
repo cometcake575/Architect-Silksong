@@ -28,6 +28,8 @@ public static class EditManager
     public static bool IsEditing;
     public static bool ReloadRequired;
     public static bool IgnoreControlRelinquished;
+
+    public static readonly List<Func<bool>> ToggleChecks = [];
     
     private static float _lastEditToggle;
 
@@ -195,7 +197,8 @@ public static class EditManager
         if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
             !_loadPos && !HeroController.instance.cState.dead &&
             HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION
-            && !HeroController.instance.transform.parent)
+            && !HeroController.instance.transform.parent
+            && ToggleChecks.All(f => f()))
         {
             if (Settings.ToggleEditor.WasPressed) ToggleEditor();
             else if (ReloadRequired) ReloadScene();

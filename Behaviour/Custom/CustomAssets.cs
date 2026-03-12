@@ -132,11 +132,14 @@ public class UIPngObject : PngObject
 
     public bool ignoreHudOut;
 
+    private static bool _hudOut;
+
     public static void Init()
     {
         typeof(GameCameras).Hook(nameof(GameCameras.HUDIn),
             (Action<GameCameras> orig, GameCameras self) =>
             {
+                _hudOut = false;
                 Pngs.RemoveAll(png => !png);
                 foreach (var png in Pngs.Where(png => png._constraint && png.ignoreHudOut)) png._constraint.constraintActive = true;
                 orig(self);
@@ -145,6 +148,7 @@ public class UIPngObject : PngObject
         typeof(GameCameras).Hook(nameof(GameCameras.HUDOut),
             (Action<GameCameras> orig, GameCameras self) =>
             {
+                _hudOut = true;
                 Pngs.RemoveAll(png => !png);
                 foreach (var png in Pngs.Where(png => png._constraint && png.ignoreHudOut)) png._constraint.constraintActive = false;
                 orig(self);
@@ -178,11 +182,17 @@ public class UIPngObject : PngObject
         _sr.sortingLayerName = "Over";
         
         UpdatePos();
+        if (_hudOut && _constraint)
+        {
+            _constraint.constraintActive = false;
+            transform.position = new Vector3(-10.3535f, 7.533f, 38.1f) + _constraint.translationOffset;
+        }
     }
 
     private void OnEnable()
     {
         Pngs.AddIfNotPresent(this);
+        if (_hudOut && _constraint) _constraint.constraintActive = false;
     }
 
     private bool _previewing;
@@ -301,20 +311,24 @@ public class WavObject : SoundMaker, IPlayable
 {
     public string url;
     public AudioClip sound;
+    
+    public bool isMusic;
 
-    private float _volume = 1;
-    private float _gmVol = GameManager.instance ? GameManager.instance.GetImplicitCinematicVolume() : 1;
+    private float GmVol =>
+        isMusic ? GameManager.instance.gameSettings.musicVolume : GameManager.instance.gameSettings.masterVolume;
+
+    private float _gmVol = 1;
 
     public float Volume
     {
-        get => _volume;
+        get;
         set
         {
-            _gmVol = GameManager.instance.GetImplicitCinematicVolume();
+            _gmVol = GmVol;
             Source.volume = value * _gmVol;
-            _volume = value;
+            field = value;
         }
-    }
+    } = 1;
 
     public float pitch = 1;
     public bool globalSound = true;
@@ -380,7 +394,7 @@ public class WavObject : SoundMaker, IPlayable
 
     private void Update()
     {
-        if (!Mathf.Approximately(_gmVol, GameManager.instance.GetImplicitCinematicVolume())) Volume = Volume;
+        if (!Mathf.Approximately(_gmVol, GmVol)) Volume = Volume;
         if (!syncId.IsNullOrWhiteSpace() && _started)
         {
             Syncs[syncId] = Source.time;

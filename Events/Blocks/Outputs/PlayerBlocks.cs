@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Architect.Utils;
 using BepInEx;
 using GlobalEnums;
 using UnityEngine;
@@ -70,7 +72,18 @@ public class HpBlock : ScriptBlock
 
 public class SilkBlock : ScriptBlock
 {
+    public static void Init()
+    {
+        typeof(PlayerData).Hook(nameof(PlayerData.AddSilk),
+            (Func<PlayerData, int, bool> orig, PlayerData self, int amount) =>
+            {
+                _onSilkGain?.Invoke();
+                return orig(self, amount);
+            });
+    }
+    
     protected override IEnumerable<string> Inputs => ["Give", "Take", "BreakCocoon"];
+    protected override IEnumerable<string> Outputs => ["OnGain"];
     protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
@@ -80,6 +93,31 @@ public class SilkBlock : ScriptBlock
     protected override void Reset()
     {
         Amount = 0;
+    }
+
+    public override void SetupReference()
+    {
+        var scr = new GameObject("[Architect] Silk Control Ref");
+        scr.AddComponent<SilkControl>().Block = this;
+    }
+
+    private static Action _onSilkGain;
+
+    public class SilkControl : MonoBehaviour
+    {
+        public SilkBlock Block;
+        
+        private void Start()
+        {
+            _onSilkGain += OnGain;
+        }
+
+        private void OnDisable()
+        {
+            _onSilkGain -= OnGain;
+        }
+
+        public void OnGain() => Block.Event("OnGain");
     }
 
     public int Amount;

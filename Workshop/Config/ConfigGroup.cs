@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Architect.Workshop.Items;
 using Architect.Workshop.Types;
 using GlobalEnums;
-using InControl;
 using UnityEngine;
 
 namespace Architect.Workshop.Config;
@@ -87,6 +86,22 @@ public static class ConfigGroup
             {
                 item.InsertBefore = value.GetValue();
             })
+        )
+    ];
+    
+    public static readonly List<ConfigType> Cue =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("WAV URL", "music_cue_wav_url", (item, value) =>
+            {
+                item.WavUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCue>("Mode", "music_cue_mode", (item, value) =>
+            {
+                item.IsAtmos = value.GetValue() == 1;
+            }).WithOptions("Music", "Atmos").WithDefaultValue(0)
         )
     ];
     

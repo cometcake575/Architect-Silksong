@@ -521,6 +521,9 @@ public static class SceneUtils
         }
     }
     
+    private static AtmosCue NoAtmosCue => field ??=
+        Resources.FindObjectsOfTypeAll<AtmosCue>().FirstOrDefault(o => o.name == "None");
+    
     public static GameObject CreateSceneManager()
     {
         var sm = Object.Instantiate(_sceneManager);
@@ -533,6 +536,7 @@ public static class SceneUtils
         csm.environmentType = EnvironmentTypes.NoEffect;
         csm.actorSnapshot = GameManager.instance.actorSnapshotUnpaused;
         csm.atmosSnapshot = GameManager.instance.noAtmosSnapshot;
+        csm.atmosCue = NoAtmosCue;
         csm.musicCue = GameManager.instance.noMusicCue;
         csm.darknessLevel = 0;
         

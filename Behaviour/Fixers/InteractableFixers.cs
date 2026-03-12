@@ -259,4 +259,21 @@ public static class InteractableFixers
             EventManager.BroadcastEvent(obj, "LoadedBroken");
         };
     }
+
+    public static void FixFallingRock(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Explode").AddAction(() =>
+        {
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("FirstBreak");
+        }, 0);
+        
+        obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
+        {
+            if (!value) return;
+            EventManager.BroadcastEvent(obj, "OnBreak");
+            EventManager.BroadcastEvent(obj, "LoadedBroken");
+        };
+    }
 }
