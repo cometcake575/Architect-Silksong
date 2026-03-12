@@ -315,7 +315,7 @@ public class WavObject : SoundMaker, IPlayable
     public bool isMusic;
 
     private float GmVol =>
-        isMusic ? GameManager.instance.gameSettings.musicVolume : GameManager.instance.gameSettings.masterVolume;
+        (isMusic ? GameManager.instance.gameSettings.musicVolume : GameManager.instance.gameSettings.masterVolume) / 10;
 
     private float _gmVol = 1;
 
