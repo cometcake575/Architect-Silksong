@@ -2132,15 +2132,19 @@ public static class VanillaObjects
                 if (was) o.SetActive(true);
             }, notSceneBundle: true));
         
-        /*
-        Categories.Interactable.Add(new PreloadObject("Bind Source", "bind_source",
-                ("Greymoor_20c", "Crest Get Shrine"), postSpawnAction: o =>
-                {
-                    var fsm = o.LocateMyFSM("Control");
-                    fsm.GetState("Check Unlocked").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-                    fsm.GetState("Crest Msg").DisableAction(2);
-                    fsm.GetState("Reload Scene").DisableAction(3);
-                }, sprite: ResourceUtils.LoadSpriteResource("bind_source", ppu:33)));*/
+        Categories.Interactable.Add(new PreloadObject("Bind Source (Stab)", "bind_source",
+                ("Greymoor_20c", "Crest Get Shrine"), postSpawnAction: InteractableFixers.FixBindSource,
+                sprite: ResourceUtils.LoadSpriteResource("bind_source", ppu:33))
+            .WithConfigGroup(ConfigGroup.BindSource)
+            .WithReceiverGroup(ReceiverGroup.BindSource)
+            .WithBroadcasterGroup(BroadcasterGroup.BindSourceStab));
+        
+        Categories.Interactable.Add(new PreloadObject("Bind Source (Stand)", "bind_source_stand",
+                ("Shellwood_10", "Ability Scene (1)/Shrine Weaver Ability"),
+                postSpawnAction: InteractableFixers.FixBindSourceStand,
+                sprite: ResourceUtils.LoadSpriteResource("bind_source", ppu:33))
+            .WithConfigGroup(ConfigGroup.Dialogue)
+            .WithBroadcasterGroup(BroadcasterGroup.BindSourceStand));
         
         Categories.Enemies.Add(new PreloadObject("Void Mass", "void_mass_citadel",
                 ("Song_15", "Black Thread States/Black Thread World/Black_Thread_Core_Citadel"),

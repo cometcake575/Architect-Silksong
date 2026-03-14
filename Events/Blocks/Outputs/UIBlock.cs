@@ -5,7 +5,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class UIBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["HudIn", "HudOut", "FadeIn", "FadeOut", "CloseInventory"];
+    protected override IEnumerable<string> Inputs => ["HudIn", "HudOut", "FadeIn", "FadeOut", "CloseInventory", "MemoryBlur", "ClearBlur"];
 
     private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
     protected override Color Color => DefaultColor;
@@ -25,7 +25,7 @@ public class UIBlock : ScriptBlock
     public float G = 1;
     public float B = 1;
     public float A = 1;
-
+    
     protected override void Trigger(string id)
     {
         switch (id)
@@ -44,6 +44,16 @@ public class UIBlock : ScriptBlock
                 break;
             case "CloseInventory":
                 EventRegister.SendEvent(EventRegisterEvents.InventoryCancel);
+                break;
+            case "MemoryBlur":
+                CameraBlurPlane.MaskLerp = 1;
+                CameraBlurPlane.MaskScale = 2;
+                CameraBlurPlane.Spacing = 30;
+                break;
+            case "ClearBlur":
+                CameraBlurPlane.MaskLerp = 0;
+                CameraBlurPlane.MaskScale = 0;
+                CameraBlurPlane.Spacing = 0;
                 break;
         }
     }

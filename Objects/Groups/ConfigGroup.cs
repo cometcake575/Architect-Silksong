@@ -518,12 +518,15 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
-    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> Dialogue = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
             {
                 o.GetComponent<MiscFixers.Npc>().text = value.GetValue();
-            }).WithDefaultValue("Sample Text").WithPriority(-1)),
+            }).WithDefaultValue("Sample Text").WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Dialogue, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Needolin Dialogue", "needolin_on", (o, value) =>
             {
@@ -2855,11 +2858,42 @@ public static class ConfigGroup
                     o.GetComponent<TransitionPoint>().entryDelay = value.GetValue();
                 }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Collision Trigger", "trans_collide",
+            new ChoiceConfigType("Trigger Type", "trans_collide",
                 (o, value) =>
                 {
-                    o.GetComponent<TransitionPoint>().isADoor = !value.GetValue();
-                }).WithPriority(-1))
+                    o.GetComponent<TransitionPoint>().isADoor = value.GetValue() == 1;
+                    if (value.GetValue() == 2) o.GetComponent<BoxCollider2D>().offset = new Vector2(-9999, -9999);
+                }).WithOptions("Collision", "Door", "None").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Active in Editor", "trans_edit_mode_active",
+                (o, value) =>
+                {
+                    o.GetComponent<CustomTransitionPoint>().applyInEditMode = value.GetValue();
+                }).WithDefaultValue(true).WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> BindSource = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Target Scene", "bind_source_scene", (o, value) =>
+            {
+                o.GetComponent<InteractableFixers.BindSource>().sceneId = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Target Door ID", "bind_source_door", (o, value) =>
+            {
+                o.GetComponent<InteractableFixers.BindSource>().doorId = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Bind Count", "bind_source_count", (o, value) =>
+            {
+                o.GetComponent<InteractableFixers.BindSource>().bindCount = value.GetValue();
+            }).WithDefaultValue(3)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Interactable", "bind_source_can_interact", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<PlayMakerNPC>().enabled = false;
+            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> Skarrwing = GroupUtils.Merge(Enemies, [

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Architect.Events;
 using Architect.Utils;
+using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 
 namespace Architect.Behaviour.Fixers;
@@ -275,5 +276,79 @@ public static class InteractableFixers
             EventManager.BroadcastEvent(obj, "OnBreak");
             EventManager.BroadcastEvent(obj, "LoadedBroken");
         };
+    }
+
+    public static void FixBindSource(GameObject obj)
+    {
+        obj.transform.GetChild(1).gameObject.SetActive(false);
+        obj.transform.GetChild(9).gameObject.SetActive(false);
+        obj.transform.GetChild(10).gameObject.SetActive(false);
+
+        var bc2d = obj.GetComponent<BoxCollider2D>();
+        bc2d.size = new Vector2(3, 3);
+        bc2d.offset = Vector2.zero;
+
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Check Unlocked").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Crest Msg").DisableAction(2);
+        fsm.fsm.globalTransitions = [];
+        
+        fsm.GetState("Bind Burst").AddAction(() => obj.BroadcastEvent("OnBind"), 0);
+        fsm.GetState("Final Bind Burst").AddAction(() => obj.BroadcastEvent("OnFinalBind"), 0);
+
+        obj.AddComponent<BindSource>().fsm = fsm;
+    }
+    
+    public static void FixBindSourceStand(GameObject obj)
+    {
+        obj.transform.GetChild(7).gameObject.SetActive(false);
+        obj.transform.GetChild(8).gameObject.SetActive(false);
+        obj.transform.GetChild(16).gameObject.SetActive(false);
+        
+        var bc2d = obj.GetComponent<BoxCollider2D>();
+        bc2d.size = new Vector2(3, 3);
+        bc2d.offset = Vector2.zero;
+        
+        var fsm = obj.LocateMyFSM("Inspection");
+        
+        fsm.GetState("Collected Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Msg Type?").AddAction(() => fsm.SendEvent("ITEM"), 1);
+        fsm.GetState("Item Msg").AddAction(() => fsm.SendEvent("GET ITEM MSG END"), 0);
+        
+        fsm.GetState("Bind Burst").AddAction(() => obj.BroadcastEvent("OnFinalBind"), 0);
+        
+        obj.AddComponent<BindSourceStand>().fsm = fsm;
+    }
+
+    public class BindSource : MonoBehaviour
+    {
+        public string sceneId = "Tut_01";
+        public string doorId = "top1";
+        public int bindCount = 3;
+
+        public PlayMakerFSM fsm;
+        
+        public void Start()
+        {
+            var rs = (BeginSceneTransition)fsm.GetState("Reload Scene").actions[3];
+            rs.sceneName = sceneId;
+            rs.entryGateName = doorId;
+
+            fsm.FsmVariables.FindFsmInt("Binds").Value = bindCount;
+        }
+    }
+
+    public class BindSourceStand : MiscFixers.Npc
+    {
+        public PlayMakerFSM fsm;
+        
+        public void Start()
+        {
+            var dialogue = (RunDialogue)fsm.GetState("Weaver Dialogue").actions[0];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+            fsm.GetState("Dialogue End").AddAction(() => gameObject.BroadcastEvent("OnFinishTalk"), 0);
+        }
     }
 }

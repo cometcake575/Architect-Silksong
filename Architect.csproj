@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>disable</Nullable>
     <RestoreAdditionalProjectSources>
       https://nuget.bepinex.dev/v3/index.json
@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>3.20.1</Version>
+    <Version>3.20.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

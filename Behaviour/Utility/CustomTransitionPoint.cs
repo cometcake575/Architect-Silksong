@@ -8,6 +8,7 @@ namespace Architect.Behaviour.Utility;
 public class CustomTransitionPoint : PreviewableBehaviour
 {
     public int pointType;
+    public bool applyInEditMode = true;
 
     public static void Init()
     {
@@ -17,11 +18,18 @@ public class CustomTransitionPoint : PreviewableBehaviour
                 var ctp = self.GetComponent<CustomTransitionPoint>();
                 return ctp ? ctp.GetGatePosition() : orig(self);
             });
+        
+        typeof(TransitionPoint).Hook(nameof(TransitionPoint.PrepareEntry),
+            (Action<TransitionPoint> orig, TransitionPoint self) =>
+            {
+                orig(self);
+                if (self.GetComponent<CustomTransitionPoint>()) self.gameObject.BroadcastEvent("OnEnter");
+            });
     }
 
     private void Start()
     {
-        if (isAPreview && PrefabManager.InPrefabScene)
+        if (isAPreview && (PrefabManager.InPrefabScene || !applyInEditMode))
         {
             gameObject.SetActive(false);
             return;

@@ -401,6 +401,7 @@ public static class UtilityObjects
 
         customDoor.AddComponent<CustomTransitionPoint>();
         var point = customDoor.AddComponent<TransitionPoint>();
+        point.entryPoint = "";
         point.nonHazardGate = true;
 
         var col = customDoor.AddComponent<BoxCollider2D>();
@@ -414,7 +415,8 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource("door", ppu:33),
                 preview:true)
             .WithConfigGroup(ConfigGroup.Transitions)
-            .WithReceiverGroup(ReceiverGroup.Transitions);
+            .WithReceiverGroup(ReceiverGroup.Transitions)
+            .WithBroadcasterGroup(BroadcasterGroup.Transitions);
     }
 
     private static PlaceableObject CreateCameraBorder()

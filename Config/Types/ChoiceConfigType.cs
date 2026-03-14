@@ -42,7 +42,13 @@ public class ChoiceConfigType(
 
     public override ConfigValue Deserialize(string data)
     {
-        return new ChoiceConfigValue(this, Convert.ToInt32(data, CultureInfo.InvariantCulture));
+        var value = data switch
+        {
+            "False" => 0,
+            "True" => 1,
+            _ => Convert.ToInt32(data, CultureInfo.InvariantCulture)
+        };
+        return new ChoiceConfigValue(this, value);
     }
 
     public string GetOption(int index)

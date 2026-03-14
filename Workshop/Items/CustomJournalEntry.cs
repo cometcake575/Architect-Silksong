@@ -43,6 +43,9 @@ public class CustomJournalEntry : SpriteItem
         
         base.Register();
         RefreshLSprite();
+
+        var old = EnemyJournalManager.Instance.recordList.GetByName(Id);
+        if (old) EnemyJournalManager.Instance.recordList.Remove(old);
         
         WorkshopManager.CustomEntries.Add(Id, this);
     }

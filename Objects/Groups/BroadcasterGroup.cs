@@ -8,6 +8,10 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Damageable = ["OnDamage"];
     
+    public static readonly List<string> BindSourceStab = ["OnBind", "OnFinalBind"];
+    
+    public static readonly List<string> BindSourceStand = ["OnFinishTalk", "OnFinalBind"];
+    
     public static readonly List<string> Exploding = ["OnExplode"];
     
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
@@ -17,6 +21,8 @@ public static class BroadcasterGroup
     public static readonly List<string> Judge = GroupUtils.Merge(Enemies, ["OnBlock"]);
     
     public static readonly List<string> Ambushers = GroupUtils.Merge(Enemies, ["OnAmbush"]);
+
+    public static readonly List<string> Transitions = ["OnEnter"];
     
     public static readonly List<string> Npcs = ["OnFinish"];
     

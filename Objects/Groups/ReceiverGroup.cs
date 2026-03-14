@@ -68,6 +68,15 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> BindSource = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_bind_stab", "Stab", o =>
+        {
+            HeroController.instance.RelinquishControl();
+            HeroController.instance.transform.position = o.transform.position;
+            o.LocateMyFSM("Control").SendEvent("INTERACT");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> AbilityCrystal = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("crystal_clear", "ClearAll", _ =>
         {
