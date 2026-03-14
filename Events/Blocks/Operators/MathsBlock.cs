@@ -27,7 +27,9 @@ public class MathsBlock : ScriptBlock
             4 => Mathf.Floor(v1 / v2),
             5 => v1 % v2,
             6 => Mathf.Pow(v1, v2),
-            _ => Mathf.Pow(v1, 1f/v2)
+            7 => Mathf.Pow(v1, 1f/v2),
+            8 => Mathf.Min(v1, v2),
+            _ => Mathf.Max(v1, v2)
         };
     }
 }

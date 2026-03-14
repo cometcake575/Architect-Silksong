@@ -114,7 +114,7 @@ public static class UtilityObjects
                 if (config)
                     try
                     {
-                        point = ObjectUtils.FindGameObject(config.objectPath);
+                        point = ObjectUtils.FindGameObject(config.objectPath, config.index);
                     }
                     catch (ArgumentException) { }
 

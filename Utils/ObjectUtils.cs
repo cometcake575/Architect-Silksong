@@ -43,19 +43,19 @@ public static class ObjectUtils
         return current.parent.GetPath() + "/" + current.name;
     }
 
-    public static GameObject FindGameObject(string path)
+    public static GameObject FindGameObject(string path, int index = 0)
     {
         for (var i = 0; i < SceneManager.loadedSceneCount; i++)
         {
             var scene = SceneManager.GetSceneAt(i);
-            var obj = GetGameObjectFromArray(scene.GetRootGameObjects(), path);
+            var obj = GetGameObjectFromArray(scene.GetRootGameObjects(), path, index);
             if (obj) return obj;
         }
 
         return null;
     }
     
-    internal static GameObject GetGameObjectFromArray(GameObject[] objects, string objName)
+    internal static GameObject GetGameObjectFromArray(GameObject[] objects, string objName, int index = 0)
     {
         // Split object name into root and child names based on '/'
         string rootName;
@@ -77,7 +77,7 @@ public static class ObjectUtils
         }
 
         // Get root object
-        var obj = objects.FirstOrDefault(o => o.name == rootName);
+        var obj = objects.Where(o => o.name == rootName).ElementAtOrDefault(index);
         if (!obj) return null;
 
         // Get child object

@@ -748,6 +748,7 @@ public static class MiscFixers
             transform.Find("Shop Prompt").gameObject.SetActive(false);
             
             var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Already Met?").DisableAction(2);
             fsm.GetState("Demo?").AddAction(() => fsm.SendEvent("TRUE"), 0);
             fsm.GetState("Talk State Demo").AddAction(() => fsm.SendEvent("FINISHED"), 0);
                 

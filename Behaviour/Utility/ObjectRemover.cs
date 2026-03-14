@@ -51,6 +51,7 @@ public class ObjectRemover : MonoBehaviour
 public class ObjectEnabler : MonoBehaviour
 {
     public string objectPath;
+    public int index;
     
     private Enabler _toggle;
 
@@ -72,7 +73,7 @@ public class ObjectEnabler : MonoBehaviour
         if (!_setup)
         {
             _setup = true;
-            var o = ObjectUtils.GetGameObjectFromArray(gameObject.scene.GetRootGameObjects(), objectPath);
+            var o = ObjectUtils.FindGameObject(objectPath, index);
             if (o)
             {
                 if (o.GetComponent<Disabler>()) return;
@@ -201,4 +202,5 @@ public class RoomClearerConfig : MonoBehaviour
 public class ObjectRemoverConfig : MonoBehaviour
 {
     public string objectPath = "";
+    public int index;
 }

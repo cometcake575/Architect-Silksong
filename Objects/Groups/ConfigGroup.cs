@@ -295,10 +295,12 @@ public static class ConfigGroup
             new FloatConfigType("Extra Length", "bell_chain_length", (o, value) =>
             {
                 o.transform.GetChild(0).GetChild(0).transform.position += new Vector3(0, value.GetValue());
-                o.transform.GetChild(0).GetChild(2).GetComponent<HingeJoint2D>().connectedAnchor +=
-                    new Vector2(0, value.GetValue() / 2);
-                o.transform.GetChild(0).GetChild(3).GetComponent<HingeJoint2D>().connectedAnchor +=
-                    new Vector2(0, value.GetValue() / 2);
+                
+                for (var i = 2; i < o.transform.GetChild(0).childCount; i++)
+                {
+                    o.transform.GetChild(0).GetChild(i).GetComponent<HingeJoint2D>().connectedAnchor +=
+                        new Vector2(0, value.GetValue() / (o.transform.GetChild(0).childCount - 2));
+                }
             }))
     ]);
 
@@ -530,7 +532,7 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
-    public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Start Awake", "zi_awake", (o, value) =>
             {
@@ -1063,6 +1065,8 @@ public static class ConfigGroup
         RenderLayer,
         ZOffset
     ]);
+
+    public static readonly List<ConfigType> StretchDecor = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, []));
     
     public static readonly List<ConfigType> Vines = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
@@ -2984,6 +2988,11 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Path", "remover_path",
                 (o, value) => { o.AddComponent<ObjectRemoverConfig>().objectPath = value.GetValue(); }).WithPriority(-1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Index", "remover_index",
+                (o, value) => { o.AddComponent<ObjectRemoverConfig>().index = value.GetValue(); })
+                .WithDefaultValue(1).WithPriority(-1)
         )
     ]);
 
@@ -2992,6 +3001,11 @@ public static class ConfigGroup
             new StringConfigType("Path", "enabler_path",
                 (o, value) => { o.GetComponent<ObjectEnabler>().objectPath = value.GetValue(); })
                 .WithPriority(-1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Index", "enabler_index",
+                    (o, value) => { o.AddComponent<ObjectEnabler>().index = value.GetValue(); })
+                .WithDefaultValue(1).WithPriority(-1)
         )
     ]);
     

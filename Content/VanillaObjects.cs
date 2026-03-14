@@ -898,7 +898,7 @@ public static class VanillaObjects
                     o.transform.SetScaleZ(1);
                     o.transform.SetRotation2D(0);
                     o.transform.SetPositionZ(0.06f);
-                }).WithConfigGroup(ConfigGroup.Decorations));
+                }).WithConfigGroup(ConfigGroup.StretchDecor));
 
         Categories.Interactable.Add(new PreloadObject("Clover Plant", "clover_pod_activator",
                 ("Clover_02c", "grove_pod (1)/Clover Bounce Pod Activator"),
@@ -1621,6 +1621,10 @@ public static class VanillaObjects
             ("Coral_32", "shell_plat_hang_bell (4)"), preloadAction: MiscFixers.FixBellSprite)
             .WithConfigGroup(ConfigGroup.Bell));
 
+        Categories.Platforming.Add(new PreloadObject("Bell of the Judged", "hang_bell_citadel",
+            ("Song_20b", "sc_plat_hang_bell (5)"), preloadAction: MiscFixers.FixBellSprite)
+            .WithConfigGroup(ConfigGroup.Bell));
+
         AddEnemy("Squirm", "squirm", ("Coral_36", "Judge Child (1)"),
             postSpawnAction: EnemyFixers.FixSquirm)
             .WithConfigGroup(ConfigGroup.Squirm);
@@ -1675,7 +1679,9 @@ public static class VanillaObjects
             sprite: ResourceUtils.LoadSpriteResource("blur", ppu: 3775),
             preview: true,
             description: "Having multiple blur planes together can cause issues.\n" +
-                         "It is recommended to disable the vanilla BlurPlane when using a custom one.",
+                         "It is recommended to disable the vanilla BlurPlane when using a custom one.\n\n" +
+                         "Blur Planes can sometimes cause unusual distortion,\n" +
+                         "if this happens try adjusting the Blur Plane's scale.",
             preloadAction: o => o.transform.localScale = new Vector3(100, 100, 1),
             postSpawnAction: o => o.transform.localScale *= 1000000))
             .WithConfigGroup(ConfigGroup.BlurPlane);
