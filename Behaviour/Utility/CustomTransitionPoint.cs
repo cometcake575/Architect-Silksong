@@ -23,7 +23,7 @@ public class CustomTransitionPoint : PreviewableBehaviour
             (Action<TransitionPoint> orig, TransitionPoint self) =>
             {
                 orig(self);
-                if (self.GetComponent<CustomTransitionPoint>()) self.gameObject.BroadcastEvent("OnEnter");
+                if (self.GetComponent<CustomTransitionPoint>()) self.gameObject.BroadcastEvent("OnExit");
             });
     }
 

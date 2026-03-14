@@ -22,7 +22,7 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Ambushers = GroupUtils.Merge(Enemies, ["OnAmbush"]);
 
-    public static readonly List<string> Transitions = ["OnEnter"];
+    public static readonly List<string> Transitions = ["OnExit"];
     
     public static readonly List<string> Npcs = ["OnFinish"];
     
