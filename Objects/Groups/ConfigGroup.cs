@@ -3021,12 +3021,13 @@ public static class ConfigGroup
     public static readonly List<ConfigType> ObjectRemover = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Path", "remover_path",
-                (o, value) => { o.AddComponent<ObjectRemoverConfig>().objectPath = value.GetValue(); }).WithPriority(-1)
+                (o, value) => { o.GetOrAddComponent<ObjectRemoverConfig>().objectPath = value.GetValue(); })
+                .WithPriority(-1)
         ),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Index", "remover_index",
-                (o, value) => { o.AddComponent<ObjectRemoverConfig>().index = value.GetValue(); })
-                .WithDefaultValue(1).WithPriority(-1)
+                (o, value) => { o.GetOrAddComponent<ObjectRemoverConfig>().index = value.GetValue(); })
+                .WithDefaultValue(0).WithPriority(-1)
         )
     ]);
 
@@ -3038,8 +3039,8 @@ public static class ConfigGroup
         ),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Index", "enabler_index",
-                    (o, value) => { o.AddComponent<ObjectEnabler>().index = value.GetValue(); })
-                .WithDefaultValue(1).WithPriority(-1)
+                    (o, value) => { o.GetComponent<ObjectEnabler>().index = value.GetValue(); })
+                .WithDefaultValue(0).WithPriority(-1)
         )
     ]);
     
