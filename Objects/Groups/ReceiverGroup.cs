@@ -71,11 +71,22 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> BindSource = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_bind_stab", "Stab", o =>
         {
-            HeroController.instance.RelinquishControl();
+            ArchitectPlugin.Instance.StartCoroutine(TakeControl(o));
             HeroController.instance.transform.position = o.transform.position;
             o.LocateMyFSM("Control").SendEvent("INTERACT");
         }))
     ]);
+
+    private static IEnumerator TakeControl(GameObject moveTo)
+    {
+        yield return HeroController.instance.FreeControl(hero =>
+        {
+            hero.transform.position = moveTo.transform.position;
+            return true;
+        });
+        HeroController.instance.RelinquishControl();
+        HeroController.instance.transform.position = moveTo.transform.position;
+    }
     
     public static readonly List<EventReceiverType> AbilityCrystal = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("crystal_clear", "ClearAll", _ =>

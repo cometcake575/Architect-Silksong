@@ -58,7 +58,7 @@ public class PersistentBoolBlock : ScriptBlock
 
 public class PlayerDataIntBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<string> Inputs => ["Set", "Add", "Subtract"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
     private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
@@ -70,7 +70,18 @@ public class PlayerDataIntBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
-        PlayerData.instance.SetInt(Data, Value);
+        switch (trigger)
+        {
+            case "Set":
+                PlayerData.instance.SetInt(Data, Value);
+                break;
+            case "Add":
+                PlayerData.instance.SetInt(Data, PlayerData.instance.GetInt(Data) + Value);
+                break;
+            case "Subtract":
+                PlayerData.instance.SetInt(Data, PlayerData.instance.GetInt(Data) - Value);
+                break;
+        }
     }
 
     protected override object GetValue(string id)
@@ -81,7 +92,7 @@ public class PlayerDataIntBlock : ScriptBlock
 
 public class PlayerDataFloatBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<string> Inputs => ["Set", "Add", "Subtract"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
     private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
@@ -93,7 +104,18 @@ public class PlayerDataFloatBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
-        PlayerData.instance.SetFloat(Data, Value);
+        switch (trigger)
+        {
+            case "Set":
+                PlayerData.instance.SetFloat(Data, Value);
+                break;
+            case "Add":
+                PlayerData.instance.SetFloat(Data, PlayerData.instance.GetFloat(Data) + Value);
+                break;
+            case "Subtract":
+                PlayerData.instance.SetFloat(Data, PlayerData.instance.GetFloat(Data) - Value);
+                break;
+        }
     }
 
     protected override object GetValue(string id)

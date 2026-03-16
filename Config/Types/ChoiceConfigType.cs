@@ -44,8 +44,8 @@ public class ChoiceConfigType(
     {
         var value = data switch
         {
-            "False" => 0,
-            "True" => 1,
+            "True" => 0,
+            "False" => 1,
             _ => Convert.ToInt32(data, CultureInfo.InvariantCulture)
         };
         return new ChoiceConfigValue(this, value);

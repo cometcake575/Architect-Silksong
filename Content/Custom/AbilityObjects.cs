@@ -311,8 +311,15 @@ public static class AbilityObjects
     #region Hooks
     private static void SetupBindingHooks()
     {
-        PlayerDataVariableEvents.OnGetBool += (pd, name, current) => 
-            name == nameof(pd.hasDash) ? BindingCheck(current, "dash") : current;
+        PlayerDataVariableEvents.OnGetBool += (pd, name, current) =>
+        {
+            return name switch
+            {
+                nameof(pd.hasDash) => BindingCheck(current, "dash"),
+                nameof(pd.hasWalljump) => BindingCheck(current, "wall_jump"),
+                _ => current
+            };
+        };
         typeof(HeroController).Hook(nameof(HeroController.CanDash),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "dash")
                                                                       || (ActiveCrystals.GetValueOrDefault("dash", 0) > 0
@@ -329,9 +336,6 @@ public static class AbilityObjects
         typeof(HeroController).Hook(nameof(HeroController.CanHarpoonDash),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "harpoon")
                                                                       || ActiveCrystals.GetValueOrDefault("harpoon", 0) > 0);
-        
-        typeof(HeroController).Hook(nameof(HeroController.IsFacingNearSlideableWall),
-            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "wall_jump"));
         
         typeof(HeroController).Hook(nameof(HeroController.CanJump),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "jump"));
@@ -365,10 +369,6 @@ public static class AbilityObjects
         _ = new Hook(typeof(PlayerData).GetProperty(nameof(PlayerData.CurrentSilkRegenMax))!.GetGetMethod(),
             (Func<PlayerData, int> orig, PlayerData self) => 
                 BindingCheck(true, "silk_heart") ? orig(self) : 0);
-        
-        typeof(HeroController).Hook("CanWallJump",
-            (Func<HeroController, bool, bool> orig, HeroController self, bool checkControlState)
-                => BindingCheck(orig(self, checkControlState), "wall_jump"));
         
         typeof(HeroController).Hook(nameof(HeroController.CanDoubleJump),
             (Func<HeroController, bool, bool> orig, HeroController self, bool checkControlState)

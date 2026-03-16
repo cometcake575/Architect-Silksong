@@ -15,6 +15,7 @@ public class CustomTransitionPoint : PreviewableBehaviour
         typeof(TransitionPoint).Hook(nameof(TransitionPoint.GetGatePosition),
             (Func<TransitionPoint, GatePosition> orig, TransitionPoint self) =>
             {
+                if (!self) return GatePosition.unknown;
                 var ctp = self.GetComponent<CustomTransitionPoint>();
                 return ctp ? ctp.GetGatePosition() : orig(self);
             });

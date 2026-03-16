@@ -197,10 +197,9 @@ public static class EditManager
         if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
             !_loadPos && !HeroController.instance.cState.dead &&
             HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION
-            && !HeroController.instance.transform.parent
-            && ToggleChecks.All(f => f()))
+            && !HeroController.instance.transform.parent)
         {
-            if (Settings.ToggleEditor.WasPressed) ToggleEditor();
+            if (Settings.ToggleEditor.WasPressed && ToggleChecks.All(f => f())) ToggleEditor(!IsEditing);
             else if (ReloadRequired) ReloadScene();
         }
 
@@ -452,8 +451,9 @@ public static class EditManager
         SetRotation(rot);
     }
 
-    private static void ToggleEditor()
+    public static void ToggleEditor(bool target)
     {
+        if (IsEditing == target) return;
         if (!PreloadManager.HasPreloaded) return;
         if (PrefabManager.InPrefabScene) return;
         if (Time.time - _lastEditToggle < 1) return;
@@ -524,7 +524,7 @@ public static class EditManager
 
     // Reloads the current scene, in order to refresh objects or update edit mode
     // Stores the player's current position in _posToLoad in order to keep them in the same place
-    private static void ReloadScene()
+    public static void ReloadScene()
     {
         ReloadRequired = false;
         IgnoreControlRelinquished = false;

@@ -518,7 +518,7 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
-    public static readonly List<ConfigType> Dialogue = GroupUtils.Merge(Visible, [
+    public static readonly List<ConfigType> Dialogue = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
             {
@@ -526,14 +526,14 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text").WithPriority(-1))
     ]);
 
-    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Dialogue, [
+    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, GroupUtils.Merge(Dialogue, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Needolin Dialogue", "needolin_on", (o, value) =>
             {
                 if (value.GetValue()) return;
                 o.RemoveComponentsInChildren<NeedolinTextOwner>();
             }).WithDefaultValue(true))
-    ]);
+    ]));
 
     public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
@@ -2872,7 +2872,7 @@ public static class ConfigGroup
                 }).WithDefaultValue(true).WithPriority(-1))
     ]);
 
-    public static readonly List<ConfigType> BindSource = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> BindSource = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Target Scene", "bind_source_scene", (o, value) =>
             {
