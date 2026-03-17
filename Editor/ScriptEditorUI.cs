@@ -581,9 +581,10 @@ public static class ScriptEditorUI
 
             labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
 
-            labelRt.anchoredPosition = new Vector2(0f, headerHeight * 0.1f);
+            var titleYOffset = Mathf.Min(headerHeight * 0.05f, 6f);
+            labelRt.anchoredPosition = new Vector2(0f, titleYOffset);
             titleLabel.textComponent.fontSize =
-                Mathf.RoundToInt(headerHeight * 0.6f);
+                Mathf.Clamp(Mathf.RoundToInt(headerHeight * 0.6f), 12, 144);
 
             titleLabel.textComponent.raycastTarget = true;
             titleLabel.transform.SetAsLastSibling();
@@ -598,7 +599,7 @@ public static class ScriptEditorUI
 
             var closeRt = closeBtnObj.AddComponent<RectTransform>();
 
-            var btnSize = rt.rect.height * 0.15f;
+            var btnSize = Mathf.Clamp(rt.rect.height * 0.15f, 16f, 192f);
 
             closeRt.sizeDelta = new Vector2(btnSize, btnSize);
             closeRt.anchorMin = new Vector2(1f, 1f);
@@ -641,7 +642,7 @@ public static class ScriptEditorUI
             colorBtnObj.transform.SetParent(commentObj.transform, false);
 
             var colorRt = colorBtnObj.AddComponent<RectTransform>();
-            var cBtnSize = rt.rect.height * 0.1f;
+            var cBtnSize = Mathf.Clamp(rt.rect.height * 0.1f, 12f, 144f);
             colorRt.anchorMin = new Vector2(0f, 1f);
             colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
             colorRt.anchorMax = new Vector2(0f, 1f);
@@ -820,10 +821,10 @@ public static class ScriptEditorUI
             var headerHeight = rt.rect.height * headerRatio;
 
             labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
-
-            labelRt.anchoredPosition = new Vector2(0f, headerHeight * 0.1f);
+            var titleYOffset = Mathf.Min(headerHeight * 0.05f, 6f);
+            labelRt.anchoredPosition = new Vector2(0f, titleYOffset);
             titleLabel.textComponent.fontSize =
-                Mathf.RoundToInt(headerHeight * 0.6f);
+                Mathf.Clamp(Mathf.RoundToInt(headerHeight * 0.6f), 12, 144);
 
             titleLabel.textComponent.raycastTarget = true;
             titleLabel.transform.SetAsLastSibling();
@@ -837,7 +838,7 @@ public static class ScriptEditorUI
 
             var closeRt = closeBtnObj.AddComponent<RectTransform>();
 
-            var btnSize = rt.rect.height * 0.15f;
+            var btnSize = Mathf.Clamp(rt.rect.height * 0.15f, 16f, 192f);
 
             closeRt.sizeDelta = new Vector2(btnSize, btnSize);
             closeRt.anchorMin = new Vector2(1f, 1f);
@@ -879,7 +880,7 @@ public static class ScriptEditorUI
             colorBtnObj.transform.SetParent(commentObj.transform, false);
 
             var colorRt = colorBtnObj.AddComponent<RectTransform>();
-            float cBtnSize = rt.rect.height * 0.1f;
+            float cBtnSize = Mathf.Clamp(rt.rect.height * 0.1f, 12f, 144f);
             colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
             colorRt.anchorMin = new Vector2(0f, 1f);
             colorRt.anchorMax = new Vector2(0f, 1f);
