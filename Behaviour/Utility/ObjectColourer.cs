@@ -23,7 +23,7 @@ public class ObjectColourer : MonoBehaviour
     public float a;
 
     public bool startApplied;
-    public bool particles;
+    public int particles;
     
     public GameObject target;
 
@@ -63,7 +63,11 @@ public class ObjectColourer : MonoBehaviour
         SpriteFlash.RepeatingFlash repeatingFlash)
     {
         var sfo = self.GetComponent<SpriteFlashOld>();
-        if (sfo && Mathf.Approximately(sfo.old.a, 1)) yield break;
+        if (sfo && Mathf.Approximately(sfo.old.a, 1))
+        {
+            sfo.StartCoroutine(sfo.Restore(self));
+            yield break;
+        }
         var o = orig(self, amount, timeUp, stayTime, timeDown, stayDownTime, repeating, repeatTimes, repeatingFlash);
         while (o.MoveNext()) yield return o.Current;
         if (sfo) self.SetParams(sfo.old.a, sfo.old);
@@ -145,19 +149,22 @@ public class ObjectColourer : MonoBehaviour
         }
         else
         {
-            foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
+            if (particles != 2)
             {
-                _current++;
-                StartCoroutine(FadeRoutine(fadeTime, sr, color, useAlphaByDefault || forceAlpha));
+                foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
+                {
+                    _current++;
+                    StartCoroutine(FadeRoutine(fadeTime, sr, color, useAlphaByDefault || forceAlpha));
+                }
+
+                foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
+                {
+                    _current++;
+                    StartCoroutine(FadeRoutine(fadeTime, sr, color, useAlphaByDefault || forceAlpha));
+                }
             }
 
-            foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
-            {
-                _current++;
-                StartCoroutine(FadeRoutine(fadeTime, sr, color, useAlphaByDefault || forceAlpha));
-            }
-
-            if (particles)
+            if (particles != 1)
                 foreach (var renderer in target.GetComponentsInChildren<ParticleSystem>(true))
                 {
                     _current++;
@@ -172,6 +179,12 @@ public class ObjectColourer : MonoBehaviour
     private class SpriteFlashOld : MonoBehaviour
     {
         public Color old = Color.clear;
+
+        public IEnumerator Restore(SpriteFlash self)
+        {
+            yield return null;
+            self.SetParams(old.a, old);
+        }
     }
     
     private IEnumerator FadeRoutine(float fadeTime, SpriteFlash sr, Color color)

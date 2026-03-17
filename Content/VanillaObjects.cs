@@ -890,7 +890,7 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)
             .WithRotationGroup(RotationGroup.Eight));
 
-        Categories.Interactable.Add(new PreloadObject("Water Effect", "water_effect_anim",
+        Categories.Effects.Add(new PreloadObject("Water Effect", "water_effect_anim",
                 ("Clover_02c", "water_components_moss_short 1/caustic_small_000 (13)"),
                 preloadAction: o =>
                 {
@@ -1429,6 +1429,20 @@ public static class VanillaObjects
                 preloadAction: MiscFixers.FixWater)
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Water));
+        
+        Categories.Platforming.Add(new PreloadObject("Steam Effect", "steam_effect",
+                ("Song_10", "Spa Region (1)/Spa Steam (1)"), 
+                sprite: ResourceUtils.LoadSpriteResource("steam_effect", FilterMode.Point, ppu:75.5f),
+                preloadAction: o => o.transform.SetScale2D(new Vector2(1, 1)))
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.Stretchable));
+        
+        Categories.Platforming.Add(new PreloadObject("Spa Area", "spa_area",
+                ("Song_10", "Spa Region (1)"), 
+                sprite: ResourceUtils.LoadSpriteResource("spa", FilterMode.Point, ppu:25.6f),
+                preloadAction: MiscFixers.FixSpaArea)
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.Stretchable));
 
         Categories.Effects.Add(new PreloadObject("Splash Area", "splash_effect",
             ("Hang_09", "Soft Waterfall Region"),
@@ -1445,6 +1459,13 @@ public static class VanillaObjects
             preloadAction: o => o.AddComponent<ParticleObject>(),
             sprite: ResourceUtils.LoadSpriteResource("water_effect", ppu:68.75f))
             .DoIgnoreScale()
+            .WithFlipAction((o, f) =>
+            {
+                if (!f) return;
+                var ps = o.GetComponent<ParticleSystem>();
+                var vol = ps.velocityOverLifetime;
+                vol.xMultiplier *= -1;
+            })
             .WithConfigGroup(ConfigGroup.Particle));
 
         Categories.Effects.Add(new PreloadObject("Flowing Water", "flowing_water_effect",
@@ -1744,6 +1765,7 @@ public static class VanillaObjects
                 o.transform.GetChild(1).gameObject.SetActive(false);
             },
             postSpawnAction: MiscFixers.FixBreakableWall)
+            .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.BreakableWall)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
 
@@ -1757,8 +1779,20 @@ public static class VanillaObjects
                     col2d.offset = Vector2.zero;
                     col2d.size = new Vector2(2.25f, 4.25f);
                 }, postSpawnAction: MiscFixers.FixBreakableWall)
+            .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.BreakableWall)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
+
+        Categories.Misc.Add(new PreloadObject("Breakable Window", "breakable_window",
+                ("Song_20", "Breakable Window"),
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(2).GetChild(2).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+                }, postSpawnAction: MiscFixers.FixBreakableWindow,
+                sprite: ResourceUtils.LoadSpriteResource("window", ppu:70))
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
+            .WithRotationGroup(RotationGroup.Four).DoFlipX());
         
         Categories.Misc.Add(new PreloadObject("Rosary Shrine", "rosary_shrine_small",
             ("Bonetown", "rosary_shrine_small"),

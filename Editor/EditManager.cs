@@ -95,8 +95,8 @@ public static class EditManager
     public static List<(string, string)> Broadcasters => HotbarBroadcasters[_hotbarIndex];
     public static Dictionary<string, ConfigValue> Config => HotbarConfig[_hotbarIndex]; 
     
+    public static bool LoadPos;
     private static Vector3 _posToLoad;
-    private static bool _loadPos;
 
     public static Vector3 NoclipPos;
     
@@ -195,7 +195,7 @@ public static class EditManager
         var actions = InputHandler.Instance.inputActions;
 
         if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
-            !_loadPos && !HeroController.instance.cState.dead &&
+            !LoadPos && !HeroController.instance.cState.dead &&
             HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION
             && !HeroController.instance.transform.parent)
         {
@@ -213,7 +213,7 @@ public static class EditManager
         }
         
         // Noclip
-        if (IsEditing || _loadPos) DoNoclip(actions, paused);
+        if (IsEditing || LoadPos) DoNoclip(actions, paused);
         
         if (!IsEditing) return;
         
@@ -493,11 +493,11 @@ public static class EditManager
     private static void OnSceneLoad(Action<GameManager> orig, GameManager self)
     {
         if (self.sceneName == "Temp") return;
-        if (_loadPos)
+        if (LoadPos)
         {
             self.entryGateName = null;
             HeroController.instance.transform.position = _posToLoad;
-            _loadPos = false;
+            LoadPos = false;
             NoclipPos = _posToLoad;
 
             if (CoopManager.Instance.IsActive()) CoopManager.Instance.RefreshRoom();
@@ -529,7 +529,7 @@ public static class EditManager
         ReloadRequired = false;
         IgnoreControlRelinquished = false;
         
-        _loadPos = true;
+        LoadPos = true;
         _posToLoad = HeroController.instance.transform.position;
         
         GameManager.instance.ChangeToScene(GameManager.instance.sceneName, "", 0);
@@ -544,7 +544,7 @@ public static class EditManager
         var right = actions.Right.IsPressed;
 
         var speed = actions.Dash.IsPressed ? 35 : 20;
-        if (!_loadPos)
+        if (!LoadPos)
         {
             if (!paused && up != down) NoclipPos += (up ? Vector3.up : Vector3.down) * (Time.deltaTime * speed);
             if (!paused && left != right) NoclipPos += (left ? Vector3.left : Vector3.right) * (Time.deltaTime * speed);

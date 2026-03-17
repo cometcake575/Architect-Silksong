@@ -23,6 +23,9 @@ public class LevelInfo
     public LevelDuration Duration = LevelDuration.None;
     public List<LevelTag> Tags = [];
 
+    public string Uploaded;
+    public string Updated;
+
     public bool Liked;
 
     // Chosen by creator

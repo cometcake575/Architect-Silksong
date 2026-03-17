@@ -196,6 +196,7 @@ public class Browse : MenuState
     private Text _title;
     private Text _desc;
     private Text _tags;
+    private Text _times;
     private Image _img;
 
     private Text _userTitle;
@@ -228,6 +229,14 @@ public class Browse : MenuState
             .textComponent;
         _tags.fontSize = 15;
         _tags.alignment = TextAnchor.UpperLeft;
+        
+        _times = UIUtils.MakeLabel("Times",
+            _level, new Vector2(85, -130),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            maxWidth: 290, maxHeight: 160)
+            .textComponent;
+        _times.fontSize = 15;
+        _times.alignment = TextAnchor.UpperRight;
 
         _img = UIUtils.MakeImage("Icon",
             _level, new Vector2(-195, 230),
@@ -344,6 +353,10 @@ public class Browse : MenuState
         _tags.text = $"Length: {info.Duration.GetLabel()}\n\n" +
                      $"Difficulty: {info.Difficulty.GetLabel()}\n\n" +
                      $"Tags: {tags}";
+        
+        _times.text = $"Uploaded: {info.Uploaded}\n\n" +
+                     $"Updated: {info.Updated}\n\n";
+        
         SharerManager.DoGetSprite(info.IconURL, _img);
 
         _userTitle.text = info.CreatorName;

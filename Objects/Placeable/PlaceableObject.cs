@@ -80,7 +80,7 @@ public abstract class PlaceableObject : SelectableObject
 
     public override Sprite GetUISprite()
     {
-        return _uiSprite ?? Sprite;
+        return _uiSprite ? _uiSprite : Sprite;
     }
 
     protected void FinishSetup(GameObject prefab)

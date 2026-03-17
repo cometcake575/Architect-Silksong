@@ -1352,10 +1352,10 @@ public static class ConfigGroup
                 oc.a = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Colour Particles", "colourer_particles", (o, value) =>
+            new ChoiceConfigType("Colour Particles", "colourer_particles", (o, value) =>
             {
                 o.GetComponent<ObjectColourer>().particles = value.GetValue();
-            }).WithDefaultValue(true)),
+            }).WithOptions("True", "False", "Only").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Tint Mode", "colourer_mode", (o, value) =>
             {

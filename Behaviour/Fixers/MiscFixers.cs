@@ -1396,6 +1396,16 @@ public static class MiscFixers
         obj.AddComponent<Water>();
     }
 
+    public static void FixSpaArea(GameObject obj)
+    {
+        obj.transform.localScale = Vector3.one;
+        var bc1 = obj.GetComponent<BoxCollider2D>();
+        bc1.size = Vector2.one * 5;
+        bc1.offset = Vector2.zero;
+        
+        obj.transform.GetChild(2).gameObject.SetActive(false);
+    }
+
     public class Water : MonoBehaviour
     {
         private SurfaceWaterRegion _swr;
@@ -1579,5 +1589,16 @@ public static class MiscFixers
                 value = new Vector3(0.25f, 0.25f, 0)
             }
         });
+    }
+
+    public static void FixBreakableWindow(GameObject obj)
+    {
+        FixBreakable(obj);
+        obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
+        {
+            if (!value) return;
+            obj.BroadcastEvent("OnBreak");
+            obj.BroadcastEvent("LoadedBroken");
+        };
     }
 }

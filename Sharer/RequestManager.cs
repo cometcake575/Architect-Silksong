@@ -266,7 +266,9 @@ public static class RequestManager
                 CreatorId = level["user_id"],
                 DownloadCount = int.Parse(level["downloads"]),
                 LikeCount = int.Parse(level["likes"]),
-                Liked = bool.Parse(level["liked"])
+                Liked = bool.Parse(level["liked"]),
+                Uploaded = level["uploaded"].IsNullOrWhiteSpace() ? "Pre 2026-03-17" : level["uploaded"],
+                Updated = level["updated"].IsNullOrWhiteSpace() ? "Pre 2026-03-17" : level["updated"]
             };
             if (level.TryGetValue("difficulty", out var difficulty))
             {

@@ -16,7 +16,7 @@ public abstract class ToolObject : SelectableObject
     protected ToolObject(string path, Settings.Keybind keybind, int index)
     {
         _sprite = ResourceUtils.LoadSpriteResource(path);
-        Keybinds[keybind] = index;
+        if (keybind != null) Keybinds[keybind] = index;
         Index = index;
     }
     
