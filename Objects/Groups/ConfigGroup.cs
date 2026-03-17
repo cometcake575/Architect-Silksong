@@ -767,11 +767,17 @@ public static class ConfigGroup
         )
     ]);
 
+    private static readonly ConfigType Width = ConfigurationManager.RegisterConfigType(
+        new FloatConfigType("Width", "size_width",
+            (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
+            (o, value, _) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); }));
+
+    public static readonly List<ConfigType> WidthOnly = GroupUtils.Merge(Generic, [
+        Width
+    ]);
+
     public static readonly List<ConfigType> Stretchable = GroupUtils.Merge(Generic, [
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Width", "size_width",
-                (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
-                (o, value, _) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); })),
+        Width,
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Height", "size_height",
             (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); },
             (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); }))

@@ -55,7 +55,9 @@ public static class VanillaObjects
     private static void AddVoltObjects()
     {
         Categories.Hazards.Add(new PreloadObject("Voltbeam", "coral_lightning_rock",
-                ("Coral_29", "Zap Worm Lightning (2)"), sprite: ResourceUtils.LoadSpriteResource("glow", ppu: 10.75f),
+                ("Coral_29", "Zap Worm Lightning (2)"),
+                sprite: ResourceUtils.LoadSpriteResource("voltbeam", ppu: 10.75f),
+                uiSprite: ResourceUtils.LoadSpriteResource("voltbeam_ui", ppu: 10.75f),
                 preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: HazardFixers.FixZaprock,
                 description: "Works best in small spaces, hitbox is very tall and pink glow extends much further.")
@@ -704,7 +706,8 @@ public static class VanillaObjects
         
         Categories.Hazards.Add(new PreloadObject("Cradle Spikes", "cradle_spikes",
             ("Cradle_03", "cradle_spike_plat (10)/art/Cradle__0004_moving_plat (9)"),
-            postSpawnAction: HazardFixers.FixCradleSpikes));
+            postSpawnAction: HazardFixers.FixCradleSpikes)
+            .WithRotationGroup(RotationGroup.All));
 
         /*AddEnemy("Grand Mother Silk", "gms_boss", ("Cradle_03", "Boss Scene/Silk Boss"),
             postSpawnAction: EnemyFixers.FixGms);*/
@@ -1430,14 +1433,14 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Water));
         
-        Categories.Platforming.Add(new PreloadObject("Steam Effect", "steam_effect",
+        Categories.Effects.Add(new PreloadObject("Steam Effect", "steam_effect",
                 ("Song_10", "Spa Region (1)/Spa Steam (1)"), 
                 sprite: ResourceUtils.LoadSpriteResource("steam_effect", FilterMode.Point, ppu:75.5f),
                 preloadAction: o => o.transform.SetScale2D(new Vector2(1, 1)))
             .WithRotationGroup(RotationGroup.All)
-            .WithConfigGroup(ConfigGroup.Stretchable));
+            .WithConfigGroup(ConfigGroup.WidthOnly));
         
-        Categories.Platforming.Add(new PreloadObject("Spa Area", "spa_area",
+        Categories.Misc.Add(new PreloadObject("Spa Area", "spa_area",
                 ("Song_10", "Spa Region (1)"), 
                 sprite: ResourceUtils.LoadSpriteResource("spa", FilterMode.Point, ppu:25.6f),
                 preloadAction: MiscFixers.FixSpaArea)

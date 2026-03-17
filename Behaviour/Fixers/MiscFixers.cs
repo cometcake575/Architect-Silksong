@@ -1403,7 +1403,7 @@ public static class MiscFixers
         bc1.size = Vector2.one * 5;
         bc1.offset = Vector2.zero;
         
-        obj.transform.GetChild(2).gameObject.SetActive(false);
+        obj.transform.GetChild(5).gameObject.SetActive(false);
     }
 
     public class Water : MonoBehaviour

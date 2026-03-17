@@ -96,13 +96,18 @@ public class Account : MenuState
         _desc.text = "";
         _pfp.sprite = ArchitectPlugin.BlankSprite;
 
-        CurrentUserInfo = new UserInfo(RequestManager.SharerKey, true);
-        yield return CurrentUserInfo.Setup();
-
+        yield return PrepareUserInfo();
         if (!CurrentUserInfo.IsSetup) yield break;
+        
         _username.text = CurrentUserInfo.Username;
         _desc.text = CurrentUserInfo.Description;
         SharerManager.DoGetSprite(CurrentUserInfo.PfpUrl, _pfp);
+    }
+
+    public static IEnumerator PrepareUserInfo()
+    {
+        CurrentUserInfo = new UserInfo(RequestManager.SharerKey, true);
+        yield return CurrentUserInfo.Setup();
     }
 
     private static void SignOut()
