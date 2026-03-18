@@ -9,6 +9,7 @@ public static class OperatorBlocks
         BoolVarBlock.Init();
         NumVarBlock.Init();
         StringVarBlock.Init();
+        PlayerDataBoolBlock.Init();
         
         ScriptManager.RegisterProcessBlock<CounterBlock>("Counter", ConfigGroup.Counter);
         ScriptManager.RegisterProcessBlock<IfBlock>("If");

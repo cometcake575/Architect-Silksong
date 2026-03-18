@@ -1,11 +1,25 @@
 using System.Collections.Generic;
+using PrepatcherPlugin;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Operators;
 
 public class PlayerDataBoolBlock : ScriptBlock
 {
+    private static readonly Dictionary<string, List<BoolBlockRef>> BlockRefs = [];
+    
+    public static void Init()
+    {
+        PlayerDataVariableEvents.OnSetBool += (_, name, current) =>
+        {
+            if (!BlockRefs.TryGetValue(name, out var refs)) return current;
+            foreach (var block in refs) block.Block.Event(current ? "OnTrue" : "OnFalse");
+            return current;
+        };
+    }
+
     protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<string> Outputs => ["OnTrue", "OnFalse"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
 
     private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
@@ -14,6 +28,25 @@ public class PlayerDataBoolBlock : ScriptBlock
 
     public string Data;
     public bool Value;
+    
+    public override void SetupReference()
+    {
+        var blockRef = new GameObject("[Architect] Bool Block");
+        var blockRefInst = blockRef.AddComponent<BoolBlockRef>();
+        blockRefInst.Block = this;
+        if (!BlockRefs.ContainsKey(Data)) BlockRefs[Data] = [];
+        BlockRefs[Data].Add(blockRefInst);
+    }
+
+    public class BoolBlockRef : MonoBehaviour
+    {
+        public PlayerDataBoolBlock Block;
+
+        private void OnDisable()
+        {
+            BlockRefs[Block.Data].Remove(this);
+        }
+    }
 
     protected override void Trigger(string trigger)
     {

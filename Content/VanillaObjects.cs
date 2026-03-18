@@ -1316,14 +1316,16 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
                 ("Hang_08", "Harpoon Ring VerticalRide"),
-                preloadAction: MiscFixers.FixRotation,
+                uiSprite: ResourceUtils.LoadSpriteResource("ring_up"),
+                preloadAction: o => o.transform.SetRotation2D(38.0005f),
                 postSpawnAction: MiscFixers.FixRing).DoFlipX()
-            .WithRotateAction((o, r) => { o.transform.SetRotation2D(r - 38.0005f); })
+            .WithRotateAction((o, r) => { o.transform.SetRotation2D(r); })
             .WithConfigGroup(ConfigGroup.VerticalRing)
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
         Categories.Platforming.Add(new PreloadObject("Horizontal Moving Ring", "harpoon_ring_h",
                 ("Cog_08", "Harpoon Ring Rail Slider"),
+                uiSprite: ResourceUtils.LoadSpriteResource("ring_side"),
                 preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: MiscFixers.FixRing).DoFlipX())
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings);
@@ -2234,6 +2236,7 @@ public static class VanillaObjects
             preloadAction: o => 
                 o.transform.GetChild(1).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>(),
             notSceneBundle: true)
+            .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Cocoon));
     }
 
