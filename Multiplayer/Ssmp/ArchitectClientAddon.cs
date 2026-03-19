@@ -50,6 +50,8 @@ public class ArchitectClientAddon : ClientAddon
         var animationManager = animationManagerField!.GetValue(API.ClientManager);
         _getCurrentAnimationClip = animationManager.GetType().GetMethod("GetCurrentAnimationClip",
             BindingFlags.Public | BindingFlags.Static);
+        
+        EditManager.ToggleChecks.Add(() => !clientApi.UiManager.ChatBox.IsOpen);
     }
 
     private static void HandleClear(ClearPacketData packet)

@@ -34,7 +34,7 @@
     <PackageReference Include="Silksong.GameLibs" Version="*-*" />
     <PackageReference Include="Silksong.PrepatcherPlugin" Version="1.0.1" />
     <PackageReference Include="Silksong.AssetHelper" Version="1.0.0" />
-    <PackageReference Include="Silksong.SSMP" Version="0.0.6" />
+    <PackageReference Include="Silksong.SSMP" Version="0.1.0" />
     <Reference Include="Patchwork">
       <HintPath>$(SilksongPluginsFolder)/Ashiepaws-Patchwork/Patchwork.dll</HintPath>
     </Reference>

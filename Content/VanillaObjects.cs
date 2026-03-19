@@ -140,6 +140,13 @@ public static class VanillaObjects
                 }, 5);
             }).DoFlipX();
 
+        Categories.Interactable.Add(new PreloadObject("Falling Coral Spike",
+            "coral_spike_fall", ("Memory_Coral_Tower", "Stalactite Group"),
+            preloadAction: o =>
+            {
+                for (var i = 1; i <= 7; i++) Object.Destroy(o.transform.GetChild(i).gameObject);
+            }));
+
         Categories.Hazards.Add(new PreloadObject("Coral Crust S", "coral_crust_s",
             ("Arborium_06", "Coral Crust Wall Small"),
             postSpawnAction: o =>
@@ -1317,9 +1324,8 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
                 ("Hang_08", "Harpoon Ring VerticalRide"),
                 uiSprite: ResourceUtils.LoadSpriteResource("ring_up"),
-                preloadAction: o => o.transform.SetRotation2D(38.0005f),
+                preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: MiscFixers.FixRing).DoFlipX()
-            .WithRotateAction((o, r) => { o.transform.SetRotation2D(r); })
             .WithConfigGroup(ConfigGroup.VerticalRing)
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings));
 
@@ -1888,6 +1894,14 @@ public static class VanillaObjects
                              "in the same way as the Custom PNG for custom shapes.",
                 preloadAction: MiscFixers.FixMirrorAndSilhouette,
                 sprite: ResourceUtils.LoadSpriteResource("silhouette", ppu: 155))
+            .WithConfigGroup(ConfigGroup.Png));
+
+        Categories.Effects.Add(new PreloadObject("Memory Silk Effect", "memory_silk_effect",
+                ("Coral_Tower_01", "Memory Group/before/thread_memory/thread_memory_starter/strand1/strandbacking (1)"),
+                description: "Memory Silk effect from memory entrances, can be configured\n" +
+                             "in the same way as the Custom PNG for custom shapes.",
+                preloadAction: MiscFixers.FixMirrorAndSilhouette,
+                sprite: ResourceUtils.LoadSpriteResource("memory", ppu: 155))
             .WithConfigGroup(ConfigGroup.Png));
 
         Categories.Effects.Add(new PreloadObject("Grass Effect", "grass_effect",
@@ -3055,8 +3069,15 @@ public static class VanillaObjects
                 o.transform.GetChild(0).SetLocalRotation2D(f);
             }).WithFlipAction((o, f) =>
             {
-                if (f) o.transform.GetChild(0).SetScaleX(-o.transform.GetChild(0).GetScaleX());
-            }));
+                if (!f) return;
+                o.transform.GetChild(0).SetScaleX(-o.transform.GetChild(0).GetScaleX());
+                o.transform.GetChild(0).SetLocalPositionX(-o.transform.GetChild(0).localPosition.x);
+            }).WithScaleAction((o, s) =>
+            {
+                o.transform.GetChild(0).localScale *= s;
+                o.transform.GetChild(0).localPosition *= s;
+                o.GetComponent<CircleCollider2D>().radius *= s;
+            })).Offset += new Vector3(0, -0.6f);
         
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
