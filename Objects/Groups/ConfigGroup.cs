@@ -53,7 +53,12 @@ public static class ConfigGroup
                 o.GetComponent<Layerer>().layer = LayerMask.NameToLayer(value.GetValue());
             })),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Set Layer", "layerer_recursive", (o, value) =>
+            new BoolConfigType("Start Applied", "layerer_start_applied", (o, value) =>
+            {
+                o.GetComponent<Layerer>().start = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Recursive", "layerer_recursive", (o, value) =>
             {
                 o.GetComponent<Layerer>().recursive = value.GetValue();
             }).WithDefaultValue(true))
@@ -518,67 +523,6 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
-    public static readonly List<ConfigType> Dialogue = GroupUtils.Merge(Generic, [
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Dialogue", "shakra_text", (o, value) =>
-            {
-                o.GetComponent<MiscFixers.Npc>().text = value.GetValue();
-            }).WithDefaultValue("Sample Text").WithPriority(-1))
-    ]);
-
-    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, GroupUtils.Merge(Dialogue, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Needolin Dialogue", "needolin_on", (o, value) =>
-            {
-                if (value.GetValue()) return;
-                o.RemoveComponentsInChildren<NeedolinTextOwner>();
-            }).WithDefaultValue(true))
-    ]));
-
-    public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Npcs, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Start Awake", "zi_awake", (o, value) =>
-            {
-                if (!value.GetValue()) return;
-                o.GetComponent<MiscFixers.Zi>().DoWake();
-            }).WithDefaultValue(true))
-
-    ]);
-
-    public static readonly List<ConfigType> MaskMaker = GroupUtils.Merge(Npcs, [
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Unmasked Dialogue", "mask_maker_unmasked_text", (o, value) =>
-            {
-                o.GetComponent<MiscFixers.MaskMaker>().unmasked = value.GetValue();
-            }).WithDefaultValue("Sample Text").WithPriority(-1))
-    ]);
-
-    public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>
-            {
-                if (value.GetValue()) return;
-                Object.Destroy(o.LocateMyFSM("Attack Enemies"));
-            }).WithDefaultValue(true))
-    ]);
-    
-    public static readonly List<ConfigType> Sherma = GroupUtils.Merge(Npcs, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Start Awake", "sherma_awake", (o, value) =>
-            {
-                if (value.GetValue()) return;
-                o.GetComponent<MiscFixers.Sherma>().startState = 1;
-            }).WithDefaultValue(true))
-    ]);
-    
-    public static readonly List<ConfigType> Caretaker = GroupUtils.Merge(Npcs, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Call Out", "caretaker_call", (o, value) =>
-            {
-                o.GetComponent<MiscFixers.Caretaker>().hail = value.GetValue();
-            }).WithDefaultValue(false))
-    ]);
-
     public static readonly List<ConfigType> MapStateHook = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Memory", "msh_state", (o, value) =>
@@ -1037,6 +981,68 @@ public static class ConfigGroup
                     }
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
+
+    public static readonly List<ConfigType> Dialogue = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Dialogue", "shakra_text", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Npc>().text = value.GetValue();
+            }).WithDefaultValue("Sample Text").WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> Npcs = GroupUtils.Merge(Visible, GroupUtils.Merge(Dialogue, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Needolin Dialogue", "needolin_on", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.RemoveComponentsInChildren<NeedolinTextOwner>();
+            }).WithDefaultValue(true)),
+        ZOffset
+    ]));
+
+    public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Awake", "zi_awake", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.GetComponent<MiscFixers.Zi>().DoWake();
+            }).WithDefaultValue(true))
+
+    ]);
+
+    public static readonly List<ConfigType> MaskMaker = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Unmasked Dialogue", "mask_maker_unmasked_text", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.MaskMaker>().unmasked = value.GetValue();
+            }).WithDefaultValue("Sample Text").WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> Shakra = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Attack Enemies", "shakra_attack", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                Object.Destroy(o.LocateMyFSM("Attack Enemies"));
+            }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> Sherma = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Awake", "sherma_awake", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<MiscFixers.Sherma>().startState = 1;
+            }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> Caretaker = GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Call Out", "caretaker_call", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Caretaker>().hail = value.GetValue();
+            }).WithDefaultValue(false))
+    ]);
 
     public static readonly List<ConfigType> Silkfly = GroupUtils.Merge(Visible, [
         ZOffset,
@@ -1564,6 +1570,33 @@ public static class ConfigGroup
             ))
     ]);
 
+    public static readonly List<ConfigType> ComponentHook = GroupUtils.Merge(Generic, [
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "component_hook_target", 
+                (o, value) => 
+                {
+                    o.GetComponent<ComponentHook>().id = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Component Name", "component_hook_name", 
+                (o, value) => 
+                {
+                    o.GetComponent<ComponentHook>().componentName = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Recursive", "component_hook_recursive", 
+                (o, value) => 
+                {
+                    o.GetComponent<ComponentHook>().recursive = value.GetValue();
+                }
+            ).WithDefaultValue(true)),
+            ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Mode", "component_hook_mode", 
+                (o, value) =>
+                {
+                    o.GetComponent<ComponentHook>().mode = value.GetValue();
+                }
+            ).WithOptions("Destroy", "Disable", "Enable").WithDefaultValue(0))
+    ]);
+
     public static readonly List<ConfigType> ObjectAnchor = GroupUtils.Merge(Generic, [
             ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "anchor_target", 
                 (o, value) => 
@@ -1720,7 +1753,28 @@ public static class ConfigGroup
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).doNotGiveSilk = !value.GetValue(); })),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Can Pogo On", "enemy_can_pogo",
-                (o, value) => { if (!value.GetValue()) o.AddComponent<NonBouncer>(); })),
+                (o, value) => {
+                    if (!value.GetValue())
+                    {
+                        foreach (var t in o.GetComponentsInChildren<Transform>(true)) 
+                            t.gameObject.AddComponent<NonBouncer>();
+                    } })),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Z Offset", "enemy_z",
+                (o, value) =>
+                {
+                    var sz = o.GetComponent<SetZ>();
+                    if (sz) sz.z += value.GetValue();
+                    o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                },
+                (o, value, arg3) =>
+                {
+                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
+                    {
+                        CursorManager.Offset.z += value.GetValue();
+                    }
+                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                }).WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Recoil Speed", "enemy_recoil_speed",
                 (o, value) =>
@@ -2128,6 +2182,8 @@ public static class ConfigGroup
                 o.GetOrAddComponent<VelocityApplier>().y = value.GetValue();
             }).WithDefaultValue(0))
     ]);
+
+    public static readonly List<ConfigType> VelocityDamager = GroupUtils.Merge(Velocity, [DamagesEnemies]);
     
     public static readonly List<ConfigType> Bubble = GroupUtils.Merge(Gravity, [
         ConfigurationManager.RegisterConfigType(
@@ -2339,7 +2395,8 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> Particle = GroupUtils.Merge(Decorations, [
         PngUrl,
-        Aa
+        Aa,
+        ZOffset
     ]);
 
     public static readonly List<ConfigType> Fish = GroupUtils.Merge(Particle, [

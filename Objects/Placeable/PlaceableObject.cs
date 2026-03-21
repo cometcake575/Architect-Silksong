@@ -13,6 +13,7 @@ using Architect.Utils;
 using BepInEx;
 using JetBrains.Annotations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Objects.Placeable;
 

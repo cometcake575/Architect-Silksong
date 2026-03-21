@@ -133,7 +133,15 @@ public static class StorageManager
 
     public static List<ObjectPlacement> DeserializePlacements(string data)
     {
-        return JsonConvert.DeserializeObject<List<ObjectPlacement>>(data);
+        try
+        {
+            return JsonConvert.DeserializeObject<List<ObjectPlacement>>(data);
+        }
+        catch (Exception)
+        {
+            ArchitectPlugin.Logger.LogError("Invalid saved objects file (prefabs.json), clearing saved objects");
+            return [];
+        }
     }
 
     public static string SerializeLevel(LevelData level, Formatting formatting)

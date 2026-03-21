@@ -148,6 +148,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> ComponentHook = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("component_hook_apply", "Apply", o =>
+        {
+            o.GetComponent<ComponentHook>().Setup();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Dust = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("dust_on", "Emit", o =>
         {

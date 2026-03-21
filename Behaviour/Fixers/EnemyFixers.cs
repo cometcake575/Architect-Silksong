@@ -3072,6 +3072,18 @@ public static class EnemyFixers
             .AddAction(() => obj.BroadcastEvent("OnDeath"), 0);
     }
 
+    public static void FixPlasmidas(GameObject obj)
+    {
+        FixPlasmified(obj);
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.rotateCorpse = true;
+        
+        ede.PreInstantiate();
+        ede.GetInstantiatedCorpse(AttackTypes.Generic).GetComponent<CorpseRegular>().resetRotation = false;
+    }
+
+    public static void RotateCorpse(GameObject obj) => obj.GetComponent<EnemyDeathEffects>().rotateCorpse = true;
+
     public static void FixChoristor(GameObject obj)
     {
         obj.AddComponent<FakePersistentMarker>();

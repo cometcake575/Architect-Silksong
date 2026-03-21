@@ -128,7 +128,7 @@ public class AudioPlayer : MonoBehaviour
             
             _isUnlocked = true;
             AudioManager.Instance.ApplyMusicCue(cue, 0, 0, true);
-            if (!cue.snapshot) AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, 0);
+            AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, 0);
             GameManager.instance.sm.musicCue = cue;
             GameManager.instance.sm.musicSnapshot = cue.snapshot;
         }

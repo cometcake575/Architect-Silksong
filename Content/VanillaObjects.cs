@@ -109,13 +109,13 @@ public static class VanillaObjects
     {
         AddEnemy("Coral Furm", "coral_spike_goomba", ("Coral_24", "Coral Spike Goomba"));
         AddEnemy("Driznit", "coral_conch_shooter", ("Coral_32", "Coral Conch Shooter (1)"),
-            preloadAction: EnemyFixers.FixDriznit)
+                preloadAction: EnemyFixers.FixDriznit)
             .WithConfigGroup(ConfigGroup.Wakeable)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
         AddEnemy("Driznarga", "coral_conch_shooter_heavy", ("Coral_24", "Coral Conch Shooter Heavy (1)"));
-        
+
         AddEnemy("Pokenabbin", "pokenabbin", ("Coral_24", "Coral Conch Stabber (1)"),
-            preloadAction: EnemyFixers.FixPatroller)
+                preloadAction: EnemyFixers.FixPatroller)
             .WithConfigGroup(ConfigGroup.Patroller);
 
         AddEnemy("Conchfly", "coral_conch_driller",
@@ -134,10 +134,7 @@ public static class VanillaObjects
             {
                 var fsm = o.LocateMyFSM("Behaviour");
                 var patrol = fsm.FsmVariables.FindFsmBool("In Patrol Range");
-                fsm.GetState("Walk").AddAction(() =>
-                {
-                    patrol.value = true;
-                }, 5);
+                fsm.GetState("Walk").AddAction(() => { patrol.value = true; }, 5);
             }).DoFlipX();
 
         Categories.Interactable.Add(new PreloadObject("Falling Coral Spike",
@@ -148,33 +145,33 @@ public static class VanillaObjects
             }));
 
         Categories.Hazards.Add(new PreloadObject("Coral Crust S", "coral_crust_s",
-            ("Arborium_06", "Coral Crust Wall Small"),
-            postSpawnAction: o =>
-            {
-                foreach (Transform child in o.transform.GetChild(1)) child.gameObject.SetActive(false);
-                HazardFixers.FixCoralCrust(o);
-            })
+                ("Arborium_06", "Coral Crust Wall Small"),
+                postSpawnAction: o =>
+                {
+                    foreach (Transform child in o.transform.GetChild(1)) child.gameObject.SetActive(false);
+                    HazardFixers.FixCoralCrust(o);
+                })
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.All)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
         Categories.Hazards.Add(new PreloadObject("Coral Crust M", "coral_crust_m",
-            ("Arborium_06", "Coral Crust Wall Mid (1)"),
-            postSpawnAction: o =>
-            {
-                foreach (Transform child in o.transform.GetChild(0)) child.gameObject.SetActive(false);
-                HazardFixers.FixCoralCrust(o);
-            })
+                ("Arborium_06", "Coral Crust Wall Mid (1)"),
+                postSpawnAction: o =>
+                {
+                    foreach (Transform child in o.transform.GetChild(0)) child.gameObject.SetActive(false);
+                    HazardFixers.FixCoralCrust(o);
+                })
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.All)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
         Categories.Hazards.Add(new PreloadObject("Coral Crust L", "coral_crust_l",
-            ("Arborium_06", "Coral Crust Wall Tall (3)"),
-            postSpawnAction: o =>
-            {
-                o.transform.GetChild(1).gameObject.SetActive(true);
-                foreach (Transform child in o.transform.GetChild(0)) child.gameObject.SetActive(false);
-                HazardFixers.FixCoralCrust(o);
-            })
+                ("Arborium_06", "Coral Crust Wall Tall (3)"),
+                postSpawnAction: o =>
+                {
+                    o.transform.GetChild(1).gameObject.SetActive(true);
+                    foreach (Transform child in o.transform.GetChild(0)) child.gameObject.SetActive(false);
+                    HazardFixers.FixCoralCrust(o);
+                })
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.All)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
@@ -190,16 +187,16 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixSpearSpawned);
 
         AddEnemy("Karaka", "coral_warrior",
-            ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 2/Coral Warrior (1)"),
-            postSpawnAction: EnemyFixers.FixKaraka)
+                ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 2/Coral Warrior (1)"),
+                postSpawnAction: EnemyFixers.FixKaraka)
             .WithConfigGroup(ConfigGroup.Karaka);
 
         AddEnemy("Corrcrust Karaka", "corrcrust_karaka",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 4/Wave 3/Coral Bubble Brute"),
             postSpawnAction: EnemyFixers.FixCorrcrustKaraka);
-        
+
         Categories.Attacks.Add(new PreloadObject("Coral Bubble", "coral_bubble",
-                ("localpoolprefabs_assets_areacoralareamemory", 
+                ("localpoolprefabs_assets_areacoralareamemory",
                     "Assets/Prefabs/Hornet Enemies/Coral Bubble.prefab"),
                 postSpawnAction: o =>
                 {
@@ -216,7 +213,7 @@ public static class VanillaObjects
         AddEnemy("Karak Gor", "karak_gor",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)"),
             preloadAction: EnemyFixers.FixKarakGor).DoFlipX();
-        
+
         AddEnemy("Alita", "alita",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 1/Coral Hunter"),
             postSpawnAction: EnemyFixers.FixAlita);
@@ -283,32 +280,47 @@ public static class VanillaObjects
                 ("Coral_24", "coral_crust_tree (5)/Interactive Activate Parent/Branch 1/Coral Crust Tree Plat Mid Red"),
                 preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral)
             .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.Four));
-        
+        Categories.Platforming.Add(new PreloadObject("Growing Coral Platform 4", "large_red_coral_plat",
+                ("Memory_Coral_Tower",
+                    "Battle Scenes/Battle Scene Chamber 4/Platform Set B/Interactive Activate Parent/Branch 1/Coral Crust Tree Plat Large"),
+                preloadAction: MiscFixers.FixCoral).WithConfigGroup(ConfigGroup.Coral)
+            .WithReceiverGroup(ReceiverGroup.Activatable).WithRotationGroup(RotationGroup.Four));
+
+        Categories.Interactable.Add(new PreloadObject("Coral Gate", "coral_gate",
+            ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 4/Gates/Battle Gate Coral"),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(4).gameObject.RemoveComponent<BoxCollider2D>();
+                var bc2d = o.GetComponent<BoxCollider2D>();
+                bc2d.offset = new Vector2(-0.7f, 0.32f);
+                bc2d.size = new Vector2(3.25f, 6.5f);
+            })
+            .WithRotationGroup(RotationGroup.Four)
+            .WithConfigGroup(ConfigGroup.CloseableGates)
+            .WithReceiverGroup(ReceiverGroup.BattleGate));
+
         AddSolid("Coral Platform 1", "coral_plat_float", ("Coral_24", "Coral_plat_float_green_medium (1)"));
-        
+
         AddEnemy("Watcher at the Edge", "watcher", ("Coral_39", "Coral Warrior Grey"),
-            postSpawnAction: EnemyFixers.FixWatcher)
+                postSpawnAction: EnemyFixers.FixWatcher)
             .WithConfigGroup(ConfigGroup.Watcher)
             .WithReceiverGroup(ReceiverGroup.Wakeable)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
-        
+
         AddEnemy("Crust King Khann", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
-            postSpawnAction: EnemyFixers.FixKhann)
+                postSpawnAction: EnemyFixers.FixKhann)
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
-        
+
         Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
                 ("Memory_Coral_Tower", "Fish/Pt Exit"),
                 preloadAction: MiscFixers.FixDecoration,
                 sprite: ResourceUtils.LoadSpriteResource("fish", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+            .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
             .WithConfigGroup(ConfigGroup.Fish);
 
         Categories.Misc.Add(new PreloadObject("Karaka Statue", "karaka_statue",
-            ("Coral_Tower_01", "Coral_Warrior_break"), postSpawnAction: MiscFixers.FixBreakable)
+                ("Coral_Tower_01", "Coral_Warrior_break"), postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 
@@ -2520,7 +2532,8 @@ public static class VanillaObjects
             postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(0));
         AddEnemy("Pondcatcher", "pilgrim_fisher",
             ("Shellwood_01", "Black Thread States/Normal World/Pilgrim Fisher Enemy (1)"));
-        AddEnemy("Gahlia", "bloom_puncher", ("Arborium_05", "Bloom Puncher"))
+        AddEnemy("Gahlia", "bloom_puncher", ("Arborium_05", "Bloom Puncher"),
+                preloadAction: EnemyFixers.RotateCorpse)
             .WithRotationGroup(RotationGroup.Four);
         AddEnemy("Phacia", "flower_drifter", ("Shellwood_10", "Flower Drifter"));
         AddEnemy("Disguised Phacia", "flower_drifter_hidden", ("Arborium_03", "Flower Drifter (3)"));
@@ -2537,7 +2550,8 @@ public static class VanillaObjects
                 sprite: ResourceUtils.LoadSpriteResource("pollen_ring", ppu:24))
             .WithReceiverGroup(ReceiverGroup.Burst));
         
-        AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"))
+        AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"),
+                preloadAction: EnemyFixers.RotateCorpse)
             .WithRotationGroup(RotationGroup.Eight);
         
         AddEnemy("Wood Wasp", "wood_wasp", ("Shellwood_02", "Shellwood Wasp"));
@@ -2677,7 +2691,7 @@ public static class VanillaObjects
                 description:"Usually already landed by the time the room finishes loading.\n" +
                             "Best used with the Object Spawner.",
                 notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithConfigGroup(ConfigGroup.VelocityDamager)
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
 
@@ -3055,7 +3069,7 @@ public static class VanillaObjects
         AddEnemy("Plasmidas", "plasmidas",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"),
             preloadAction: o => o.transform.Find("blueblood_worm_growths").gameObject.SetActive(false),
-            postSpawnAction: EnemyFixers.FixPlasmified);
+            postSpawnAction: EnemyFixers.FixPlasmidas);
 
         AddEnemy("Plasmified Zango", "zango_boss", ("Crawl_10", "Area_States/Infected/Blue Assistant"),
                 postSpawnAction: EnemyFixers.FixZango)

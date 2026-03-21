@@ -39,6 +39,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateEnemyHook());
         Categories.Utility.Add(CreateFsmHook());
+        Categories.Utility.Add(CreateComponentToggler());
         
         Categories.Utility.Add(CreateCocoonSpawn());
         
@@ -286,6 +287,23 @@ public static class UtilityObjects
             .WithInputGroup(InputGroup.FsmHook)
             .WithBroadcasterGroup(BroadcasterGroup.FsmHook)
             .WithOutputGroup(OutputGroup.FsmHook);
+    }
+
+    private static PlaceableObject CreateComponentToggler()
+    {
+        var hook = new GameObject("Component Toggler");
+        Object.DontDestroyOnLoad(hook);
+        hook.SetActive(false);
+
+        hook.AddComponent<ComponentHook>();
+        
+        return new CustomObject("Component Hook", "component_toggle", hook, 
+                "Allows enabling, disabling or removing components on an object.\n" +
+                "Works on vanilla objects using their internal path.\n" +
+                "'Recursive' will get components of child objects too.",
+                sprite:ResourceUtils.LoadSpriteResource("fsm_hook", FilterMode.Point, ppu:64))
+            .WithConfigGroup(ConfigGroup.ComponentHook)
+            .WithReceiverGroup(ReceiverGroup.ComponentHook);
     }
 
     private static PlaceableObject CreatePlasmifier()
