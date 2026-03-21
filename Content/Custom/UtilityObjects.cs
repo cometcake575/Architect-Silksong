@@ -301,7 +301,7 @@ public static class UtilityObjects
                 "Allows enabling, disabling or removing components on an object.\n" +
                 "Works on vanilla objects using their internal path.\n" +
                 "'Recursive' will get components of child objects too.",
-                sprite:ResourceUtils.LoadSpriteResource("fsm_hook", FilterMode.Point, ppu:64))
+                sprite:ResourceUtils.LoadSpriteResource("component_hook", FilterMode.Point, ppu:64))
             .WithConfigGroup(ConfigGroup.ComponentHook)
             .WithReceiverGroup(ReceiverGroup.ComponentHook);
     }
