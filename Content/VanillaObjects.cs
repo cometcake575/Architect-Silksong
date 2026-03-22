@@ -107,7 +107,9 @@ public static class VanillaObjects
 
     private static void AddSandsObjects()
     {
-        AddEnemy("Coral Furm", "coral_spike_goomba", ("Coral_24", "Coral Spike Goomba"));
+        AddEnemy("Coral Furm", "coral_spike_goomba", ("Coral_24", "Coral Spike Goomba"),
+            preloadAction: EnemyFixers.AddComponent<EnemyFixers.CoralFurm>)
+            .WithConfigGroup(ConfigGroup.Wakeable);
         AddEnemy("Driznit", "coral_conch_shooter", ("Coral_32", "Coral Conch Shooter (1)"),
                 preloadAction: EnemyFixers.FixDriznit)
             .WithConfigGroup(ConfigGroup.Wakeable)
@@ -294,6 +296,12 @@ public static class VanillaObjects
                 var bc2d = o.GetComponent<BoxCollider2D>();
                 bc2d.offset = new Vector2(-0.7f, 0.32f);
                 bc2d.size = new Vector2(3.25f, 6.5f);
+            }, postSpawnAction: o =>
+            {
+                var fsm = o.GetComponent<PlayMakerFSM>(); 
+                fsm.FsmVariables.FindFsmBool("Stay Closed").Value = false;
+                fsm.GetState("Blast Open").AddAction(() => fsm.SetState("Opened"));
+                fsm.GetState("Open Antic").AddAction(() => o.transform.GetChild(5).gameObject.SetActive(false), 0);
             })
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.CloseableGates)
@@ -322,6 +330,13 @@ public static class VanillaObjects
         Categories.Misc.Add(new PreloadObject("Karaka Statue", "karaka_statue",
                 ("Coral_Tower_01", "Coral_Warrior_break"), postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Coral Tablet", "coral_tablet",
+                ("Coral_Tower_01", "Coral Crust Lore Tablet"),
+                preloadAction: InteractableFixers.FixCoralNut,
+                postSpawnAction: InteractableFixers.FixActivator)
+            .WithBroadcasterGroup(BroadcasterGroup.ActiveDeactivatable)
+            .WithConfigGroup(ConfigGroup.LoreTablets));
     }
 
     private static void AddRoadObjects()
@@ -1674,7 +1689,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Squirm);
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
-                preloadAction: EnemyFixers.FixJudge,
+                preloadAction: EnemyFixers.AddComponent<EnemyFixers.Judge>,
                 postSpawnAction: o => o.LocateMyFSM("Control").GetState("Shield Block")
                     .AddAction(() => o.BroadcastEvent("OnBlock"), 0))
             .WithConfigGroup(ConfigGroup.Judge)
@@ -2627,7 +2642,7 @@ public static class VanillaObjects
 
         AddEnemy("Spear Skarr", "bone_hunter_fly",
                 ("Ant_21", "Enemy Control/Ant Merchant Killed/Big Guard Dead/Bone Hunter Fly"),
-                preloadAction: EnemyFixers.FixSpearSkarr)
+                preloadAction: EnemyFixers.AddComponent<EnemyFixers.SpearSkarr>)
             .WithConfigGroup(ConfigGroup.SpearSkarr)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
@@ -3154,7 +3169,7 @@ public static class VanillaObjects
     private static void AddMossObjects()
     {
         AddEnemy("Mossgrub", "mossbone_crawler", ("Arborium_09", "MossBone Crawler (1)"),
-                preloadAction: EnemyFixers.FixMossgrub)
+                preloadAction: EnemyFixers.AddComponent<EnemyFixers.Mossgrub>)
             .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX()
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Wakeable);

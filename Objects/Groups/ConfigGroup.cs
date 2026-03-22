@@ -1029,11 +1029,10 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Sherma = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Start Awake", "sherma_awake", (o, value) =>
+            new ChoiceConfigType("Start State", "sherma_awake", (o, value) =>
             {
-                if (value.GetValue()) return;
-                o.GetComponent<MiscFixers.Sherma>().startState = 1;
-            }).WithDefaultValue(true))
+                o.GetComponent<MiscFixers.Sherma>().startState = value.GetValue();
+            }).WithOptions("Idle", "Asleep", "Singing").WithDefaultValue(0))
     ]);
     
     public static readonly List<ConfigType> Caretaker = GroupUtils.Merge(Npcs, [
@@ -2161,8 +2160,9 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Start Awake", "mossgrub_walk", (o, value) =>
             {
-                if (!value.GetValue()) return;
-                o.GetComponent<EnemyFixers.Wakeable>().DoWake();
+                var wakeable = o.GetComponent<EnemyFixers.Wakeable>();
+                if (value.GetValue()) wakeable.DoWake();
+                else wakeable.DoUnwake();
             }).WithDefaultValue(true))
     ]);
 

@@ -554,6 +554,11 @@ public static class ReceiverGroup
             if (b == null) return;
             o.transform.SetScaleY(b.GetVariable<float>("New Height", 1));
         })),
+        EventManager.RegisterReceiverType(new EventReceiverType("png_set_frame", "SetFrame", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<PngObject>().SetFrame(Mathf.RoundToInt(b.GetVariable<float>("New Frame", 1)));
+        })),
         EventManager.RegisterReceiverType(new EventReceiverType("png_set_fps", "SetFPS", (o, b) =>
         {
             if (b == null) return;

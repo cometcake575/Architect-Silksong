@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Behaviour.Custom;
 using Architect.Behaviour.Utility;
 using Architect.Content.Custom;
 using Architect.Events;
@@ -9,6 +10,8 @@ namespace Architect.Objects.Groups;
 
 public static class OutputGroup
 {
+    private static readonly OutputType Space = new("space", "", "", null);
+    
     public static readonly List<OutputType> Generic = [];
 
     public static readonly List<OutputType> Enemies =
@@ -68,6 +71,11 @@ public static class OutputGroup
         EventManager.RegisterOutputType(
             new OutputType("png_sprite", "Current Sprite", "Sprite", 
                 o => o.GetComponent<SpriteRenderer>().sprite)
+        ),
+        Space,
+        EventManager.RegisterOutputType(
+            new OutputType("png_frame", "Frame", "Number", 
+                o => o.GetComponent<PngObject>().frame)
         )
     ];
 

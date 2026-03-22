@@ -60,6 +60,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Finishable = ["OnFinish"];
     
+    public static readonly List<string> Png = ["OnFinish", "OnFrameChange"];
+    
     public static readonly List<string> Toll = ["OnPay"];
     
     public static readonly List<string> Breakable = ["OnBreak"];

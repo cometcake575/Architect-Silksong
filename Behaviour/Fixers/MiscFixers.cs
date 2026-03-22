@@ -874,11 +874,50 @@ public static class MiscFixers
         {
             var fsm = gameObject.LocateMyFSM("Conversation Control");
             var asleep = fsm.GetState("Asleep");
+
+            var choice = fsm.GetState("Choice");
+
+            if (startState == 1)
+            {
+                asleep.DisableAction(1);
+                choice.AddAction(() => fsm.SendEvent("REPEAT"), 0);
+            }
+            else
+            {
+                asleep.AddAction(() => fsm.SendEvent("WAKE"), 0);
+                if (startState == 2)
+                {
+                    var idle = fsm.GetState("Idle");
+                    idle.DisableAction(0);
+                    idle.DisableAction(1);
+                    idle.DisableAction(2);
+                    var sing = fsm.GetState("Sing");
+                    idle.AddAction(sing.actions[1], 1);
+                    idle.AddAction(sing.actions[2], 2);
+                    var se = fsm.GetState("Sing End");
+                    choice.AddAction(se.actions[0], 0);
+                    se.AddAction(() => fsm.SendEvent("READY"), 0);
+
+                    idle.transitions = idle.transitions
+                        .Where(i => i.EventName != "SING")
+                        .ToArray();
+                    
+                    for (var i = 1; i < 9; i++) choice.DisableAction(i);
+                    var anim = GetComponent<tk2dSpriteAnimator>();
+                    choice.AddAction(() =>
+                    {
+                        fsm.StartCoroutine(RepeatSoon());
+                    }, 1);
+
+                    IEnumerator RepeatSoon()
+                    {
+                        yield return new WaitForSeconds(0.2f);
+                        anim.Play("Listen");
+                        fsm.SendEvent("REPEAT");
+                    }
+                }
+            }
             
-            if (startState == 0) asleep.AddAction(() => fsm.SendEvent("WAKE"), 0);
-            else asleep.DisableAction(1);
-            
-            fsm.GetState("Choice").AddAction(() => fsm.SendEvent("REPEAT"), 0);
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;

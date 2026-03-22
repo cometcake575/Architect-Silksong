@@ -2563,7 +2563,8 @@ public static class EnemyFixers
 
     public abstract class Wakeable : MonoBehaviour
     {
-        public abstract void DoWake();
+        public virtual void DoWake() { }
+        public virtual void DoUnwake() { }
     }
 
     public class Mossgrub : Wakeable
@@ -2571,6 +2572,31 @@ public static class EnemyFixers
         public override void DoWake() 
         {
             gameObject.LocateMyFSM("Noise Reaction").SendEvent("WAKE");
+        }
+    }
+
+    public class CoralFurm : Wakeable
+    {
+        private PlayMakerFSM _fsm;
+
+        private void Prepare()
+        {
+            if (_fsm) return;
+            _fsm = gameObject.LocateMyFSM("Control");
+        }
+
+        public override void DoUnwake() 
+        {
+            Prepare();
+            _fsm.GetState("Init").AddAction(() => _fsm.SendEvent("HIDING"), 0);
+            _fsm.GetState("Hiding").DisableAction(4);
+            GetComponent<tk2dSpriteAnimator>().Play("Rest");
+        }
+
+        public override void DoWake()
+        {
+            Prepare();
+            _fsm.SendEvent("WAKE");
         }
     }
 
@@ -2622,19 +2648,9 @@ public static class EnemyFixers
         }
     }
 
-    public static void FixMossgrub(GameObject obj)
+    public static void AddComponent<T>(GameObject obj) where T : MonoBehaviour
     {
-        obj.AddComponent<Mossgrub>();
-    }
-
-    public static void FixJudge(GameObject obj)
-    {
-        obj.AddComponent<Judge>();
-    }
-
-    public static void FixSpearSkarr(GameObject obj)
-    {
-        obj.AddComponent<SpearSkarr>();
+        obj.AddComponent<T>();
     }
 
     public static void FixCrawJurorPreload(GameObject obj)

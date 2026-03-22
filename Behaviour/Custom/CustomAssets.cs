@@ -71,6 +71,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
         {
             _remainingFrameTime += frameTime;
             frame++;
+            gameObject.BroadcastEvent("OnFrameChange");
             if (frame >= _count)
             {
                 gameObject.BroadcastEvent("OnFinish");
@@ -99,6 +100,23 @@ public class PngObject : PreviewableBehaviour, IPlayable
     {
         frame = 0;
         if (_renderer) _renderer.sprite = Sprites[0];
+    }
+
+    public void SetFrame(int newFrame)
+    {
+        frame = newFrame;
+            if (frame >= _count)
+            {
+                gameObject.BroadcastEvent("OnFinish");
+                frame %= _count;
+                if (!loop)
+                {
+                    playing = false;
+                    return;
+                }
+            }
+
+            _renderer.sprite = Sprites[frame];
     }
 }
 

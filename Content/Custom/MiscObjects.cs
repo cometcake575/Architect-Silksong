@@ -51,7 +51,7 @@ public static class MiscObjects
                 "Broadcasts 'OnFinish' when the animation ends.")
             .WithConfigGroup(ConfigGroup.PhysicalPng)
             .WithReceiverGroup(ReceiverGroup.Png)
-            .WithBroadcasterGroup(BroadcasterGroup.Finishable)
+            .WithBroadcasterGroup(BroadcasterGroup.Png)
             .WithInputGroup(InputGroup.Png)
             .WithOutputGroup(OutputGroup.Png));
         

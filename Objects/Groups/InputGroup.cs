@@ -23,6 +23,8 @@ public static class InputGroup
 
     public static readonly List<(string, string)> Png =
     [
+        ("New Frame", "Number"),
+        ScriptBlock.Space,
         ("New Width", "Number"),
         ScriptBlock.Space,
         ("New Height", "Number"),
