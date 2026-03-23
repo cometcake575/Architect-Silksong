@@ -73,6 +73,7 @@ public class QuestBlock : ScriptBlock
             case "Accept":
                 yield return HeroController.instance.FreeControl();
                 HeroController.instance.RelinquishControl();
+                GameCameras.instance.HUDOut();
                 
                 completion.IsAccepted = true;
                 completion.IsCompleted = false;
@@ -83,10 +84,13 @@ public class QuestBlock : ScriptBlock
                 {
                     Event("OnAcceptDismiss");
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
+                    GameCameras.instance.HUDIn();
                 });
                 break;
             case "Complete":
                 yield return HeroController.instance.FreeControl();
+                
+                GameCameras.instance.HUDOut();
                 
                 completion.IsCompleted = true;
                 quest.Completion = completion;
@@ -96,6 +100,7 @@ public class QuestBlock : ScriptBlock
                 {
                     Event("OnCompleteDismiss");
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
+                    GameCameras.instance.HUDIn();
                 });
                 break;
             case "SilentAccept":
@@ -117,6 +122,7 @@ public class QuestBlock : ScriptBlock
             {
                 cci.Take(999, false);
                 cci.Get(target.Count);
+                quest.rewardCount = cci.reward;
             }
         }
     }
