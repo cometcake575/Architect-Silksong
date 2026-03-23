@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Architect.Utils;
-using HutongGames.PlayMaker;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;
@@ -11,22 +9,7 @@ public class Darkness : MonoBehaviour
 {
     private static readonly List<Darkness> DarknessObjects = [];
 
-    private static PlayMakerFSM _fsm;
-    private static FsmInt _value;
-
     public int amount = 1;
-
-    public static void Init()
-    {
-        HookUtils.OnFsmAwake += fsm =>
-        {
-            if (fsm.FsmName == "Darkness Control")
-            {
-                _fsm = fsm;
-                _value = fsm.FsmVariables.FindFsmInt("Darkness Level");
-            }
-        };
-    }
 
     private void OnEnable()
     {
@@ -47,8 +30,6 @@ public class Darkness : MonoBehaviour
 
     private static void Refresh()
     {
-        GameManager.instance.sm.darknessLevel = Math.Clamp(DarknessObjects.Sum(o => o.amount), 0, 2);
-        _value.Value = GameManager.instance.sm.darknessLevel;
-        _fsm.SendEvent("RESET");
+        DarknessRegion.SetDarknessLevel(Math.Clamp(DarknessObjects.Sum(o => o.amount), 0, 2));
     }
 }

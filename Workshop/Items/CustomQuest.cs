@@ -94,14 +94,14 @@ public class CustomQuest : SpriteItem
             var dictionary = ic.Distinct().ToDictionary(i => i, i => ic.Count(o => o == i));
             foreach (var (i, num) in dictionary)
             {
-                var item = MiscUtils.GetSavedItem(i) as CollectableItemBasic;
+                var item = MiscUtils.GetSavedItem(i) as CollectableItem;
                 if (!item) continue;
                 targets.Add(new FullQuestBase.QuestTarget
                 {
                     Counter = item,
                     Count = ItemCount / ic.Length * num,
                     AltTest = new PlayerDataTest(),
-                    ItemName = item.displayName
+                    ItemName = (LocalStr)item.GetDisplayName(CollectableItem.ReadSource.Inventory)
                 });
             }
         }

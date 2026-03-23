@@ -359,8 +359,6 @@ public static class UtilityObjects
 
     private static PlaceableObject CreateDarkness()
     {
-        Darkness.Init();
-        
         var dark = new GameObject("Darkness");
         
         Object.DontDestroyOnLoad(dark);

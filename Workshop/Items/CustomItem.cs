@@ -11,7 +11,7 @@ public class CustomItem : SpriteItem
 {
     private ICustomItem _item;
 
-    public CustomItemType ItemType;
+    public CustomItemType ItemType = CustomItemType.Normal;
     
     public LocalStr ItemName = string.Empty;
     public LocalStr ItemDesc = string.Empty;
@@ -31,10 +31,17 @@ public class CustomItem : SpriteItem
         (WavURL1, "wav"),
         (WavURL2, "wav")
     ];
-
+    
+    // Courier
+    public int CourierEffects;
+    public Color BarColour = Color.white;
+    public int Time = 0;
+    public int RewardCost = 0;
+    
     public override void Register()
     {
-        _item = ScriptableObject.CreateInstance<CustomCollectable>();
+        if (ItemType == CustomItemType.Courier) _item = ScriptableObject.CreateInstance<CustomCourierItem>();
+        else _item = ScriptableObject.CreateInstance<CustomCollectable>();
         
         _item.Register(this);
         
@@ -98,7 +105,8 @@ public class CustomItem : SpriteItem
     {
         Normal,
         Usable,
-        Memento
+        Memento,
+        Courier
     }
 
     private static CollectableItemMementoList _mementoList;
@@ -200,6 +208,88 @@ public class CustomItem : SpriteItem
         {
             CollectableItemManager.Instance.masterList.Remove(this);
             if (MementoList) MementoList.Remove(this);
+            Destroy(this);
+        }
+    }
+
+    public class CustomCourierItem : DeliveryQuestItem, ICustomItem
+    {
+        public string consumeEvent;
+        public bool consume;
+        public int reward;
+
+        public override void ConsumeItemResponse()
+        {
+            if (consumeEvent.IsNullOrWhiteSpace()) return;
+            BroadcastBlock.DoBroadcast(consumeEvent);
+        }
+
+        public override bool TakeItemOnConsume => consume;
+
+        public void Register(CustomItem item)
+        {
+            name = item.Id;
+            displayName = item.ItemName;
+            description = item.ItemDesc;
+            useResponseTextOverride = item.UseType;
+            useResponses =
+            [
+                new UseResponse
+                {
+                    UseType = UseTypes.None,
+                    Description = item.UseDesc
+                }
+            ];
+            
+            customMaxAmount = item.MaxAmount;
+
+            isHidden = item.Hidden;
+        
+            consumeEvent = item.UseEvent;
+            consume = item.Consume;
+            
+            var effectSource = item.CourierEffects switch
+            {
+                0 => null,
+                1 => MiscUtils.GetSavedItem("Courier Supplies"),
+                2 => MiscUtils.GetSavedItem("Courier Supplies Slave"),
+                _ => MiscUtils.GetSavedItem("Courier Supplies Gourmand")
+            } as DeliveryQuestItem;
+            if (effectSource)
+            {
+                breakHeroEffect = effectSource.breakHeroEffect;
+                breakUIEffect = effectSource.breakUIEffect;
+                heroLoopEffect = effectSource.heroLoopEffect;
+                hitHeroEffect = effectSource.hitHeroEffect;
+                hitUIEffect = effectSource.hitUIEffect;
+                uiLoopEffect = effectSource.uiLoopEffect;
+            }
+
+            barColour = item.BarColour;
+            totalTimer = item.Time;
+            reward = item.RewardCost;
+            
+            CollectableItemManager.Instance.masterList.Add(this);
+        }
+
+        public void SetSprite(Sprite sprite)
+        {
+            icon = sprite;
+        }
+        
+        public override bool IsVisibleInCollection()
+        {
+            return CollectedAmount > 0;
+        }
+        
+        public override string GetDescription(ReadSource readSource)
+        {
+            return description;
+        }
+        
+        public void Unregister()
+        {
+            CollectableItemManager.Instance.masterList.Remove(this);
             Destroy(this);
         }
     }

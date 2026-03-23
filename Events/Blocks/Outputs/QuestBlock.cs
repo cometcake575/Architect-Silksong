@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Utils;
+using Architect.Workshop.Items;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Outputs;
@@ -8,10 +10,13 @@ namespace Architect.Events.Blocks.Outputs;
 public class QuestBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Clear", "Offer", "Update", "Accept", "Complete", "SilentAccept", "SilentComplete"];
+    protected override IEnumerable<string> Outputs => ["OnAccept", "OnDecline", "OnAcceptDismiss", "OnCompleteDismiss"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Accepted", "Boolean"),
         Space,
-        ("Completed", "Boolean")
+        ("Completed", "Boolean"),
+        Space,
+        ("CanComplete", "Boolean")
     ];
 
     private static readonly Color DefaultColor = new(0.6f, 0.2f, 0.9f);
@@ -41,14 +46,23 @@ public class QuestBlock : ScriptBlock
             case "Offer":
                 yield return HeroController.instance.FreeControl();
                 HeroController.instance.RelinquishControl();
+
+                var targets = quest.targets;
+                var set = targets.Any(target => target.Counter is CustomItem.CustomCourierItem { reward: 0 });
+                if (set) quest.targets = [];
                 
                 QuestYesNoBox.Open(() =>
                 {
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
+                    PrepareCourierItems(quest);
+                    Event("OnAccept");
                 }, () =>
                 {
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
+                    Event("OnDecline");
                 }, true, quest, true);
+
+                if (set) quest.targets = targets;
                 break;
             case "Update":
                 QuestManager.ShowQuestUpdatedStandalone(quest);
@@ -63,9 +77,11 @@ public class QuestBlock : ScriptBlock
                 completion.IsAccepted = true;
                 completion.IsCompleted = false;
                 quest.Completion = completion;
+                PrepareCourierItems(quest);
                 
                 quest.BeginQuest(() =>
                 {
+                    Event("OnAcceptDismiss");
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
                 });
                 break;
@@ -78,16 +94,30 @@ public class QuestBlock : ScriptBlock
                 HeroController.instance.RelinquishControl();
                 quest.ShowQuestCompleted(() =>
                 {
+                    Event("OnCompleteDismiss");
                     ArchitectPlugin.Instance.StartCoroutine(RegainControl());
                 });
                 break;
             case "SilentAccept":
                 completion.IsAccepted = true;
                 quest.Completion = completion;
+                PrepareCourierItems(quest);
                 break;
             case "SilentComplete":
                 quest.SilentlyComplete();
                 break;
+        }
+    }
+
+    private static void PrepareCourierItems(FullQuestBase quest)
+    {
+        foreach (var target in quest.targets)
+        {
+            if (target.Counter is CustomItem.CustomCourierItem cci)
+            {
+                cci.Take(999, false);
+                cci.Get(target.Count);
+            }
         }
     }
 
@@ -101,6 +131,11 @@ public class QuestBlock : ScriptBlock
     {
         var quest = QuestManager.instance.masterList.GetByName(QuestName) as FullQuestBase;
         if (!quest) return false;
-        return id == "Accepted" ? quest.IsAccepted : quest.IsCompleted;
+        return id switch
+        {
+            "Accepted" => quest.IsAccepted,
+            "Completed" => quest.IsCompleted,
+            _ => quest.CanComplete
+        };
     }
 }

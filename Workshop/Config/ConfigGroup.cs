@@ -279,6 +279,51 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> CourierItem =
+    [
+        (NoteConfigType) "Only apply to Courier items",
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomItem>("Effects", "courier_item_effect", (item, value) =>
+            {
+                item.CourierEffects = value.GetValue();
+            }).WithOptions("None", "Swag", "Liquid", "Meat").WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomItem>("Ring R", "courier_item_r", (item, value) =>
+            {
+                item.BarColour.r = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomItem>("Ring G", "courier_item_g", (item, value) =>
+            {
+                item.BarColour.g = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomItem>("Ring B", "courier_item_b", (item, value) =>
+            {
+                item.BarColour.b = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        (NoteConfigType)"The time in seconds for the item to break",
+        (NoteConfigType)"If set to 0 the item will not break over time",
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomItem>("Time to Break", "courier_item_time", (item, value) =>
+            {
+                item.Time = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        (NoteConfigType)"The number of rosaries to show up as a reward when used alone in a quest",
+        (NoteConfigType)"Setting this to 0 will make the quest appear as a normal quest",
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomItem>("Reward Count", "courier_reward_num", (item, value) =>
+            {
+                item.RewardCost = value.GetValue();
+            }).WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> CustomItem = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomItem>("Item Name", "item_display_name", (item, value) =>
@@ -308,7 +353,7 @@ public static class ConfigGroup
             new ChoiceConfigType<CustomItem>("Item Type", "item_consume", (item, value) =>
             {
                 item.ItemType = Enum.Parse<CustomItem.CustomItemType>(value.GetStringValue());
-            }).WithOptions("Normal", "Usable", "Memento").WithDefaultValue(0)
+            }).WithOptions("Normal", "Usable", "Memento", "Courier").WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType<CustomItem>("Max Amount", "item_max", (item, value) =>
@@ -737,20 +782,22 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> QuestItem = [
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomQuest>("Count Items", "quest_req_items", (item, value) =>
+            new BoolConfigType<CustomQuest>("Include Items", "quest_req_items", (item, value) =>
             {
                 item.HasItem = value.GetValue();
             }).WithDefaultValue(false)
         ),
         (NoteConfigType)"Separating IDs with a comma will share the required count across each item type",
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomQuest>("Item to Count", "quest_item_id", (item, value) =>
+            new StringConfigType<CustomQuest>("Item ID", "quest_item_id", (item, value) =>
             {
                 item.ItemId = value.GetValue();
             })
         ),
+        (NoteConfigType)"For normal items, this is the required number to complete the quest",
+        (NoteConfigType)"For Courier items, this is the number of hit points the item will have",
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<CustomQuest>("Required Count", "quest_item_num", (item, value) =>
+            new IntConfigType<CustomQuest>("Item Count", "quest_item_num", (item, value) =>
             {
                 item.ItemCount = value.GetValue();
             }).WithDefaultValue(1)

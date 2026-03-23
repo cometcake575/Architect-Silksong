@@ -143,8 +143,10 @@ public static class VanillaObjects
             "coral_spike_fall", ("Memory_Coral_Tower", "Stalactite Group"),
             preloadAction: o =>
             {
+                o.AddComponent<MiscFixers.TriggerActivator>();
+                o.transform.GetChild(0).GetChild(4).GetChild(1).gameObject.layer = LayerMask.NameToLayer("Particle");
                 for (var i = 1; i <= 7; i++) Object.Destroy(o.transform.GetChild(i).gameObject);
-            }));
+            }).WithConfigGroup(ConfigGroup.CoralSpike));
 
         Categories.Hazards.Add(new PreloadObject("Coral Crust S", "coral_crust_s",
                 ("Arborium_06", "Coral Crust Wall Small"),
@@ -1722,7 +1724,8 @@ public static class VanillaObjects
                 o.GetComponent<SpriteRenderer>().color = Color.white;
                 o.transform.SetPositionZ(-0.0054f);
                 o.transform.SetRotation2D(0);
-            }, postSpawnAction: HazardFixers.FixCarvers));
+            }, postSpawnAction: HazardFixers.FixCarvers)
+            .WithConfigGroup(ConfigGroup.Sandcarver));
 
         Categories.Npcs.Add(new PreloadObject("Steel Seer Zi", "steel_seer",
             ("Coral_37", "Room_States/Steel/Steel Sentinel"),

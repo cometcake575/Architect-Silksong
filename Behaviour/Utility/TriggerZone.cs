@@ -39,7 +39,7 @@ public class TriggerZone : MonoBehaviour
                 if (!tz || (tz.layer != layer && usingLayer)) return;
                 break;
             case 4:
-                var kr = other.gameObject.GetComponent<MiscFixers.TriggerActivator>();
+                var kr = other.gameObject.GetComponentInParent<MiscFixers.TriggerActivator>();
                 if (!kr || (kr.layer != layer && usingLayer)) return;
                 break;
         }

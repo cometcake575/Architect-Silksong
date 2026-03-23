@@ -183,6 +183,15 @@ public static class ConfigGroup
             }))
     ]);
     
+    public static readonly List<ConfigType> Sandcarver = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Appear Range", "sandcarver_range", (o, value) =>
+            {
+                o.GetComponentInChildren<CircleCollider2D>().radius = value.GetValue();
+            }).WithDefaultValue(4))
+    ]);
+    
     public static readonly List<ConfigType> Cocoon = GroupUtils.Merge(Visible,
     [
         ConfigurationManager.RegisterConfigType(
@@ -1390,7 +1399,8 @@ public static class ConfigGroup
 
         private void Start()
         {
-            rb2d = gameObject.GetOrAddComponent<Rigidbody2D>();
+            rb2d = gameObject.GetComponentInChildren<Rigidbody2D>(true);
+            if (!rb2d) rb2d = gameObject.AddComponent<Rigidbody2D>();
         }
 
         private void Update()
@@ -1408,6 +1418,9 @@ public static class ConfigGroup
             }
         ))
     ]);
+    
+    public static readonly List<ConfigType> CoralSpike = GroupUtils.Merge(PersistentBreakable, 
+        GroupUtils.Merge(TriggerActivator, []));
 
     public static readonly List<ConfigType> FakePerformance = GroupUtils.Merge(Generic, [
             ConfigurationManager.RegisterConfigType(new FloatConfigType("Range Multiplier", "perform_range",

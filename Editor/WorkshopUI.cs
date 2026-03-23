@@ -369,7 +369,7 @@ public static class WorkshopUI
         _configParent.transform.SetParent(_configArea.transform, false);
         _configParent.RemoveOffset();
 
-        var ic = item.Config.Length > 4 ? item.Config[..3] : item.Config;
+        var ic = item.Config.Length > 3 ? item.Config[..3] : item.Config;
         
         var y = (2 * ic.Length + ic.SelectMany(o => o).Count() - 3) * 6;
 
@@ -430,7 +430,7 @@ public static class WorkshopUI
             }
 
             y -= 24;
-            if (item.Config.Length > 4) g++;
+            if (item.Config.Length > 3) g++;
         }
     }
 }
