@@ -31,7 +31,9 @@ public class ObjectMoverBlock : ScriptBlock
         ("Pos X", "Number"),
         ("Pos Y", "Number"),
         ("Pos Z", "Number"),
-        ("Rotation", "Number")
+        ("Rotation", "Number"),
+        ("Force X", "Number"),
+        ("Force Y", "Number")
     ];
     
     protected override Color Color => ObjectBlock.ValidColor;
@@ -88,12 +90,24 @@ public class ObjectMoverBlock : ScriptBlock
     {
         var obj = GetVariable<GameObject>("Target");
         if (!obj) return 0;
+        switch (id)
+        {
+            case "Force X":
+                var xrb2d = obj.GetComponent<Rigidbody2D>();
+                if (!xrb2d) return 0;
+                return xrb2d.linearVelocityX;
+            case "Force Y":
+                var yrb2d = obj.GetComponent<Rigidbody2D>();
+                if (!yrb2d) return 0;
+                return yrb2d.linearVelocityY;
+        }
+        
         return id switch
         {
             "Pos X" => obj.transform.GetPositionX(),
             "Pos Y" => obj.transform.GetPositionY(),
             "Pos Z" => obj.transform.GetPositionZ(),
-            "Angle" => obj.transform.GetRotation2D(),
+            "Rotation" => obj.transform.GetRotation2D(),
             _ => 0
         };
     }

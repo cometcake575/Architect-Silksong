@@ -126,6 +126,7 @@ public class Wind : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Enemy Detector"));
         Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Hero Detector"));
+        Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Interactive Object"));
         HookUtils.OnHeroUpdate += _ =>
         {
             if (HeroController.instance.cState.jumping

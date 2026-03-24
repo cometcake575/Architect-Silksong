@@ -691,7 +691,17 @@ public static class ConfigGroup
             new IdConfigType("Object ID", "camera_view_id", (o, value) =>
             {
                 o.GetComponent<CameraObjects.CustomCamera>().id = value.GetValue();
-            }))
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Resolution", "camera_resolution", (o, value) =>
+            {
+                o.GetComponent<CameraObjects.CustomCamera>().resolution = value.GetValue();
+            }).WithDefaultValue(1024)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Zoom", "camera_zoom_amount", (o, value) =>
+            {
+                o.GetComponent<tk2dCamera>().zoomFactor = value.GetValue();
+            }).WithDefaultValue(1))
     ]);
     
     public static readonly List<ConfigType> Zaprock =  GroupUtils.Merge(Visible, [
@@ -998,6 +1008,41 @@ public static class ConfigGroup
                     }
                     else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
+
+    public static readonly List<ConfigType> CameraView = GroupUtils.Merge(Stretchable, [
+        ZOffset,
+        RenderLayer,
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("On UI", "ui_camera_target_on_ui",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<CameraObjects.CustomCameraTarget>().onUI = value.GetValue();
+                }).WithDefaultValue(false).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("UI X Offset", "ui_camera_target_x",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<CameraObjects.CustomCameraTarget>().xOffset = value.GetValue();
+                }).WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("UI Y Offset", "ui_camera_target_y",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<CameraObjects.CustomCameraTarget>().yOffset = value.GetValue();
+                }).WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("UI Shift With", "ui_camera_target_anchor",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<CameraObjects.CustomCameraTarget>().anchorTo = value.GetValue();
+                }).WithOptions("None", "LastMask", "LastTool").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("UI Hide with HUD", "ui_camera_target_hide_with_hud",
+                (o, value) =>
+                {
+                    o.GetOrAddComponent<CameraObjects.CustomCameraTarget>().ignoreHudOut = !value.GetValue();
+                }).WithDefaultValue(true).WithPriority(-1))
+    ]);
 
     public static readonly List<ConfigType> Dialogue = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
