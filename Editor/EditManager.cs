@@ -139,9 +139,20 @@ public static class EditManager
 
         typeof(PersistentBoolItem).Hook("Awake", (Action<PersistentBoolItem> orig, PersistentBoolItem self) =>
         {
-            if (self.gameObject.name.StartsWith("[Architect] ") && Settings.TestMode.Value)
+            if (Settings.TestMode.Value && self.gameObject.name.StartsWith("[Architect] "))
             {
-                self.OnGetSaveState += (out bool value) => value = false;
+                self.OnGetSaveState += (out value) => value = self.DefaultValue;
+                self.enabled = false;
+            }
+            orig(self);
+        });
+
+        typeof(PersistentIntItem).Hook("Awake", (Action<PersistentIntItem> orig, PersistentIntItem self) =>
+        {
+            if (Settings.TestMode.Value && self.gameObject.name.StartsWith("[Architect] "))
+            {
+                self.OnGetSaveState += (out value) => value = self.DefaultValue;
+                self.enabled = false;
             }
             orig(self);
         });

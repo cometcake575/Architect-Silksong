@@ -43,6 +43,7 @@ public class PrefabObject : PlaceableObject
         Name = name;
         ConfigGroup = Objects.Groups.ConfigGroup.Generic;
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
+        OutputGroup = Objects.Groups.OutputGroup.Generic;
         DisableTransformations = true;
     }
 

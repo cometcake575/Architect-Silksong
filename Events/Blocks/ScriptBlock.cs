@@ -186,6 +186,12 @@ public abstract class ScriptBlock
         {
             return (T)(object)(float)i;
         }
+
+        if (typeof(T) == typeof(GameObject) && val is HealthManager hm)
+        {
+            return (T)(object)hm.gameObject;
+        }
+        
         return (T)val;
     }
 

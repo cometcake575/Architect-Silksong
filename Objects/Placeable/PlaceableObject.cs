@@ -52,7 +52,7 @@ public abstract class PlaceableObject : SelectableObject
     private RotationGroup _rotationGroup = RotationGroup.None;
     
     public List<EventReceiverType> ReceiverGroup = Groups.ReceiverGroup.Generic;
-    public List<OutputType> OutputGroup = Groups.OutputGroup.Generic;
+    public List<OutputType> OutputGroup = Groups.OutputGroup.Objects;
     public List<(string, string)> InputGroup = Groups.InputGroup.Generic;
     public List<ConfigType> ConfigGroup = Groups.ConfigGroup.Visible;
     public List<string> BroadcasterGroup = [];

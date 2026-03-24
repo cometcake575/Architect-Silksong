@@ -686,6 +686,14 @@ public static class ConfigGroup
             }))
     ]);
     
+    public static readonly List<ConfigType> Camera =  GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Object ID", "camera_view_id", (o, value) =>
+            {
+                o.GetComponent<CameraObjects.CustomCamera>().id = value.GetValue();
+            }))
+    ]);
+    
     public static readonly List<ConfigType> Zaprock =  GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Start Delay", "zap_delay", (o, value) =>

@@ -41,6 +41,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
         ScriptManager.RegisterInputBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting);
         ScriptManager.RegisterInputBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
+        ScriptManager.RegisterInputBlock<ObjectMoverBlock>("Move Object");
         
         ScriptManager.RegisterInputBlock<TravelBlock>("Travel UI", ConfigGroup.TravelUI);
         ScriptManager.RegisterHiddenBlock<TravelBlock.TravelLoc>("Travel Target", ConfigGroup.TravelUITarget);

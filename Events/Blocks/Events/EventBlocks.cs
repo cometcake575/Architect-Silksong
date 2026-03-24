@@ -8,6 +8,7 @@ public static class EventBlocks
     {
         ScriptManager.RegisterOutputBlock<StartBlock>("Start");
         ScriptManager.RegisterOutputBlock<TimerBlock>("Timer", ConfigGroup.Timer);
+        ScriptManager.RegisterOutputBlock<EveryFrameBlock>("Every Frame");
         ScriptManager.RegisterOutputBlock<KeyBlock>("Key Listener", ConfigGroup.KeyListener);
         ScriptManager.RegisterOutputBlock<PlayerBlock>("Player Listener");
         ScriptManager.RegisterOutputBlock<ReceiveBlock>("Receive", ConfigGroup.Receive);

@@ -13,6 +13,12 @@ public static class OutputGroup
     private static readonly OutputType Space = new("space", "", "", null);
     
     public static readonly List<OutputType> Generic = [];
+    
+    public static readonly List<OutputType> Objects = [
+        EventManager.RegisterOutputType(
+            new OutputType("object_self", "Self", "Object", o => o)
+        )
+    ];
 
     public static readonly List<OutputType> Enemies =
     [
@@ -32,7 +38,7 @@ public static class OutputGroup
         )
     ];
 
-    public static readonly List<OutputType> EnemyDamager =
+    public static readonly List<OutputType> EnemyDamager = GroupUtils.Merge(Objects,
     [
         EventManager.RegisterOutputType(
             new OutputType("enemy_lastdmg", "LastDamaged", "Enemy", o =>
@@ -41,7 +47,7 @@ public static class OutputGroup
                 return hm.last;
             })
         )
-    ];
+    ]);
 
     public static readonly List<OutputType> EnemyHook =
     [
@@ -58,15 +64,15 @@ public static class OutputGroup
         )
     ];
 
-    public static readonly List<OutputType> TriggerZone =
+    public static readonly List<OutputType> TriggerZone = GroupUtils.Merge(Objects,
     [
         EventManager.RegisterOutputType(
             new OutputType("trigger_inside", "Inside", "Boolean", 
                 o => o.GetComponent<TriggerZone>().inside)
         )
-    ];
+    ]);
 
-    public static readonly List<OutputType> Png =
+    public static readonly List<OutputType> Png = GroupUtils.Merge(Objects,
     [
         EventManager.RegisterOutputType(
             new OutputType("png_sprite", "Current Sprite", "Sprite", 
@@ -77,9 +83,9 @@ public static class OutputGroup
             new OutputType("png_frame", "Frame", "Number", 
                 o => o.GetComponent<PngObject>().frame)
         )
-    ];
+    ]);
 
-    public static readonly List<OutputType> FsmHook =
+    public static readonly List<OutputType> FsmHook = GroupUtils.Merge(Objects,
     [
         EventManager.RegisterOutputType(
             new OutputType("fsm_hoo_state", "State", "Text",
@@ -89,9 +95,9 @@ public static class OutputGroup
             new OutputType("fsm_hook_time", "Time", "Number",
                 o => o.GetComponent<FsmHook>().GetTime())
         )
-    ];
+    ]);
 
-    public static readonly List<OutputType> ObjectAnchor =
+    public static readonly List<OutputType> ObjectAnchor = GroupUtils.Merge(Objects,
     [
         EventManager.RegisterOutputType(
             new OutputType("anchor_x", "X", "Number", 
@@ -101,7 +107,7 @@ public static class OutputGroup
             new OutputType("anchor_y", "Y", "Number", 
                 o => o.transform.GetPositionY()
         ))
-    ];
+    ]);
 
     public static readonly List<OutputType> LastJudge = GroupUtils.Merge(Enemies, [
         EventManager.RegisterOutputType

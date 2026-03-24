@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Architect.Events.Blocks.Events;
 using Architect.Utils;

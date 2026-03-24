@@ -32,7 +32,8 @@ public class PlayerBlock : ToggleableBlock
         ("Left", "Boolean"),
         ("Right", "Boolean"),
         ("Up", "Boolean"),
-        ("Down", "Boolean")
+        ("Down", "Boolean"),
+        ("Self", "Object")
     ];
     protected override Color Color => Color.green;
     protected override string Name => "Player Listener";
@@ -53,13 +54,14 @@ public class PlayerBlock : ToggleableBlock
             "Down" => HeroController.instance.cState.lookingDown,
             "X" => HeroController.instance.transform.GetPositionX(),
             "Y" => HeroController.instance.transform.GetPositionY(),
+            "Self" => HeroController.instance.gameObject,
             _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
         };
     }
 
     public class PlayerEvent : MonoBehaviour
     {
-        public PlayerBlock Block;
+        public ScriptBlock Block;
     
         private void OnEnable()
         {

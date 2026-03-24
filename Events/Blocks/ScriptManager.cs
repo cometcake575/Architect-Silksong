@@ -215,7 +215,7 @@ public static class ScriptManager
         public void OnPointerDown(PointerEventData eventData)
         {
             if (CurrentStart is not VarStart start) return;
-            if (start.type != type && type != "Any") return;
+            if (start.type != type && type != "Any" && !(start.type == "Enemy" && type == "Object")) return;
             
             if (!Block.IsValid || !CurrentStart.Block.IsValid) return;
 
