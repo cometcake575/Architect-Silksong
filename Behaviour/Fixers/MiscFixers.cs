@@ -908,6 +908,7 @@ public static class MiscFixers
                     {
                         fsm.StartCoroutine(RepeatSoon());
                     }, 1);
+                    choice.transitions = choice.transitions.Where(o => o.EventName == "REPEAT").ToArray();
 
                     IEnumerator RepeatSoon()
                     {
@@ -1277,7 +1278,7 @@ public static class MiscFixers
         fsm.GetState("Rescue 2").AddAction(() => obj.BroadcastEvent("OnSave"));
     }
 
-    public static void FixMirrorAndSilhouette(GameObject obj)
+    public static void FixSpecialPNGs(GameObject obj)
     {
         obj.AddComponent<PngObject>().ignoreGlow = true;
         obj.transform.SetScale2D(new Vector2(2, 2));
@@ -1591,7 +1592,7 @@ public static class MiscFixers
 
     public static void FixSilkeaterCocoon(GameObject obj)
     {
-        obj.transform.GetChild(3).gameObject.AddComponent<SilkCocoon>().obj = obj;
+        obj.transform.Find("Break Effects").gameObject.AddComponent<SilkCocoon>().obj = obj;
     }
 
     public class SilkCocoon : MonoBehaviour

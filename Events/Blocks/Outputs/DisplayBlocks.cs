@@ -9,7 +9,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class TitleBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Display"];
+    protected override IEnumerable<string> Inputs => ["Display", "Cancel"];
 
     private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
     protected override Color Color => DefaultColor;
@@ -19,10 +19,12 @@ public class TitleBlock : ScriptBlock
     public string Body = "";
     public string Footer = "";
     public int TitleType;
+    public bool WaitForCancel;
 
     protected override void Trigger(string trigger)
     {
-        TitleUtils.DisplayTitle(Header, Body, Footer, TitleType);
+        if (trigger == "Display") TitleUtils.DisplayTitle(Header, Body, Footer, TitleType, WaitForCancel);
+        else TitleUtils.CancelTitle();
     }
 }
 

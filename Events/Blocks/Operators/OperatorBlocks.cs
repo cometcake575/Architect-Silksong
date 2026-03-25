@@ -12,6 +12,10 @@ public static class OperatorBlocks
         PlayerDataBoolBlock.Init();
         
         ScriptManager.RegisterProcessBlock<CounterBlock>("Counter", ConfigGroup.Counter);
+        
+        ScriptManager.RegisterProcessBlock<OneByOneBlock>("Step Counter");
+        ScriptManager.RegisterHiddenBlock<OneByOneBlock.TriggerBlock>("Step Trigger");
+        
         ScriptManager.RegisterProcessBlock<IfBlock>("If");
         
         ScriptManager.RegisterProcessBlock<OrderBlock>("Ordered Events");
@@ -48,5 +52,6 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<PlayerDataBoolBlock>("PlayerData (Bool)", ConfigGroup.PdBool);
         ScriptManager.RegisterProcessBlock<PlayerDataIntBlock>("PlayerData (Int)", ConfigGroup.PdInt);
         ScriptManager.RegisterProcessBlock<PlayerDataFloatBlock>("PlayerData (Float)", ConfigGroup.PdFloat);
+        ScriptManager.RegisterProcessBlock<CustomNeedleBlock>("Custom Needle", ConfigGroup.CustomNeedle);
     }
 }

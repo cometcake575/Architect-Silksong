@@ -14,6 +14,7 @@ public class BlackThreader : MonoBehaviour
     public string id;
     public int mode;
     public bool blockAttacks;
+    public int sideEffects;
     public bool requireAct3;
     public float hpMultiplier = 1;
 
@@ -82,17 +83,17 @@ public class BlackThreader : MonoBehaviour
     {
         var hm = target.GetComponentInChildren<HealthManager>();
         var fc = target.GetComponent<EnemyFixers.FourthChorus>();
-        if (!hm)
+        if (!hm || sideEffects != 0)
         {
-            foreach (var dh in target.GetComponentsInChildren<DamageHero>(true))
+            if (sideEffects is 0 or 1) foreach (var dh in target.GetComponentsInChildren<DamageHero>(true))
                 dh.damagePropertyFlags |= DamagePropertyFlags.Void;
-            foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
+            if (sideEffects is 0 or 2) foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>(true))
                 sr.material.EnableKeyword("BLACKTHREAD");
-            foreach (var sr in target.GetComponentsInChildren<MeshRenderer>(true))
+            if (sideEffects is 0 or 2) foreach (var sr in target.GetComponentsInChildren<MeshRenderer>(true))
                 sr.material.EnableKeyword("BLACKTHREAD");
-            foreach (var aSource in target.GetComponentsInChildren<AudioSource>(true))
+            if (sideEffects is 0 or 3) foreach (var aSource in target.GetComponentsInChildren<AudioSource>(true))
                 aSource.outputAudioMixerGroup = Effects.BlackThreadVoiceMixerGroup;
-            foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
+            if (sideEffects is 0 or 2) foreach (var sr in target.GetComponentsInChildren<tk2dSprite>(true))
                 try
                 {
                     sr.EnableKeyword("BLACKTHREAD");

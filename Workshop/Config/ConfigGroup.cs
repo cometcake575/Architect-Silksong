@@ -972,4 +972,26 @@ public static class ConfigGroup
             }).WithDefaultValue(100)
         )
     ];
+    
+    public static readonly List<ConfigType> Needle =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomNeedle>("Name", "needle_title", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomNeedle>("Description", "needle_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomNeedle>("Damage", "needle_damage_level", (item, value) =>
+            {
+                item.Damage = value.GetValue();
+            })
+        )
+    ];
 }

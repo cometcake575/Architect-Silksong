@@ -12,6 +12,8 @@ public class ArchitectData
     public Dictionary<string, string> StringVariables = [];
     public Dictionary<string, float> FloatVariables = [];
     public Dictionary<string, bool> BoolVariables = [];
+
+    public string CustomNeedle = string.Empty;
 }
 
 public class GlobalArchitectData

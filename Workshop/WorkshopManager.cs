@@ -86,6 +86,12 @@ public static class WorkshopManager
             new Vector2(-100, -300),
             ConfigGroup.Cue);
         
+        CustomNeedle.Init();
+        Register<CustomNeedle>("Needle",
+            new Vector2(-300, -337.5f),
+            ConfigGroup.Needle,
+            ConfigGroup.SpriteItem);
+        
         SceneGroup.Init();
         
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),

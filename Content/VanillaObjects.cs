@@ -401,8 +401,20 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Silkeater Cocoon", "silkeater",
             ("Dust_11", "Steel Soul States/Regular/NPC Control/Large Cocoon 1"),
-            postSpawnAction: MiscFixers.FixSilkeaterCocoon)
+            preloadAction: MiscFixers.FixSilkeaterCocoon)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Hanging Silkeater Cocoon", "silkeater_hang",
+            ("Coral_37", "Room_States/Normal/Silk Grub Large Cocoon"),
+            preloadAction: MiscFixers.FixSilkeaterCocoon)
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
+
+        Categories.Misc.Add(new PreloadObject("Tiny Hanging Silkeater Cocoon", "silkeater_s_hang",
+            ("Coral_37", "Room_States/Normal/Silk Grub Small Cocoon 2"),
+            preloadAction: MiscFixers.FixSilkeaterCocoon)
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
 
         AddEnemy("Disgraced Chef Lugoli", "disgraced_chef",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 2/Roachkeeper Chef (1)"),
@@ -1914,7 +1926,7 @@ public static class VanillaObjects
                 ("Hang_06b", "new_scene/Reflection_surface"),
                 description: "Reflects objects above itself, can be configured\n" +
                              "in the same way as the Custom PNG for custom mirror shapes.",
-                preloadAction: MiscFixers.FixMirrorAndSilhouette,
+                preloadAction: MiscFixers.FixSpecialPNGs,
                 sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
@@ -1922,15 +1934,21 @@ public static class VanillaObjects
                 ("Shadow_02", "Shakra Trail Quest Parent/Active/Tracking Trail (2)/Silhouettes Parent/Silhoutte"),
                 description: "Silhouette effect from tracking, can be configured\n" +
                              "in the same way as the Custom PNG for custom shapes.",
-                preloadAction: MiscFixers.FixMirrorAndSilhouette,
+                preloadAction: MiscFixers.FixSpecialPNGs,
                 sprite: ResourceUtils.LoadSpriteResource("silhouette", ppu: 155))
+            .WithConfigGroup(ConfigGroup.Png));
+
+        Categories.Effects.Add(new PreloadObject("Vignette Cutout Effect", "vignette_cutout_effect",
+                ("Belltown", "Vignette Cutout (3)"),
+                description: "Cuts out part of the vignette, can be used to make areas visible in darkness.",
+                preloadAction: MiscFixers.FixSpecialPNGs)
             .WithConfigGroup(ConfigGroup.Png));
 
         Categories.Effects.Add(new PreloadObject("Memory Silk Effect", "memory_silk_effect",
                 ("Coral_Tower_01", "Memory Group/before/thread_memory/thread_memory_starter/strand1/strandbacking (1)"),
                 description: "Memory Silk effect from memory entrances, can be configured\n" +
                              "in the same way as the Custom PNG for custom shapes.",
-                preloadAction: MiscFixers.FixMirrorAndSilhouette,
+                preloadAction: MiscFixers.FixSpecialPNGs,
                 sprite: ResourceUtils.LoadSpriteResource("memory", ppu: 155))
             .WithConfigGroup(ConfigGroup.Png));
 

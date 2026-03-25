@@ -623,7 +623,12 @@ public static class ConfigGroup
             new ChoiceConfigType<TitleBlock>("Mode", "title_type", (o, value) =>
             {
                 o.TitleType = value.GetValue();
-            }).WithOptions("Large", "Left", "Right").WithDefaultValue(0))
+            }).WithOptions("Large", "Left", "Right").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<TitleBlock>("Wait to Cancel", "title_wait_cancel", (o, value) =>
+            {
+                o.WaitForCancel = value.GetValue();
+            }).WithDefaultValue(false))
     ];
 
     public static readonly List<ConfigType> PowerupDisplay =
@@ -882,6 +887,14 @@ public static class ConfigGroup
             new IntConfigType<TimerBlock>("Max Calls", "timer_limit", (o, value) =>
             {
                 o.MaxCalls = value.GetValue();
+            }))
+    ];
+    
+    public static readonly List<ConfigType> CustomNeedle =  [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomNeedleBlock>("Needle ID", "custom_needle_id", (o, value) =>
+            {
+                o.Value = value.GetValue();
             }))
     ];
 }

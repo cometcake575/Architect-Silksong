@@ -358,6 +358,11 @@ public static class ConfigGroup
                 o.GetComponent<BlackThreader>().id = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Effects", "voider_side_effects", (o, value) =>
+            {
+                o.GetComponent<BlackThreader>().sideEffects = value.GetValue();
+            }).WithOptions("All", "Hazard", "Visual", "Audio").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Void Circle Chance", "voider_ball", (o, value) =>
             {
                 o.GetComponent<BlackThreader>().chances[0] = Mathf.Abs(value.GetValue());
