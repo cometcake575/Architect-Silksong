@@ -1532,7 +1532,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.FlowingWater)
             .WithRotationGroup(RotationGroup.All));
 
-        Categories.Effects.Add(new PreloadObject("Falling Water", "waterfall_effect",
+        Categories.Effects.Add(new PreloadObject("Waterfall A", "waterfall_effect",
             ("Hang_09", "coral_river_chunk/waterfall/Base"),
             sprite: ResourceUtils.LoadSpriteResource("water_fall", FilterMode.Point, ppu:215),
             preloadAction: o =>
@@ -1543,7 +1543,41 @@ public static class VanillaObjects
                 o.transform.SetScale2D(new Vector2(3, 3));
             })
             .WithConfigGroup(ConfigGroup.FlowingWater));
-
+        
+        Categories.Effects.Add(new PreloadObject("Waterfall B", "waterfall_top",
+                ("Memory_Coral_Tower", "Top (39)"),
+                preloadAction: o =>
+                {
+                    o.transform.SetPositionZ(0.01f);
+                    o.transform.localScale = new Vector3(6, 6, 1);
+                },
+                sprite: ResourceUtils.LoadSpriteResource("water_fall_b", FilterMode.Point, ppu:215))
+            .WithConfigGroup(ConfigGroup.FlowingWater));
+        
+        Categories.Effects.Add(new PreloadObject("Waterfall C", "water_waterfall_tiled",
+            ("Memory_Coral_Tower", "water_waterfall_tiled (2)"),
+            preloadAction: o =>
+            {
+                o.transform.localScale = Vector3.one;
+                o.transform.SetPositionZ(0.01f);
+                o.transform.GetChild(0).SetLocalPositionY(0);
+                o.transform.GetChild(1).SetLocalPositionX(0);
+                o.transform.GetChild(0).localScale = new Vector3(6, 6, 1);
+            },
+            sprite: ResourceUtils.LoadSpriteResource("water_fall_c", FilterMode.Point, ppu:35.83f))
+            .WithConfigGroup(ConfigGroup.FlowingWater));
+        
+        Categories.Effects.Add(new PreloadObject("Waterfall D", "coral_river_tiled_thin_waterfall",
+            ("Memory_Coral_Tower", "coral_river_tiled_thin_waterfall (13)"),
+            preloadAction: o =>
+            {
+                o.transform.localScale = new Vector3(2, 4, 1);
+                o.transform.GetChild(0).localScale = Vector3.one;
+                o.transform.SetPositionZ(0.01f);
+            },
+            sprite: ResourceUtils.LoadSpriteResource("water_fall_d", FilterMode.Point, ppu:215))
+            .WithConfigGroup(ConfigGroup.FlowingWater));
+        
         AddEnemy("Stilkin", "stilkin",
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman (4)"),
             postSpawnAction: EnemyFixers.FixStilkin)

@@ -114,7 +114,7 @@ public class QuestBlock : ScriptBlock
         }
     }
 
-    private static void PrepareCourierItems(FullQuestBase quest)
+    public static void PrepareCourierItems(FullQuestBase quest)
     {
         foreach (var target in quest.targets)
         {

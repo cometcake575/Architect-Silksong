@@ -7,6 +7,7 @@ public static class Settings
 {
     public static Keybind ToggleEditor;
     public static Keybind Rotate;
+    public static Keybind InvertRotate;
     public static Keybind UnsafeRotation;
     public static Keybind Flip;
     public static Keybind ScaleUp;
@@ -62,6 +63,13 @@ public static class Settings
             "Rotate",
             KeyCode.R,
             "Rotates the object on the cursor"
+        ));
+        
+        InvertRotate = new Keybind(config.Bind(
+            "Keybinds",
+            "InvertRotate",
+            KeyCode.LeftShift,
+            "Inverts the direction of the Rotate keybind"
         ));
         
         UnsafeRotation = new Keybind(config.Bind(

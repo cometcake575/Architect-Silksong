@@ -455,7 +455,7 @@ public static class EditManager
                 _ => 0
             };
         else return;
-        if (Input.GetKey(KeyCode.LeftShift)) i = -i;
+        if (Settings.InvertRotate.IsPressed) i = -i;
 
         var rot = CurrentRotation + i;
         if (group == RotationGroup.Three && Mathf.Approximately(rot, 180)) rot = 270;

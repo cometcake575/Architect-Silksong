@@ -6,6 +6,7 @@ using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Utils;
+using TeamCherry.SharedUtils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -162,6 +163,12 @@ public class ObjectColourer : MonoBehaviour
                     _current++;
                     StartCoroutine(FadeRoutine(fadeTime, sr, color, useAlphaByDefault || forceAlpha));
                 }
+
+                foreach (var sr in target.GetComponentsInChildren<TintRendererGroup>(true))
+                {
+                    _current++;
+                    StartCoroutine(FadeRoutine(fadeTime, sr, color, useAlphaByDefault || forceAlpha));
+                }
             }
 
             if (particles != 1)
@@ -247,6 +254,28 @@ public class ObjectColourer : MonoBehaviour
         }
         
         sr.color = end;
+        _current--;
+    }
+
+    private IEnumerator FadeRoutine(float fadeTime, TintRendererGroup sr, Color color, bool useAlpha)
+    {
+        var time = 0f;
+        
+        var start = sr.color;
+        var end = mode == 0 ? start * color : color;
+        if (!useAlpha) end.a = start.a;
+        
+        while (time < fadeTime)
+        {
+            if (!sr) yield break;
+            sr.color = Color.Lerp(start, end, time / fadeTime);
+            sr.enabled = true;
+            time += Time.deltaTime;
+            yield return null;
+        }
+        
+        sr.color = end;
+        sr.enabled = true;
         _current--;
     }
 

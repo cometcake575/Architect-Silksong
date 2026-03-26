@@ -14,6 +14,7 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
+using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
@@ -2223,6 +2224,10 @@ public static class ConfigGroup
                 self.GetComponentInParent<EnemyInvulnerabilityMarker>() ||
                 orig(self, cardinalDirection,
                     attackType, specialType));
+
+        _ = new Hook(typeof(HealthManager).GetProperty(nameof(HealthManager.IsInvincible))!.GetGetMethod(),
+            (Func<HealthManager, bool> orig, HealthManager self) => 
+                self.GetComponentInParent<EnemyInvulnerabilityMarker>() || orig(self));
     }
 
     public class EnemyInvulnerabilityMarker : MonoBehaviour;

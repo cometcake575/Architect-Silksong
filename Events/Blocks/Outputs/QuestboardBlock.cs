@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Content.Preloads;
 using Architect.Utils;
 using UnityEngine;
@@ -52,7 +53,19 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
         _qbi.questBoard = Object.Instantiate(_qbi.questBoardPrefab);
 
         var qib = _qbi.questBoard;
-        qib.BoardClosed += _ => HeroController.instance.RegainControl();
+        qib.BoardClosed += e =>
+        {
+            foreach (var child in e
+                         .Select(q => Children.Children.FirstOrDefault(c => c.Quest == q))
+                         .Where(child => child != null))
+            {
+                child.Event("OnAccept");
+                var fqb = child.Quest as FullQuestBase;
+                if (fqb) Blocks.Outputs.QuestBlock.PrepareCourierItems(fqb);
+            }
+
+            HeroController.instance.RegainControl();
+        };
         qib.GetAvailableQuestsFunc = _qbi.GetDisplayedQuests;
         
         _qbi.questBoardPrefab = null;
@@ -68,7 +81,8 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
     {
         yield return HeroController.instance.FreeControl(_ => !GameManager.instance.isPaused);
         HeroController.instance.RelinquishControl();
-        
+
+        if (!_qbi) yield break;
         _qbi.questList.Clear();
         foreach (var child in Children.Children)
         {

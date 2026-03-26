@@ -809,7 +809,7 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Collected Description")
         ),
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType<CustomQuest>("List Counter Type", "quest_item_desc_icon", (item, value) =>
+            new ChoiceConfigType<CustomQuest>("List Counter Type", "quest_item_list_icon", (item, value) =>
             {
                 item.ListCounterType = value.GetStringValue() switch
                 {
