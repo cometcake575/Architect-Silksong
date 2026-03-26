@@ -2548,6 +2548,8 @@ public static class ConfigGroup
     public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, 
         GroupUtils.Merge(Stretchable, 
         [
+            ZOffset,
+            RenderLayer,
             ConfigurationManager.RegisterConfigType(
                 new FloatConfigType("Colour R", "png_col_r",
                     (o, value) =>
