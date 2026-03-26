@@ -1278,7 +1278,7 @@ public static class MiscFixers
         fsm.GetState("Rescue 2").AddAction(() => obj.BroadcastEvent("OnSave"));
     }
 
-    public static void FixSpecialPNGs(GameObject obj)
+    public static void FixSpecialPngs(GameObject obj)
     {
         obj.AddComponent<PngObject>().ignoreGlow = true;
         obj.transform.SetScale2D(new Vector2(2, 2));
@@ -1640,5 +1640,29 @@ public static class MiscFixers
             obj.BroadcastEvent("OnBreak");
             obj.BroadcastEvent("LoadedBroken");
         };
+    }
+
+    public static void FixBubble(GameObject obj)
+    {
+        obj.AddComponent<Bubble>();
+    }
+    
+    public class Bubble : MonoBehaviour
+    {
+        private string _scene = string.Empty;
+
+        private void Start()
+        {
+            _scene = GameManager.instance.sceneName;
+        }
+        
+        private void Update()
+        {
+            if (_scene != GameManager.instance.sceneName)
+            {
+                GetComponent<PlayMakerFSM>().SetState("Recycle");
+                _scene = GameManager.instance.sceneName;
+            }
+        }
     }
 }

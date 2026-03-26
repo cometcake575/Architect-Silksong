@@ -992,6 +992,36 @@ public static class ConfigGroup
             {
                 item.Damage = value.GetValue();
             })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomNeedle>("Range Multiplier", "needle_damage_range", (item, value) =>
+            {
+                item.NeedleRangeMult = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomNeedle>("Colour Mode", "needle_colour_mode", (item, value) =>
+            {
+                item.NeedleColourActive = value.GetValue();
+            }).WithOptions("Off", "PreImbue", "PostImbue").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomNeedle>("Colour R", "needle_colour_r", (item, value) =>
+            {
+                item.NeedleColour.r = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomNeedle>("Colour G", "needle_colour_g", (item, value) =>
+            {
+                item.NeedleColour.g = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomNeedle>("Colour B", "needle_colour_b", (item, value) =>
+            {
+                item.NeedleColour.b = value.GetValue();
+            }).WithDefaultValue(1)
         )
     ];
 }

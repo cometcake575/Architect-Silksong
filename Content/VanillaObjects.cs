@@ -202,6 +202,7 @@ public static class VanillaObjects
         Categories.Attacks.Add(new PreloadObject("Coral Bubble", "coral_bubble",
                 ("localpoolprefabs_assets_areacoralareamemory",
                     "Assets/Prefabs/Hornet Enemies/Coral Bubble.prefab"),
+                preloadAction: MiscFixers.FixBubble,
                 postSpawnAction: o =>
                 {
                     var init = o.LocateMyFSM("Control").GetState("Init");
@@ -1926,7 +1927,7 @@ public static class VanillaObjects
                 ("Hang_06b", "new_scene/Reflection_surface"),
                 description: "Reflects objects above itself, can be configured\n" +
                              "in the same way as the Custom PNG for custom mirror shapes.",
-                preloadAction: MiscFixers.FixSpecialPNGs,
+                preloadAction: MiscFixers.FixSpecialPngs,
                 sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
             .WithConfigGroup(ConfigGroup.Mirror));
 
@@ -1934,23 +1935,23 @@ public static class VanillaObjects
                 ("Shadow_02", "Shakra Trail Quest Parent/Active/Tracking Trail (2)/Silhouettes Parent/Silhoutte"),
                 description: "Silhouette effect from tracking, can be configured\n" +
                              "in the same way as the Custom PNG for custom shapes.",
-                preloadAction: MiscFixers.FixSpecialPNGs,
+                preloadAction: MiscFixers.FixSpecialPngs,
                 sprite: ResourceUtils.LoadSpriteResource("silhouette", ppu: 155))
-            .WithConfigGroup(ConfigGroup.Png));
+            .WithConfigGroup(ConfigGroup.PhysicalPng));
 
         Categories.Effects.Add(new PreloadObject("Vignette Cutout Effect", "vignette_cutout_effect",
                 ("Belltown", "Vignette Cutout (3)"),
                 description: "Cuts out part of the vignette, can be used to make areas visible in darkness.",
-                preloadAction: MiscFixers.FixSpecialPNGs)
+                preloadAction: MiscFixers.FixSpecialPngs)
             .WithConfigGroup(ConfigGroup.Png));
 
         Categories.Effects.Add(new PreloadObject("Memory Silk Effect", "memory_silk_effect",
                 ("Coral_Tower_01", "Memory Group/before/thread_memory/thread_memory_starter/strand1/strandbacking (1)"),
                 description: "Memory Silk effect from memory entrances, can be configured\n" +
                              "in the same way as the Custom PNG for custom shapes.",
-                preloadAction: MiscFixers.FixSpecialPNGs,
+                preloadAction: MiscFixers.FixSpecialPngs,
                 sprite: ResourceUtils.LoadSpriteResource("memory", ppu: 155))
-            .WithConfigGroup(ConfigGroup.Png));
+            .WithConfigGroup(ConfigGroup.PhysicalPng));
 
         Categories.Effects.Add(new PreloadObject("Grass Effect", "grass_effect",
                 ("Tut_02", "green_grass_tri (6)/Green Grass A"),

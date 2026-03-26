@@ -2547,12 +2547,7 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, 
         GroupUtils.Merge(Stretchable, 
-        GroupUtils.Merge(Decorations, [
-            ConfigurationManager.RegisterConfigType(
-                new BoolConfigType("Light Reflection", "png_glow",
-                        (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
-                    .WithDefaultValue(false)
-                    .WithPriority(-2)),
+        [
             ConfigurationManager.RegisterConfigType(
                 new FloatConfigType("Colour R", "png_col_r",
                     (o, value) =>
@@ -2589,7 +2584,16 @@ public static class ConfigGroup
                         c.a = value.GetValue();
                         sr.color = c;
                     }).WithDefaultValue(1).WithPriority(-1))
-        ])));
+        ]));
+
+    public static readonly List<ConfigType> FullPng = GroupUtils.Merge(PhysicalPng, 
+        [
+            ConfigurationManager.RegisterConfigType(
+                new BoolConfigType("Light Reflection", "png_glow",
+                        (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
+                    .WithDefaultValue(false)
+                    .WithPriority(-2))
+        ]);
 
     public static readonly List<ConfigType> PngUI = GroupUtils.Merge(Png, [
         RenderLayer,
@@ -2903,7 +2907,7 @@ public static class ConfigGroup
     
     private static readonly int ReflectionOffset = Shader.PropertyToID("_ReflectionOffset");
 
-    public static readonly List<ConfigType> Mirror = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Png, [
+    public static readonly List<ConfigType> Mirror = GroupUtils.Merge(Stretchable, GroupUtils.Merge(PhysicalPng, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Alpha Colour", "mirror_alpha", (o, value) =>
             {

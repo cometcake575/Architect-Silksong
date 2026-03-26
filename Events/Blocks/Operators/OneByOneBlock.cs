@@ -28,13 +28,13 @@ public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
         
         var count = Children.Blocks.Count;
         
+        _index %= count;
+        Children.Blocks[_index].Event("OnTrigger");
         do
         {
             _index += 1;
             _index %= count;
         } while (!(Children.Blocks[_index] as TriggerBlock)!.Enabled);
-            
-        Children.Blocks[_index].Event("OnTrigger");
     }
 
     public class TriggerBlock : ChildBlock

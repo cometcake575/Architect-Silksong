@@ -20,6 +20,10 @@ public class CustomNeedle : SpriteItem
     public int Damage;
     public LocalStr Name = string.Empty;
     public LocalStr Desc = string.Empty;
+
+    public float NeedleRangeMult = 1;
+    public int NeedleColourActive = 0;
+    public Color NeedleColour = Color.white;
     
     public static void Init()
     {
@@ -58,6 +62,27 @@ public class CustomNeedle : SpriteItem
                     return upgrade.Damage;
 
                 return orig(self);
+            });
+        
+        typeof(NailAttackBase).Hook(nameof(NailAttackBase.OnSlashStarting),
+            (Action<NailAttackBase> orig, NailAttackBase self) =>
+            {
+                var needle = ArchitectData.Instance.CustomNeedle;
+                if (!needle.IsNullOrWhiteSpace() && Needles.TryGetValue(needle, out var upgrade))
+                {
+                    if (upgrade.NeedleColourActive == 1)
+                    {
+                        if (self.slashSprite) self.slashSprite.color = upgrade.NeedleColour;
+                        if (self.imbuedSlashAnim) self.imbuedSlashSprite.color = upgrade.NeedleColour;
+                    }
+                    orig(self);
+                    self.transform.localScale *= upgrade.NeedleRangeMult;
+                    if (upgrade.NeedleColourActive == 2)
+                    {
+                        if (self.slashSprite) self.slashSprite.color = upgrade.NeedleColour;
+                        if (self.imbuedSlashAnim) self.imbuedSlashSprite.color = upgrade.NeedleColour;
+                    }
+                } else orig(self);
             });
     }
     

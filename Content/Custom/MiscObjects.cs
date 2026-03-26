@@ -49,7 +49,7 @@ public static class MiscObjects
         Categories.Effects.AddStart(CreateAsset<PngObject>("PNG", "custom_png", true, false,
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
                 "Broadcasts 'OnFinish' when the animation ends.")
-            .WithConfigGroup(ConfigGroup.PhysicalPng)
+            .WithConfigGroup(ConfigGroup.FullPng)
             .WithReceiverGroup(ReceiverGroup.Png)
             .WithBroadcasterGroup(BroadcasterGroup.Png)
             .WithInputGroup(InputGroup.Png)
