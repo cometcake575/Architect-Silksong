@@ -11,7 +11,7 @@ namespace Architect.Workshop.Items;
 
 public class CustomNeedle : SpriteItem
 {
-    private static readonly Dictionary<string, CustomNeedle> Needles = [];
+    public static readonly Dictionary<string, CustomNeedle> Needles = [];
     private static InventoryItemNail _nail;
     private static GameObject _nailPrefab;
     
@@ -84,6 +84,38 @@ public class CustomNeedle : SpriteItem
                     }
                 } else orig(self);
             });
+        
+        typeof(HeroExtraNailSlash).Hook(nameof(HeroExtraNailSlash.OnEnable),
+            (Action<HeroExtraNailSlash> orig, HeroExtraNailSlash self) =>
+            {
+                var needle = ArchitectData.Instance.CustomNeedle;
+                if (!needle.IsNullOrWhiteSpace() && Needles.TryGetValue(needle, out var upgrade))
+                {
+                    if (upgrade.NeedleColourActive == 1)
+                    {
+                        foreach (var tintSprite in self.tintSprites)
+                        {
+                            if (tintSprite) tintSprite.color = upgrade.NeedleColour;
+                        }
+                        foreach (var tintTk2dSprite in self.tintTk2dSprites)
+                        {
+                            if (tintTk2dSprite) tintTk2dSprite.color = upgrade.NeedleColour;
+                        }
+                    }
+                    orig(self);
+                    if (upgrade.NeedleColourActive == 2)
+                    {
+                        foreach (var tintSprite in self.tintSprites)
+                        {
+                            if (tintSprite) tintSprite.color = upgrade.NeedleColour;
+                        }
+                        foreach (var tintTk2dSprite in self.tintTk2dSprites)
+                        {
+                            if (tintTk2dSprite) tintTk2dSprite.color = upgrade.NeedleColour;
+                        }
+                    }
+                } else orig(self);
+            });
     }
     
     public override void Register()
@@ -109,11 +141,16 @@ public class CustomNeedle : SpriteItem
     
     public override void Unregister()
     {
-        var states = _nail.displayStates.ToList();
-        states.Remove(_displayState);
-        _nail.displayStates = states.ToArray();
-        
-        Object.Destroy(_displayState.DisplayObject);
+        if (_nail)
+        {
+            var states = _nail.displayStates.ToList();
+            states.Remove(_displayState);
+            _nail.displayStates = states.ToArray();
+
+            Object.Destroy(_displayState.DisplayObject);
+        }
+
+        Needles.Remove(Id);
     }
 
     protected override void OnReadySprite()

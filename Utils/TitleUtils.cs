@@ -35,7 +35,7 @@ public static class TitleUtils
                     footer.value = _areaFooter;
                     body.value = _areaBody;
                     npc.value = _waitForCancel;
-                    if (_waitForCancel) wait.value = 9999999;
+                    wait.value = _waitForCancel ? 9999999 : 4.75f;
                 });
                 
                 fsm.GetState("Visited Check").AddAction(() =>

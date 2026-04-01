@@ -9,6 +9,7 @@ using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Storage;
+using Architect.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -41,10 +42,11 @@ public class PrefabObject : PlaceableObject
         FinishSetup(_prefabObject);
         PostSpawnAction = Setup;
         Name = name;
-        ConfigGroup = Objects.Groups.ConfigGroup.Generic;
+        ConfigGroup = Objects.Groups.ConfigGroup.Prefab;
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
         OutputGroup = Objects.Groups.OutputGroup.Generic;
-        DisableTransformations = true;
+        RotateAction = Rotate;
+        ScaleAction = Scale;
     }
 
     public override void Click(Vector3 mousePosition, bool first)
@@ -75,12 +77,18 @@ public class PrefabObject : PlaceableObject
                         icv.Value += id;
                     }
                 }
-                
-                rePlacement.Move(placement.GetPos() + pos - new Vector3(100, 100));
+
+                var newPos = placement.GetPos() + pos - new Vector3(100, 100);
+                newPos = (newPos - pos) * EditManager.CurrentScale + pos;
+                newPos = newPos.RotatePointAroundPivot(pos, EditManager.CurrentRotation);
+                rePlacement.SetRotation(rePlacement.GetRotation() + EditManager.CurrentRotation);
+                rePlacement.SetScale(rePlacement.GetScale() * EditManager.CurrentScale);
+                rePlacement.Move(newPos);
             }
             EditManager.RegisterLastPos(pos);
             ActionManager.PerformAction(new PlaceObjects(placements));
-            
+
+            List<ScriptBlock> clones = [];
             foreach (var block in o.ScriptBlocks)
             {
                 var clone = block.Clone(id);
@@ -90,15 +98,27 @@ public class PrefabObject : PlaceableObject
                 
                 PlacementManager.GetLevelData().ScriptBlocks.Add(clone);
                 clone.Setup(true);
+                clones.Add(clone);
                 
                 if (!wasLocal) ScriptManager.IsLocal = false;
             } 
+            foreach (var clone in clones) clone.LateSetup();
         } else base.Click(mousePosition, first);
     }
 
     private void Setup(GameObject self)
     {
         self.GetComponent<Prefab>().id = Name;
+    }
+
+    private static void Rotate(GameObject self, float rot)
+    {
+        self.GetComponent<Prefab>().rot = rot;
+    }
+
+    private static void Scale(GameObject self, float scale)
+    {
+        self.GetComponent<Prefab>().scale = scale;
     }
 }
 
@@ -107,6 +127,11 @@ public class Prefab : PreviewableBehaviour
     public string id;
     public List<GameObject> spawns = [];
     private Dictionary<string, ReceiveBlock> _receivers = [];
+
+    public int visibility;
+
+    public float scale;
+    public float rot;
 
     private void Start()
     {
@@ -123,7 +148,7 @@ public class Prefab : PreviewableBehaviour
         {
             if (isAPreview)
             {
-                placement.PlaceGhost(
+                if (visibility == 0 || (visibility == 1 && !placement.Locked)) placement.PlaceGhost(
                     placement.GetPos() + transform.position - new Vector3(100, 100),
                     false,
                     name
@@ -131,9 +156,14 @@ public class Prefab : PreviewableBehaviour
             }
             else
             {
+                var pos = placement.GetPos() + transform.position - new Vector3(100, 100);
+                pos = (pos - transform.position) * scale + transform.position;
+                pos = pos.RotatePointAroundPivot(transform.position, rot);
                 var obj = placement.SpawnObject(
-                    placement.GetPos() + transform.position - new Vector3(100, 100),
-                    name
+                    pos,
+                    name,
+                    rot,
+                    scale
                 );
                 PlacementManager.PrefabPlacements[placement.GetId() + name] = placement;
                 if (obj)
@@ -165,6 +195,12 @@ public class Prefab : PreviewableBehaviour
                     _receivers[rb.ActualEventName] = rb;
                     break;
             }
+        }
+
+        if (isAPreview)
+        {
+            transform.SetRotation2D(rot);
+            transform.localScale *= scale;
         }
     }
 

@@ -108,6 +108,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> FleaCounter = ["OnGold", "OnSilver", "OnBronze", "OnWhite"];
     
+    public static readonly List<string> Killable = ["OnDeath"];
+    
     public static readonly List<string> PlayerHooks = [
         "FaceLeft",
         "FaceRight",

@@ -43,7 +43,7 @@ public class OrderBlock : CollectionBlock<OrderBlock.TriggerBlock>
 
         public bool Enabled = true;
 
-        protected override void Reset()
+        public override void Reset()
         {
             Enabled = true;
         }

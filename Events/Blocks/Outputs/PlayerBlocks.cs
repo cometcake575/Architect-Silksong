@@ -26,7 +26,7 @@ public class HpBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Health Control";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Amount = 0;
     }
@@ -90,7 +90,7 @@ public class SilkBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Silk Control";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Amount = 0;
     }
@@ -155,7 +155,7 @@ public class CurrencyBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Currency Control";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Amount = 0;
     }

@@ -7,6 +7,7 @@ using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Objects.Placeable;
 using Architect.Utils;
+using Architect.Workshop.Items;
 using GlobalEnums;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
@@ -87,7 +88,9 @@ public static class EnemyFixers
         
         typeof(HealthManager).Hook("ApplyDamageScaling",
             (Func<HealthManager, HitInstance, HitInstance> orig, HealthManager self, HitInstance hit) => 
-                self.GetComponentInParent<DisableHealthScaling>() ? hit : orig(self, hit));
+                self.GetComponentInParent<DisableHealthScaling>() || 
+                CustomNeedle.Needles.ContainsKey(ArchitectData.Instance.CustomNeedle) 
+                    ? hit : orig(self, hit));
         
         typeof(DisplayBossTitle).Hook(nameof(DisplayBossTitle.OnEnter),
             (Action<DisplayBossTitle> orig, DisplayBossTitle self) =>
@@ -1585,16 +1588,6 @@ public static class EnemyFixers
         }
     }
 
-    private class FixedMovement : MonoBehaviour
-    {
-        public bool moveValid;
-        
-        private void OnCollisionStay2D(Collision2D other)
-        {
-            if (other.gameObject.layer == 8) moveValid = false;
-        }
-    }
-
     public static void FixKarakGor(GameObject obj)
     {
         obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Spear Spawner").Value = false;
@@ -2648,11 +2641,6 @@ public static class EnemyFixers
         }
     }
 
-    public static void AddComponent<T>(GameObject obj) where T : MonoBehaviour
-    {
-        obj.AddComponent<T>();
-    }
-
     public static void FixCrawJurorPreload(GameObject obj)
     {
         RemoveConstrainPosition(obj);
@@ -3446,7 +3434,7 @@ public static class EnemyFixers
                 item.SetValueOverride(true);
             }
         };
-        item.OnGetSaveState += (out bool b) => { b = fc.head.GetComponent<HealthManager>().isDead; };
+        item.OnGetSaveState += (out b) => { b = fc.head.GetComponent<HealthManager>().isDead; };
 
         var rocks = Object.Instantiate(_lavaRocks, obj.transform);
         rocks.name = obj.name + " Lava Rocks";

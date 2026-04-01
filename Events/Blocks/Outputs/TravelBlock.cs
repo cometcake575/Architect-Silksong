@@ -90,7 +90,7 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
                 });
     }
 
-    protected override void Reset()
+    public override void Reset()
     {
         Title = "Sample Text";
     }
@@ -219,7 +219,7 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
         public float YPos;
         public bool Unlocked => GetVariable<bool>("Unlocked", true);
 
-        protected override void Reset()
+        public override void Reset()
         {
             ListName = "Sample Text";
             XPos = -99999;

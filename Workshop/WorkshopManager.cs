@@ -18,6 +18,7 @@ public static class WorkshopManager
     
     public static readonly Dictionary<string, WorkshopItem> CustomItems = [];
     public static readonly Dictionary<string, WorkshopItem> CustomEntries = [];
+    public static readonly Dictionary<string, WorkshopItem> CustomCrests = [];
     public static readonly Dictionary<string, WorkshopItem> CustomQuests = [];
     public static readonly Dictionary<string, WorkshopItem> CustomTools = [];
 
@@ -49,6 +50,7 @@ public static class WorkshopManager
             new Vector2(-100, -150),
             ConfigGroup.Quest,
             ConfigGroup.QuestSprites,
+            [],
             ConfigGroup.QuestItem);
         
         Register<SceneGroup>("Scene Group",
@@ -91,6 +93,26 @@ public static class WorkshopManager
             new Vector2(-300, -337.5f),
             ConfigGroup.Needle,
             ConfigGroup.SpriteItem);
+        
+        /*
+        Register<StatusEffect>("Status Effect",
+            new Vector2(-100, -337.5f));*/
+        
+        CustomAchievement.Init();
+        Register<CustomAchievement>("Achievement",
+            new Vector2(-100, -337.5f),
+            ConfigGroup.Achievement);
+        
+        CustomCrest.Init();
+        Register<CustomCrest>("Crest",
+            new Vector2(-300, -375),
+            ConfigGroup.Crest,
+            ConfigGroup.SpriteItem,
+            ConfigGroup.CrestSprites);
+        
+        Register<CustomCrest.CrestSlot>("Crest Slot",
+            new Vector2(-100, -375),
+            ConfigGroup.CrestSlot);
         
         SceneGroup.Init();
         
@@ -166,6 +188,14 @@ public static class WorkshopManager
                     item.Register();
                 }
             }
+            foreach (var (id, item) in CustomCrests.ToArray())
+            {
+                if (!ToolItemManager.Instance.crestList.dictionary.ContainsKey(id))
+                {
+                    item.Unregister();
+                    item.Register();
+                }
+            }
             foreach (var (id, item) in CustomQuests.ToArray())
             {
                 if (!QuestManager.Instance.masterList.dictionary.ContainsKey(id))
@@ -207,6 +237,7 @@ public static class WorkshopManager
     
     private static void Register<T>(string type, Vector2 pos, params List<ConfigType>[] config) where T : WorkshopItem, new()
     {
+        pos.y += 5;
         WorkshopItems[type] = (pos, s => new T
         {
             Id = s,

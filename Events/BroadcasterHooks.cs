@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -122,6 +123,18 @@ public static class BroadcasterHooks
                 }
                 orig(self);
             });
+        
+        
+        typeof(HealthFlyer).Hook(nameof(HealthFlyer.Heal), DeathEvent);
+    }
+
+    private static IEnumerator DeathEvent(
+        Func<HealthFlyer, IEnumerator> orig,
+        HealthFlyer self)
+    {
+        self.gameObject.BroadcastEvent("OnDeath");
+        var o = orig(self);
+        while (o.MoveNext()) yield return o.Current;
     }
 
     private class DoneRoar : MonoBehaviour;

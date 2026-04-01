@@ -10,6 +10,7 @@ using Architect.Config.Types;
 using Architect.Content.Custom;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
@@ -40,6 +41,15 @@ public static class ConfigGroup
             {
                 if (value.GetValue()) o.GetComponent<ObjectRemover>().all = true;
             }).WithDefaultValue(false))
+    ]);
+    
+    public static readonly List<ConfigType> Prefab = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Preview Visibility", "prefab_visibility", (o, value) =>
+            {
+                o.GetComponent<Prefab>().visibility = value.GetValue();
+            }).WithOptions("All", "Unlocked", "None").WithDefaultValue(0))
     ]);
     
     public static readonly List<ConfigType> ObjectLayerer = [
@@ -191,6 +201,30 @@ public static class ConfigGroup
             {
                 o.GetComponentInChildren<CircleCollider2D>().radius = value.GetValue();
             }).WithDefaultValue(4))
+    ]);
+    
+    public static readonly List<ConfigType> DocksLift = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Offset L", "docks_lift_x_l", (o, value) =>
+            {
+                o.GetComponentInChildren<InteractableFixers.BoneCarriage>().leftOffset.x = value.GetValue();
+            }).WithDefaultValue(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Offset L", "docks_lift_y_l", (o, value) =>
+            {
+                o.GetComponentInChildren<InteractableFixers.BoneCarriage>().leftOffset.y = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("X Offset R", "docks_lift_x_r", (o, value) =>
+            {
+                o.GetComponentInChildren<InteractableFixers.BoneCarriage>().rightOffset.x = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Y Offset R", "docks_lift_y_r", (o, value) =>
+            {
+                o.GetComponentInChildren<InteractableFixers.BoneCarriage>().rightOffset.y = value.GetValue();
+            }).WithDefaultValue(0))
     ]);
     
     public static readonly List<ConfigType> Cocoon = GroupUtils.Merge(Visible,
@@ -2460,6 +2494,7 @@ public static class ConfigGroup
                     sprites =>
                     {
                         if (o) o.GetComponent<SpriteRenderer>().sprite = sprites[0];
+                        EditorUI.RefreshItem();
                     });
             }).WithPriority(-1));
 
@@ -3309,6 +3344,50 @@ public static class ConfigGroup
                         o.RemoveComponent<DeactivateIfPlayerdataFalse>();
                     })
                 .WithDefaultValue(false).WithPriority(-1)
+        )
+    ]);
+
+    public static readonly List<ConfigType> BounceFlea = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Direction", "bounce_flea_dir",
+                    (o, value) =>
+                    {
+                        if (value.GetValue() == 0) return;
+                        o.GetComponent<MiscFixers.BounceFlea>().isRight = true;
+                    })
+                .WithOptions("Left", "Right").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Fly Away on Hit", "bounce_flea_leave",
+                    (o, value) =>
+                    {
+                        o.GetComponent<MiscFixers.BounceFlea>().flyAway = value.GetValue();
+                    })
+                .WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Distance", "bounce_flea_dist",
+                    (o, value) =>
+                    {
+                        o.GetComponent<MiscFixers.BounceFlea>().distance = value.GetValue();
+                    })
+                .WithDefaultValue(10)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Wave Top Offset", "bounce_flea_wave_top",
+                    (o, value) =>
+                    {
+                        o.GetComponent<MiscFixers.BounceFlea>().topYOffset = value.GetValue();
+                    })
+                .WithDefaultValue(2)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Wave Bottom Offset", "bounce_flea_wave_bot",
+                    (o, value) =>
+                    {
+                        o.GetComponent<MiscFixers.BounceFlea>().botYOffset = value.GetValue();
+                    })
+                .WithDefaultValue(-2)
         )
     ]);
 

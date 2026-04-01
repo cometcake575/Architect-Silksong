@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Architect.Storage;
 using Architect.Utils;
 using UnityEngine;
 
@@ -28,6 +29,11 @@ public class BoolVarBlock : LocalBlock
             {
                 orig(self);
                 TempVars.Clear();
+                if (Settings.TestMode.Value)
+                {
+                    SemiVars.Clear();
+                    ArchitectData.Instance.BoolVariables.Clear();
+                }
             });
     }
 
@@ -84,6 +90,11 @@ public class NumVarBlock : LocalBlock
             {
                 orig(self);
                 TempVars.Clear();
+                if (Settings.TestMode.Value)
+                {
+                    SemiVars.Clear();
+                    ArchitectData.Instance.FloatVariables.Clear();
+                }
             });
     }
 
@@ -139,6 +150,11 @@ public class StringVarBlock : LocalBlock
             {
                 orig(self);
                 TempVars.Clear();
+                if (Settings.TestMode.Value)
+                {
+                    SemiVars.Clear();
+                    ArchitectData.Instance.StringVariables.Clear();
+                }
             });
     }
 

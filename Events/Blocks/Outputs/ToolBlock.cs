@@ -16,7 +16,7 @@ public class ToolBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Tool Control";
 
-    protected override void Reset()
+    public override void Reset()
     {
         ToolName = "";
     }

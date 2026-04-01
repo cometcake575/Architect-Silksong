@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Architect.Utils;
 using GlobalEnums;
@@ -28,6 +29,23 @@ public class MapStateHook : MonoBehaviour
 
                 return original;
             });
+        
+        typeof(GameManager).Hook(nameof(GameManager.EnterHero),
+            (Action<GameManager> orig, GameManager self) =>
+            {
+                if (MapStateHooks.Count > 0 && self.RespawningHero)
+                {
+                    ArchitectPlugin.Instance.StartCoroutine(FadeIn());
+                }
+
+                orig(self);
+            });
+    }
+
+    private static IEnumerator FadeIn()
+    {
+        yield return new WaitForSeconds(3);
+        ScreenFaderUtils.Fade(new Color(0, 0, 0, 1), Color.clear, 1);
     }
 
     private void OnEnable()

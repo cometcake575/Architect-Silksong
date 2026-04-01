@@ -17,7 +17,7 @@ public class EnemyBlock : ScriptBlock
     public int Health;
     public AttackTypes AttackType;
 
-    protected override void Reset()
+    public override void Reset()
     {
         Health = 1;
         AttackType = AttackTypes.Generic;

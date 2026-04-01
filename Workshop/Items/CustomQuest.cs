@@ -82,14 +82,19 @@ public class CustomQuest : SpriteItem
         _quest.cancelIfIncomplete = [];
         _quest.hideIfComplete = [];
         _quest.playerDataTest = new PlayerDataTest();
+        
+        _quest.displayName = ItemName;
+        _quest.inventoryDescription = ItemDesc;
+        _quest.inventoryCompletableDescription = ItemDesc;
+        _quest.wallDescription = WallDesc;
 
         _quest.descCounterType = DescCounterType;
         _quest.listCounterType = ListCounterType;
         _quest.progressBarTint = BarColour;
-        _quest.inventoryCompletableDescription = CollectedDesc;
         List<FullQuestBase.QuestTarget> targets = [];
         if (HasItem)
         {
+            _quest.inventoryCompletableDescription = CollectedDesc;
             var ic = ItemId.Split(",");
             var dictionary = ic.Distinct().ToDictionary(i => i, i => ic.Count(o => o == i));
             foreach (var (i, num) in dictionary)
@@ -111,10 +116,6 @@ public class CustomQuest : SpriteItem
         _quest.overrideFontSize = new OverrideFloat();
         _quest.overrideParagraphSpacing = new OverrideFloat();
         _quest.overrideParagraphSpacingShort = new OverrideFloat();
-        
-        _quest.displayName = ItemName;
-        _quest.inventoryDescription = ItemDesc;
-        _quest.wallDescription = WallDesc;
         
         QuestManager.Instance.masterList.Add(_quest);
         

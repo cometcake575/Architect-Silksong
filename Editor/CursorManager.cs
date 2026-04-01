@@ -97,7 +97,7 @@ public static class CursorManager
         _renderer.sortingOrder = 0;
 
         if (play) play.url = "";
-        
+
         foreach (var config in EditManager.Config.Values.OrderBy(configVal => configVal.GetPriority()))
         {
             config.SetupPreview(_cursorObject, ConfigurationManager.PreviewContext.Cursor);

@@ -18,6 +18,7 @@ public abstract class ToolObject : SelectableObject
         _sprite = ResourceUtils.LoadSpriteResource(path);
         if (keybind != null) Keybinds[keybind] = index;
         Index = index;
+        DisableTransformations = true;
     }
     
     public override Sprite GetUISprite() => _sprite;

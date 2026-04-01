@@ -1024,4 +1024,172 @@ public static class ConfigGroup
             }).WithDefaultValue(1)
         )
     ];
+    
+    public static readonly List<ConfigType> Crest =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest>("Unlock Prefix", "crest_name_prefix", (item, value) =>
+            {
+                item.NamePrefix = value.GetValue();
+            }).WithDefaultValue("Bound the Crest of")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest>("Name", "crest_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest>("Description", "crest_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest>("Equip Desc", "crest_equip_desc", (item, value) =>
+            {
+                item.EquipText = value.GetValue();
+            }).WithDefaultValue("To change Crest, open the Crest screen of the Menu while resting at a bench.")
+        ),
+        (NoteConfigType)"Determines the moveset for the crest, does not affect the bind",
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCrest>("Base Movement", "crest_base_movement", (item, value) =>
+            {
+                item.Movement = value.GetStringValue();
+            }).WithOptions(
+                "Hunter",
+                "Reaper",
+                "Wanderer",
+                "Beast",
+                "Witch",
+                "Architect",
+                "Shaman",
+                "Cursed",
+                "Cloakless"
+            ).WithDefaultValue(0)
+        )
+    ];
+    
+    public static readonly List<ConfigType> CrestSprites =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest>("Silhouette URL", "png_crest_sil_url", (item, value) =>
+            {
+                item.HIconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomCrest>("Anti Aliasing", "png_crest_sil_antialias", (item, value) =>
+            {
+                item.HPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomCrest>("Pixels Per Unit", "png_crest_sil_ppu", (item, value) =>
+            {
+                item.HPpu = value.GetValue();
+            }).WithDefaultValue(100)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest>("Glow URL", "png_crest_glow_url", (item, value) =>
+            {
+                item.GIconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomCrest>("Anti Aliasing", "png_crest_glow_antialias", (item, value) =>
+            {
+                item.GPoint = !value.GetValue();
+            }).WithDefaultValue(true)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomCrest>("Pixels Per Unit", "png_crest_glow_ppu", (item, value) =>
+            {
+                item.GPpu = value.GetValue();
+            }).WithDefaultValue(100)
+        )
+    ];
+    
+    public static readonly List<ConfigType> CrestSlot =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCrest.CrestSlot>("Crest ID", "crest_target_id", (item, value) =>
+            {
+                item.CrestId = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCrest.CrestSlot>("Type", "crest_slot_type", (item, value) =>
+            {
+                item.ToolType = (ToolItemType)value.GetValue();
+            }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCrest.CrestSlot>("Direction", "crest_slot_dir", (item, value) =>
+            {
+                item.Binding = (AttackToolBinding)value.GetValue();
+            }).WithDefaultValue(0).WithOptions("Neutral", "Up", "Down")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomCrest.CrestSlot>("X Pos", "crest_slot_x", (item, value) =>
+            {
+                item.Pos.x = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomCrest.CrestSlot>("Y Pos", "crest_slot_y", (item, value) =>
+            {
+                item.Pos.y = value.GetValue();
+            }).WithDefaultValue(0)
+        ),
+        (NoteConfigType)"At least one slot must be unlocked by default",
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomCrest.CrestSlot>("Start Locked", "crest_slot_locked", (item, value) =>
+            {
+                item.Lock = value.GetValue();
+            }).WithDefaultValue(false)
+        )
+    ];
+    
+    public static readonly List<ConfigType> Achievement =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomAchievement>("Name", "achievement_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomAchievement>("Description", "achievement_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomAchievement>("Type", "achievement_type", (item, value) =>
+            { 
+                if (!Enum.TryParse<AchievementType>(value.GetStringValue(), out var at)) return;
+                item.AchievementType = at;
+            }).WithOptions("Normal", "Hidden").WithDefaultValue(0)
+        ),
+        (NoteConfigType) "A vanilla achievement (list can be found in the guide)",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomAchievement>("Add Before", "achievement_before", (item, value) =>
+            {
+                item.InsertBefore = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SpriteItem>("Icon URL", "achievement_url", (item, value) =>
+            {
+                item.IconUrl = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SpriteItem>("Anti Aliasing", "achievement_antialias", (item, value) =>
+            {
+                item.Point = !value.GetValue();
+            }).WithDefaultValue(true)
+        )
+    ];
 }

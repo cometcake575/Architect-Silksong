@@ -25,7 +25,7 @@ public class RaycastBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Raycast";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Clear();
         MaxDistance = 10;

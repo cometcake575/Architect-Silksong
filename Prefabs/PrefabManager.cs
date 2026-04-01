@@ -25,12 +25,14 @@ public static class PrefabManager
     {
         PrefabObject.Init();
         
-        typeof(GameManager).Hook(nameof(GameManager.LoadGame),
-            (Action<GameManager, int, Action<bool>> orig, GameManager self, int saveSlot, Action<bool> callback) =>
+        typeof(HeroController).Hook(nameof(HeroController.SceneInit),
+            (Action<HeroController> orig, HeroController self) =>
             {
+                orig(self);
+
+                if (GameManager.instance.sceneName.StartsWith("Prefab_")) return;
                 InPrefabScene = false;
                 ScriptEditorUI.ToggleParent.SetActive(true);
-                orig(self, saveSlot, callback);
             });
     }
     

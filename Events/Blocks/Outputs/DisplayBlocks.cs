@@ -39,7 +39,7 @@ public class TextBlock : ScriptBlock
 
     private TextDisplay _display;
 
-    protected override void Reset()
+    public override void Reset()
     {
         Text = "";
         OffsetY = 0;
@@ -190,8 +190,8 @@ public class NeedolinBlock : ScriptBlock
     public string Text = "";
     public float Delay = 1;
     private LocalisedTextCollection _collection;
-    
-    protected override void Reset()
+
+    public override void Reset()
     {
         Text = "";
         Delay = 1;

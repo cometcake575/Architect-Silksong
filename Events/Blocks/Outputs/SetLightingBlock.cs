@@ -46,7 +46,7 @@ public class SetLightingBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Set Lighting";
 
-    protected override void Reset()
+    public override void Reset()
     {
         R = 1;
         G = 1;

@@ -23,7 +23,7 @@ public class QuestBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Custom Quest Control";
 
-    protected override void Reset()
+    public override void Reset()
     {
         QuestName = "";
     }

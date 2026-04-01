@@ -25,7 +25,7 @@ public static class Categories
     /** Enemies and bosses */
     public static readonly Category Enemies = RegisterCategory("Enemies", 1);
     /** Utility objects for things like trigger zones and object removers */
-    public static readonly Category Utility = RegisterCategory("Utility", 10);
+    public static readonly Category Utility = RegisterCategory("Utility", 11);
     /** Legacy objects that must be enabled in the configuration */
     public static readonly Category Legacy = new("Legacy", -1);
     /** Objects relating to giving or limiting abilities */

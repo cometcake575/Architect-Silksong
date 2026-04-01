@@ -9,12 +9,16 @@ namespace Architect.Events.Blocks.Objects;
 public class SpawnPrefabBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Spawn"];
-    protected override IEnumerable<(string, string)> InputVars => [("X", "Number"), ("Y", "Number")];
+    protected override IEnumerable<(string, string)> InputVars => [
+        ("X", "Number"), 
+        ("Y", "Number"), 
+        ("Rot", "Number"),
+        ("Scale", "Number")];
 
     protected override Color Color => ObjectBlock.ValidColor;
     protected override string Name => "Spawn Prefab";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Prefab = "";
         OffsetX = 0;
@@ -35,6 +39,8 @@ public class SpawnPrefabBlock : ScriptBlock
                 GetVariable<float>("X") + OffsetX, 
                 GetVariable<float>("Y") + OffsetY) }
         }.AddComponent<Prefab>();
+        prefab.rot = GetVariable<float>("Rot");
+        prefab.scale = GetVariable<float>("Scale", 1);
         prefab.id = Prefab;
     }
 }

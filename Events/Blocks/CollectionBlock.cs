@@ -83,13 +83,14 @@ public abstract class CollectionBlock<T> : LinkedBlock
         {
             ScriptManager.Blocks[child.BlockId] = child;
             child.Group = Children;
-            
+
             if (visual && BlockObject)
             {
                 child.SetupBlock(newBlock);
                 if (!child.BlockObject) return;
                 child.BlockObject.transform.SetParent(BlockObject.transform, true);
             }
+            else child.Reset();
             foreach (var cfg in child.CurrentConfig.Values) cfg.Setup(child);
         }
         if (visual) Children.OrderChildren();

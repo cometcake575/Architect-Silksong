@@ -76,6 +76,13 @@ public static class ReceiverGroup
             o.LocateMyFSM("Control").SendEvent("INTERACT");
         }))
     ]);
+    
+    public static readonly List<EventReceiverType> MushTablet = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("mush_deactivate", "Deactivate", o =>
+        {
+            o.LocateMyFSM("Inspection").SetState("Inactive");
+        }))
+    ]);
 
     private static IEnumerator TakeControl(GameObject moveTo)
     {
@@ -204,6 +211,19 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> BounceFlea = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("bounce_flea_fly", "FlyStraight", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<MiscFixers.BounceFlea>().Fly(b, "ENTER HIGH");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("bounce_flea_wave", "FlyWave", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<MiscFixers.BounceFlea>().Fly(b, "ENTER WAVE");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Activatable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("grow_pod", "Grow", o =>
         {
@@ -233,16 +253,21 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("dial_rotate_l", "RotateLeft", o =>
         {
             var ddb = o.GetComponent<DialDoorBridge>();
-            ddb.StartCoroutine(ddb.MoveRotate(-1));
-            ddb.isRotated = !ddb.isRotated;
+            ddb.StartCoroutine(RotateAfterFrame(ddb, -1));
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("dial_rotate_r", "RotateRight", o =>
         {
             var ddb = o.GetComponent<DialDoorBridge>();
-            ddb.StartCoroutine(ddb.MoveRotate(1));
-            ddb.isRotated = !ddb.isRotated;
+            ddb.StartCoroutine(RotateAfterFrame(ddb, 1));
         }))
     ]);
+
+    private static IEnumerator RotateAfterFrame(DialDoorBridge ddb, int direction)
+    {
+        yield return null;
+        ddb.isRotated = !ddb.isRotated;
+        yield return ddb.MoveRotate(direction);
+    }
     
     public static readonly List<EventReceiverType> RuneBomb = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("bomb_trigger", "Activate", o =>

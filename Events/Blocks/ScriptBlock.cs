@@ -564,8 +564,8 @@ public abstract class ScriptBlock
     protected virtual void DeserializeExtraData(Dictionary<string, string> data) { }
 
     public virtual void SetupReference() { }
-    
-    protected virtual void Reset() { }
+
+    public virtual void Reset() { }
 
     public virtual void Event(string name)
     {

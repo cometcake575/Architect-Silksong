@@ -346,9 +346,6 @@ public static class AbilityObjects
         typeof(HeroController).Hook(nameof(HeroController.CanSuperJump),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "super_jump"));
         
-        typeof(HeroController).Hook(nameof(HeroController.CanAttack),
-            (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "attack"));
-        
         typeof(HeroController).Hook(nameof(HeroController.CanNailCharge),
             (Func<HeroController, bool> orig, HeroController self) => BindingCheck(orig(self), "attack"));
         

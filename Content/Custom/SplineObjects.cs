@@ -33,7 +33,8 @@ public static class SplineObjects
                 description: "The start of a track.\n" +
                              "Place Track Points with the same Track ID to link together and form a track.\n\n" +
                              "Setting a track point as the parent of an Object Anchor will cause it to\n" +
-                             "follow the track, starting at that point.")
+                             "follow the track, starting at that point.\n\n" +
+                             "Set the Colour A option to 0 to hide the track.")
             .WithConfigGroup(ConfigGroup.TrackStartPoint);
     }
 
@@ -86,11 +87,11 @@ public static class SplineObjects
             spline.splines.Add(this);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (!hasSetup && Splines.ContainsKey(id)) Setup();
         }
-
+        
         private void OnDisable()
         {
             if (!Splines.TryGetValue(id, out var spl)) return;
@@ -114,6 +115,7 @@ public static class SplineObjects
 
         private void Update()
         {
+            if (!source || !source.spline) return;
             transform.position = source.transform.position.Where(z: source.spline.transform.GetPositionZ());
         }
 
@@ -184,10 +186,17 @@ public static class SplineObjects
             Destroy(actualSpline);
         }
 
-        private void OnEnable()
+        private bool _setup;
+
+        protected override void Update()
         {
-            if (Splines.ContainsKey(id)) return;
-            Splines.Add(id, this);
+            if (!_setup)
+            {
+                _setup = true;
+                if (Splines.ContainsKey(id)) return;
+                Splines.Add(id, this);
+            } 
+            base.Update();
         }
 
         private void OnDisable()

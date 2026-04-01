@@ -89,4 +89,11 @@ public static class ObjectUtils
 
         return obj;
     }
+    
+    public static Vector3 RotatePointAroundPivot(this Vector3 point, Vector3 pivot, float angle) {
+        var dir = point - pivot;
+        dir = Quaternion.Euler(0, 0, angle) * dir;
+        point = dir + pivot;
+        return point;
+    }
 }

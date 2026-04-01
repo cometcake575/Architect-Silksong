@@ -351,4 +351,28 @@ public static class InteractableFixers
             fsm.GetState("Dialogue End").AddAction(() => gameObject.BroadcastEvent("OnFinishTalk"), 0);
         }
     }
+
+    public static void FixBoneCarriage(GameObject obj)
+    {
+        for (var i = 1; i <= 10; i++) obj.transform.GetChild(i).gameObject.SetActive(false);
+        var lift = obj.transform.GetChild(0);
+        lift.localPosition = Vector3.zero;
+        lift.SetPositionZ(-0.03f);
+        
+        lift.gameObject.AddComponent<BoneCarriage>();
+    }
+
+    public class BoneCarriage : MonoBehaviour
+    {
+        public Vector3 leftOffset;
+        public Vector3 rightOffset;
+        
+        public void Start()
+        {
+            var ml = GetComponent<ManualLift>();
+        
+            ml.leftTargetPos = transform.position + leftOffset;
+            ml.rightTargetPos = transform.position + rightOffset;
+        }
+    }
 }

@@ -221,7 +221,8 @@ public class ObjectColourer : MonoBehaviour
         var time = 0f;
 
         var mat = sr.material;
-        var start = mat.color;
+        var start = mat.color * sr.color;
+        sr.color = Color.white;
         var end = mode == 0 ? start * color : color;
         if (!useAlpha) end.a = start.a;
         

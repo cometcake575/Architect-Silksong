@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Architect.Behaviour.Custom;
 using Architect.Content.Preloads;
 using Architect.Editor;
+using Architect.Events.Blocks;
 using Architect.Events.Blocks.Operators;
 using Architect.Objects.Placeable;
 using Architect.Utils;
@@ -1663,6 +1664,144 @@ public static class MiscFixers
                 GetComponent<PlayMakerFSM>().SetState("Recycle");
                 _scene = GameManager.instance.sceneName;
             }
+        }
+    }
+
+    public static void FixQuietPilgrim(GameObject obj)
+    {
+        obj.AddComponent<BasicNpcFix>();
+        EnemyFixers.KeepActive(obj);
+    }
+
+    public static void RotateCocoon(GameObject obj, float rot)
+    {
+        obj.transform.SetRotation2D(rot);
+        var cocoon = obj.GetComponent<HealthCocoon>();
+        foreach (var prefab in cocoon.flingPrefabs)
+        {
+            prefab.Prefab = Object.Instantiate(prefab.Prefab);
+            prefab.Prefab.SetActive(false);
+            prefab.Prefab.transform.SetRotation2D(-rot);
+        }
+    }
+
+    public static void FixJuggleFlea(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Enter L").DisableAction(0);
+        fsm.GetState("Enter R").DisableAction(0);
+        
+        fsm.FsmVariables.FindFsmFloat("Entry X").Value = obj.transform.GetPositionX();
+        fsm.FsmVariables.FindFsmFloat("Entry Y").Value = obj.transform.GetPositionY();
+        
+        fsm.FsmVariables.FindFsmFloat("Platform Max X").Value = obj.transform.GetPositionX() + 8;
+        fsm.FsmVariables.FindFsmFloat("Platform Min X").Value = obj.transform.GetPositionX() - 8;
+        
+        fsm.FsmVariables.FindFsmFloat("Floor Y").Value = obj.transform.GetPositionY() - 5;
+    }
+
+    public class BounceFlea : MonoBehaviour
+    {
+        public bool isRight;
+        public float distance = 10;
+
+        public float topYOffset = 2;
+        public float botYOffset = -2;
+
+        public bool flyAway = true;
+
+        private float _startY;
+        private FsmFloat _entryY;
+        private FsmFloat _speed;
+        private bool _quick;
+
+        private PlayMakerFSM _fsm;
+
+        private void Start()
+        {
+            _startY = transform.GetPositionY();
+            
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Enter High").DisableAction(0);
+            fsm.GetState("Enter Wave").DisableAction(0);
+
+            var fp = fsm.GetState("Fly Past");
+            ((CheckXPosition)fp.actions[2]).compareToOffset = -0.2f;
+            ((CheckXPosition)fp.actions[3]).compareToOffset = 0.2f;
+
+            var bc2d = GetComponentInChildren<BoxCollider2D>(true);
+            
+            fsm.GetState("Choose Entry Side").AddAction(() =>
+            {
+                fsm.SendEvent(isRight ? "R" : "L");
+                bc2d.enabled = true;
+            }, 0);
+        
+            _entryY = fsm.FsmVariables.FindFsmFloat("Entry Y");
+            _speed = fsm.FsmVariables.FindFsmFloat("Fly Speed");
+
+            fsm.FsmVariables.FindFsmFloat("Arena Edge L").Value = transform.GetPositionX() + (isRight ? -distance : 0);
+            fsm.FsmVariables.FindFsmFloat("Arena Edge R").Value = transform.GetPositionX() + (isRight ? 0 : distance);
+
+            var fo = fsm.GetState("Fly Out");
+            fo.AddAction(() => bc2d.enabled = false, 0);
+            var end = fsm.GetState("Tink").transitions.First(e => e.EventName == "END");
+            end.toState = flyAway ? "Fly Out" : "Fly Past";
+            end.toFsmState = flyAway ? fo : fsm.GetState("Fly Past");
+
+            var waveFsm = gameObject.LocateMyFSM("Wave Control");
+            var botY = waveFsm.FsmVariables.FindFsmFloat("Bot Y");
+            var topY = waveFsm.FsmVariables.FindFsmFloat("Top Y");
+            waveFsm.GetState("Start").AddAction(() =>
+            {
+                botY.Value = _entryY.Value + botYOffset;
+                topY.Value = _entryY.Value + topYOffset;
+            }, 2);
+
+            fsm.GetState("Enter").DisableAction(2);
+            
+            fsm.GetState("Tink").AddAction(() =>
+            {
+                gameObject.BroadcastEvent("OnHit");
+                if (!flyAway) fsm.SendEvent("END");
+            }, 0);
+            
+            fsm.GetState("Quickening Effects").AddAction(() => fsm.SendEvent(_quick ? "BUBBLES" : "FINISHED"), 0);
+            
+            _fsm = fsm;
+        }
+
+        public void Fly(ScriptBlock block, string eName)
+        {
+            _entryY.Value = block.GetVariable<float>("Fly Y", _startY);
+            _speed.Value = block.GetVariable<float>("Speed", 10);
+            _quick = block.GetVariable<bool>("Quick");
+            _fsm.SendEvent(eName);
+        }
+    }
+
+    public static void AddComponent<T>(GameObject obj) where T : MonoBehaviour
+    {
+        obj.AddComponent<T>();
+    }
+
+    public class MushroomTablet : Npc
+    {
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Inspection");
+            var idle = fsm.GetState("Idle");
+            idle.DisableAction(0);
+            idle.DisableAction(1);
+            fsm.GetState("Hornet Dialogue").AddAction(() => fsm.SendEvent("CONVO_END"), 0);
+            fsm.GetState("Begin Quest?").AddAction(() => fsm.SendEvent("NO"), 0);
+
+            var dlg = (RunDialogue)fsm.GetState("Weaver Dialogue").actions[0];
+            dlg.Sheet = "ArchitectMod";
+            dlg.Key = text;
+            
+            fsm.GetState("Dialogue End No").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
 }

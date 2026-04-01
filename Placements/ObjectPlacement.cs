@@ -65,12 +65,17 @@ public class ObjectPlacement(
         return withinX && withinY;
     }
 
+    private float _rotation = rotation;
+    private float _scale = scale;
+
     public string GetId() => ID;
     public PlaceableObject GetPlacementType() => type;
     public Vector3 GetPos() => _position;
     public bool IsFlipped() => flipped;
-    public float GetRotation() => rotation;
-    public float GetScale() => scale;
+    public float GetRotation() => _rotation;
+    public void SetRotation(float rot) => _rotation = rot;
+    public void SetScale(float sc) => _scale = sc;
+    public float GetScale() => _scale;
 
     public bool Locked = locked;
 
@@ -137,7 +142,7 @@ public class ObjectPlacement(
 
     public GameObject PlaceGhost(Vector3 pos = default, bool store = true, string extraId = null)
     {
-        var rot = rotation + type.Rotation;
+        var rot = _rotation + type.Rotation;
         
         if (pos == default) pos = _position;
         else pos.z = _position.z;
@@ -150,7 +155,7 @@ public class ObjectPlacement(
         _previewRenderer.color = DefaultColour;
         
         _previewRenderer.sprite = type.Sprite;
-        _previewObject.transform.localScale *= scale;
+        _previewObject.transform.localScale *= _scale;
         _previewObject.transform.SetRotation2D(rot + type.ChildRotation + type.Tk2dRotation);
 
         if (type.Preview)
@@ -176,7 +181,7 @@ public class ObjectPlacement(
             }
         }
 
-        _offset = PreviewUtils.FixPreview(_previewRenderer, type, flipped, rot, scale);
+        _offset = PreviewUtils.FixPreview(_previewRenderer, type, flipped, rot, _scale);
         _previewObject.transform.position = pos + _offset;
 
         _previewObject.AddComponent<PreviewObject>().offset = _offset;
@@ -197,8 +202,8 @@ public class ObjectPlacement(
     {
         public Vector3 offset;
     }
-
-    public GameObject SpawnObject(Vector3 pos = default, string extraId = null)
+    
+    public GameObject SpawnObject(Vector3 pos = default, string extraId = null, float extraRot = 0, float extraScale = 1)
     {
         if (!type.Prefab)
         {
@@ -225,11 +230,11 @@ public class ObjectPlacement(
         if (type.FlipAction != null) type.FlipAction.Invoke(obj, flipped);
         else if (flipped) obj.transform.SetScaleX(-obj.transform.GetScaleX());
         
-        if (type.RotateAction != null) type.RotateAction.Invoke(obj, rotation);
-        else obj.transform.SetRotation2D(rotation + obj.transform.GetRotation2D());
+        if (type.RotateAction != null) type.RotateAction.Invoke(obj, _rotation + extraRot);
+        else obj.transform.SetRotation2D(_rotation + obj.transform.GetRotation2D() + extraRot);
         
-        if (type.ScaleAction != null) type.ScaleAction.Invoke(obj, scale);
-        else obj.transform.localScale *= scale;
+        if (type.ScaleAction != null) type.ScaleAction.Invoke(obj, _scale * extraScale);
+        else obj.transform.localScale *= _scale * extraScale;
 
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() < 0)
                      .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj, extraId);

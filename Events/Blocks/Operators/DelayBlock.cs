@@ -17,7 +17,7 @@ public class DelayBlock : ScriptBlock
 
     public float Delay;
 
-    protected override void Reset() => Delay = 0;
+    public override void Reset() => Delay = 0;
 
     private DelayObj _delay;
 
@@ -48,7 +48,7 @@ public class WaitUntilBlock : ScriptBlock
 {
     protected override IEnumerable<(string, string)> InputVars => [("Check", "Boolean")];
 
-    protected override IEnumerable<string> Inputs => ["In"];
+    protected override IEnumerable<string> Inputs => ["In", "Cancel"];
     protected override IEnumerable<string> Outputs => ["Out"];
 
     private static readonly Color DefaultColor = Color.yellow;
@@ -66,7 +66,8 @@ public class WaitUntilBlock : ScriptBlock
     protected override void Trigger(string trigger)
     {
         if (!_delay) return;
-        _delay.StartCoroutine(DelayedEvent());
+        if (trigger == "In") _delay.StartCoroutine(DelayedEvent());
+        else _delay.StopAllCoroutines();
     }
 
     private IEnumerator DelayedEvent()
@@ -94,7 +95,7 @@ public class LoopBlock : ScriptBlock
     
     private int _currentTime;
 
-    protected override void Reset() => Delay = 0;
+    public override void Reset() => Delay = 0;
 
     private DelayObj _delay;
 

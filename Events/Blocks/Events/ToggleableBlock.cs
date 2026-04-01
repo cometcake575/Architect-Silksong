@@ -8,7 +8,7 @@ public abstract class ToggleableBlock : ScriptBlock
 
     protected bool Enabled = true;
 
-    protected override void Reset()
+    public override void Reset()
     {
         Enabled = true;
     }

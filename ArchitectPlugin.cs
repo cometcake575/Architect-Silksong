@@ -22,7 +22,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.22.5")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.23.2")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -74,6 +74,7 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         AbilityObjects.Init();
         MiscObjects.Init();
         CameraObjects.Init();
+        // CollectableObjects.Init();
         
         RespawnMarkerManager.Init();
         

@@ -243,6 +243,7 @@ public static class StorageManager
         foreach (var file in Directory.GetFiles(DataPath + "Assets/")) File.Delete(file);
 
         GlobalArchitectData.Instance.CurrentMap = "";
+        GlobalArchitectData.Instance.CurrentMapId = "";
         CustomAssetManager.WipeAssets();
         WorkshopManager.LoadWorkshop(new WorkshopData());
     }
@@ -254,7 +255,9 @@ public static class StorageManager
 
         Dictionary<string, StringConfigValue> downloads = [];
         Dictionary<string, StringConfigValue<PngBlock>> blockDownloads = [];
-        
+
+        var cherries = 0;
+        var goldCherries = 0;
         foreach (var (scene, data) in levels)
         {
             foreach (var config in data.Placements.SelectMany(obj => obj.Config)
@@ -264,7 +267,7 @@ public static class StorageManager
                 var cfg = config.GetValue();
                 downloads.TryAdd(cfg, config);
             }
-            
+
             foreach (var config in data.ScriptBlocks.SelectMany(obj => obj.CurrentConfig.Values)
                          .OfType<StringConfigValue<PngBlock>>())
             {
@@ -272,9 +275,31 @@ public static class StorageManager
                 var cfg = config.GetValue();
                 blockDownloads.TryAdd(cfg, config);
             }
-            
+
+            cherries += data.Placements.Count(p => p.ID.StartsWith("cherry_false"));
+            goldCherries += data.Placements.Count(p => p.ID.StartsWith("cherry_true"));
+
             SaveScene(scene, data);
         }
+
+        var gad = GlobalArchitectData.Instance;
+        var levelId = gad.CurrentMapId;
+
+        if (!gad.CherryScores.TryGetValue(levelId, out var score))
+        {
+            score = gad.CherryScores[levelId] = ([], cherries);
+        }
+        else score.Item2 = cherries;
+
+        gad.CherryScores[levelId] = score;
+
+        if (!gad.GoldCherryScores.TryGetValue(levelId, out var gscore))
+        {
+            gscore = gad.GoldCherryScores[levelId] = ([], goldCherries);
+        }
+        else score.Item2 = goldCherries;
+
+        gad.GoldCherryScores[levelId] = gscore;
 
         Dictionary<string, string> workshopDownloads = [];
         foreach (var item in workshop.Items)
@@ -287,31 +312,34 @@ public static class StorageManager
                 workshopDownloads.TryAdd(file.Item1, file.Item2);
             }
         }
-        
+
         CustomAssetManager.DownloadingAssets = 0;
         CustomAssetManager.Downloaded = 0;
         CustomAssetManager.Failed = 0;
         var downloadCount = downloads.Count + blockDownloads.Count + workshopDownloads.Count;
         status.text = "Downloading Assets...\n" +
                       $"0/{downloadCount}";
-        
+
         foreach (var config in downloads.Values)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
         }
+
         foreach (var config in blockDownloads.Values)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
         }
+
         foreach (var (url, type) in workshopDownloads)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(url, type, status, downloadCount));
         }
+
         while (CustomAssetManager.Downloaded < downloadCount) yield return null;
-        
+
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
 
@@ -320,8 +348,9 @@ public static class StorageManager
         SaveWorkshopData();
 
         var plural = CustomAssetManager.Failed == 1 ? "" : "s";
-        status.text = "Download Complete" + (CustomAssetManager.Failed == 0 ? "" : 
-            $"\n{CustomAssetManager.Failed} asset{plural} could not be downloaded");
+        status.text = "Download Complete" + (CustomAssetManager.Failed == 0
+            ? ""
+            : $"\n{CustomAssetManager.Failed} asset{plural} could not be downloaded");
     }
 
     public static void MakeBackup()

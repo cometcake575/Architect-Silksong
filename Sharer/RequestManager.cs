@@ -514,8 +514,9 @@ public static class RequestManager
         var data = JsonConvert.DeserializeObject<Dictionary<string, LevelData>>(result["level"]);
         var wData = JsonConvert.DeserializeObject<WorkshopData>(result["workshop"]);
         
-        yield return StorageManager.LoadLevelData(data, wData, status);
         GlobalArchitectData.Instance.CurrentMap = levelName;
+        GlobalArchitectData.Instance.CurrentMapId = levelId;
+        yield return StorageManager.LoadLevelData(data, wData, status);
 
         PlacementManager.InvalidateScene();
     }

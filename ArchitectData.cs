@@ -24,6 +24,10 @@ public class GlobalArchitectData
     public Dictionary<string, KeyCode> Keybinds = [];
 
     public string CurrentMap = "";
+    public string CurrentMapId = "";
+
+    public Dictionary<string, (List<string>, int)> CherryScores = [];
+    public Dictionary<string, (List<string>, int)> GoldCherryScores = [];
 
     public string MapLabel => CurrentMap.IsNullOrWhiteSpace() ? "Map Keybinds" : CurrentMap;
 }

@@ -17,7 +17,7 @@ public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
     
     private int _index;
 
-    protected override void Reset()
+    public override void Reset()
     {
         _index = 0;
     }
@@ -43,7 +43,7 @@ public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
 
         public bool Enabled = true;
 
-        protected override void Reset()
+        public override void Reset()
         {
             Enabled = true;
         }

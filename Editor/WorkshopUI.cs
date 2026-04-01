@@ -25,6 +25,10 @@ public static class WorkshopUI
     private static ScrollRect _scrollRect;
     private static InputField _search;
 
+    private static int _pageNum;
+    private static int _pageMax;
+    private static Text _pageCounter;
+
     private static readonly List<Listing> Listings = [];
     
     public static void Init(GameObject workshopUI)
@@ -32,6 +36,7 @@ public static class WorkshopUI
         var bg = new GameObject("Background");
         bg.transform.SetParent(workshopUI.transform, false);
         bg.RemoveOffset();
+        ((RectTransform)bg.transform).anchoredPosition = new Vector2(0, -40);
         
         var bgImg = UIUtils.MakeImage(
             "Image",
@@ -66,6 +71,7 @@ public static class WorkshopUI
         _configArea.transform.SetParent(workshopUI.transform, false);
         _configArea.RemoveOffset();
         _configArea.SetActive(false);
+        ((RectTransform)_configArea.transform).anchoredPosition = new Vector2(0, -40);
 
         _title = UIUtils.MakeLabel(
             "Title",
@@ -187,6 +193,35 @@ public static class WorkshopUI
         _scrollRect.gameObject.AddComponent<ScaleWithScreenSize>().padding = 150;
         bar.gameObject.AddComponent<ScaleWithScreenSize>().padding = 180;
 
+        var (leftBtn, leftLabel) = UIUtils.MakeTextButton(
+            "Left", "<=", _openArea, new Vector2(100, 0),
+            new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(100, 100)
+        );
+        leftLabel.textComponent.fontSize = 15;
+        leftBtn.onClick.AddListener(() =>
+        {
+            _pageNum--;
+            Search();
+        });
+        
+        var (rightBtn, rightLabel) = UIUtils.MakeTextButton(
+            "Right", "=>", _openArea, new Vector2(250, 0),
+            new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(100, 100)
+        );
+        rightLabel.textComponent.fontSize = 15;
+        rightBtn.onClick.AddListener(() =>
+        {
+            _pageNum++;
+            Search();
+        });
+        
+        _pageCounter = UIUtils.MakeLabel("Page Number", _openArea, new Vector2(175, 0),
+            new Vector2(0.5f, 0), new Vector2(0.5f, 0)).textComponent;
+        _pageCounter.fontSize = 18;
+        _pageCounter.alignment = TextAnchor.MiddleCenter;
+
         for (var i = 0; i < 15; i++)
         {
             var listing = new GameObject("Listing");
@@ -238,6 +273,7 @@ public static class WorkshopUI
         
         _search.onValueChanged.AddListener(_ =>
         {
+            _pageNum = 0;
             Search();
         });
         
@@ -272,20 +308,34 @@ public static class WorkshopUI
     {
         _scrollRect.verticalNormalizedPosition = 1;
         _search.text = "";
+        _pageNum = 0;
         Search();
     }
 
     private static void Search()
     {
         var i = 0;
-        foreach (var item in WorkshopManager.WorkshopData.Items
-                     .Where(o => o.Id.ToLower().Contains(_search.text.ToLower())))
+        var j = 0;
+        var items = WorkshopManager.WorkshopData.Items
+            .Where(o => o.Id.ToLower().Contains(_search.text.ToLower())).ToArray();
+
+        _pageMax = Mathf.CeilToInt(items.Length / 15f);
+        if (_pageMax > 0)
         {
-            Listings[i].Setup(item);
-            i++;
-            if (i >= 15) break;
+            while (_pageNum >= _pageMax) _pageNum -= _pageMax;
+            while (_pageNum < 0) _pageNum += _pageMax;
+
+            foreach (var item in items)
+            {
+                j++;
+                if (j <= _pageNum * 15) continue;
+                Listings[i].Setup(item);
+                i++;
+                if (i >= 15) break;
+            }
         }
 
+        _pageCounter.text = $"{_pageNum+1}/{_pageMax}";
         for (; i < 15; i++)
         {
             Listings[i].Clear();
@@ -352,6 +402,7 @@ public static class WorkshopUI
         if (isNew)
         {
             GlobalArchitectData.Instance.CurrentMap = "";
+            GlobalArchitectData.Instance.CurrentMapId = "";
             WorkshopManager.WorkshopData.Items.Add(item);
             item.Register();
         }

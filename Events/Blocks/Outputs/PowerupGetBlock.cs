@@ -34,7 +34,7 @@ public class PowerupGetBlock : ScriptBlock
         ("Prompt", "Sprite")
     ];
 
-    protected override void Reset()
+    public override void Reset()
     {
         PrefixText = "";
         NameText = "";

@@ -15,6 +15,7 @@ public static class ActionBlocks
         QuestboardBlock.Init();
         SetLightingBlock.Init();
         SilkBlock.Init();
+        CrestBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
@@ -22,7 +23,9 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<StatusBlock>("Status Control");
         ScriptManager.RegisterInputBlock<QuestBlock>("Quest Control", ConfigGroup.QuestControl);
         ScriptManager.RegisterInputBlock<JournalEntryBlock>("Journal Control", ConfigGroup.EntryControl);
+        ScriptManager.RegisterInputBlock<AchievementBlock>("Achievement Control", ConfigGroup.AchievementControl);
         ScriptManager.RegisterInputBlock<ToolBlock>("Tool Control", ConfigGroup.ToolControl);
+        ScriptManager.RegisterInputBlock<CrestBlock>("Crest Control", ConfigGroup.CrestControl);
         ScriptManager.RegisterInputBlock<ItemBlock>("Item Control", ConfigGroup.ItemControl);
         ScriptManager.RegisterInputBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
         ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);

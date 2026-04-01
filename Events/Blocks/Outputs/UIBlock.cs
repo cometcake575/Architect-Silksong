@@ -11,7 +11,7 @@ public class UIBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "UI Control";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Duration = 1;
         R = 1;

@@ -84,7 +84,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 
         public ShopBlock Shop;
 
-        protected override void Reset()
+        public override void Reset()
         {
             ItemId = "Rosary_Set_Small";
             ItemName = string.Empty;

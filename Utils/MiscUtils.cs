@@ -30,6 +30,31 @@ public static class MiscUtils
         if (MateriumItemManager.Instance.masterList.dictionary.TryGetValue(name, out var i3)) return i3;
         return ToolItemManager.Instance.toolItems.dictionary.GetValueOrDefault(name);
     }
+
+    public static int FirstPosMin<T>(this IEnumerable<T> enumerable, Func<T, float> rule, Func<T, float> backupRule)
+    {
+        var minV1 = float.MaxValue;
+        var minV2 = float.MaxValue;
+        var minI1 = -1;
+        var i = -1;
+        
+        foreach (var n in enumerable)
+        {
+            i++;
+            
+            var v = rule(n);
+            var v2 = backupRule(n);
+            if (v <= 0) continue;
+            if (v < minV1 || (Mathf.Approximately(v, minV1) && v2 < minV2))
+            {
+                minV1 = v;
+                minV2 = v2;
+                minI1 = i;
+            }
+        }
+        
+        return minI1;
+    }
 }
 
 public class LocalStr(string s)

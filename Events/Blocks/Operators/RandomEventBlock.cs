@@ -52,7 +52,7 @@ public class RandomEventBlock : CollectionBlock<RandomEventBlock.TriggerBlock>
         public float Chance;
         public bool Enabled = true;
 
-        protected override void Reset()
+        public override void Reset()
         {
             Enabled = true;
         }

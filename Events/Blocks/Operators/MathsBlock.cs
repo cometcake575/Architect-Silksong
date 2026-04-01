@@ -70,7 +70,7 @@ public class NormaliseBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Normalise";
 
-    protected override void Reset()
+    public override void Reset()
     {
         Angle = 0;
     }

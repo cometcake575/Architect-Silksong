@@ -139,7 +139,7 @@ public static class EditorUI
         wt.anchorMin = Vector2.zero;
         wt.offsetMax = Vector2.zero;
         wt.offsetMin = Vector2.zero;
-        wt.anchoredPosition = new Vector2(0, 20);
+        wt.anchoredPosition = new Vector2(0, 60);
         
         WorkshopUI.Init(_workshopUI);
         
@@ -868,6 +868,14 @@ public static class EditorUI
     {
         var icon = HotbarIcons[EditManager.HotbarIndex];
         icon.sprite = EditManager.CurrentObject.GetUISprite();
+        var cfg = EditManager.Config.Values.FirstOrDefault(c => c.GetTypeId() == "png_url");
+        if (cfg != null)
+        {
+            CustomAssetManager.DoLoadSprite(cfg.SerializeValue(), true, 100, 1, 1, sprites =>
+            {
+                icon.sprite = sprites[0];
+            });
+        }
 
         var rot = 0f;
         icon.transform.SetScaleX(1);
@@ -947,7 +955,7 @@ public static class EditorUI
                 }
                 
                 icon.Item1.gameObject.SetActive(placeable is not PrefabObject);
-                icon.Item1.sprite = placeable.GetUISprite();
+                icon.Item1.sprite = _categoryContents[index].GetUISprite();
 
                 var text = "";
                 if (placeable is PrefabObject)
