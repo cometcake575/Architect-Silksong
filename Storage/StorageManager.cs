@@ -353,11 +353,10 @@ public static class StorageManager
             : $"\n{CustomAssetManager.Failed} asset{plural} could not be downloaded");
     }
 
-    public static void MakeBackup()
+    public static void MakeBackup(string backupId)
     {
         try
         {
-            var backupId = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
             var path = DataPath + $"Backups/{backupId}";
             Directory.CreateDirectory($"{path}/Scenes");
             Directory.CreateDirectory($"{path}/Prefabs");
@@ -378,6 +377,53 @@ public static class StorageManager
             {
                 File.Copy(DataPath + "workshop.json", path + "/workshop.json");
             }
+        }
+        catch
+        {
+            //
+        }
+    }
+
+    public static void DeleteBackup(string backupId)
+    {
+        try
+        {
+            var path = DataPath + $"Backups/{backupId}";
+            Directory.Delete(path, true);
+        }
+        catch
+        {
+            //
+        }
+    }
+
+    public static void LoadBackup(string backupId)
+    {
+        try
+        {
+            var path = DataPath + $"Backups/{backupId}/";
+            
+            WipeLevelData();
+
+            foreach (var file in Directory.GetFiles(path + "Scenes/"))
+            {
+                if (!file.EndsWith(".architect.json")) continue;
+                File.Copy(file, DataPath + "Scenes/" + Path.GetFileName(file));
+            }
+
+            foreach (var file in Directory.GetFiles(path + "Prefabs/"))
+            {
+                if (!file.EndsWith(".architect.json")) continue;
+                File.Copy(file, DataPath + "Prefabs/" + Path.GetFileName(file));
+            }
+
+            if (File.Exists(path + "workshop.json"))
+            {
+                File.Copy(path + "/workshop.json", DataPath + "workshop.json");
+            }
+
+            PrefabsCategory.Prefabs = LoadPrefabs();
+            LoadWorkshopData();
         }
         catch
         {

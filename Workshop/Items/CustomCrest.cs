@@ -101,7 +101,9 @@ public class CustomCrest : SpriteItem
             ChargeSlash = originalCg.ChargeSlash,
             TauntSlash = originalCg.TauntSlash
         };
+        var ara = originalCg.ActiveRoot.activeSelf;
         cg.Setup();
+        if (ara) originalCg.ActiveRoot.SetActive(true);
         var cfgs = HeroController.instance.configs.ToList();
         cfgs.Add(cg);
         HeroController.instance.configs = cfgs.ToArray();

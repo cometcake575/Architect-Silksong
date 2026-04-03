@@ -29,6 +29,7 @@ public class PlayerBlock : ToggleableBlock
     protected override IEnumerable<(string, string)> OutputVars => [
         ("X", "Number"),
         ("Y", "Number"),
+        ("Ground", "Boolean"),
         ("Left", "Boolean"),
         ("Right", "Boolean"),
         ("Up", "Boolean"),
@@ -48,6 +49,7 @@ public class PlayerBlock : ToggleableBlock
     {
         return id switch
         {
+            "Ground" => !HeroController.instance.cState.onGround,
             "Left" => !HeroController.instance.cState.facingRight,
             "Right" => HeroController.instance.cState.facingRight,
             "Up" => HeroController.instance.cState.lookingUp,

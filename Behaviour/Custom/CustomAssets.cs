@@ -330,10 +330,15 @@ public class WavObject : SoundMaker, IPlayable
     public string url;
     public AudioClip sound;
     
-    public bool isMusic;
+    public int soundType;
 
     private float GmVol =>
-        (isMusic ? GameManager.instance.gameSettings.musicVolume : GameManager.instance.gameSettings.masterVolume) / 10;
+        soundType switch
+        {
+            2 => GameManager.instance.gameSettings.soundVolume,
+            1 => GameManager.instance.gameSettings.musicVolume,
+            _ => GameManager.instance.gameSettings.masterVolume
+        } / 10;
 
     private float _gmVol = 1;
 

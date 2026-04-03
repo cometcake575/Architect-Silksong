@@ -38,6 +38,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateFakePerformance());
         
         Categories.Utility.Add(CreateEnemyHook());
+        Categories.Utility.Add(CreateObjectHook());
         Categories.Utility.Add(CreateFsmHook());
         Categories.Utility.Add(CreateComponentToggler());
         
@@ -174,6 +175,8 @@ public static class UtilityObjects
             .WithReceiverGroup(ReceiverGroup.Generic));
         
         Categories.Effects.Add(CreateRoar());
+        /*Categories.Effects.Add(CreateFinalHit());
+        Categories.Effects.Add(CreateBossExplosion());*/
     }
 
     private static PlaceableObject CreateItem()
@@ -229,6 +232,34 @@ public static class UtilityObjects
             .WithReceiverGroup(ReceiverGroup.Roar);
     }
 
+    private static PlaceableObject CreateFinalHit()
+    {
+        var roar = new GameObject("Roar Spawner");
+        Object.DontDestroyOnLoad(roar);
+        roar.SetActive(false);
+
+        roar.AddComponent<RoarEffect>();
+        
+        return new CustomObject("Roar Effect", "roar_effect", roar,
+                sprite:ResourceUtils.LoadSpriteResource("roar", ppu:64))
+            .WithConfigGroup(ConfigGroup.Roar)
+            .WithReceiverGroup(ReceiverGroup.Roar);
+    }
+
+    private static PlaceableObject CreateBossExplosion()
+    {
+        var roar = new GameObject("Roar Spawner");
+        Object.DontDestroyOnLoad(roar);
+        roar.SetActive(false);
+
+        roar.AddComponent<RoarEffect>();
+        
+        return new CustomObject("Roar Effect", "roar_effect", roar,
+                sprite:ResourceUtils.LoadSpriteResource("roar", ppu:64))
+            .WithConfigGroup(ConfigGroup.Roar)
+            .WithReceiverGroup(ReceiverGroup.Roar);
+    }
+
     private static PlaceableObject CreateVoider()
     {
         var threader = new GameObject("Voider");
@@ -268,6 +299,22 @@ public static class UtilityObjects
             .WithInputGroup(InputGroup.EnemyHook)
             .WithOutputGroup(OutputGroup.EnemyHook)
             .WithReceiverGroup(ReceiverGroup.EnemyHook);
+    }
+
+    private static PlaceableObject CreateObjectHook()
+    {
+        var hook = new GameObject("Object Hook");
+        Object.DontDestroyOnLoad(hook);
+        hook.SetActive(false);
+
+        hook.AddComponent<ObjectHook>();
+        
+        return new CustomObject("Object Hook", "enemy_hook", hook, 
+                "Allows using vanilla objects in the Script Editor.\n\n" +
+                "The path to an object can be found with tools such as Unity Explorer.",
+                sprite:ResourceUtils.LoadSpriteResource("enemy_hook", FilterMode.Point, ppu:64))
+            .WithConfigGroup(ConfigGroup.ObjectHook)
+            .WithOutputGroup(OutputGroup.ObjectHook);
     }
 
     private static PlaceableObject CreateFsmHook()

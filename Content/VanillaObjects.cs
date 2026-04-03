@@ -50,6 +50,14 @@ public static class VanillaObjects
         AddCradleObjects();
         AddSurfaceObjects();
         AddMiscObjects();
+        AddToolObjects();
+    }
+
+    private static void AddToolObjects()
+    {
+        /*Categories.Attacks.Add(new PreloadObject("Ally Wisp", "hero_wisp_fireball",
+            ("localpoolprefabs_assets_shared", "Assets/Prefabs/Heroes/Tools/Hero Wisp Fireball.prefab"),
+            notSceneBundle: true));*/
     }
 
     private static void AddVoltObjects()
@@ -479,7 +487,6 @@ public static class VanillaObjects
             ("Under_06", "understore_junk_pipe"),
             preloadAction: HazardFixers.FixJunkPipe,
             postSpawnAction: HazardFixers.FixJunkPipePostSpawn)
-            .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.JunkPipe));
 
         Categories.Npcs.Add(new PreloadObject("Loam NPC", "loam_npc",
@@ -1687,7 +1694,11 @@ public static class VanillaObjects
     private static void AddMistObjects()
     {
         AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"),
-            preloadAction: EnemyFixers.RemoveConstrainPosition);
+            preloadAction: EnemyFixers.RemoveConstrainPosition,
+            postSpawnAction: o =>
+            {
+                o.LocateMyFSM("Control").GetState("Init").DisableAction(2);
+            });
         AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
             postSpawnAction: EnemyFixers.FixPhantom)
             .WithBroadcasterGroup(BroadcasterGroup.SlamEnemies);

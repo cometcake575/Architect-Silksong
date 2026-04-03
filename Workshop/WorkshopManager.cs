@@ -98,7 +98,6 @@ public static class WorkshopManager
         Register<StatusEffect>("Status Effect",
             new Vector2(-100, -337.5f));*/
         
-        CustomAchievement.Init();
         Register<CustomAchievement>("Achievement",
             new Vector2(-100, -337.5f),
             ConfigGroup.Achievement);
@@ -217,6 +216,7 @@ public static class WorkshopManager
     
     public static void Setup()
     {
+        CustomAchievement.Init();
         SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
     }

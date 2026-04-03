@@ -65,6 +65,7 @@ public static class ScriptEditorUI
         _bgTxt.text = "architect";
         _bgTxt.alignment = TextAnchor.MiddleCenter;
         _bgTxt.fontSize = 50;
+        _bgTxt.raycastTarget = false;
         label.transform.SetAsLastSibling();
 
         _blockTransformSource = new GameObject("Transform Source")

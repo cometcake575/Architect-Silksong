@@ -29,5 +29,9 @@ public class GlobalArchitectData
     public Dictionary<string, (List<string>, int)> CherryScores = [];
     public Dictionary<string, (List<string>, int)> GoldCherryScores = [];
 
+    public Dictionary<int, (string, bool)> CustomSaveArt = [];
+
+    public List<string> SavedMapNames = [];
+
     public string MapLabel => CurrentMap.IsNullOrWhiteSpace() ? "Map Keybinds" : CurrentMap;
 }

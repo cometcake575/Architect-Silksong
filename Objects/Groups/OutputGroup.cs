@@ -64,6 +64,14 @@ public static class OutputGroup
         )
     ];
 
+    public static readonly List<OutputType> ObjectHook =
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("obj_hook_target", "Target", "Object", 
+                o => o.GetComponent<ObjectHook>().o)
+        )
+    ];
+
     public static readonly List<OutputType> TriggerZone = GroupUtils.Merge(Objects,
     [
         EventManager.RegisterOutputType(

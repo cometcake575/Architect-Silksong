@@ -281,7 +281,8 @@ public class ObjectAnchor : PreviewableBehaviour
                 case true when !_previewInMotion:
                     _previewPos = _constraint.transform.localPosition;
                     _constraint.constraintActive = true;
-                    _constraint.translationOffset = _constraint.GetComponent<ObjectPlacement.PreviewObject>().offset;
+                    var po = _constraint.GetComponent<ObjectPlacement.PreviewObject>();
+                    if (po) _constraint.translationOffset = po.offset;
                     
                     _previewInMotion = true;
                     _offset = startOffset;

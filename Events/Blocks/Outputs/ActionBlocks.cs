@@ -16,6 +16,7 @@ public static class ActionBlocks
         SetLightingBlock.Init();
         SilkBlock.Init();
         CrestBlock.Init();
+        //EndingBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
         ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
@@ -45,6 +46,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting);
         ScriptManager.RegisterInputBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
         ScriptManager.RegisterInputBlock<ObjectMoverBlock>("Move Object");
+        //ScriptManager.RegisterInputBlock<EndingBlock>("Ending Control");
         
         ScriptManager.RegisterInputBlock<TravelBlock>("Travel UI", ConfigGroup.TravelUI);
         ScriptManager.RegisterHiddenBlock<TravelBlock.TravelLoc>("Travel Target", ConfigGroup.TravelUITarget);

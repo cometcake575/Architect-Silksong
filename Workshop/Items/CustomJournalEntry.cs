@@ -18,6 +18,8 @@ public class CustomJournalEntry : SpriteItem
     public LocalStr ItemHDesc = string.Empty;
 
     public string InsertBefore = string.Empty;
+    
+    public EnemyJournalRecord.RequiredTypes Required = EnemyJournalRecord.RequiredTypes.Required;
 
     public int KillsRequired = 1;
 
@@ -35,6 +37,8 @@ public class CustomJournalEntry : SpriteItem
         _record.displayName = ItemName;
         _record.description = ItemDesc;
         _record.notes = ItemHDesc;
+
+        _record.requiredType = Required;
 
         var l = EnemyJournalManager.Instance.recordList.List;
         var i = l.FindIndex(o => o.name == InsertBefore);

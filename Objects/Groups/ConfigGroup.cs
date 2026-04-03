@@ -120,6 +120,15 @@ public static class ConfigGroup
             }))
     ]);
     
+    public static readonly List<ConfigType> ObjectHook = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Path", "enemy_path", (o, value) =>
+            {
+                o.GetComponent<ObjectHook>().path = value.GetValue();
+            }))
+    ]);
+    
     public static readonly List<ConfigType> CocoonSpawnPoint = GroupUtils.Merge(Generic,
     [
         ConfigurationManager.RegisterConfigType(
@@ -2685,8 +2694,8 @@ public static class ConfigGroup
                 .WithOptions("Local", "Global").WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Volume Type", "wav_volume_mode",
-                (o, value) => { o.GetComponent<WavObject>().isMusic = value.GetValue() == 1; })
-                .WithOptions("Master", "Music").WithDefaultValue(0)),
+                (o, value) => { o.GetComponent<WavObject>().soundType = value.GetValue(); })
+                .WithOptions("Master", "Music", "Sound").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Loop Sound", "wav_loop",
                 (o, value) => { o.GetComponent<WavObject>().loop = value.GetValue(); })

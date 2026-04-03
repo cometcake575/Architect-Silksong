@@ -57,6 +57,13 @@ public static class ConfigGroup
                 item.KillsRequired = value.GetValue();
             }).WithDefaultValue(1)
         ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomJournalEntry>("Requirement", "journal_requirements", (item, value) =>
+            {
+                
+                item.Required = (EnemyJournalRecord.RequiredTypes)value.GetValue();
+            }).WithOptions("None", "Required", "Steel Soul").WithDefaultValue(1)
+        ),
         (NoteConfigType) "A vanilla entry (list can be found in the guide)",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomJournalEntry>("Add Before", "journal_before", (item, value) =>

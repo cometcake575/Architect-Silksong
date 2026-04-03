@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Architect.Storage;
 using Architect.Utils;
@@ -39,7 +40,8 @@ public class CustomKeybind : WorkshopItem
     {
         SimpleMenuScreen mapKeybinds = null;
         List<CustomKeyBindElement> keyButtons = [];
-        Registry.AddModMenu("Architect Binds", () =>
+        
+        Registry.AddModMenu("Architect Map", () =>
         {
             var tb = new TextButton(LocalizedText.Key(new LocalisedString("ArchitectMap", "ArchitectMap")));
             tb.OnSubmit += () =>
