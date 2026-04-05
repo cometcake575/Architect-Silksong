@@ -358,6 +358,9 @@ public static class StorageManager
         try
         {
             var path = DataPath + $"Backups/{backupId}";
+            
+            if (Directory.Exists(path)) Directory.Delete(path, true);
+            
             Directory.CreateDirectory($"{path}/Scenes");
             Directory.CreateDirectory($"{path}/Prefabs");
 
@@ -419,7 +422,7 @@ public static class StorageManager
 
             if (File.Exists(path + "workshop.json"))
             {
-                File.Copy(path + "/workshop.json", DataPath + "workshop.json");
+                File.Copy(path + "workshop.json", DataPath + "workshop.json", true);
             }
 
             PrefabsCategory.Prefabs = LoadPrefabs();

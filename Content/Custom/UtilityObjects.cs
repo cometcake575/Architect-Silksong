@@ -309,11 +309,11 @@ public static class UtilityObjects
 
         hook.AddComponent<ObjectHook>();
         
-        return new CustomObject("Object Hook", "enemy_hook", hook, 
+        return new CustomObject("Object Hook", "object_hook", hook, 
                 "Allows using vanilla objects in the Script Editor.\n\n" +
                 "The path to an object can be found with tools such as Unity Explorer.",
                 sprite:ResourceUtils.LoadSpriteResource("enemy_hook", FilterMode.Point, ppu:64))
-            .WithConfigGroup(ConfigGroup.ObjectHook)
+            .WithConfigGroup(ConfigGroup.EnemyHook)
             .WithOutputGroup(OutputGroup.ObjectHook);
     }
 

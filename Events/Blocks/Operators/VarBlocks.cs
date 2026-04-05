@@ -22,6 +22,8 @@ public class BoolVarBlock : LocalBlock
     public string Id = "";
     public int PType;
 
+    public bool Default;
+
     public static void Init()
     {
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
@@ -62,7 +64,7 @@ public class BoolVarBlock : LocalBlock
             1 => SemiVars.ContainsKey(Id) && SemiVars[Id],
             2 => ArchitectData.Instance.BoolVariables.ContainsKey(Id) &&
                  ArchitectData.Instance.BoolVariables[Id],
-            _ => false
+            _ => Default
         };
     }
 }
@@ -82,6 +84,8 @@ public class NumVarBlock : LocalBlock
 
     public string Id = "";
     public int PType;
+
+    public float Default;
     
     public static void Init()
     {
@@ -119,10 +123,10 @@ public class NumVarBlock : LocalBlock
     {
         return PType switch
         {
-            0 => TempVars.GetValueOrDefault(Id, 0),
-            1 => SemiVars.GetValueOrDefault(Id, 0),
-            2 => ArchitectData.Instance.FloatVariables.GetValueOrDefault(Id, 0),
-            _ => 0
+            0 => TempVars.GetValueOrDefault(Id, Default),
+            1 => SemiVars.GetValueOrDefault(Id, Default),
+            2 => ArchitectData.Instance.FloatVariables.GetValueOrDefault(Id, Default),
+            _ => Default
         };
     }
 }
@@ -142,6 +146,8 @@ public class StringVarBlock : LocalBlock
 
     public string Id = "";
     public int PType;
+
+    public string Default = string.Empty;
     
     public static void Init()
     {
@@ -188,10 +194,10 @@ public class StringVarBlock : LocalBlock
     {
         return PType switch
         {
-            0 => TempVars.GetValueOrDefault(Id, ""),
-            1 => SemiVars.GetValueOrDefault(Id, ""),
-            2 => ArchitectData.Instance.StringVariables.GetValueOrDefault(Id, ""),
-            _ => ""
+            0 => TempVars.GetValueOrDefault(Id, Default),
+            1 => SemiVars.GetValueOrDefault(Id, Default),
+            2 => ArchitectData.Instance.StringVariables.GetValueOrDefault(Id, Default),
+            _ => Default
         };
     }
 }

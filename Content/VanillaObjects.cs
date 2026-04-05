@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Fixers;
 using Architect.Content.Custom;
@@ -494,7 +495,36 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixLoam)
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs));
-        
+
+        Categories.Misc.Add(new PreloadObject("Treadmill", "treadmill",
+            ("Under_03d", "Black Thread States/Normal World/Hero Treadmill"),
+            preloadAction: o => o.transform.GetChild(0).gameObject.SetActive(false),
+            sprite: ResourceUtils.LoadSpriteResource("treadmill", ppu: 56),
+            description: "If the Override Speed is set, the Treadmill will move at a\n" +
+                         "constant speed instead of matching the player.")
+            .WithFlipAction((o, f) =>
+            {
+                if (f)
+                {
+                    o.transform.SetScaleX(-o.transform.GetScaleX());
+                    var ht = o.GetComponent<HeroTreadmill>();
+                    var iht = o.AddComponent<InverseHeroTreadmill>();
+                    foreach (var field in typeof(HeroTreadmill)
+                                 .GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+                    {
+                        typeof(InverseHeroTreadmill)
+                            .GetField(field.Name, BindingFlags.NonPublic | BindingFlags.Instance)!
+                            .SetValue(iht, field.GetValue(ht));
+                    }
+                    Object.Destroy(ht);
+                }
+            })
+            .WithRotateAction((o, r) =>
+            {
+                o.transform.SetRotation2D(r);
+                o.GetComponentInChildren<ConveyorBelt>().vertical = r % 180 != 0;
+            })
+            .WithConfigGroup(ConfigGroup.Treadmill)).Offset += new Vector3(3, 1.5f, 0);
         AddSolid("Underworks Platform 1", "under_plat_1", ("Under_05", "dock_metal_grate_floor_set (1)"),
             preloadAction: MiscFixers.FocusFirstChild);
     }
@@ -636,7 +666,8 @@ public static class VanillaObjects
             ("localpoolprefabs_assets_areahangareasong.bundle", "Assets/Prefabs/Hornet Enemies/Song Handmaiden.prefab"),
             postSpawnAction: EnemyFixers.FixClawmaiden,
             notSceneBundle: true)
-            .WithConfigGroup(ConfigGroup.Clawmaiden);
+            .WithConfigGroup(ConfigGroup.Clawmaiden)
+            .Offset = Vector3.zero;
 
         /*
         Categories.Interactable.Add(new PreloadObject("Docks Lift", "bone_carriage",
@@ -2809,6 +2840,7 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Gurr Trap", "hunter_landmine",
                 ("Bone_East_24", "Ant Trapper Quest Scene (3)/Tracking Scene/Trapper Barb Trap Landmine"))
             .WithReceiverGroup(ReceiverGroup.Trap)
+            .WithConfigGroup(ConfigGroup.Hazards)
             .WithRotationGroup(RotationGroup.All));
 
         Categories.Interactable.Add(new PreloadObject("Hunter's March Pressure Plate", "hunter_trap_plate",
@@ -2871,6 +2903,15 @@ public static class VanillaObjects
             ("Bone_East_03", "bone_goomba_skull_break_large)"),
             postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Pilgrim Dummy 1", "pilgrim_dummy_1",
+            ("Bone_12", "Black Thread States/Normal World/Pin Gallery States/Not Here/Hanging Dummy 01")));
+
+        Categories.Misc.Add(new PreloadObject("Pilgrim Dummy 2", "pilgrim_dummy_2",
+            ("Bone_12", "Black Thread States/Normal World/Pin Gallery States/Not Here/Hanging Dummy 02")));
+
+        Categories.Misc.Add(new PreloadObject("Pilgrim Dummy 3", "pilgrim_dummy_3",
+            ("Bone_12", "Black Thread States/Normal World/Pin Gallery States/Not Here/Hanging Dummy 03")));
 
         Categories.Interactable.Add(new PreloadObject("Silk Vines", "silk_vines",
             ("Mosstown_02", "Black Thread States Thread Only Variant/Normal World/Thick Silk Vines"),

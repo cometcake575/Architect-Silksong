@@ -359,6 +359,11 @@ public static class ConfigGroup
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
         ),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<BoolVarBlock>("Default", "var_default_bool", 
+                (b, f) => b.Default = f.GetValue())
+                .WithDefaultValue(false)
+        ),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType<BoolVarBlock>("Prefab-Local", "var_local_bool", 
                 (b, f) => b.Local = f.GetValue())
                 .WithDefaultValue(true).MarkPrefabOnly()
@@ -377,6 +382,11 @@ public static class ConfigGroup
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
         ),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<NumVarBlock>("Default", "var_default_num", 
+                    (b, f) => b.Default = f.GetValue())
+                .WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType<NumVarBlock>("Prefab-Local", "var_local_num", 
                     (b, f) => b.Local = f.GetValue())
                 .WithDefaultValue(true).MarkPrefabOnly()
@@ -393,6 +403,10 @@ public static class ConfigGroup
             new ChoiceConfigType<StringVarBlock>("Persistence", "var_persistence_str", 
                 (b, f) => b.PType = f.GetValue())
                 .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<StringVarBlock>("Default", "var_default_str", 
+                    (b, f) => b.Default = f.GetValue())
         ),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType<StringVarBlock>("Prefab-Local", "var_local_str", 

@@ -191,11 +191,12 @@ public static class LegacyObjects
         var animCtrl = new GameObject("Animator Controller");
         
         AnimPlayer.Init();
+        PlayerAnimPlayer.Init();
 
         Object.DontDestroyOnLoad(animCtrl);
         animCtrl.SetActive(false);
 
-        animCtrl.AddComponent<AnimPlayer>();
+        animCtrl.AddComponent<PlayerAnimPlayer>();
         
         return new CustomObject("Animation Player", "anim_player", animCtrl,
                 description:"[LEGACY]\n\n" +

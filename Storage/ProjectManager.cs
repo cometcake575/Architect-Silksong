@@ -1,3 +1,5 @@
+using System;
+using BepInEx;
 using Silksong.ModMenu;
 using Silksong.ModMenu.Elements;
 using Silksong.ModMenu.Models;
@@ -42,20 +44,23 @@ public class ProjectManager
             
             save.OnSubmit += () =>
             {
-                GlobalArchitectData.Instance.SavedMapNames.Add(te.Value);
+                if (te.Value.IsNullOrWhiteSpace()) return;
+                if (!GlobalArchitectData.Instance.SavedMapNames.Contains(te.Value))
+                    GlobalArchitectData.Instance.SavedMapNames.Add(te.Value);
                 StorageManager.MakeBackup(te.Value);
+                StorageManager.MakeBackup(DateTime.Now.ToString("yy-MM-dd-HH-mm-ss"));
                 UpdateValues();
             };
             
             load.OnSubmit += () =>
             {
-                if (choice.Value == "None") return;
+                if (choice.Value == "None" || choice.Value.IsNullOrWhiteSpace()) return;
                 StorageManager.LoadBackup(choice.Value);
             };
             
             delete.OnSubmit += () =>
             {
-                if (choice.Value == "None") return;
+                if (choice.Value == "None" || choice.Value.IsNullOrWhiteSpace()) return;
                 GlobalArchitectData.Instance.SavedMapNames.Remove(choice.Value);
                 StorageManager.DeleteBackup(choice.Value);
                 UpdateValues();

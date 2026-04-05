@@ -467,11 +467,11 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> AnimPlayer = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("play_anim", "Play", o =>
         {
-            o.GetComponent<AnimPlayer>().Play();
+            o.GetComponent<PlayerAnimPlayer>().Play();
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("stop_anim", "Stop", o =>
         {
-            o.GetComponent<AnimPlayer>().Stop();
+            o.GetComponent<PlayerAnimPlayer>().Stop();
         }))
     ]);
     

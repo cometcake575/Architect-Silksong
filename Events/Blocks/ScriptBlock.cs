@@ -179,7 +179,8 @@ public abstract class ScriptBlock
         else
         {
             var (blockId, targetId) = value;
-            val = ScriptManager.Blocks[blockId].GetValue(targetId) ?? def ?? GetDefaultValue<T>();
+            if (!ScriptManager.Blocks.TryGetValue(blockId, out var block)) val = def ?? GetDefaultValue<T>();
+            else val = block.GetValue(targetId) ?? def ?? GetDefaultValue<T>();
         }
 
         if (typeof(T) == typeof(float) && val is int i)

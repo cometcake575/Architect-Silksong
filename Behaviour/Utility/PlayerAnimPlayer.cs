@@ -8,11 +8,62 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class AnimPlayer : MonoBehaviour
+public interface IAnimPlayer
+{
+    public void Play();
+    public void Stop();
+}
+
+public class AnimPlayer : MonoBehaviour, IAnimPlayer
+{
+    public tk2dSpriteAnimator animator;
+
+    public bool isLocked;
+    public tk2dSpriteAnimationClip clip;
+    
+    public bool overrideAnimTime;
+    public float animTime;
+
+    private float _animTimeRemaining;
+    
+    public static void Init()
+    {
+        typeof(tk2dSpriteAnimator).Hook(nameof(tk2dSpriteAnimator.Play),
+            (Action<tk2dSpriteAnimator, tk2dSpriteAnimationClip, float, float> orig, 
+                tk2dSpriteAnimator self, tk2dSpriteAnimationClip clip, float clipStartTime, float overrideFps) =>
+            {
+                var player = self.GetComponent<AnimPlayer>();
+                if (player && player.isLocked) return;
+                orig(self, clip, clipStartTime, overrideFps);
+            }, typeof(tk2dSpriteAnimationClip), typeof(float), typeof(float));
+    }
+    
+    public void Play()
+    {
+        _animTimeRemaining = overrideAnimTime ? animTime : clip.Duration;
+        animator.Play(clip);
+        isLocked = true;
+    }
+
+    public void Stop()
+    {
+        isLocked = false;
+    }
+
+    private void Update()
+    {
+        if (_animTimeRemaining <= 0) return;
+
+        _animTimeRemaining -= Time.deltaTime;
+        if (_animTimeRemaining <= 0) Stop();
+    }
+}
+
+public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
 {
     public ScriptBlock Block;
     
-    private static AnimPlayer _active;
+    private static PlayerAnimPlayer _active;
     
     public string clipName;
 
@@ -72,7 +123,7 @@ public class AnimPlayer : MonoBehaviour
         if (_animTimeRemaining <= 0) return;
 
         _animTimeRemaining -= Time.deltaTime;
-        HeroController.instance.rb2d.linearVelocity = Vector2.zero;
+        HeroController.instance.rb2d.linearVelocityX = 0;
         if (_animTimeRemaining <= 0) Stop();
     }
 

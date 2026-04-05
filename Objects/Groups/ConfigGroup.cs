@@ -20,6 +20,7 @@ using TeamCherry.Localization;
 using UnityEngine;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace Architect.Objects.Groups;
 
@@ -116,16 +117,9 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Path", "enemy_path", (o, value) =>
             {
-                o.GetComponent<EnemyHook>().path = value.GetValue();
-            }))
-    ]);
-    
-    public static readonly List<ConfigType> ObjectHook = GroupUtils.Merge(Generic,
-    [
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Path", "enemy_path", (o, value) =>
-            {
-                o.GetComponent<ObjectHook>().path = value.GetValue();
+                var hook = o.GetComponent<EnemyHook>();
+                if (hook) hook.path = value.GetValue();
+                else o.GetComponent<ObjectHook>().path = value.GetValue();
             }))
     ]);
     
@@ -210,6 +204,23 @@ public static class ConfigGroup
             {
                 o.GetComponentInChildren<CircleCollider2D>().radius = value.GetValue();
             }).WithDefaultValue(4))
+    ]);
+    
+    public static readonly List<ConfigType> Treadmill = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Override Speed", "treadmill_speed", (o, value) =>
+            {
+                var val = value.GetValue();
+                
+                o.RemoveComponent<HeroTreadmill>();
+                o.RemoveComponent<InverseHeroTreadmill>();
+                o.GetComponent<Animator>().speed = val / 5;
+                o.GetComponent<CogRotationController>().rotationMultiplier = val / 5;
+
+                if (o.transform.localScale.x > 0) val = -val;
+                o.GetComponentInChildren<ConveyorBelt>().speed = val;
+            }))
     ]);
     
     public static readonly List<ConfigType> DocksLift = GroupUtils.Merge(Visible,
@@ -523,19 +534,19 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Clip Name", "anim_clip", (o, value) =>
             {
-                o.GetComponent<AnimPlayer>().clipName = value.GetValue();
+                o.GetComponent<PlayerAnimPlayer>().clipName = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Duration Override", "anim_duration", (o, value) =>
             {
-                var ap = o.GetComponent<AnimPlayer>();
+                var ap = o.GetComponent<PlayerAnimPlayer>();
                 ap.overrideAnimTime = true;
                 ap.animTime = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Take Control", "anim_take_ctrl", (o, value) =>
             {
-                o.GetComponent<AnimPlayer>().takeCtrl = value.GetValue();
+                o.GetComponent<PlayerAnimPlayer>().takeCtrl = value.GetValue();
             }).WithDefaultValue(true))
     ]);
 
@@ -1948,10 +1959,12 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> Lilypad = GroupUtils.Merge(NonPersistentEnemies, [
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Is Trap", "nuphar_mode", (o, value) =>
+            new ChoiceConfigType("Is Trap", "nuphar_mode", (o, value) =>
             {
-                o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = value.GetValue();
-            }).WithDefaultValue(false))
+                var val = value.GetValue();
+                o.LocateMyFSM("Control").FsmVariables.FindFsmBool("Is Enemy").value = 
+                    val == 0 || (val == 2 && Random.value > 0.5f);
+            }).WithOptions("True", "False", "Random").WithDefaultValue(2))
     ]);
 
     public static readonly List<ConfigType> Squirm = GroupUtils.Merge(Enemies, [

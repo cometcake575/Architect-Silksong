@@ -8,6 +8,7 @@ public class AnimatorBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Start", "Stop"];
     protected override IEnumerable<string> Outputs => ["Stop"];
+    protected override IEnumerable<(string, string)> InputVars => [("Target", "Object")];
     protected override IEnumerable<(string, string)> OutputVars => [("Current", "Text")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
@@ -21,17 +22,33 @@ public class AnimatorBlock : ScriptBlock
     public bool OverrideAnimTime;
     public float AnimTime;
 
-    private AnimPlayer _player;
+    private IAnimPlayer _player;
 
     public override void SetupReference()
     {
-        _player = new GameObject("[Architect] Anim Player Block").AddComponent<AnimPlayer>();
-        _player.Block = this;
-        
-        _player.clipName = ClipName;
-        _player.takeCtrl = TakeCtrl;
-        _player.overrideAnimTime = OverrideAnimTime;
-        _player.animTime = AnimTime;
+        var target = GetVariable<GameObject>("Target");
+        if (target && target != HeroController.instance.gameObject)
+        {
+            var player = target.AddComponent<AnimPlayer>();
+            player.animator = target.GetComponent<tk2dSpriteAnimator>();
+            if (!player.animator) return;
+            player.clip = player.animator.GetClipByName(ClipName);
+            player.overrideAnimTime = OverrideAnimTime;
+            player.animTime = AnimTime;
+            _player = player;
+        }
+        else
+        {
+            var player = new GameObject("[Architect] Anim Player Block").AddComponent<PlayerAnimPlayer>();
+            player.Block = this;
+
+            player.clipName = ClipName;
+            player.takeCtrl = TakeCtrl;
+            player.overrideAnimTime = OverrideAnimTime;
+            player.animTime = AnimTime;
+
+            _player = player;
+        }
     }
 
     protected override object GetValue(string id)
