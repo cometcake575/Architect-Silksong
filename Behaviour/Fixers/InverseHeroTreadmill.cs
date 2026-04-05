@@ -123,7 +123,7 @@ public class InverseHeroTreadmill : MonoBehaviour
     this.StartCoroutine(this.NeedleControlRoutine());
   }
 
-  private void OnDisable()
+  public void OnDisable()
   {
     if (!(bool) (UnityEngine.Object) this.capturedHero)
       return;
@@ -175,6 +175,7 @@ public class InverseHeroTreadmill : MonoBehaviour
 
   private void OnBeforeHeroConveyor(Vector2 heroVelocity)
   {
+    if (!this) return;
     if ((double) heroVelocity.x < 0.0)
     {
       float tbetween = this.speedXRange.GetTBetween(this.transform.InverseTransformPoint(this.capturedHero.transform.position).x);

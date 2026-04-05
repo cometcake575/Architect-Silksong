@@ -495,8 +495,14 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixLoam)
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs));
-
-        Categories.Misc.Add(new PreloadObject("Treadmill", "treadmill",
+        
+        typeof(HeroTreadmill).Hook(nameof(HeroTreadmill.OnBeforeHeroConveyor),
+            (Action<HeroTreadmill, Vector2> orig, HeroTreadmill self, Vector2 velocity) =>
+            {
+                if (!self) return;
+                orig(self, velocity);
+            });
+        Categories.Platforming.Add(new PreloadObject("Treadmill", "treadmill",
             ("Under_03d", "Black Thread States/Normal World/Hero Treadmill"),
             preloadAction: o => o.transform.GetChild(0).gameObject.SetActive(false),
             sprite: ResourceUtils.LoadSpriteResource("treadmill", ppu: 56),
@@ -519,6 +525,7 @@ public static class VanillaObjects
                     Object.Destroy(ht);
                 }
             })
+            .WithRotationGroup(RotationGroup.Three)
             .WithRotateAction((o, r) =>
             {
                 o.transform.SetRotation2D(r);

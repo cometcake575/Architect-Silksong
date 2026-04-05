@@ -221,6 +221,11 @@ public static class ReceiverGroup
         {
             if (b == null) return;
             o.GetComponent<MiscFixers.BounceFlea>().Fly(b, "ENTER WAVE");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("bounce_flea_away", "FlyAway", (o, b) =>
+        {
+            if (b == null) return;
+            o.LocateMyFSM("Control").SendEvent("END");
         }))
     ]);
     

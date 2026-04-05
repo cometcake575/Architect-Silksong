@@ -213,8 +213,20 @@ public static class ConfigGroup
             {
                 var val = value.GetValue();
                 
-                o.RemoveComponent<HeroTreadmill>();
-                o.RemoveComponent<InverseHeroTreadmill>();
+                var ht = o.GetComponent<HeroTreadmill>();
+                var iht = o.GetComponent<InverseHeroTreadmill>();
+
+                if (ht)
+                {
+                    ht.OnDisable();
+                    Object.Destroy(ht);
+                }
+                if (iht)
+                {
+                    iht.OnDisable();
+                    Object.Destroy(iht);
+                }
+                
                 o.GetComponent<Animator>().speed = val / 5;
                 o.GetComponent<CogRotationController>().rotationMultiplier = val / 5;
 
