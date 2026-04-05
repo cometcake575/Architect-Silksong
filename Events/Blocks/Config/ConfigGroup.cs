@@ -653,7 +653,7 @@ public static class ConfigGroup
             new ChoiceConfigType<TitleBlock>("Mode", "title_type", (o, value) =>
             {
                 o.TitleType = value.GetValue();
-            }).WithOptions("Large", "Left", "Right").WithDefaultValue(0)),
+            }).WithOptions("Area", "Left", "Right", "BigBoss").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType<TitleBlock>("Wait to Cancel", "title_wait_cancel", (o, value) =>
             {

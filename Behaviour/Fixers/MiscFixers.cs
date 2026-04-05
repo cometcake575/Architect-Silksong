@@ -393,7 +393,11 @@ public static class MiscFixers
     public static void FixBreakable(GameObject obj)
     {
         var brk = obj.GetComponentInChildren<Breakable>();
-        brk.onBreak.AddListener(() => obj.BroadcastEvent("OnBreak"));
+        brk.onBreak.AddListener(() =>
+        {
+            obj.BroadcastEvent("FirstBreak");
+            obj.BroadcastEvent("OnBreak");
+        });
     }
     
     public static void FixLamp(GameObject obj)
@@ -1778,6 +1782,80 @@ public static class MiscFixers
             _speed.Value = block.GetVariable<float>("Speed", 10);
             _quick = block.GetVariable<bool>("Quick");
             _fsm.SendEvent(eName);
+        }
+    }
+
+    public class DodgeFlea : MonoBehaviour
+    {
+        private PlayMakerFSM _fsm;
+
+        public int dir;
+        public float dist = 50;
+
+        private FsmFloat _speed;
+        private bool _quick;
+        private Vector3 _startPos;
+
+        private void Start()
+        {
+            _startPos = transform.position;
+            
+            var fsm = gameObject.LocateMyFSM("Control");
+            
+            fsm.GetState("Set Speed").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            
+            _speed = fsm.FsmVariables.FindFsmFloat("Charge Speed");
+            
+            var rf1 = (RandomFloat)fsm.GetState("Down").actions[0];
+            rf1.min = rf1.max = transform.GetPositionY();
+
+            var diag = fsm.GetState("Diag");
+            var rf2 = (RandomFloat)diag.actions[0];
+            rf2.min = rf2.max = transform.GetPositionY();
+            diag.AddAction(() => fsm.SendEvent(dir == 2 ? "L" : "R"), 5);
+
+            var rf3 = (RandomFloat)fsm.GetState("Charge L").actions[0];
+            rf3.min = rf3.max = transform.GetPositionX();
+
+            var chargeR = fsm.GetState("Charge R");
+            var rf4 = (RandomFloat)chargeR.actions[0];
+            rf4.min = rf4.max = transform.GetPositionX();
+            chargeR.DisableAction(7);
+            
+            var quickened = fsm.FsmVariables.FindFsmBool("Quickened");
+            fsm.GetState("Quickening Effects").AddAction(() =>
+            {
+                quickened.Value = _quick;
+            }, 0);
+
+            fsm.FsmVariables.FindFsmFloat("Arena Bound L").Value = transform.GetPositionX() - dist - 5; 
+            fsm.FsmVariables.FindFsmFloat("Arena Bound R").Value = transform.GetPositionX() + dist + 5;
+            fsm.FsmVariables.FindFsmFloat("Arena Centre").Value = transform.GetPositionX() + dir switch
+            {
+                0 => -dist / 2,
+                1 => dist / 2,
+                _ => 0
+            };
+            fsm.FsmVariables.FindFsmFloat("Side Y Top").Value = transform.GetPositionY();
+            fsm.FsmVariables.FindFsmFloat("Side Y Top Low").Value = transform.GetPositionY();
+            fsm.FsmVariables.FindFsmFloat("Side Y Bot").Value = transform.GetPositionY() - dist;
+
+            _fsm = fsm;
+        }
+
+        public void Fly(ScriptBlock block)
+        {
+            transform.position = _startPos;
+            _speed.Value = block.GetVariable<float>("Speed", 20);
+            _quick = block.GetVariable<bool>("Quick");
+            _fsm.SendEvent(dir switch
+            {
+                0 => "CHARGE L",
+                1 => "CHARGE R",
+                2 => "DIAG",
+                3 => "DIAG",
+                _ => "DOWN"
+            });
         }
     }
 

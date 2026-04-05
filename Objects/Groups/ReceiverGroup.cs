@@ -224,6 +224,14 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> DodgeFlea = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("dodge_flea_fly", "Fly", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<MiscFixers.DodgeFlea>().Fly(b);
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Activatable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("grow_pod", "Grow", o =>
         {

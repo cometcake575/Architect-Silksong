@@ -3413,6 +3413,25 @@ public static class ConfigGroup
         )
     ]);
 
+    public static readonly List<ConfigType> DodgeFlea = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Direction", "dodge_flea_dir",
+                    (o, value) =>
+                    {
+                        o.GetComponent<MiscFixers.DodgeFlea>().dir = value.GetValue();
+                    })
+                .WithOptions("Left", "Right", "DiagLeft", "DiagRight", "Down").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Max Flight Distance", "dodge_flea_max_dist",
+                    (o, value) =>
+                    {
+                        o.GetComponent<MiscFixers.DodgeFlea>().dist = value.GetValue();
+                    })
+                .WithDefaultValue(50)
+        )
+    ]);
+
     private static ChoiceConfigType MakePersistenceConfigType(string name, string id,
         Action<GameObject, PersistentBoolItem> action = null)
     {

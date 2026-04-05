@@ -3340,6 +3340,15 @@ public static class VanillaObjects
             .WithInputGroup(InputGroup.BounceFlea)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable));
         
+        Categories.Misc.Add(new PreloadObject("Dodge Flea", "dodge_flea",
+            ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Dodging/Bellfleas/Bellflea Swooper"),
+            description: "Only appears when the Fly trigger is run.",
+            postSpawnAction: MiscFixers.AddComponent<MiscFixers.DodgeFlea>)
+            .WithConfigGroup(ConfigGroup.DodgeFlea)
+            .WithReceiverGroup(ReceiverGroup.DodgeFlea)
+            .WithInputGroup(InputGroup.DodgeFlea)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
+        
         /*Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",
             ("Aqueduct_05_festival",
                 "Caravan_States/Flea Festival/Flea Game - Dodging/Active While Playing/Dodge Plat L")));*/
