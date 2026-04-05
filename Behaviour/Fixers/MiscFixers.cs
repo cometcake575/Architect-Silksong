@@ -1839,6 +1839,13 @@ public static class MiscFixers
             fsm.FsmVariables.FindFsmFloat("Side Y Top").Value = transform.GetPositionY();
             fsm.FsmVariables.FindFsmFloat("Side Y Top Low").Value = transform.GetPositionY();
             fsm.FsmVariables.FindFsmFloat("Side Y Bot").Value = transform.GetPositionY() - dist;
+            
+            fsm.GetState("Tink React").AddAction(() =>
+            {
+                gameObject.BroadcastEvent("OnHit");
+            }, 0);
+            
+            fsm.GetState("Charge").DisableAction(5);
 
             _fsm = fsm;
         }
