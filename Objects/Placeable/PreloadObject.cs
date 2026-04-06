@@ -54,12 +54,18 @@ public class PreloadObject : PlaceableObject, IPreload
     public override IEnumerator EnsureLoaded()
     {
         if (Loaded) yield break;
+
+        PreloadManager.IsLoading = true;
         yield return _asset.Load();
-        if (_asset.Handle.OperationException != null) yield break;
-        
-        if (Loaded) yield break;
+        if (_asset.Handle.OperationException != null || Loaded)
+        {
+            PreloadManager.IsLoading = false;
+            yield break;
+        }
+
         Loaded = true;
         OnPreload(_asset.Handle.Result);
+        PreloadManager.IsLoading = false;
     }
 
     public void OnPreload(GameObject preload)

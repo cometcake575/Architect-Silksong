@@ -45,6 +45,7 @@ public static class ActionBlocks
         ScriptManager.RegisterInputBlock<MultiplayerInBlock>("Multiplayer Event", ConfigGroup.MultiplayerIn);
         ScriptManager.RegisterInputBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
         ScriptManager.RegisterInputBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting);
+        ScriptManager.RegisterInputBlock<SpawnObjectBlock>("Spawn Object", ConfigGroup.SpawnObject);
         ScriptManager.RegisterInputBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
         ScriptManager.RegisterInputBlock<ObjectMoverBlock>("Move Object");
         //ScriptManager.RegisterInputBlock<EndingBlock>("Ending Control");

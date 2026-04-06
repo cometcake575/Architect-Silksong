@@ -37,7 +37,7 @@ public class ObjectBlock : ScriptBlock
                         .Cast<ReceiveBlock>()
                         .Select(rb => rb.EventName)
                         .Distinct()
-                        .Append("prefab_start");
+                        .Append("prefab_start").Append("prefab_destroy");
                 }
                 default:
                     return ObjectType.ReceiverGroup.Select(o => o.Id);

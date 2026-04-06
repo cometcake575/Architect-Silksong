@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Architect.Editor;
+using Architect.Objects.Categories;
+using Architect.Storage;
 using Architect.Utils;
 using Architect.Workshop;
 using Silksong.AssetHelper.ManagedAssets;
@@ -14,6 +15,7 @@ namespace Architect.Content.Preloads;
 public static class PreloadManager
 {
     public static bool HasPreloaded;
+    public static bool IsLoading;
 
     private static GameObject _canvasObj;
     private static Text _status;
@@ -85,6 +87,7 @@ public static class PreloadManager
     private static IEnumerator Preload()
     {
         yield return new WaitForSeconds(2);
+        if (!Settings.LoadAllAssets.Value) StorageManager.FindLoadRequirements();
         _totalCount = Preloaded.Count(p => p.Item1.ShouldAlwaysLoad);
         foreach (var (preload, asset) in Preloaded)
         {
@@ -101,6 +104,10 @@ public static class PreloadManager
         HasPreloaded = true;
         Object.Destroy(_canvasObj);
         WorkshopManager.Setup();
+        
+        FavouritesCategory.Favourites = StorageManager.LoadFavourites();
+        SavedCategory.Objects = StorageManager.LoadSavedObjects();
+        PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
     }
 
     private static IEnumerator Prepare(IPreload preload, ManagedAsset<GameObject> asset)

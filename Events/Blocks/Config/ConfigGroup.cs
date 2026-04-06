@@ -51,6 +51,18 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> SpawnObject =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SpawnObjectBlock>("Offset X", "spawn_object_x", 
+                (b, f) => b.OffsetX = f.GetValue()).WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<SpawnObjectBlock>("Offset Y", "spawn_object_y", 
+                (b, f) => b.OffsetY = f.GetValue()).WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> Prefab =
     [
         ConfigurationManager.RegisterConfigType(
@@ -532,6 +544,18 @@ public static class ConfigGroup
             new BoolConfigType<RandomNumBlock>("Whole Num", "random_whole", 
                 (b, f) => b.WholeNumber = f.GetValue())
                 .WithDefaultValue(false)
+        )
+    ];
+    
+    public static readonly List<ConfigType> RandomText =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<RandomTextBlock>("Source", "random_text_source", 
+                (b, f) => b.Pool = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<RandomTextBlock>("Delimiter", "random_text_delimiter", 
+                (b, f) => b.Delimiter = f.GetValue())
         )
     ];
     

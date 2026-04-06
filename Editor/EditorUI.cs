@@ -79,17 +79,12 @@ public static class EditorUI
         SetupCanvas();
         SetupLabels();
         SetupObjects();
-        SetupCategories();
         SetupSearchBox();
         SetupPreciseSettings();
         SetupAttributeSettings();
         SetupHotbar();
 
         RefreshItem();
-        
-        FavouritesCategory.Favourites = StorageManager.LoadFavourites();
-        SavedCategory.Objects = StorageManager.LoadSavedObjects();
-        PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
     }
 
     private static void SetupCanvas()
@@ -211,7 +206,7 @@ public static class EditorUI
 
     private static (Button, UIUtils.Label) _legacyCategory;
 
-    private static void SetupCategories()
+    public static void SetupCategories()
     {
         var anchor = new Vector2(1, 0);
         var position = new Vector2(-25, 135);

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Architect.Events.Blocks.Operators;
 
@@ -16,7 +18,6 @@ public class RandomBoolBlock : ScriptBlock
         return Random.value > 0.5f;
     }
 }
-
 
 public class RandomNumBlock : ScriptBlock
 {
@@ -36,5 +37,29 @@ public class RandomNumBlock : ScriptBlock
         return WholeNumber ?
             Random.RandomRangeInt(Mathf.CeilToInt(LowerBound), Mathf.FloorToInt(UpperBound) + 1)
             : Random.Range(LowerBound, UpperBound);
+    }
+}
+
+public class RandomTextBlock : ScriptBlock
+{
+    protected override IEnumerable<(string, string)> OutputVars => [("Value", "Text")];
+
+    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
+    protected override Color Color => DefaultColor;
+    protected override string Name => "Random (Text)";
+
+    public string Pool = string.Empty;
+    public string Delimiter = ",";
+
+    protected override object GetValue(string id)
+    {
+        try
+        {
+            return Pool.Split(Delimiter).GetRandomElement();
+        }
+        catch (Exception)
+        {
+            return string.Empty;
+        }
     }
 }

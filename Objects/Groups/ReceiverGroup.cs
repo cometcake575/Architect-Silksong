@@ -5,6 +5,7 @@ using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Content.Custom;
 using Architect.Events;
+using Architect.Prefabs;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -28,6 +29,10 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("prefab_start", "Activate", o =>
         {
             o.SetActive(true);
+        }, true)),
+        EventManager.RegisterReceiverType(new EventReceiverType("prefab_destroy", "Destroy", o =>
+        {
+            o.GetComponent<Prefab>().Destroy();
         }, true))
     ];
     
@@ -778,7 +783,10 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> EnemyHook = GroupUtils.Merge(Enemies, [
         EventManager.RegisterReceiverType(new EventReceiverType("enemy_hook_set", "SetEnemy", (o, b) =>
         {
-            o.GetComponent<EnemyHook>().Set(b.GetVariable<HealthManager>("New Enemy"));
+            var eh = o.GetComponent<EnemyHook>();
+            if (!eh) return;
+            var hm = b.GetVariable<HealthManager>("New Enemy");
+            eh.Set(hm);
         }))
     ]);
     

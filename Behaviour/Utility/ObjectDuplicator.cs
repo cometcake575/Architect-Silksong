@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using Architect.Utils;

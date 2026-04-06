@@ -35,6 +35,7 @@ public static class OperatorBlocks
         ScriptManager.RegisterProcessBlock<ConvertBlock>("Convert");
         ScriptManager.RegisterProcessBlock<RandomNumBlock>("Random Number", ConfigGroup.RandomNumber);
         ScriptManager.RegisterProcessBlock<RandomBoolBlock>("Random Bool");
+        ScriptManager.RegisterProcessBlock<RandomTextBlock>("Random Text", ConfigGroup.RandomText);
         ScriptManager.RegisterProcessBlock<MathsBlock>("Operation", ConfigGroup.Maths);
         ScriptManager.RegisterProcessBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);
         ScriptManager.RegisterProcessBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);

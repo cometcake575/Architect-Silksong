@@ -11,7 +11,7 @@ public static class PatchworkFix
         typeof(SpriteLoader).Hook("LoadCollection",
             (Action<tk2dSpriteCollectionData> orig, tk2dSpriteCollectionData self) =>
             {
-                if (!PreloadManager.HasPreloaded) return;
+                if (!PreloadManager.HasPreloaded || PreloadManager.IsLoading) return;
                 orig(self);
             });
     }

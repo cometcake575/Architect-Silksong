@@ -1491,7 +1491,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.MaskMaker)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
-        Categories.Npcs.Add(new PreloadObject("Fayforn (Ground)", "fayforn_npc",
+        Categories.Misc.Add(new PreloadObject("Fayforn (Ground)", "fayforn_npc",
                 ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
                 sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
             .WithConfigGroup(ConfigGroup.Fayforn));
@@ -2402,9 +2402,15 @@ public static class VanillaObjects
             ("herodynamic_assets_all", "Assets/Prefabs/Heroes/Hornet Cocoon Corpse.prefab"),
             preloadAction: o => 
                 o.transform.GetChild(1).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>(),
+            postSpawnAction: o =>
+            {
+                o.GetComponent<HitResponse>().OnHit.AddListener(() => o.BroadcastEvent("OnHit"));
+                o.GetComponent<PlayMakerFSM>().GetState("Break").AddAction(() => o.BroadcastEvent("OnHit"));
+            },
             notSceneBundle: true)
             .WithRotationGroup(RotationGroup.All)
-            .WithConfigGroup(ConfigGroup.Cocoon));
+            .WithConfigGroup(ConfigGroup.Cocoon)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
 
         Categories.Misc.Add(new PreloadObject("Harp Tablet", "weaver_harp_sign",
                 ("Shellwood_10", "weaver_harp_sign"),
@@ -3401,6 +3407,13 @@ public static class VanillaObjects
                 o.LocateMyFSM("Control").GetState("Die").AddAction(() => o.BroadcastEvent("OnBreak"));
             }).WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
+        Categories.Misc.Add(new PreloadObject("Moss Ball", "moss_ball_break",
+                ("Tut_02", "moss_ball_break (11)"),
+                preloadAction: MiscFixers.FixRotation,
+                postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
             ("localpoolprefabs_assets_areaclover.bundle", "Assets/Prefabs/Hornet Enemies/Aspid Hatchling.prefab"),
             notSceneBundle: true)
@@ -3532,13 +3545,6 @@ public static class VanillaObjects
             ("Tut_02", "bone_plat_01"));
         AddSolid("Moss Grotto Platform 2", "bone_plat_02",
             ("Tut_02", "bone_plat_02"));
-
-        Categories.Misc.Add(new PreloadObject("Moss Ball", "moss_ball_break",
-            ("Tut_02", "moss_ball_break (11)"),
-            preloadAction: MiscFixers.FixRotation,
-            postSpawnAction: MiscFixers.FixBreakable)
-            .WithConfigGroup(ConfigGroup.BreakableDecor)
-            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Interactable.Add(new PreloadObject("Pilgrim Trap Wire", "pilgrim_trap_wire",
                 ("Mosstown_02", "Pilgrim Trap Wire"), postSpawnAction: InteractableFixers.FixTrapWire).DoFlipX()

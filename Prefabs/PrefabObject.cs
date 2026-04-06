@@ -133,6 +133,11 @@ public class Prefab : PreviewableBehaviour
     public float scale;
     public float rot;
 
+    public void Destroy()
+    {
+        foreach (var spawn in spawns) Destroy(spawn);
+    }
+
     private void Start()
     {
         // Turn red and don't preview if inside own prefab scene to indicate to user this will not work
