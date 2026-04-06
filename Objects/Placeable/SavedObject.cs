@@ -23,6 +23,8 @@ public class SavedObject : SelectableObject
                 _extraSprite = sprites[0];
             });
         }
+
+        ArchitectPlugin.Instance.StartCoroutine(PlaceableObject.EnsureLoaded());
     }
     
     public readonly ObjectPlacement Placement;

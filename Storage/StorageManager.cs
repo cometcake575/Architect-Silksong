@@ -218,6 +218,25 @@ public static class StorageManager
         return prefabs;
     }
 
+    public static void FindLoadRequirements()
+    {
+        foreach (var s in new[] { "Scenes/", "Prefabs/" })
+        {
+            foreach (var file in Directory.GetFiles(DataPath + s))
+            {
+                var name = Path.GetFileName(file);
+                if (!name.EndsWith(".architect.json")) continue;
+
+                var n = name.Replace(".architect.json", "");
+                foreach (var o in LoadScene(n).Placements)
+                {
+                    if (o.GetPlacementType() is PreloadObject preload) 
+                        preload.ShouldLoad = true;
+                }
+            }
+        }
+    }
+
     public static string SerializeAllScenes()
     {
         Dictionary<string, LevelData> data = [];
@@ -256,10 +275,18 @@ public static class StorageManager
         Dictionary<string, StringConfigValue> downloads = [];
         Dictionary<string, StringConfigValue<PngBlock>> blockDownloads = [];
 
+        HashSet<PlaceableObject> placeable = [];
+
         var cherries = 0;
         var goldCherries = 0;
         foreach (var (scene, data) in levels)
         {
+            foreach (var pt in data.Placements
+                         .Select(placement => placement.GetPlacementType()).OfType<PreloadObject>())
+            {
+                placeable.Add(pt);
+            }
+            
             foreach (var config in data.Placements.SelectMany(obj => obj.Config)
                          .OfType<StringConfigValue>())
             {
@@ -323,22 +350,37 @@ public static class StorageManager
         foreach (var config in downloads.Values)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
+            CustomAssetManager.DownloadingAssets++;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
         }
 
         foreach (var config in blockDownloads.Values)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
+            CustomAssetManager.DownloadingAssets++;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(config, status, downloadCount));
         }
 
         foreach (var (url, type) in workshopDownloads)
         {
             while (CustomAssetManager.DownloadingAssets > 4) yield return null;
+            CustomAssetManager.DownloadingAssets++;
             Task.Run(() => CustomAssetManager.TryDownloadAssets(url, type, status, downloadCount));
         }
 
         while (CustomAssetManager.Downloaded < downloadCount) yield return null;
+
+        var preloadCount = placeable.Count;
+        var doneCount = 0;
+        status.text = "Loading Objects...\n" + 
+                      $"0/{preloadCount}";
+        foreach (var preload in placeable)
+        {
+            yield return preload.EnsureLoaded();
+            doneCount++;
+            status.text = "Loading Objects...\n" + 
+                          $"{doneCount}/{preloadCount}";
+        }
 
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);

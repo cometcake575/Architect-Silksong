@@ -22,7 +22,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.23.8")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.24.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -85,6 +85,7 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         SharerManager.Init();
         
         PreloadManager.Init();
+        EditorUI.Setup();
 
         StorageManager.MakeBackup(DateTime.Now.ToString("yy-MM-dd-HH-mm-ss"));
         ProjectManager.Init();
@@ -97,6 +98,7 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
                 StringVarBlock.SemiVars.Clear();
                 orig(self);
             });
+        if (!Settings.LoadAllAssets.Value) StorageManager.FindLoadRequirements();
     }
     
     private void Update()

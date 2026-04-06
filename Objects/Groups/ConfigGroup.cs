@@ -1543,6 +1543,16 @@ public static class ConfigGroup
             }
         ))
     ]);
+
+    public static readonly List<ConfigType> Kratt = GroupUtils.Merge(TriggerActivator, [
+        ConfigurationManager.RegisterConfigType(new BoolConfigType("Interactable", "kratt_interactable",
+            (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<PlayMakerNPC>().enabled = false;
+            }
+        ).WithDefaultValue(false))
+    ]);
     
     public static readonly List<ConfigType> CoralSpike = GroupUtils.Merge(PersistentBreakable, 
         GroupUtils.Merge(TriggerActivator, []));

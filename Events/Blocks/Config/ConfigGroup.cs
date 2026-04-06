@@ -286,6 +286,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> CollectionItem =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CollectionViewBlock.CollectionItemBlock>("Item ID", "collection_item_id", 
+                (b, f) => b.ItemId = f.GetValue())
+                .WithDefaultValue("Rosary_Set_Small")
+        )
+    ];
+    
     public static readonly List<ConfigType> TravelUI =
     [
         ConfigurationManager.RegisterConfigType(

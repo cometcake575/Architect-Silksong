@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Editor;
 using Architect.Utils;
 using Architect.Workshop;
@@ -84,18 +85,22 @@ public static class PreloadManager
     private static IEnumerator Preload()
     {
         yield return new WaitForSeconds(2);
-        _totalCount = Preloaded.Count;
+        _totalCount = Preloaded.Count(p => p.Item1.ShouldAlwaysLoad);
         foreach (var (preload, asset) in Preloaded)
         {
+            if (!preload.ShouldAlwaysLoad)
+            {
+                preload.SetAsset(asset);
+                continue;
+            }
             ArchitectPlugin.Instance.StartCoroutine(Prepare(preload, asset));
         }
 
-        while (_count < Preloaded.Count) yield return null;
+        while (_count < _totalCount) yield return null;
         
-        EditorUI.Setup();
-        WorkshopManager.Setup();
         HasPreloaded = true;
         Object.Destroy(_canvasObj);
+        WorkshopManager.Setup();
     }
 
     private static IEnumerator Prepare(IPreload preload, ManagedAsset<GameObject> asset)
@@ -106,15 +111,6 @@ public static class PreloadManager
         if (asset.Handle.OperationException != null) yield break;
 
         var foundObject = asset.Handle.Result;
-        if (preload.IsNotSceneBundle && foundObject.GetComponent<HealthManager>())
-        {
-            var active = foundObject.activeSelf;
-            foundObject.SetActive(false);
-            var p = foundObject;
-            foundObject = Object.Instantiate(foundObject);
-            Object.DontDestroyOnLoad(foundObject);
-            if (active) p.SetActive(true);
-        }
         preload.OnPreload(foundObject);
         _count++;
         _status.text = $"{_count} / {_totalCount}";

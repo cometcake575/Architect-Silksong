@@ -40,6 +40,7 @@ public static class Settings
     public static ConfigEntry<bool> TestMode;
     public static ConfigEntry<bool> ShowRespawnPoint;
     public static ConfigEntry<bool> BlockInventoryInEditMode;
+    public static ConfigEntry<bool> LoadAllAssets;
 
     public static ConfigEntry<int> SaveSlot; 
     
@@ -273,6 +274,13 @@ public static class Settings
             "BlockInventoryInEditMode",
             true,
             "Prevents the inventory from being opened during edit mode"
+        );
+        
+        LoadAllAssets = config.Bind(
+            "Options",
+            "LoadAllAssets",
+            false,
+            "Loads all assets on startup instead of when needed"
         );
         
         SaveSlot = config.Bind(

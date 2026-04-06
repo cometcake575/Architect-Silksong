@@ -881,7 +881,7 @@ public static class VanillaObjects
                 ("Aqueduct_05_caravan", "Caravan_States/Fleatopia/Caravan Lech/Caravan Lech Wounded"),
                 postSpawnAction: MiscFixers.FixKratt)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable)
-            .WithConfigGroup(ConfigGroup.TriggerActivator));
+            .WithConfigGroup(ConfigGroup.Kratt));
 
         Categories.Platforming.Add(new PreloadObject("Trapped Wardenfly", "swamp_barnacle_slab_fly",
             ("Aqueduct_04", "Swamp Barnacle Slab Fly")));
@@ -2802,6 +2802,15 @@ public static class VanillaObjects
             ("Ant_21", "Enemy Control/Normal/Bone Hunter Throw"),
             preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos);
 
+        Categories.Misc.Add(new PreloadObject("Skarr String Shard", "ant_string_shard",
+            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/ant_shell_shard_string (2)"),
+            preloadAction: o =>
+            {
+                o.transform.SetPositionZ(0.01f);
+                MiscFixers.FixRotation(o);
+            })
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
         Categories.Misc.Add(new PreloadObject("Skarr String S", "ros_str_s",
             ("Ant_21", "ant_rosary_string"),
             preloadAction: MiscFixers.FixRotation)
@@ -3323,6 +3332,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.FleaCounter)
             .WithReceiverGroup(ReceiverGroup.FleaCounter)
             .WithInputGroup(InputGroup.FleaCounter)
+            .WithOutputGroup(OutputGroup.FleaCounter)
             .WithBroadcasterGroup(BroadcasterGroup.FleaCounter));
         
         Categories.Npcs.Add(new PreloadObject("Fleamaster NPC", "fleamaster_npc",
@@ -3379,6 +3389,17 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixMossMother)
             .WithConfigGroup(ConfigGroup.MossMother)
             .WithBroadcasterGroup(BroadcasterGroup.SlamBosses).DoFlipX();
+
+        Categories.Misc.Add(new PreloadObject("Moss Cocoon", "moss_cocoon",
+            ("Tut_03", "Black Thread States/Normal World/Battle Scene/Trap Cocoons/MossBone Cocoon (7)"),
+            preloadAction: o =>
+            {
+                o.transform.SetScale2D(Vector2.one);
+                o.transform.SetRotation2D(0);
+            }, postSpawnAction: o =>
+            {
+                o.LocateMyFSM("Control").GetState("Die").AddAction(() => o.BroadcastEvent("OnBreak"));
+            }).WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
             ("localpoolprefabs_assets_areaclover.bundle", "Assets/Prefabs/Hornet Enemies/Aspid Hatchling.prefab"),
@@ -3512,6 +3533,13 @@ public static class VanillaObjects
         AddSolid("Moss Grotto Platform 2", "bone_plat_02",
             ("Tut_02", "bone_plat_02"));
 
+        Categories.Misc.Add(new PreloadObject("Moss Ball", "moss_ball_break",
+            ("Tut_02", "moss_ball_break (11)"),
+            preloadAction: MiscFixers.FixRotation,
+            postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
         Categories.Interactable.Add(new PreloadObject("Pilgrim Trap Wire", "pilgrim_trap_wire",
                 ("Mosstown_02", "Pilgrim Trap Wire"), postSpawnAction: InteractableFixers.FixTrapWire).DoFlipX()
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)
@@ -3539,9 +3567,49 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs);
 
-        Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
-            ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
+        Categories.Misc.Add(new PreloadObject("Egg Statue Front", "shard_statue_4", 
+            ("Tut_01b", "Shell Shard Fossil Tiny Front"),
+            preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
+            .WithRotationGroup(RotationGroup.Eight)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Egg Statue Side", "shard_statue_2", 
+            ("Coral_36", "Shell Shard Fossil Tiny Egg"),
+            preloadAction: MiscFixers.FixRotation,
+            postSpawnAction: MiscFixers.FixStatue)
+            .WithRotationGroup(RotationGroup.Eight)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Pilgrim Statue", "shard_statue_5", 
+            ("Tut_01b", "Shell Shard Fossil Mid (1)"),
+            preloadAction: MiscFixers.FixRotation,
+            postSpawnAction: MiscFixers.FixStatue)
+            .WithRotationGroup(RotationGroup.Eight)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Spiral Statue", "shard_statue_3", 
+            ("Bone_East_LavaChallenge", "Shell Shard Fossil Mid"),
+            preloadAction: MiscFixers.FixRotation,
+            postSpawnAction: MiscFixers.FixStatue)
+            .WithRotationGroup(RotationGroup.Eight)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Marrowmaw Statue", "shard_statue_1", 
+            ("Coral_36", "Shell Shard Fossil Beast"),
+            postSpawnAction: MiscFixers.FixStatue)
+            .WithRotationGroup(RotationGroup.Eight)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
+                ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
+                postSpawnAction: MiscFixers.FixFixerStatue)
+            .WithRotationGroup(RotationGroup.Eight)
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }

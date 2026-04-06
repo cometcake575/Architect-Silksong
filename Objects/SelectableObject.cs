@@ -1,3 +1,4 @@
+using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -16,7 +17,12 @@ public abstract class SelectableObject
 
     public virtual void Release() { }
 
+    public virtual IEnumerator EnsureLoaded()
+    {
+        yield break;
+    }
+
     public abstract Sprite GetUISprite();
-    
+
     public bool DisableTransformations;
 }

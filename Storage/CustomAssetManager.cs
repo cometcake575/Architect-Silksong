@@ -162,7 +162,6 @@ public static class CustomAssetManager
         else return;
 
         var url = config.GetValue();
-        DownloadingAssets += 1;
         var b = await SaveFile(url, GetPath(url) + fileType);
         DownloadingAssets -= 1;
         Downloaded += 1;
@@ -179,7 +178,6 @@ public static class CustomAssetManager
         else return;
 
         var url = config.GetValue();
-        DownloadingAssets += 1;
         var b = await SaveFile(url, GetPath(url) + fileType);
         DownloadingAssets -= 1;
         Downloaded += 1;
@@ -204,7 +202,6 @@ public static class CustomAssetManager
                 return;
         }
 
-        DownloadingAssets += 1;
         var b = await SaveFile(url, GetPath(url) + fileType);
         DownloadingAssets -= 1;
         Downloaded += 1;

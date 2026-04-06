@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -89,8 +90,6 @@ public static class EditorUI
         FavouritesCategory.Favourites = StorageManager.LoadFavourites();
         SavedCategory.Objects = StorageManager.LoadSavedObjects();
         PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
-        
-        RefreshCurrentPage();
     }
 
     private static void SetupCanvas()
@@ -233,7 +232,7 @@ public static class EditorUI
             {
                 PageIndex = 0;
                 CurrentCategory = category;
-                RefreshCurrentPage();
+                DoRefreshCurrentPage();
             });
         }
     }
@@ -391,7 +390,7 @@ public static class EditorUI
         {
             PageIndex = 0;
             CurrentCategory = PrefabsCategory.Instance;
-            RefreshCurrentPage();
+            DoRefreshCurrentPage();
         });
     }
 
@@ -470,7 +469,7 @@ public static class EditorUI
             {
                 PageIndex = 0;
                 CurrentCategory = Categories.All;
-                RefreshCurrentPage();
+                DoRefreshCurrentPage();
             }
         }
 
@@ -520,24 +519,31 @@ public static class EditorUI
         else
         {
             var obj = _categoryContents[index];
-            if (obj is SavedObject prefab)
-            {
-                obj = prefab.PlaceableObject;
-
-                EditManager.Broadcasters.AddRange(prefab.Placement.Broadcasters);
-                EditManager.Receivers.AddRange(prefab.Placement.Receivers);
-                foreach (var conf in prefab.Placement.Config)
-                {
-                    EditManager.Config[conf.GetTypeId()] = conf;
-                }
-
-                EditManager.SetScale(prefab.Placement.GetScale());
-                EditManager.SetRotation(prefab.Placement.GetRotation());
-                EditManager.CurrentlyFlipped = prefab.Placement.IsFlipped();
-
-                isPrefab = true;
-            }
             
+            switch (obj)
+            {
+                case PreloadObject { Loaded: false }:
+                    return;
+                case SavedObject prefab:
+                {
+                    obj = prefab.PlaceableObject;
+
+                    EditManager.Broadcasters.AddRange(prefab.Placement.Broadcasters);
+                    EditManager.Receivers.AddRange(prefab.Placement.Receivers);
+                    foreach (var conf in prefab.Placement.Config)
+                    {
+                        EditManager.Config[conf.GetTypeId()] = conf;
+                    }
+
+                    EditManager.SetScale(prefab.Placement.GetScale());
+                    EditManager.SetRotation(prefab.Placement.GetRotation());
+                    EditManager.CurrentlyFlipped = prefab.Placement.IsFlipped();
+
+                    isPrefab = true;
+                    break;
+                }
+            }
+
             EditManager.CurrentObject = obj;
         }
         
@@ -859,7 +865,7 @@ public static class EditorUI
                 break;
             case SavedObject prefab:
                 SavedCategory.RemovePrefab(prefab);
-                RefreshCurrentPage();
+                DoRefreshCurrentPage();
                 break;
         }
     }
@@ -911,7 +917,15 @@ public static class EditorUI
         RotationText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
     }
 
-    public static void RefreshCurrentPage()
+    private static int _refreshRoutineId;
+
+    public static void DoRefreshCurrentPage()
+    {
+        _refreshRoutineId++;
+        ArchitectPlugin.Instance.StartCoroutine(RefreshCurrentPage(_refreshRoutineId));
+    }
+
+    private static IEnumerator RefreshCurrentPage(int id)
     {
         _categoryContents = CurrentCategory.GetObjects().Where(obj => obj.GetName()
             .IndexOf(_currentSearch, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
@@ -951,8 +965,15 @@ public static class EditorUI
                         rot = prefab.Placement.GetRotation();
                         break;
                     default:
-                        return;
+                        continue;
                 }
+
+                if (placeable is PreloadObject { Loaded: false })
+                {
+                    yield return placeable.EnsureLoaded();
+                }
+
+                if (id != _refreshRoutineId) yield break;
                 
                 icon.Item1.gameObject.SetActive(placeable is not PrefabObject);
                 icon.Item1.sprite = _categoryContents[index].GetUISprite();
@@ -1000,11 +1021,12 @@ public static class EditorUI
     {
         PageIndex += amount;
 
+        if (_categoryContents == null) return;
         var num = (_categoryContents.Count - 1) / 9;
         if (PageIndex > num) PageIndex = 0;
         else if (PageIndex < 0) PageIndex = num;
 
-        RefreshCurrentPage();
+        DoRefreshCurrentPage();
     }
 
     private static void SetupSearchBox()
@@ -1017,7 +1039,7 @@ public static class EditorUI
         {
             PageIndex = 0;
             _currentSearch = s;
-            RefreshCurrentPage();
+            DoRefreshCurrentPage();
         });
 
         var placeholder = UIUtils.MakeLabel("Search Box Placeholder", _mapUI, pos,

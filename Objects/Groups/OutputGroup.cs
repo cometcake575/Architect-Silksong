@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Architect.Behaviour.Custom;
+using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Content.Custom;
 using Architect.Events;
@@ -77,6 +78,14 @@ public static class OutputGroup
         EventManager.RegisterOutputType(
             new OutputType("trigger_inside", "Inside", "Boolean", 
                 o => o.GetComponent<TriggerZone>().inside)
+        )
+    ]);
+
+    public static readonly List<OutputType> FleaCounter = GroupUtils.Merge(Objects,
+    [
+        EventManager.RegisterOutputType(
+            new OutputType("flea_score", "Score", "Number", 
+                o => o.GetComponent<MiscFixers.CustomFleaCounter>().currentCount)
         )
     ]);
 

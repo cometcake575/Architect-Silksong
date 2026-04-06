@@ -215,6 +215,11 @@ public static class EditManager
         }
 
         EditorUI.RefreshVisibility(IsEditing, paused);
+        
+        // Noclip
+        if (IsEditing || LoadPos) DoNoclip(actions, paused);
+        
+        if (!IsEditing) return;
 
         if (paused)
         {
@@ -222,11 +227,6 @@ public static class EditManager
             var right = actions.Right.WasPressed;
             if (left != right) EditorUI.Shift(right ? 1 : -1);
         }
-        
-        // Noclip
-        if (IsEditing || LoadPos) DoNoclip(actions, paused);
-        
-        if (!IsEditing) return;
         
         PlayerData.instance.isInvincible = true;
         
@@ -259,7 +259,7 @@ public static class EditManager
             if (Settings.SaveObject.WasPressed && placeable is not PrefabObject)
             {
                 SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(Vector3.zero)));
-                if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.RefreshCurrentPage();
+                if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.DoRefreshCurrentPage();
             }
 
             if (!paused && (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed))
@@ -481,8 +481,12 @@ public static class EditManager
                      .SelectMany(o => o.GetComponentsInChildren<TransitionPoint>())) 
             o.gameObject.SetActive(false);
         IsEditing = !IsEditing;
+
+        EditorUI.DoRefreshCurrentPage();
+        
         GlobalArchitectData.Instance.CurrentMapId = ""; 
         HeroController.instance.ExitUpdraft();
+        
         if (!IsEditing) PlayerData.instance.isInvincible = false;
         else
         {
@@ -494,6 +498,7 @@ public static class EditManager
             ScreenFaderUtils.SetColour(Color.clear);
             GameCameras.instance.HUDIn();
         }
+        
         ReloadScene();
         
         StorageManager.SaveScene(GameManager.instance.sceneName, PlacementManager.GetLevelData());

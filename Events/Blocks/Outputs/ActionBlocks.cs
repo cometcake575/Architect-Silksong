@@ -16,6 +16,7 @@ public static class ActionBlocks
         SetLightingBlock.Init();
         SilkBlock.Init();
         CrestBlock.Init();
+        CollectionViewBlock.Init();
         //EndingBlock.Init();
         
         ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
@@ -53,6 +54,9 @@ public static class ActionBlocks
         
         ScriptManager.RegisterInputBlock<ShopBlock>("Shop");
         ScriptManager.RegisterHiddenBlock<ShopBlock.ShopItemBlock>("Shop Item", ConfigGroup.ShopItem);
+        
+        /*ScriptManager.RegisterInputBlock<CollectionViewBlock>("Collection View");
+        ScriptManager.RegisterHiddenBlock<CollectionViewBlock.CollectionItemBlock>("Collection Item", ConfigGroup.CollectionItem);*/
         
         ScriptManager.RegisterInputBlock<QuestboardBlock>("Quest Board");
         ScriptManager.RegisterHiddenBlock<QuestboardBlock.QuestBlock>("Quest Item", ConfigGroup.QuestItem);

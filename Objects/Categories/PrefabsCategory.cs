@@ -29,7 +29,7 @@ public class PrefabsCategory : AbstractCategory
         if (EditorUI.CurrentCategory == Instance)
         {
             EditorUI.PageIndex = 0;
-            EditorUI.RefreshCurrentPage();
+            EditorUI.DoRefreshCurrentPage();
         }
     }
 

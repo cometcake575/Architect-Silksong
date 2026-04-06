@@ -296,10 +296,15 @@ public class Browse : MenuState
         {
             StartCoroutine(DownloadSave());
         });
-        
+
+        IEnumerator download = null;
         downloadBtn.onClick.AddListener(() =>
         {
-            StartCoroutine(DownloadLevel());
+            if (download == null)
+            {
+                download = DownloadLevel();
+                StartCoroutine(download);
+            } else CancelDownload();
         });
 
         _level.SetActive(false);
@@ -321,15 +326,27 @@ public class Browse : MenuState
 
         IEnumerator DownloadLevel()
         {
-            downloadBtn.interactable = false;
+            downloadLabel.textComponent.text = "Cancel Download";
             _downloadSBtn.interactable = false;
             closeBtn.interactable = false;
             SharerManager.ReturnBtn.interactable = false;
             yield return RequestManager.DownloadLevel(_info.LevelId, _info.LevelName, _status);
             closeBtn.interactable = true;
-            downloadBtn.interactable = true;
             if (_info.HasSave) _downloadSBtn.interactable = true;
             SharerManager.ReturnBtn.interactable = true;
+            downloadLabel.textComponent.text = "Download Level";
+            download = null;
+        }
+
+        void CancelDownload()
+        {
+            downloadLabel.textComponent.text = "Download Level";
+            StopCoroutine(download);
+            closeBtn.interactable = true;
+            if (_info.HasSave) _downloadSBtn.interactable = true;
+            SharerManager.ReturnBtn.interactable = true;
+            downloadLabel.textComponent.text = "Download Level";
+            download = null;
         }
     }
 
