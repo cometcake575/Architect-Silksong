@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
 using Architect.Behaviour.Custom;
@@ -8,6 +9,7 @@ using Architect.Content.Preloads;
 using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
+using Architect.Storage;
 using Architect.Utils;
 using GlobalSettings;
 using JetBrains.Annotations;
@@ -754,6 +756,42 @@ public static class VanillaObjects
             }))
             .WithConfigGroup(ConfigGroup.Levers)
             .WithBroadcasterGroup(BroadcasterGroup.Levers);
+
+        Categories.Interactable.Add(new PreloadObject("Ventrica Tube", "ventrica_tube",
+            ("Bellway_City", "City Travel Tube"), preloadAction: o =>
+            {
+                for (var i = 2; i <= 7; i++) o.transform.GetChild(3).GetChild(i).gameObject.SetActive(false);
+                for (var i = 13; i <= 25; i++) o.transform.GetChild(3).GetChild(i).gameObject.SetActive(false);
+                o.transform.GetChild(3).GetChild(12).GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+            }, postSpawnAction: o =>
+            {
+                var unlock = o.transform.GetChild(4).GetComponent<PlayMakerFSM>();
+                unlock.GetState("Inert")
+                    .AddAction(() => unlock.SendEvent("ACTIVATED"), 0);
+                
+                var fsm = o.LocateMyFSM("Tube Travel");
+                var om = fsm.GetState("Open map");
+                om.DisableAction(1);
+                om.AddAction(() =>
+                {
+                    o.BroadcastEvent("OnEnter");
+                    fsm.StartCoroutine(ExitLater());
+                });
+
+                return;
+
+                IEnumerator ExitLater()
+                {
+                    yield return new WaitUntil(() => !fsm || fsm.ActiveStateName != "Open map" || 
+                                                     Settings.ToggleEditor.IsPressed);
+                    if (!fsm) yield break;
+                    fsm.SendEvent("CONTINUE");
+                }
+            })
+            .WithConfigGroup(ConfigGroup.Ventrica)
+            .WithInputGroup(InputGroup.Ventrica)
+            .WithBroadcasterGroup(BroadcasterGroup.Ventrica)
+            .WithReceiverGroup(ReceiverGroup.Ventrica)).Offset -= new Vector3(0, 1.5f);
     }
 
     private static void AddVaultsObjects()

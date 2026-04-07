@@ -325,13 +325,16 @@ public static class ScriptManager
         }
     }
 
+    public static Vector3 BlockSpawnPos =>
+        ScriptEditorUI.Blocks.transform.InverseTransformPoint(Screen.width / 2f, Screen.height / 2f, 0); 
+
     public static void RegisterInputBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
     {
         var func = () => new T
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
+            Position = BlockSpawnPos
         };
         InputBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -343,7 +346,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
+            Position = BlockSpawnPos
         };
         ProcessBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -355,7 +358,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
+            Position = BlockSpawnPos
         };
         OutputBlocks.Add((func, name));
         BlockTypes[name] = func;
@@ -367,7 +370,7 @@ public static class ScriptManager
         {
             Type = name, 
             Config = configGroup,
-            Position = -ScriptEditorUI.ScriptParent.transform.localPosition
+            Position = BlockSpawnPos
         };
     }
 
@@ -383,7 +386,8 @@ public static class ScriptManager
         {
             TypeId = obj.GetPlacementType().GetId(),
             TargetId = obj.GetId(),
-            Type = "object"
+            Type = "object",
+            Position = BlockSpawnPos
         };
         block.Setup(true);
         PlacementManager.GetLevelData().ScriptBlocks.Add(block);

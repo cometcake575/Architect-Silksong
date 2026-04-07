@@ -51,6 +51,8 @@ public class TextBlock : ScriptBlock
 
     public int VerticalAlignment;
     public int HorizontalAlignment;
+
+    public Color TextColour = Color.white;
     
     public bool Decorators;
 
@@ -59,6 +61,7 @@ public class TextBlock : ScriptBlock
         _display = new GameObject("[Architect] Text Display").AddComponent<TextDisplay>();
         _display.Block = this;
 
+        _display.color = TextColour;
         _display.text = Text;
         _display.offsetY = OffsetY;
         _display.verticalAlignment = VerticalAlignment;

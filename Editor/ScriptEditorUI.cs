@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Events.Blocks;
+using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
@@ -279,6 +281,9 @@ public static class ScriptEditorUI
             col.b >= 0.9f ? -0.1f : 0.1f);
     }
 
+    private static readonly List<ScriptBlock> CopiedBlocks = [];
+    private static Vector2 _copyPos;
+
     public class BackgroundDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IPointerDownHandler, IPointerUpHandler
     {
         private Vector2 _offset;
@@ -451,8 +456,40 @@ public static class ScriptEditorUI
         }
 
         private void Update() {
+            if (Settings.Copy.WasPressed)
+            {
+                CopiedBlocks.Clear();
+                CopiedBlocks.AddRange(ScriptManager.SelectedBlockIds
+                    .Select(id => ScriptManager.Blocks.GetValueOrDefault(id))
+                    .Where(block => block is { CanCloneDirectly: true })
+                    .Select(block => block.Clone("")));
+                _copyPos = Blocks.transform.InverseTransformPoint(Input.mousePosition);
+            }
+            
+            if (Settings.Paste.WasPressed)
+            {
+                List<ScriptBlock> copied = [];
+                var add = Guid.NewGuid().ToString()[..4];
+                foreach (var block in CopiedBlocks)
+                {
+                    if (block is ObjectBlock && !ScriptManager.IsLocal) continue;
+                    
+                    var newBlock = block.Clone(add, true);
+                    
+                    (ScriptManager.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData())
+                        .ScriptBlocks.Add(newBlock);
+                    
+                    newBlock.Position += (Vector2)Blocks.transform.InverseTransformPoint(Input.mousePosition) - 
+                                         _copyPos;
+                    copied.Add(newBlock);
+                }
+                foreach (var block in copied) block.Setup(true);
+                foreach (var block in copied) block.LateSetup();
+                ScriptManager.SetSelection(copied.Select(c => c.BlockId));
+            }
+            
             if (_isSelecting && _selectionImage && _selectionImage.gameObject.activeSelf) {
-                if (Settings.CreateNewComment.IsPressed) {
+                if (Settings.CreateNewComment.WasPressed) {
                     CreateCommentFromSelection();
 
                     _isSelecting = false;

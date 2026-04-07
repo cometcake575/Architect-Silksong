@@ -259,6 +259,24 @@ public static class ConfigGroup
             }).WithDefaultValue(0))
     ]);
     
+    public static readonly List<ConfigType> Ventrica = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Decorations", "ventrica_decor", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    for (var i = 8; i <= 11; i++) o.transform.GetChild(3).GetChild(i).gameObject.SetActive(false);
+                }
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Door ID", "ventrica_door_id", (o, value) =>
+            {
+                o.transform.GetChild(0).name = value.GetValue();
+                o.LocateMyFSM("Tube Travel").FsmVariables.FindFsmString("Door Name").value = value.GetValue();
+            }))
+    ]);
+    
     public static readonly List<ConfigType> Cocoon = GroupUtils.Merge(Visible,
     [
         ConfigurationManager.RegisterConfigType(
@@ -495,6 +513,30 @@ public static class ConfigGroup
             {
                 o.GetComponent<Shielder>().id = value.GetValue();
             })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Generic", "shielder_generic", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.GetComponent<Shielder>().extraImmunities.Add(AttackTypes.Generic);
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Lightning", "shielder_lightning", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.GetComponent<Shielder>().extraImmunities.Add(AttackTypes.Lightning);
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Spell", "shielder_spell", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.GetComponent<Shielder>().extraImmunities.Add(AttackTypes.Spell);
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Immune to Heavy", "shielder_heavy", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.GetComponent<Shielder>().extraImmunities.Add(AttackTypes.Heavy);
+            }).WithDefaultValue(false)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Immune to Water", "shielder_water", (o, value) =>
             {
@@ -3057,7 +3099,7 @@ public static class ConfigGroup
                     {
                         o.GetComponent<CustomTransitionPoint>().pointType = value.GetValue();
                     })
-                .WithOptions("Door", "Left", "Right", "Top", "Bottom").WithDefaultValue(0).WithPriority(-1)),
+                .WithOptions("Door", "Left", "Right", "Top", "Bottom", "Wake").WithDefaultValue(0).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Door ID", "trans_id", (o, value) =>
             {

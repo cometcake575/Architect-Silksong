@@ -61,6 +61,8 @@ public abstract class ScriptBlock
 
     public string Type;
 
+    public virtual bool CanCloneDirectly => true;
+
     public virtual bool IsValid => true;
     
     public Vector2 Position;
@@ -69,26 +71,27 @@ public abstract class ScriptBlock
     public ScriptBlockInstance BlockInstance;
 
     // Creates a copy for prefabs
-    public ScriptBlock Clone(string idAddition)
+    public ScriptBlock Clone(string idAddition, bool trimStart = false)
     {
         var clone = ScriptManager.BlockTypes[Type]();
         
         clone.Type = Type;
-        clone.BlockId = BlockId + idAddition;
+        clone.BlockId = trimStart ? idAddition + BlockId : BlockId + idAddition;
         clone.Position = Position;
         
         clone.EventMap = [];
         foreach (var (ev, blocks) in EventMap)
         {
             List<(string, string)> newBlocks = [];
-            foreach (var (blockId, trigger) in blocks) newBlocks.Add((blockId + idAddition, trigger));
+            foreach (var (blockId, trigger) in blocks) 
+                newBlocks.Add((trimStart ? idAddition + blockId : blockId + idAddition, trigger));
             clone.EventMap[ev] = newBlocks;
         }
         
         clone.VarMap = [];
         foreach (var (ev, (blockId, var)) in VarMap)
         {
-            clone.VarMap[ev] = (blockId + idAddition, var);
+            clone.VarMap[ev] = (trimStart ? idAddition + blockId : blockId + idAddition, var);
         }
 
         foreach (var (_, c) in CurrentConfig)
@@ -99,7 +102,7 @@ public abstract class ScriptBlock
         foreach (var (key, c) in CurrentConfig)
         {
             ConfigValue cfg;
-            if (this is LocalBlock { Local: true } && c.IsLocal)
+            if (!trimStart && this is LocalBlock { Local: true } && c.IsLocal)
             {
                 cfg = ConfigurationManager.DeserializeConfigValue(c.GetTypeId(),
                     c.SerializeValue() + idAddition);
@@ -109,11 +112,11 @@ public abstract class ScriptBlock
         }
         
         var ext = SerializeExtraData();
-        if (ext.ContainsKey("object")) ext["object"] += idAddition;
+        if (!trimStart && ext.ContainsKey("object")) ext["object"] += idAddition;
         if (ext.ContainsKey("children"))
         {
             var blocks = JsonConvert.DeserializeObject<List<ScriptBlock>>(ext["children"], Sbc);
-            for (var b = 0; b < blocks.Count; b++) blocks[b] = blocks[b].Clone(idAddition);
+            for (var b = 0; b < blocks.Count; b++) blocks[b] = blocks[b].Clone(idAddition, trimStart);
             ext["children"] = JsonConvert.SerializeObject(blocks);
         }
         clone.DeserializeExtraData(ext);

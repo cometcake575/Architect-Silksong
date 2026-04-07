@@ -14,6 +14,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Exploding = ["OnExplode"];
     
+    public static readonly List<string> Ventrica = ["OnEnter"];
+    
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];
     
     public static readonly List<string> Shardillard = GroupUtils.Merge(Enemies, ["OnBounce"]);

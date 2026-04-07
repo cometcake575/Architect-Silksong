@@ -19,6 +19,8 @@ public class TextDisplay : NPCControlBase, IDisplayable
     public int horizontalAlignment;
 
     public bool decorators = true;
+
+    public Color color = Color.white;
     
     private DialogueBox.DisplayOptions _displayOptions;
     
@@ -49,7 +51,7 @@ public class TextDisplay : NPCControlBase, IDisplayable
             ShowDecorators = decorators,
             Alignment = alignment,
             OffsetY = offsetY,
-            TextColor = Color.white
+            TextColor = color
         };
     }
 

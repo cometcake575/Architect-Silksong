@@ -244,7 +244,7 @@ public static class Settings
         CreateNewComment = new Keybind(config.Bind(
             "ToolHotkeys",
             "CreateNewComment",
-            KeyCode.C,
+            KeyCode.G,
             "Creates a new comment block from the selection in the script editor"
         ));
         

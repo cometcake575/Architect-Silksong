@@ -123,6 +123,7 @@ public abstract class CollectionBlock<T> : LinkedBlock
         protected override string Name => null;
         public ChildrenGroup Group;
         public int BlockHeight;
+        public override bool CanCloneDirectly => false;
 
         protected override void SetupBlock(bool newBlock, int width, int height)
         {

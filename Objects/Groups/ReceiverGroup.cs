@@ -141,6 +141,21 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Ventrica = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("ventrica_leave", "Exit", o =>
+        {
+            o.GetComponent<PlayMakerFSM>().SendEvent("CONTINUE");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("ventrica_takeoff", "TakeOff", (o, b) =>
+        {
+            if (b == null) return;
+            var fsm = o.GetComponent<PlayMakerFSM>();
+            fsm.FsmVariables.FindFsmString("To Scene").value = b.GetVariable<string>("To Scene");
+            fsm.FsmVariables.FindFsmString("Door Name").value = b.GetVariable<string>("To Door");
+            fsm.SetState("Preload Scene");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> FsmHook = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("fsm_set_state", "SetState", o =>
         {

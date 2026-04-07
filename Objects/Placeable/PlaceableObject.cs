@@ -255,7 +255,7 @@ public abstract class PlaceableObject : SelectableObject
         var source = sprSource?.gameObject ?? Prefab;
         
         var cSprite = source.GetComponentInChildren<tk2dSprite>();
-        if (cSprite)
+        if (cSprite && !(sprSource && cSprite.gameObject != source && source.GetComponent<SpriteRenderer>()))
         {
             ChildOffset = cSprite.gameObject.transform.position - Prefab.transform.position;
             ChildRotation = cSprite.gameObject.transform.eulerAngles.z;

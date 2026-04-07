@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using Architect.Placements;
+using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -16,6 +19,22 @@ public class Shielder : MonoBehaviour
     public bool immuneToSpikes;
     public bool immuneToTraps;
     public bool immuneToWater;
+
+    public static void Init()
+    {
+        typeof(HealthManager).Hook(nameof(HealthManager.IsImmuneTo),
+            (Func<HealthManager, HitInstance, bool, bool> orig, 
+                HealthManager self,
+                HitInstance hit,
+                bool full) =>
+            {
+                var ext = self.GetComponent<ExtraResistance>();
+                if (ext && ext.resistances.Contains(hit.AttackType)) return true;
+                return orig(self, hit, full);
+            });
+    }
+
+    public List<AttackTypes> extraImmunities = [];
 
     private bool _shielded;
 
@@ -46,6 +65,14 @@ public class Shielder : MonoBehaviour
         hm.immuneToSpikes = immuneToSpikes;
         hm.immuneToTraps = immuneToTraps;
         hm.immuneToWater = immuneToWater;
+
+        if (!extraImmunities.IsNullOrEmpty())
+            hm.gameObject.AddComponent<ExtraResistance>().resistances = extraImmunities;
+    }
+
+    public class ExtraResistance : MonoBehaviour
+    {
+        public List<AttackTypes> resistances;
     }
 
     private void Update()

@@ -662,7 +662,22 @@ public static class ConfigGroup
             new BoolConfigType<TextBlock>("Decorators", "display_decor", (o, value) =>
             {
                 o.Decorators = value.GetValue();
-            }).WithDefaultValue(true))
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TextBlock>("Text R", "display_text_r", (o, value) =>
+            {
+                o.TextColour.r = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TextBlock>("Text G", "display_text_g", (o, value) =>
+            {
+                o.TextColour.g = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<TextBlock>("Text B", "display_text_b", (o, value) =>
+            {
+                o.TextColour.b = value.GetValue();
+            }).WithDefaultValue(1))
     ];
 
     public static readonly List<ConfigType> TitleDisplay =
