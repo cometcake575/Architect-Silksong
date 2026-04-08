@@ -26,7 +26,7 @@ public class PlayerDataBoolBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "PlayerData Control (Bool)";
 
-    public string Data;
+    public string Data = string.Empty;
     public bool Value;
     
     public override void SetupReference()

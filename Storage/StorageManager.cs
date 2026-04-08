@@ -228,7 +228,9 @@ public static class StorageManager
                 if (!name.EndsWith(".architect.json")) continue;
 
                 var n = name.Replace(".architect.json", "");
-                foreach (var o in LoadScene(n).Placements)
+                var scene = LoadScene(n);
+                if (scene == null) continue;
+                foreach (var o in scene.Placements.Where(o => o != null))
                 {
                     if (o.GetPlacementType() is PreloadObject preload) 
                         preload.ShouldLoad = true;

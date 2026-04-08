@@ -84,7 +84,7 @@ public class LoopBlock : ScriptBlock
 
     protected override IEnumerable<(string, string)> OutputVars => [("Loop Value", "Number")];
 
-    protected override IEnumerable<string> Inputs => ["In"];
+    protected override IEnumerable<string> Inputs => ["In", "Cancel"];
     protected override IEnumerable<string> Outputs => ["Out"];
 
     private static readonly Color DefaultColor = Color.yellow;
@@ -108,7 +108,8 @@ public class LoopBlock : ScriptBlock
     protected override void Trigger(string trigger)
     {
         if (!_delay) return;
-        _delay.StartCoroutine(DelayedEvent());
+        if (trigger == "In") _delay.StartCoroutine(DelayedEvent());
+        else _delay.StopAllCoroutines();
     }
 
     protected override object GetValue(string id)

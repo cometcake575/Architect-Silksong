@@ -9,6 +9,7 @@ namespace Architect.Events.Blocks.Outputs;
 public class TransitionBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Transition"];
+    protected override IEnumerable<(string, string)> OutputVars => [("InScene", "Boolean")];
 
     private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
     protected override Color Color => DefaultColor;
@@ -16,6 +17,8 @@ public class TransitionBlock : ScriptBlock
 
     public string Scene = "";
     public string Door = "";
+
+    protected override object GetValue(string id) => Scene == GameManager.instance.sceneName;
 
     protected override void Trigger(string trigger)
     {

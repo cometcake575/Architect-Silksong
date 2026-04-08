@@ -18,7 +18,7 @@ public class BroadcastBlock : LocalBlock
     public GameObject TargetPrefab;
 
     public string ActualEventName;
-    public string EventName;
+    public string EventName = string.Empty;
 
     protected override void Trigger(string id)
     {

@@ -375,6 +375,8 @@ public static class UtilityObjects
         var shielder = new GameObject("Shielder");
         Object.DontDestroyOnLoad(shielder);
         shielder.SetActive(false);
+        
+        Shielder.Init();
 
         shielder.AddComponent<Shielder>();
         
@@ -946,14 +948,13 @@ public static class UtilityObjects
 
         point.AddComponent<HazardRespawnTrigger>().respawnMarker = point.AddComponent<CustomHazardRespawnMarker>();
 
-        var collider = point.AddComponent<CircleCollider2D>();
+        var collider = point.AddComponent<BoxCollider2D>();
+        collider.size = Vector2.one;
         collider.isTrigger = true;
         
         return new CustomObject("Hazard Respawn Point", "hazard_respawn_point", point, 
             sprite:ResourceUtils.LoadSpriteResource("hazard_respawn_point"),
-            description:"A point that the player can respawn at after taking hazard damage.\n\n" +
-                        "To use a custom hitbox set 'Contact Trigger' to false, then use a Trigger Zone and\n" +
-                        "the Hazard Respawn Point's 'SetSpawn' trigger.",
+            description:"A point that the player can respawn at after taking hazard damage.",
             preview:true)
             .WithConfigGroup(ConfigGroup.HazardRespawn)
             .WithReceiverGroup(ReceiverGroup.HazardRespawn);

@@ -770,6 +770,7 @@ public static class VanillaObjects
                     .AddAction(() => unlock.SendEvent("ACTIVATED"), 0);
                 
                 var fsm = o.LocateMyFSM("Tube Travel");
+                fsm.GetState("Locked?").AddAction(() => fsm.SendEvent("FALSE"), 0);
                 var om = fsm.GetState("Open map");
                 om.DisableAction(1);
                 om.AddAction(() =>
@@ -958,7 +959,8 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Void Tendrils", "abyss_tendrils",
             ("Abyss_07", "Abyss Tendrils (16)"),
             preloadAction: o => o.transform.localScale = new Vector3(1.5f, 1.5f),
-            postSpawnAction: HazardFixers.FixTendrils));
+            postSpawnAction: HazardFixers.FixTendrils)
+            .WithConfigGroup(ConfigGroup.Stretchable));
 
         Categories.Platforming.Add(new PreloadObject("Abyss Pod", "abyss_pod",
             ("Abyss_05", "Abyss Bounce Pod")));
@@ -2242,7 +2244,11 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Shakra Lamp", "shakra_lamp",
             ("Belltown", "Mapper Control/Mapper Scenery/Mapper_lamp"),
-            preloadAction: EnemyFixers.KeepActive));
+            preloadAction: o =>
+            {
+                o.transform.GetChild(0).GetChild(0).GetChild(0).name = "[Architect] Lamp Part";
+                EnemyFixers.KeepActive(o);
+            }));
 
         Categories.Npcs.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
@@ -2449,6 +2455,16 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Cocoon)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable));
+
+        Categories.Misc.Add(new PreloadObject("Double Harp Tablet", "weaver_harp_sign_double",
+                ("Mosstown_02", "lore_tablet"),
+                description: "Use <br> for a new line, <page> for a new page,\n" +
+                             "and <hpage> for one where Hornet speaks.\n\n" +
+                             "Use <color>, <b>, <i>, <s> and <u> to format text.\n" +
+                             "For example: '<b><color=#FF0000>YOU</color></b>'",
+                preloadAction: o =>
+                    o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>())
+            .WithConfigGroup(ConfigGroup.DoubleLoreTablet));
 
         Categories.Misc.Add(new PreloadObject("Harp Tablet", "weaver_harp_sign",
                 ("Shellwood_10", "weaver_harp_sign"),
@@ -3422,6 +3438,19 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX()
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Wakeable);
+        AddEnemy("Falling Mossgrub", "mossbone_crawler_summon", 
+            ("Weave_03", "Boss Scene/MossBone Crawler Summon"),
+            preloadAction: o =>
+            {
+                var anim = o.GetComponent<tk2dSpriteAnimator>();
+                anim.defaultClipId = anim.GetClipIdByName("SummonFall");
+            },
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Summon Control");
+                fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("SPAWN"), 0);
+                fsm.GetState("Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            });
         AddEnemy("Massive Mossgrub", "mossbone_crawler_fat",
             ("Arborium_09", "MossBone Crawler Fat"));
 
@@ -3579,9 +3608,11 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation)
             .DoFlipX();
 
-        AddSolid("Moss Grotto Platform 1", "bone_plat_01",
+        AddSolid("Moss Grotto Platform 1", "bone_plat_03",
+            ("Weave_03", "bone_plat_01 (6)"));
+        AddSolid("Moss Grotto Platform 2", "bone_plat_01",
             ("Tut_02", "bone_plat_01"));
-        AddSolid("Moss Grotto Platform 2", "bone_plat_02",
+        AddSolid("Moss Grotto Platform 3", "bone_plat_02",
             ("Tut_02", "bone_plat_02"));
 
         Categories.Interactable.Add(new PreloadObject("Pilgrim Trap Wire", "pilgrim_trap_wire",

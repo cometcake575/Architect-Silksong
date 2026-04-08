@@ -389,6 +389,25 @@ public static class ConfigGroup
             }).WithDefaultValue("Sample Text"))
     ]);
 
+    public static readonly List<ConfigType> DoubleLoreTablet = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            MakePersistenceConfigType("Stay Activated", "double_tablet_stay")),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Initial Text", "double_tablet_text_1", (o, value) =>
+            {
+                o.GetComponentInChildren<BasicNPC>(true).talkText = [
+                    new LocalisedString("ArchitectMod", value.GetValue())
+                ];
+            }).WithDefaultValue("Sample Text")),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Actual Text", "double_tablet_text_2", (o, value) =>
+            {
+                o.transform.GetChild(1).GetComponentInChildren<BasicNPC>(true).talkText = [
+                    new LocalisedString("ArchitectMod", value.GetValue())
+                ];
+            }).WithDefaultValue("Sample Text"))
+    ]);
+
     public static readonly List<ConfigType> Bell = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Extra Length", "bell_chain_length", (o, value) =>
@@ -3030,7 +3049,27 @@ public static class ConfigGroup
             {
                 if (value.GetValue()) return;
                 o.RemoveComponent<Collider2D>();
-            }).WithDefaultValue(true))
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Collision Width", "hrp_width", (o, value) =>
+            {
+                if (EditManager.IsEditing) return;
+                var bc2d = o.GetComponent<BoxCollider2D>();
+                bc2d.size = bc2d.size.Where(x: value.GetValue());
+            }, (o, value, _) =>
+            {
+                o.transform.SetScaleX(value.GetValue());
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Collision Height", "hrp_height", (o, value) =>
+            {
+                if (EditManager.IsEditing) return;
+                var bc2d = o.GetComponent<BoxCollider2D>();
+                bc2d.size = bc2d.size.Where(y: value.GetValue());
+            }, (o, value, _) =>
+            {
+                o.transform.SetScaleY(value.GetValue());
+            }).WithDefaultValue(1))
     ]);
     
     private static readonly int ReflectionOffset = Shader.PropertyToID("_ReflectionOffset");

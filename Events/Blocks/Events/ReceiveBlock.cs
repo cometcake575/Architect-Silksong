@@ -11,8 +11,8 @@ public class ReceiveBlock : LocalBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Receive";
     
-    public string ActualEventName;
-    public string EventName;
+    public string ActualEventName = string.Empty;
+    public string EventName = string.Empty;
 
     public override void SetupReference()
     {
