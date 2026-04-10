@@ -7,7 +7,7 @@ using Silksong.ModMenu.Screens;
 
 namespace Architect.Storage;
 
-public class ProjectManager
+public static class ProjectManager
 {
     public static void Init()
     {

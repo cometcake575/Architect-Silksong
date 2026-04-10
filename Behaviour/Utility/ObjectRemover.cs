@@ -94,6 +94,8 @@ public class ObjectEnabler : MonoBehaviour
     }
 }
 
+public class IgnoreDisablers : MonoBehaviour;
+
 public class Disabler : MonoBehaviour
 {
     public List<string> disablers = [];
@@ -102,6 +104,11 @@ public class Disabler : MonoBehaviour
 
     private void OnEnable()
     {
+        if (GetComponent<IgnoreDisablers>())
+        {
+            enabled = false;
+            return;
+        }
         if (disablers.Count > 0)
         {
             _enableByDefault = true;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Editor;
+using Architect.Placements;
 using Architect.Prefabs;
 using JetBrains.Annotations;
 
@@ -33,11 +34,10 @@ public class PrefabsCategory : AbstractCategory
         }
     }
 
-    public static void Add(string name)
+    public static void Add(string name, LevelData data)
     {
-        if (Prefabs.FirstOrDefault(o => o.Name == name) == null)
-        {
-            Prefabs.Add(new PrefabObject(name));
-        }
+        var old = Prefabs.FirstOrDefault(o => o.Name == name);
+        if (old == null) Prefabs.Add(new PrefabObject(name, data));
+        else old.RefreshConfig(data);
     }
 }

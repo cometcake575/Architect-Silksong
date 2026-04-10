@@ -111,17 +111,34 @@ public static class ConfigGroup
                 "PeakPuff",
                 "FlowerField").WithDefaultValue(0))
     ];
+
+    private static readonly ConfigType Hook = ConfigurationManager.RegisterConfigType(
+        new StringConfigType("Path", "enemy_path", (o, value) =>
+        {
+            var hook = o.GetComponent<EnemyHook>();
+            if (hook) hook.path = value.GetValue();
+            else o.GetComponent<ObjectHook>().path = value.GetValue();
+        }));
     
-    public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic,
-    [
+    public static readonly List<ConfigType> ObjectHook = [
+        Hook,
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType("Path", "enemy_path", (o, value) =>
+            new ChoiceConfigType("Start Mode", "object_hook_start", (o, value) =>
             {
-                var hook = o.GetComponent<EnemyHook>();
-                if (hook) hook.path = value.GetValue();
-                else o.GetComponent<ObjectHook>().path = value.GetValue();
-            }))
-    ]);
+                o.GetComponent<ObjectHook>().start = value.GetValue();
+            }).WithOptions("Normal", "Inactive", "Active").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Remove Normal Activators", "remove_vanilla_disablers", (o, value) =>
+            {
+                if (value.GetValue()) EnemyFixers.KeepActive(o);
+                o.RemoveComponent<ActivateIfPlayerdataFalse>();
+                o.RemoveComponent<ActivateIfPlayerdataTrue>();
+                o.AddComponent<IgnoreDisablers>();
+                o.RemoveComponent<Disabler>();
+            }).WithDefaultValue(false))
+    ];
+    
+    public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic, [Hook]);
     
     public static readonly List<ConfigType> CocoonSpawnPoint = GroupUtils.Merge(Generic,
     [
@@ -204,6 +221,15 @@ public static class ConfigGroup
             {
                 o.GetComponentInChildren<CircleCollider2D>().radius = value.GetValue();
             }).WithDefaultValue(4))
+    ]);
+    
+    public static readonly List<ConfigType> VoidTsunami = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Camera Shake", "void_tsunami_shake", (o, value) =>
+            {
+                if (!value.GetValue()) o.RemoveComponentsInChildren<CameraControlAnimationEvents>();
+            }).WithDefaultValue(true))
     ]);
     
     public static readonly List<ConfigType> Treadmill = GroupUtils.Merge(Visible,
@@ -1276,6 +1302,45 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> StretchDecor = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, []));
+    
+    public static readonly List<ConfigType> StretchColourDecor = GroupUtils.Merge(StretchDecor, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour R", "png_col_r",
+                (o, value) =>
+                {
+                    var sr = o.GetComponent<SpriteRenderer>();
+                    var c = sr.color;
+                    c.r = value.GetValue();
+                    sr.color = c;
+                }).WithDefaultValue(1).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour G", "png_col_g",
+                (o, value) =>
+                {
+                    var sr = o.GetComponent<SpriteRenderer>();
+                    var c = sr.color;
+                    c.g = value.GetValue();
+                    sr.color = c;
+                }).WithDefaultValue(1).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour B", "png_col_b",
+                (o, value) =>
+                {
+                    var sr = o.GetComponent<SpriteRenderer>();
+                    var c = sr.color;
+                    c.b = value.GetValue();
+                    sr.color = c;
+                }).WithDefaultValue(1).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Colour A", "png_col_a",
+                (o, value) =>
+                {
+                    var sr = o.GetComponent<SpriteRenderer>();
+                    var c = sr.color;
+                    c.a = value.GetValue();
+                    sr.color = c;
+                }).WithDefaultValue(1).WithPriority(-1))
+    ]);
     
     public static readonly List<ConfigType> Vines = GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
@@ -2690,48 +2755,8 @@ public static class ConfigGroup
                 }).WithDefaultValue(true).WithPriority(-2))
     ]);
 
-    public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png, 
-        GroupUtils.Merge(Stretchable, 
-        [
-            ZOffset,
-            RenderLayer,
-            ConfigurationManager.RegisterConfigType(
-                new FloatConfigType("Colour R", "png_col_r",
-                    (o, value) =>
-                    {
-                        var sr = o.GetComponent<SpriteRenderer>();
-                        var c = sr.color;
-                        c.r = value.GetValue();
-                        sr.color = c;
-                    }).WithDefaultValue(1).WithPriority(-1)),
-            ConfigurationManager.RegisterConfigType(
-                new FloatConfigType("Colour G", "png_col_g",
-                    (o, value) =>
-                    {
-                        var sr = o.GetComponent<SpriteRenderer>();
-                        var c = sr.color;
-                        c.g = value.GetValue();
-                        sr.color = c;
-                    }).WithDefaultValue(1).WithPriority(-1)),
-            ConfigurationManager.RegisterConfigType(
-                new FloatConfigType("Colour B", "png_col_b",
-                    (o, value) =>
-                    {
-                        var sr = o.GetComponent<SpriteRenderer>();
-                        var c = sr.color;
-                        c.b = value.GetValue();
-                        sr.color = c;
-                    }).WithDefaultValue(1).WithPriority(-1)),
-            ConfigurationManager.RegisterConfigType(
-                new FloatConfigType("Colour A", "png_col_a",
-                    (o, value) =>
-                    {
-                        var sr = o.GetComponent<SpriteRenderer>();
-                        var c = sr.color;
-                        c.a = value.GetValue();
-                        sr.color = c;
-                    }).WithDefaultValue(1).WithPriority(-1))
-        ]));
+    public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png,
+        GroupUtils.Merge(StretchColourDecor, []));
 
     public static readonly List<ConfigType> FullPng = GroupUtils.Merge(PhysicalPng, 
         [

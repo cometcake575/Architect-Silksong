@@ -15,8 +15,8 @@ public class TransitionBlock : ScriptBlock
     protected override Color Color => DefaultColor;
     protected override string Name => "Scene Transition";
 
-    public string Scene = "";
-    public string Door = "";
+    public string Scene = "Tut_01";
+    public string Door = "placeholder";
 
     protected override object GetValue(string id) => Scene == GameManager.instance.sceneName;
 

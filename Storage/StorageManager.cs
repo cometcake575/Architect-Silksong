@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Architect.Config.Types;
+using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Outputs;
@@ -84,7 +85,7 @@ public static class StorageManager
             if (scene.StartsWith("Prefab_")) PrefabsCategory.Remove(scene.Replace("Prefab_", ""));
             return;
         }
-        if (scene.StartsWith("Prefab_")) PrefabsCategory.Add(scene.Replace("Prefab_", ""));
+        if (scene.StartsWith("Prefab_")) PrefabsCategory.Add(scene.Replace("Prefab_", ""), level);
         
         var data = SerializeLevel(level, Formatting.Indented);
         
@@ -471,6 +472,13 @@ public static class StorageManager
 
             PrefabsCategory.Prefabs = LoadPrefabs();
             LoadWorkshopData();
+
+            if (!Settings.LoadAllAssets.Value)
+            {
+                FindLoadRequirements();
+                PreloadManager.HasPreloaded = false;
+                PreloadManager.FinishPreloading();
+            }
         }
         catch
         {

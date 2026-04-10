@@ -1008,6 +1008,34 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
+
+        Categories.Hazards.Add(new PreloadObject("Void Tsunami", "void_wave",
+            ("Abyss_Cocoon", "Boss Control/Abyss Wave/Abyss Wave L1"),
+            description: "Tsunami ends where the object is placed.\n\n" +
+                         "This object activates when enabled, and disables itself when done.\n" +
+                         "To use it multiple times, enable it each time. An Object Spawner is not needed.",    
+            preloadAction: o =>
+            {
+                o.transform.DisableChild(0, 5, 5);
+                o.transform.DisableChild(0, 5, 6);
+                o.transform.DisableChild(0, 10);
+                o.transform.DisableChild(0, 17);
+                Object.Destroy(o.transform.GetChild(0).GetChild(19).gameObject.LocateMyFSM("Catch Hornet"));
+            },
+            sprite: ResourceUtils.LoadSpriteResource("voidtsu", ppu: 64))
+            .DoFlipX()
+            .WithConfigGroup(ConfigGroup.VoidTsunami)).Offset = new Vector3(7, 1.8f);
+
+        Categories.Effects.Add(new PreloadObject("Surface Water Effect", "abyss_water",
+            ("Abyss_Cocoon",
+                "Boss Control/Abyss Wave/Abyss Wave L1/abyss_wave/Wave_Antic/abyss_water_top(Clone)"),
+            preloadAction: o =>
+            {
+                o.transform.SetRotation2D(0);
+                o.transform.SetPositionZ(0.006f);
+            })
+            .WithScaleAction((o, s) => o.transform.localScale *= s * 1.2f)
+            .WithConfigGroup(ConfigGroup.StretchColourDecor));
     }
 
     private static void AddMemoryObjects()

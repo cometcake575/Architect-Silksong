@@ -25,6 +25,19 @@ public static class ReceiverGroup
         }, true))
     ];
     
+    public static readonly List<EventReceiverType> ObjectHook = [
+        EventManager.RegisterReceiverType(new EventReceiverType("hook_disable_target", "Disable", o =>
+        {
+            var target = o.GetComponent<ObjectHook>().o;
+            if (target) target.SetActive(false);
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("hook_enable_target", "Enable", o =>
+        {
+            var target = o.GetComponent<ObjectHook>().o;
+            if (target) target.SetActive(true);
+        }))
+    ];
+    
     public static readonly List<EventReceiverType> Prefab = [
         EventManager.RegisterReceiverType(new EventReceiverType("prefab_start", "Activate", o =>
         {

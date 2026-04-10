@@ -15,7 +15,7 @@ public static class ConfigurationManager
     
     public static ConfigValue DeserializeConfigValue(string configType, string serializedValue)
     {
-        return ConfigTypes[configType].Deserialize(serializedValue);
+        return ConfigTypes.TryGetValue(configType, out var type) ? type.Deserialize(serializedValue) : null;
     }
 
     public enum PreviewContext

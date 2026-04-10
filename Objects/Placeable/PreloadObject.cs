@@ -10,15 +10,16 @@ namespace Architect.Objects.Placeable;
 
 public class PreloadObject : PlaceableObject, IPreload
 {
+    public bool Loaded { get; private set; }
     public string Scene { get; }
     public string Path { get; }
-    
+
+    public void MarkLoaded() { }
+
     public bool IsNotSceneBundle { get; }
 
     public bool ShouldLoad;
     public bool ShouldAlwaysLoad => ShouldLoad || Settings.LoadAllAssets.Value;
-
-    public bool Loaded;
 
     private readonly Action<GameObject> _preloadAction;
 

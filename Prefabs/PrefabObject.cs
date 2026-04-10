@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Behaviour.Utility;
+using Architect.Config;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events.Blocks;
 using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Placeable;
 using Architect.Placements;
@@ -29,8 +32,14 @@ public class PrefabObject : PlaceableObject
         Object.DontDestroyOnLoad(_prefabObject);
         _prefabObject.AddComponent<Prefab>();
     }
+
+    public PrefabObject(string name) : 
+        this(name, PrefabManager.Prefabs[name] = StorageManager.LoadScene($"Prefab_{name}"))
+    {
+        
+    }
     
-    public PrefabObject(string name) : base(
+    public PrefabObject(string name, LevelData data) : base(
         $"{name} (Prefab)",
         $"prefab_{name}",
         "References a prefab, changes to the prefab will\n" +
@@ -42,11 +51,27 @@ public class PrefabObject : PlaceableObject
         FinishSetup(_prefabObject);
         PostSpawnAction = Setup;
         Name = name;
-        ConfigGroup = Objects.Groups.ConfigGroup.Prefab;
+
+        RefreshConfig(data);
+        
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
         OutputGroup = Objects.Groups.OutputGroup.Generic;
         RotateAction = Rotate;
         ScaleAction = Scale;
+    }
+
+    public void RefreshConfig(LevelData data)
+    {
+        var blocks = data.ScriptBlocks.OfType<ConstantBlock>().ToArray();
+        foreach (var b in blocks)
+        {
+            foreach (var c in b.CurrentConfig) c.Value.Setup(b);
+        }
+
+        ConfigGroup = blocks
+            .Where(b => b.Public)
+            .Select(b => b.GetConfigType())
+            .Concat(Objects.Groups.ConfigGroup.Prefab).ToList();
     }
 
     public override void Click(Vector3 mousePosition, bool first)
@@ -126,7 +151,8 @@ public class Prefab : PreviewableBehaviour
 {
     public string id;
     public List<GameObject> spawns = [];
-    private Dictionary<string, ReceiveBlock> _receivers = [];
+    private readonly Dictionary<string, ReceiveBlock> _receivers = [];
+    private readonly Dictionary<string, string> _constants = [];
 
     public int visibility;
 
@@ -136,6 +162,11 @@ public class Prefab : PreviewableBehaviour
     public void Destroy()
     {
         foreach (var spawn in spawns) Destroy(spawn);
+    }
+
+    public void ApplyConfig(string block, string value)
+    {
+        _constants[block] = value;
     }
 
     private void Start()
@@ -198,6 +229,10 @@ public class Prefab : PreviewableBehaviour
                     if (!rb.Local) continue;
                     rb.ActualEventName = ((ReceiveBlock)block).EventName;
                     _receivers[rb.ActualEventName] = rb;
+                    break;
+                case ConstantBlock cb:
+                    if (!cb.Public) continue;
+                    if (_constants.TryGetValue(block.BlockId, out var value)) cb.Load(value);
                     break;
             }
         }

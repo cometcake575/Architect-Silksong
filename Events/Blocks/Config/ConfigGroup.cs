@@ -5,6 +5,7 @@ using Architect.Events.Blocks.Events;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
+using Architect.Objects.Groups;
 using Architect.Workshop.Items;
 using UnityEngine;
 
@@ -12,13 +13,44 @@ namespace Architect.Events.Blocks.Config;
 
 public static class ConfigGroup
 {
-    public static readonly List<ConfigType> ConstantNum =
+    public static readonly List<ConfigType> Constants =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<ConstantBlock>("Configurable", "prefab_configurable", 
+                (b, f) => b.Public = f.GetValue())
+                .WithDefaultValue(false)
+                .MarkPrefabOnly()
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ConstantBlock>("Name", "prefab_configurable_name", 
+                (b, f) => b.ConfigName = f.GetValue())
+                .MarkPrefabOnly()
+        )
+    ];
+    
+    public static readonly List<ConfigType> ConstantNum = GroupUtils.Merge(Constants,
     [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<ConstantNumBlock>("Number", "constant_num", 
                 (b, f) => b.Value = f.GetValue())
         )
-    ];
+    ]);
+    
+    public static readonly List<ConfigType> ConstantBool = GroupUtils.Merge(Constants,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<ConstantBoolBlock>("Bool", "constant_bool", 
+                (b, f) => b.Value = f.GetValue())
+        )
+    ]);
+    
+    public static readonly List<ConfigType> ConstantText = GroupUtils.Merge(Constants,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<ConstantTextBlock>("Text", "constant_text", 
+                (b, f) => b.Value = f.GetValue())
+        )
+    ]);
     
     public static readonly List<ConfigType> Counter =
     [
@@ -787,22 +819,6 @@ public static class ConfigGroup
             {
                 o.Text = value.GetValue();
             }).WithDefaultValue("Sample Text"))
-    ];
-    
-    public static readonly List<ConfigType> ConstantBool =
-    [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<ConstantBoolBlock>("Bool", "constant_bool", 
-                (b, f) => b.Value = f.GetValue())
-        )
-    ];
-    
-    public static readonly List<ConfigType> ConstantText =
-    [
-        ConfigurationManager.RegisterConfigType(
-            new StringConfigType<ConstantTextBlock>("Text", "constant_text", 
-                (b, f) => b.Value = f.GetValue())
-        )
     ];
     
     public static readonly List<ConfigType> Pd =

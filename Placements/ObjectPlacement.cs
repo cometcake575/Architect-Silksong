@@ -418,18 +418,14 @@ public class ObjectPlacement(
 
         private static ConfigValue[] DeserializeConfig(Dictionary<string, string> data)
         {
+            List<ConfigValue> config = [];
             try
             {
-                var config = new ConfigValue[data.Count];
+                config.AddRange(data
+                    .Select(pair => ConfigurationManager.DeserializeConfigValue(pair.Key, pair.Value))
+                    .Where(cfg => cfg != null));
 
-                var i = 0;
-                foreach (var pair in data)
-                {
-                    config[i] = ConfigurationManager.DeserializeConfigValue(pair.Key, pair.Value);
-                    i++;
-                }
-
-                return config;
+                return config.ToArray();
             }
             catch (Exception)
             {

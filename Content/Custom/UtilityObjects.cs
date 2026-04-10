@@ -108,7 +108,7 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.DisableRenderer)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
-        Categories.Utility.Add(CreateObjectRemover("object_remover", "Disable Object", (o, _) =>
+        Categories.Legacy.Add(CreateObjectRemover("object_remover", "Disable Object", (o, _) =>
             {
                 var config = o.GetComponent<ObjectRemoverConfig>();
                 GameObject point = null;
@@ -127,7 +127,7 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.ObjectRemover)
             .WithReceiverGroup(ReceiverGroup.Generic));
         
-        Categories.Utility.Add(CreateObjectEnabler());
+        Categories.Legacy.Add(CreateObjectEnabler());
         
         Categories.Utility.Add(CreateObjectRemover("room_remover", "Clear Room", (o, filter) =>
                 {
@@ -312,8 +312,10 @@ public static class UtilityObjects
         return new CustomObject("Object Hook", "object_hook", hook, 
                 "Allows using vanilla objects in the Script Editor.\n\n" +
                 "The path to an object can be found with tools such as Unity Explorer.",
-                sprite:ResourceUtils.LoadSpriteResource("enemy_hook", FilterMode.Point, ppu:64))
-            .WithConfigGroup(ConfigGroup.EnemyHook)
+                preview: true,
+                sprite:ResourceUtils.LoadSpriteResource("object_hook", FilterMode.Point, ppu:100))
+            .WithConfigGroup(ConfigGroup.ObjectHook)
+            .WithReceiverGroup(ReceiverGroup.ObjectHook)
             .WithOutputGroup(OutputGroup.ObjectHook);
     }
 

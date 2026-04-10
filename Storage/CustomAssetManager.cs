@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Architect.Behaviour.Custom;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events.Blocks.Config.Types;
@@ -132,11 +131,12 @@ public static class CustomAssetManager
                 var task = Task.Run(() => SaveFile(url, path));
                 while (!task.IsCompleted) yield return null;
             }
-            yield return ArchitectPlugin.Instance.StartCoroutine(ResourceUtils.LoadClip(path, clip =>
+            yield return ResourceUtils.LoadClip(path, clip =>
             {
                 if (clip) Sounds[url] = clip;
                 LoadingSounds.Remove(url);
-            }));
+            });
+            if (!Sounds.ContainsKey(url)) yield break;
         }
 
         callback(Sounds[url]);

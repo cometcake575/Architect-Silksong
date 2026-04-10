@@ -71,7 +71,7 @@ public static class PreloadManager
         }
     }
 
-    private static void FinishPreloading()
+    public static void FinishPreloading()
     {
         if (HasPreloaded) return;
         SetupCanvas();
@@ -91,11 +91,14 @@ public static class PreloadManager
         _totalCount = Preloaded.Count(p => p.Item1.ShouldAlwaysLoad);
         foreach (var (preload, asset) in Preloaded)
         {
+            if (preload.Loaded) continue;
             if (!preload.ShouldAlwaysLoad)
             {
                 preload.SetAsset(asset);
                 continue;
             }
+
+            preload.MarkLoaded();
             ArchitectPlugin.Instance.StartCoroutine(Prepare(preload, asset));
         }
 

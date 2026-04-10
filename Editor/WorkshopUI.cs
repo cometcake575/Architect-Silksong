@@ -334,6 +334,7 @@ public static class WorkshopUI
                 if (i >= 15) break;
             }
         }
+        else _pageNum = 0;
 
         _pageCounter.text = $"{_pageNum+1}/{_pageMax}";
         for (; i < 15; i++)

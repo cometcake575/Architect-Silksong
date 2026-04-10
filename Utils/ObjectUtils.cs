@@ -96,4 +96,9 @@ public static class ObjectUtils
         point = dir + pivot;
         return point;
     }
+
+    public static void DisableChild(this Transform transform, params int[] children)
+    {
+        children.Aggregate(transform, (current, c) => current.GetChild(c)).gameObject.SetActive(false);
+    }
 }

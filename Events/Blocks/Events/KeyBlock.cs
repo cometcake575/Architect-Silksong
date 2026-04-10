@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Architect.Utils;
 using Architect.Workshop.Items;
 using InControl;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace Architect.Events.Blocks.Events;
 public class KeyBlock : ToggleableBlock
 {
     protected override IEnumerable<string> Outputs => ["OnPress", "OnRelease"];
+    protected override IEnumerable<string> Inputs => ["Disable", "Enable"];
     protected override IEnumerable<(string, string)> OutputVars => [("Held", "Boolean")];
     protected override Color Color => Color.green;
     protected override string Name => "Key Listener";
@@ -20,6 +22,27 @@ public class KeyBlock : ToggleableBlock
     {
         var te = new GameObject("[Architect] Key Listener Block").AddComponent<KeyEvent>();
         te.Block = this;
+    }
+    
+    protected override void Trigger(string trigger)
+    {
+        //InputHandler.Instance.buttons
+        if (trigger == "Prompt")
+        {
+            /*ControlReminder.PushSingle(new CustomConfig
+            {
+                Text = (LocalStr)"Test",
+                DisappearOnButtonPress = false,
+                Button = 
+            });
+            ControlReminder.ShowPushed();*/
+        }
+        else base.Trigger(trigger);
+    }
+
+    public class CustomConfig : ControlReminder.SingleConfig
+    {
+         
     }
 
     protected override object GetValue(string id)
