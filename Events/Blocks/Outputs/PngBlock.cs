@@ -6,8 +6,8 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class PngBlock : ScriptBlock
 {
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Custom PNG";
 
     protected override IEnumerable<(string, string)> OutputVars => [("Current Sprite", "Sprite")];

@@ -10,6 +10,7 @@ public class FsmHook : MonoBehaviour
     public string targetId;
     public string fsmName;
     public string stateName;
+    public int index;
     
     private PlayMakerFSM _fsm;
     
@@ -54,7 +55,7 @@ public class FsmHook : MonoBehaviour
         _setup = true;
         if (!PlacementManager.Objects.TryGetValue(targetId, out var target) && targetId != "Hero_Hornet")
         {
-            var o = ObjectUtils.FindGameObject(targetId);
+            var o = ObjectUtils.FindGameObject(targetId, index);
             if (!o) return;
             target = o;
         }

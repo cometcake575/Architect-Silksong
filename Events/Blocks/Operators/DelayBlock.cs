@@ -11,8 +11,6 @@ public class DelayBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["In", "Cancel"];
     protected override IEnumerable<string> Outputs => ["Out"];
 
-    private static readonly Color DefaultColor = Color.yellow;
-    protected override Color Color => DefaultColor;
     protected override string Name => "Delay";
 
     public float Delay;
@@ -51,8 +49,6 @@ public class WaitUntilBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["In", "Cancel"];
     protected override IEnumerable<string> Outputs => ["Out"];
 
-    private static readonly Color DefaultColor = Color.yellow;
-    protected override Color Color => DefaultColor;
     protected override string Name => "Wait Until";
 
     private DelayObj _delay;
@@ -87,8 +83,6 @@ public class LoopBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["In", "Cancel"];
     protected override IEnumerable<string> Outputs => ["Out"];
 
-    private static readonly Color DefaultColor = Color.yellow;
-    protected override Color Color => DefaultColor;
     protected override string Name => "Loop";
 
     public float Delay;

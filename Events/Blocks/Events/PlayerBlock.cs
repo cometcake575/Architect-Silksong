@@ -36,7 +36,6 @@ public class PlayerBlock : ToggleableBlock
         ("Down", "Boolean"),
         ("Self", "Object")
     ];
-    protected override Color Color => Color.green;
     protected override string Name => "Player Listener";
 
     public override void SetupReference()
@@ -54,6 +53,11 @@ public class PlayerBlock : ToggleableBlock
             "Right" => HeroController.instance.cState.facingRight,
             "Up" => HeroController.instance.cState.lookingUp,
             "Down" => HeroController.instance.cState.lookingDown,
+            "Benched" => PlayerData.instance.atBench,
+            "Sprinting" => HeroController.instance.sprintFSM.ActiveStateName.Contains("Sprint"),
+            "Floating" => HeroController.instance.umbrellaFSM.ActiveStateName == "Float Idle",
+            "Clawlining" => HeroController.instance.harpoonDashFSM.ActiveStateName == "Catch" 
+                            || HeroController.instance.harpoonDashFSM.ActiveStateName == "Dash",
             "X" => HeroController.instance.transform.GetPositionX(),
             "Y" => HeroController.instance.transform.GetPositionY(),
             "Self" => HeroController.instance.gameObject,
@@ -75,4 +79,65 @@ public class PlayerBlock : ToggleableBlock
             PlayerHook.PlayerListenerBlocks.Remove(this);
         }
     }
+}
+
+public class StateBlock : PlayerBlock
+{
+    protected override string Name => "Player State";
+    
+    protected override IEnumerable<string> Outputs => [
+        "OnFaceLeft",
+        "OnFaceRight",
+        "OnLand",
+        "OnHardLand",
+        "OnBench",
+        "OnUnbench"
+    ];
+
+    protected override IEnumerable<(string, string)> OutputVars => [
+        ("Ground", "Boolean"),
+        ("Left", "Boolean"),
+        ("Right", "Boolean"),
+        ("Up", "Boolean"),
+        ("Down", "Boolean"),
+        ("Benched", "Boolean"),
+        ("Self", "Object")
+    ];
+}
+
+public class ActionBlock : PlayerBlock
+{
+    protected override string Name => "Player Movement";
+    
+    protected override IEnumerable<string> Outputs => [
+        "OnJump",
+        "OnWallJump",
+        "OnDoubleJump",
+        "OnInflate",
+        "OnDownDash",
+        "OnDash",
+        "OnClawline"
+    ];
+
+    protected override IEnumerable<(string, string)> OutputVars => [
+        ("Sprinting", "Boolean"),
+        ("Floating", "Boolean"),
+        ("Clawlining", "Boolean"),
+        ("Self", "Object")
+    ];
+}
+
+public class AttackBlock : PlayerBlock
+{
+    protected override string Name => "Player Attack";
+    
+    protected override IEnumerable<string> Outputs => [
+        "OnAttack",
+        "OnNormalAttack",
+        "OnUpAttack",
+        "OnDownAttack",
+        "OnDashAttack"
+    ];
+
+    protected override IEnumerable<(string, string)> OutputVars => [("Self", "Object")];
 }

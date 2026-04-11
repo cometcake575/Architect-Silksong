@@ -9,8 +9,6 @@ public class CounterBlock : ScriptBlock
     protected override IEnumerable<string> Outputs => ["Out"];
     protected override IEnumerable<(string, string)> OutputVars => [("Count", "Number")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Counter";
 
     public int Count;

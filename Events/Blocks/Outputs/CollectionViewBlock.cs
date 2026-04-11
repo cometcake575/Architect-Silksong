@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class CollectionViewBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 {
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Collection View";
 
     private static GameObject _deskPrefab;
@@ -41,7 +41,7 @@ public class CollectionViewBlock : CollectionBlock<ShopBlock.ShopItemBlock>
     
     public class CollectionItemBlock : ChildBlock
     {
-        protected override Color Color => DefaultColor;
+        
         
         public string ItemId = "Rosary_Set_Small";
 

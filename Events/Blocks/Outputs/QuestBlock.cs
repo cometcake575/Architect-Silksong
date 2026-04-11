@@ -19,8 +19,8 @@ public class QuestBlock : ScriptBlock
         ("CanComplete", "Boolean")
     ];
 
-    private static readonly Color DefaultColor = new(0.6f, 0.2f, 0.9f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Custom Quest Control";
 
     public override void Reset()

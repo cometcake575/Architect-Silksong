@@ -7,62 +7,49 @@ public static class ActionBlocks
 {
     public static void Init()
     {
-        TimeSlowerBlock.Init();
-        PowerupGetBlock.Init();
-        LegacyTravelBlock.Init();
-        TravelBlock.Init();
-        ShopBlock.Init();
-        QuestboardBlock.Init();
-        SetLightingBlock.Init();
-        SilkBlock.Init();
-        CrestBlock.Init();
-        CollectionViewBlock.Init();
-        //EndingBlock.Init();
+        Category.World.RegisterBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
+        Category.World.RegisterBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook, SilkBlock.Init);
+        Category.World.RegisterBlock<CurrencyBlock>("Currency Control", ConfigGroup.CurrencyHook);
+        Category.World.RegisterBlock<StatusBlock>("Status Control");
+        Category.World.RegisterBlock<QuestBlock>("Quest Control", ConfigGroup.QuestControl);
+        Category.World.RegisterBlock<JournalEntryBlock>("Journal Control", ConfigGroup.EntryControl);
+        Category.World.RegisterBlock<AchievementBlock>("Achievement Control", ConfigGroup.AchievementControl);
+        Category.World.RegisterBlock<ToolBlock>("Tool Control", ConfigGroup.ToolControl);
+        Category.World.RegisterBlock<CrestBlock>("Crest Control", ConfigGroup.CrestControl, CrestBlock.Init);
+        Category.World.RegisterBlock<ItemBlock>("Item Control", ConfigGroup.ItemControl);
+        Category.World.RegisterBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
+        Category.Visual.RegisterBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
+        Category.Visual.RegisterBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
+        // ScriptManager.RegisterBlock<InputBlock>("Input Display", ConfigGroup.InputDisplay);
+        Category.Visual.RegisterBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
+        Category.Visual.RegisterBlock<SongBlock>("Song Display", ConfigGroup.SongDisplay);
+        Category.Visual.RegisterBlock<PngBlock>("Custom PNG", ConfigGroup.Png);
+        Category.Visual.RegisterBlock<PowerupGetBlock>("Powerup Display", ConfigGroup.PowerupDisplay, PowerupGetBlock.Init);
+        Category.Visual.RegisterBlock<ShakeCameraBlock>("Camera Shake", ConfigGroup.CameraShaker);
+        Category.Visual.RegisterBlock<UIBlock>("UI Control", ConfigGroup.UIControl);
+        Category.Visual.RegisterBlock<TimeSlowerBlock>("Time Slowdown", ConfigGroup.TimeSlower, TimeSlowerBlock.Init);
+        Category.Visual.RegisterBlock<AnimatorBlock>("Animator Controller", ConfigGroup.AnimPlayer);
+        Category.World.RegisterBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
+        Category.Visual.RegisterBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting, SetLightingBlock.Init);
+        Category.World.RegisterBlock<SpawnObjectBlock>("Spawn Object", ConfigGroup.SpawnObject);
+        Category.World.RegisterBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
+        Category.World.RegisterBlock<ObjectMoverBlock>("Move Object");
+        //ScriptManager.RegisterBlock<EndingBlock>("Ending Control");
         
-        ScriptManager.RegisterInputBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
-        ScriptManager.RegisterInputBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook);
-        ScriptManager.RegisterInputBlock<CurrencyBlock>("Currency Control", ConfigGroup.CurrencyHook);
-        ScriptManager.RegisterInputBlock<StatusBlock>("Status Control");
-        ScriptManager.RegisterInputBlock<QuestBlock>("Quest Control", ConfigGroup.QuestControl);
-        ScriptManager.RegisterInputBlock<JournalEntryBlock>("Journal Control", ConfigGroup.EntryControl);
-        ScriptManager.RegisterInputBlock<AchievementBlock>("Achievement Control", ConfigGroup.AchievementControl);
-        ScriptManager.RegisterInputBlock<ToolBlock>("Tool Control", ConfigGroup.ToolControl);
-        ScriptManager.RegisterInputBlock<CrestBlock>("Crest Control", ConfigGroup.CrestControl);
-        ScriptManager.RegisterInputBlock<ItemBlock>("Item Control", ConfigGroup.ItemControl);
-        ScriptManager.RegisterInputBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
-        ScriptManager.RegisterInputBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
-        ScriptManager.RegisterInputBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
-        // ScriptManager.RegisterInputBlock<InputBlock>("Input Display", ConfigGroup.InputDisplay);
-        ScriptManager.RegisterInputBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
-        ScriptManager.RegisterInputBlock<NeedolinBlock>("Song Display", ConfigGroup.SongDisplay);
-        ScriptManager.RegisterProcessBlock<PngBlock>("Custom PNG", ConfigGroup.Png);
-        ScriptManager.RegisterInputBlock<PowerupGetBlock>("Powerup Display", ConfigGroup.PowerupDisplay);
-        ScriptManager.RegisterInputBlock<ShakeCameraBlock>("Camera Shake", ConfigGroup.CameraShaker);
-        ScriptManager.RegisterInputBlock<UIBlock>("UI Control", ConfigGroup.UIControl);
-        ScriptManager.RegisterInputBlock<TimeSlowerBlock>("Time Slowdown", ConfigGroup.TimeSlower);
-        ScriptManager.RegisterInputBlock<AnimatorBlock>("Animator Controller", ConfigGroup.AnimPlayer);
-        ScriptManager.RegisterInputBlock<BroadcastBlock>("Broadcast", ConfigGroup.Broadcast);
-        ScriptManager.RegisterInputBlock<MultiplayerInBlock>("Multiplayer Event", ConfigGroup.MultiplayerIn);
-        ScriptManager.RegisterInputBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
-        ScriptManager.RegisterInputBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting);
-        ScriptManager.RegisterInputBlock<SpawnObjectBlock>("Spawn Object", ConfigGroup.SpawnObject);
-        ScriptManager.RegisterInputBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
-        ScriptManager.RegisterInputBlock<ObjectMoverBlock>("Move Object");
-        //ScriptManager.RegisterInputBlock<EndingBlock>("Ending Control");
+        Category.Visual.RegisterBlock<TravelBlock>("Travel UI", ConfigGroup.TravelUI, TravelBlock.Init);
+        Category.Visual.RegisterHiddenBlock<TravelBlock.TravelLoc>("Travel Target", ConfigGroup.TravelUITarget);
         
-        ScriptManager.RegisterInputBlock<TravelBlock>("Travel UI", ConfigGroup.TravelUI);
-        ScriptManager.RegisterHiddenBlock<TravelBlock.TravelLoc>("Travel Target", ConfigGroup.TravelUITarget);
+        Category.Visual.RegisterBlock<ShopBlock>("Shop", init: ShopBlock.Init);
+        Category.Visual.RegisterHiddenBlock<ShopBlock.ShopItemBlock>("Shop Item", ConfigGroup.ShopItem);
         
-        ScriptManager.RegisterInputBlock<ShopBlock>("Shop");
-        ScriptManager.RegisterHiddenBlock<ShopBlock.ShopItemBlock>("Shop Item", ConfigGroup.ShopItem);
-        
-        /*ScriptManager.RegisterInputBlock<CollectionViewBlock>("Collection View");
+        /*ScriptManager.RegisterBlock<CollectionViewBlock>("Collection View");
         ScriptManager.RegisterHiddenBlock<CollectionViewBlock.CollectionItemBlock>("Collection Item", ConfigGroup.CollectionItem);*/
         
-        ScriptManager.RegisterInputBlock<QuestboardBlock>("Quest Board");
-        ScriptManager.RegisterHiddenBlock<QuestboardBlock.QuestBlock>("Quest Item", ConfigGroup.QuestItem);
+        Category.Visual.RegisterBlock<QuestboardBlock>("Quest Board", init: QuestboardBlock.Init);
+        Category.Visual.RegisterHiddenBlock<QuestboardBlock.QuestBlock>("Quest Item", ConfigGroup.QuestItem);
         
-        ScriptManager.RegisterHiddenBlock<LegacyTravelBlock>("Travel List", ConfigGroup.TravelList);
-        ScriptManager.RegisterHiddenBlock<TravelLoc>("Travel", ConfigGroup.Travel);
+        LegacyTravelBlock.Init();
+        Category.Visual.RegisterHiddenBlock<LegacyTravelBlock>("Travel List", ConfigGroup.TravelList);
+        Category.Visual.RegisterHiddenBlock<TravelLoc>("Travel", ConfigGroup.Travel);
     }
 }

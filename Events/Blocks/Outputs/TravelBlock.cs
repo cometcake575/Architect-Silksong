@@ -103,8 +103,6 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
         ("Bottom", "Sprite")
     ];
     
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Travel UI";
     
     protected override string ChildName => "Travel Target";
@@ -209,8 +207,6 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
 
     public class TravelLoc : ChildBlock
     {
-        protected override Color Color => DefaultColor;
-        
         protected override IEnumerable<(string, string)> InputVars => [("Unlocked", "Boolean")];
         protected override IEnumerable<string> Outputs => ["OnChoose"];
         

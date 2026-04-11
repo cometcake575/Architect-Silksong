@@ -22,8 +22,6 @@ public class ConstantNumBlock : ConstantBlock
 
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Constant (Number)";
 
     protected override object GetValue(string id)
@@ -51,8 +49,6 @@ public class ConstantBoolBlock : ConstantBlock
 
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Constant (Bool)";
 
     protected override object GetValue(string id)
@@ -80,8 +76,6 @@ public class ConstantTextBlock : ConstantBlock
 
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Text")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Constant (Text)";
 
     protected override object GetValue(string id)

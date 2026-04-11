@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Architect.Events.Blocks.Events;
 using Architect.Utils;
 using GlobalEnums;
+using PrepatcherPlugin;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -63,11 +64,18 @@ public class PlayerHook : MonoBehaviour
                 PlayerEvent("HardLand");
             });
 
-        typeof(HeroController).Hook("DoAttack",
-            (Action<HeroController> orig, HeroController self) =>
+        typeof(HeroController).Hook(nameof(HeroController.Attack),
+            (Action<HeroController, AttackDirection> orig, HeroController self, AttackDirection dir) =>
             {
-                orig(self);
+                orig(self, dir);
                 PlayerEvent("Attack");
+                
+                PlayerEvent(dir switch
+                {
+                    AttackDirection.upward => "UpAttack",
+                    AttackDirection.downward => "DownAttack",
+                    _ => "NormalAttack"
+                });
             });
 
         typeof(HeroController).Hook(nameof(HeroController.BindCompleted),
@@ -99,16 +107,37 @@ public class PlayerHook : MonoBehaviour
             {
                 PlayerEvent("OnHazardRespawn");
             };
-
+            
+            self.umbrellaFSM.GetState("Inflate").AddAction(() => PlayerEvent("OnInflate"), 0);
+            self.harpoonDashFSM.GetState("Antic").AddAction(() => PlayerEvent("OnClawline"), 0);
+            
+            var sprintFsm = self.sprintFSM;
+            sprintFsm.fsmTemplate = null;
+            
+            sprintFsm.GetState("Start Attack").AddAction(() =>
+            {
+                PlayerEvent("OnDashAttack");
+            }, 0);
+            
             HeroPerformanceRegion.StartedPerforming += () => PlayerEvent("NeedolinStart");
             HeroPerformanceRegion.StoppedPerforming += () => PlayerEvent("NeedolinStop");
+        };
+        
+        PlayerDataVariableEvents.OnSetBool += (_, name, current) =>
+        {
+            if (name == "atBench") PlayerEvent(current ? "OnBench" : "OnUnbench");
+            return current;
         };
     }
 
     private static void PlayerEvent(string triggerName)
     {
         foreach (var obj in PlayerListeners.ToArray()) obj?.BroadcastEvent(triggerName);
-        foreach (var obj in PlayerListenerBlocks.ToArray()) obj?.Block.Event(triggerName);
+        foreach (var obj in PlayerListenerBlocks.ToArray())
+        {
+            obj?.Block.Event(triggerName);
+            obj?.Block.Event($"On{triggerName}");
+        }
     }
     
     private void OnEnable()

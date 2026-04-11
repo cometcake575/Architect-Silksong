@@ -51,8 +51,8 @@ public abstract class ScriptBlock
     protected int InputVarCount => InputVars.Count();
     protected int OutputVarCount => OutputVars.Count();
     protected int ConfigCount => Config?.Count ?? 0;
-    
-    protected abstract Color Color { get; }
+
+    public virtual Color Color { get; set; }
     protected abstract string Name { get; }
 
     public Dictionary<string, List<(string, string)>> EventMap = [];

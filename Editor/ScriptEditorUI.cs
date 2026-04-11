@@ -101,7 +101,7 @@ public static class ScriptEditorUI
         ap.anchorMin = new Vector2(0.5f, 1);
         ap.offsetMax = Vector2.zero;
         ap.offsetMin = Vector2.zero;
-        ap.anchoredPosition = new Vector2(0, -40);
+        ap.anchoredPosition = new Vector2(0, -60);
 
         var (left, _) = UIUtils.MakeTextButton(
             "Go Left",
@@ -145,6 +145,21 @@ public static class ScriptEditorUI
             });
             labels.Add(txt.textComponent);
         }
+
+        var (tb, lb) = UIUtils.MakeTextbox("Search", addParent, new Vector2(0, 25),
+            new Vector2(0.5f, 1), new Vector2(0.5f, 1),
+            1000, 50);
+        lb.textComponent.rectTransform.sizeDelta /= 3;
+        lb.textComponent.fontSize = 11;
+        lb.transform.localScale = Vector3.one;
+
+        var filter = string.Empty;
+        tb.onValueChanged.AddListener(s =>
+        {
+            filter = s;
+            index = 0;
+            DoRefresh();
+        });
         
         left.onClick.AddListener(() =>
         {
@@ -161,54 +176,32 @@ public static class ScriptEditorUI
 
             DoRefresh();
         });
-        
-        var (topBtn, topImg, _) = UIUtils.MakeButtonWithImage(
-            "Top",
-            scriptUI,
-            new Vector2(-32, -62),
-            new Vector2(1, 1),
-            new Vector2(1, 1),
-            128,
-            64);
-        topImg.sprite = ResourceUtils.LoadSpriteResource("Flowcharts.output", ppu: 15, filterMode: FilterMode.Point);
-        topBtn.onClick.AddListener(() =>
-        {
-            ScriptManager.CurrentType = ScriptManager.BlockType.Output;
-            index = 0;
-            DoRefresh();
-        });
-        
-        var (midBtn, midImg, _) = UIUtils.MakeButtonWithImage(
-            "Middle",
-            scriptUI,
-            new Vector2(-32, -5),
-            new Vector2(1, 0.5f),
-            new Vector2(1, 0.5f),
-            128,
-            64);
-        midImg.sprite = ResourceUtils.LoadSpriteResource("Flowcharts.middle", ppu: 15, filterMode: FilterMode.Point);
-        midBtn.onClick.AddListener(() =>
-        {
-            ScriptManager.CurrentType = ScriptManager.BlockType.Process;
-            index = 0;
-            DoRefresh();
-        });
 
-        var (botBtn, botImg, _) = UIUtils.MakeButtonWithImage(
-            "Bottom",
-            scriptUI,
-            new Vector2(-32, 52),
-            new Vector2(1, 0),
-            new Vector2(1, 0),
-            128,
-            64);
-        botImg.sprite = ResourceUtils.LoadSpriteResource("Flowcharts.input", ppu: 15, filterMode: FilterMode.Point);
-        botBtn.onClick.AddListener(() =>
+        var pos = (Category.Categories.Count - 1) * 20;
+        var sprite = ResourceUtils.LoadSpriteResource("Flowcharts.middle_white", ppu: 15, filterMode: FilterMode.Point);
+        foreach (var category in Category.Categories)
         {
-            ScriptManager.CurrentType = ScriptManager.BlockType.Input;
-            index = 0;
-            DoRefresh();
-        });
+            var (midBtn, midImg, midTxt) = UIUtils.MakeButtonWithImage(
+                $"{category.Name} Button",
+                scriptUI,
+                new Vector2(32, pos),
+                new Vector2(0, 0.5f),
+                new Vector2(0, 0.5f),
+                64,
+                32);
+            midTxt.textComponent.text = category.Name;
+            midTxt.textComponent.fontSize = 24;
+            midTxt.textComponent.rectTransform.anchoredPosition = new Vector2(0, -55);
+            midImg.sprite = sprite;
+            midImg.color = category.Colour;
+            midBtn.onClick.AddListener(() =>
+            {
+                ScriptManager.CurrentCategory = category;
+                index = 0;
+                DoRefresh();
+            });
+            pos -= 40;
+        }
 
         ToggleParent = CreateBlankParent("Mode Toggles", scriptUI, 0);
         _localBtnText = SetupSwitchButton(ToggleParent, true, "Local Script", new Vector3(-200, 20));
@@ -229,10 +222,14 @@ public static class ScriptEditorUI
 
         void DoRefresh()
         {
+            var blocks = ScriptManager.CurrentBlocks
+                .Where(c => 
+                    c.Item2.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
+                .ToArray();
             for (var i = 0; i < labels.Count; i++)
             {
-                labels[i].text = ScriptManager.CurrentBlocks.Count <= index + i ? "" :
-                    ScriptManager.CurrentBlocks[index + i].Item2;
+                labels[i].text = blocks.Length <= index + i ? "" :
+                    blocks[index + i].Item2;
             }
         }
     }

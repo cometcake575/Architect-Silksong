@@ -11,8 +11,6 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
 {
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Quest Board";
 
     private static GameObject _questBoard;
@@ -95,7 +93,7 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
     
     public class QuestBlock : ChildBlock
     {
-        protected override Color Color => DefaultColor;
+        
 
         public string QuestName = string.Empty;
 

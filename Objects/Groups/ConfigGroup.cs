@@ -128,6 +128,11 @@ public static class ConfigGroup
                 o.GetComponent<ObjectHook>().start = value.GetValue();
             }).WithOptions("Normal", "Inactive", "Active").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Index", "object_hook_index", (o, value) =>
+            {
+                o.GetComponent<ObjectHook>().index = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Remove Normal Activators", "remove_vanilla_disablers", (o, value) =>
             {
                 if (value.GetValue()) EnemyFixers.KeepActive(o);
@@ -138,7 +143,14 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ];
     
-    public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic, [Hook]);
+    public static readonly List<ConfigType> EnemyHook = GroupUtils.Merge(Generic, [
+        Hook,
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Index", "enemy_hook_index", (o, value) =>
+            {
+                o.GetComponent<EnemyHook>().index = value.GetValue();
+            }).WithDefaultValue(0))
+    ]);
     
     public static readonly List<ConfigType> CocoonSpawnPoint = GroupUtils.Merge(Generic,
     [
@@ -1589,7 +1601,7 @@ public static class ConfigGroup
             }).WithDefaultValue(1))
     ]);
     
-    public static readonly List<ConfigType> Colourer = [
+    public static readonly List<ConfigType> Colourer = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(
             new IdConfigType("Object ID", "colourer_target", (o, value) =>
             {
@@ -1632,7 +1644,7 @@ public static class ConfigGroup
             {
                 o.GetComponent<ObjectColourer>().mode = value.GetValue();
             }).WithOptions("Multiply", "Set", "Brighten").WithDefaultValue(0))
-    ];
+    ]);
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",
@@ -1829,6 +1841,11 @@ public static class ConfigGroup
                     o.GetComponent<FsmHook>().targetId = value.GetValue();
                 }
             )),
+            ConfigurationManager.RegisterConfigType(
+                new IntConfigType("Index", "fsm_hook_index", (o, value) =>
+                {
+                    o.GetComponent<FsmHook>().index = value.GetValue();
+                }).WithDefaultValue(0)),
             ConfigurationManager.RegisterConfigType(new StringConfigType("FSM Name", "fsm_hook_name", 
                 (o, value) => 
                 {

@@ -25,7 +25,7 @@ public class SpawnObjectBlock : ScriptBlock
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Last", "Object")];
 
-    protected override Color Color => ObjectBlock.ValidColor;
+    public override Color Color => ObjectBlock.ValidColor;
     protected override string Name => "Spawn Object";
 
     public override void Reset()

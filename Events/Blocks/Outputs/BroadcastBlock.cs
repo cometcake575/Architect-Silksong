@@ -10,9 +10,7 @@ namespace Architect.Events.Blocks.Outputs;
 public class BroadcastBlock : LocalBlock
 {
     protected override IEnumerable<string> Inputs => ["Broadcast"];
-
-    private static readonly Color DefaultColor = new(0.8f, 0.2f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
     protected override string Name => "Broadcast";
 
     public GameObject TargetPrefab;

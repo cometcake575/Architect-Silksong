@@ -11,8 +11,8 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 {
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Shop";
 
     private static ShopMenuStock _shopPrefab;
@@ -72,7 +72,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
     
     public class ShopItemBlock : ChildBlock
     {
-        protected override Color Color => DefaultColor;
+        
         
         public string ItemId = "Rosary_Set_Small";
         public string ItemName = string.Empty;

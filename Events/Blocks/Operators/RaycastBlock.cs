@@ -20,9 +20,7 @@ public class RaycastBlock : ScriptBlock
         ("Y", "Number"),
         ("Distance", "Number")
     ];
-
-    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
-    protected override Color Color => DefaultColor;
+    
     protected override string Name => "Raycast";
 
     public override void Reset()

@@ -42,8 +42,8 @@ public class SetLightingBlock : ScriptBlock
     
     protected override IEnumerable<string> Inputs => ["Set"];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Set Lighting";
 
     public override void Reset()

@@ -22,8 +22,8 @@ public class PlayerDataBoolBlock : ScriptBlock
     protected override IEnumerable<string> Outputs => ["OnTrue", "OnFalse"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "PlayerData Control (Bool)";
 
     public string Data = string.Empty;
@@ -64,8 +64,8 @@ public class PersistentBoolBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Set", "ClearScene"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Persistent Data Control";
 
     public string Group;
@@ -94,8 +94,8 @@ public class PlayerDataIntBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Set", "Add", "Subtract"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "PlayerData Control (Int)";
 
     public string Data;
@@ -128,8 +128,8 @@ public class PlayerDataFloatBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Set", "Add", "Subtract"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "PlayerData Control (Float)";
 
     public string Data;

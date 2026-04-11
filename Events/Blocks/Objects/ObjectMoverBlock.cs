@@ -36,7 +36,7 @@ public class ObjectMoverBlock : ScriptBlock
         ("Force Y", "Number")
     ];
     
-    protected override Color Color => ObjectBlock.ValidColor;
+    public override Color Color => ObjectBlock.ValidColor;
     protected override string Name => "Move Object";
 
     protected override void Trigger(string trigger)

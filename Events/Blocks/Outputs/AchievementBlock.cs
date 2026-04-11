@@ -10,8 +10,8 @@ public class AchievementBlock : ScriptBlock
         ("Completed", "Boolean")
     ];
 
-    private static readonly Color DefaultColor = new(0.6f, 0.2f, 0.9f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Achievement Control";
 
     public override void Reset()

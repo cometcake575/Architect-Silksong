@@ -6,8 +6,8 @@ namespace Architect.Events.Blocks.Operators;
 
 public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
 {
-    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Step Counter";
     
     protected override IEnumerable<string> Inputs => ["Trigger", "DisableAll", "EnableAll"];
@@ -39,7 +39,7 @@ public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
 
     public class TriggerBlock : ChildBlock
     {
-        protected override Color Color => DefaultColor;
+        
 
         public bool Enabled = true;
 

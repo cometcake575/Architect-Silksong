@@ -11,8 +11,8 @@ public class TransitionBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Transition"];
     protected override IEnumerable<(string, string)> OutputVars => [("InScene", "Boolean")];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Scene Transition";
 
     public string Scene = "Tut_01";

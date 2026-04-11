@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Architect.Events.Blocks.Events;
 using Architect.Utils;
 using BepInEx;
 using GlobalEnums;
@@ -8,22 +9,29 @@ using Math = System.Math;
 
 namespace Architect.Events.Blocks.Outputs;
 
-public class HpBlock : ScriptBlock
+public class HpBlock : PlayerBlock
 {
     protected override IEnumerable<string> Inputs => [
+        "Max", 
         "Give", 
         "GiveBlue",
         "Take",
         "TakeInstant",
         "TakeHazard"];
+    
+    protected override IEnumerable<string> Outputs => [
+        "OnHazardRespawn",
+        "OnDamage",
+        "OnDeath",
+        "OnHeal",
+        "OnHealFail"];
+    
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Amount", "Number"),
-        ("MaxAmount", "Number"),
+        ("Max", "Number"),
         ("Lifeblood", "Number")
     ];
-
-    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
     protected override string Name => "Health Control";
 
     public override void Reset()
@@ -37,6 +45,9 @@ public class HpBlock : ScriptBlock
     {
         switch (trigger)
         {
+            case "Max":
+                HeroController.instance.AddHealth(99999);
+                break;
             case "Give":
                 HeroController.instance.AddHealth(Amount);
                 break;
@@ -82,12 +93,10 @@ public class SilkBlock : ScriptBlock
             });
     }
     
-    protected override IEnumerable<string> Inputs => ["Give", "Take", "BreakCocoon"];
+    protected override IEnumerable<string> Inputs => ["Max", "Give", "Take", "BreakCocoon"];
     protected override IEnumerable<string> Outputs => ["OnGain"];
     protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
-
-    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
     protected override string Name => "Silk Control";
 
     public override void Reset()
@@ -126,6 +135,9 @@ public class SilkBlock : ScriptBlock
     {
         switch (trigger)
         {
+            case "Max":
+                HeroController.instance.AddSilk(9999, true);
+                break;
             case "Give":
                 HeroController.instance.AddSilk(Amount, true);
                 break;
@@ -151,8 +163,8 @@ public class CurrencyBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Give", "Take"];
     protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Currency Control";
 
     public override void Reset()
@@ -188,8 +200,8 @@ public class StatusBlock : ScriptBlock
         ("Frosted", "Boolean"), 
         ("Plasmified", "Boolean")];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.6f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Status Control";
 
     protected override void Trigger(string trigger)

@@ -14,6 +14,7 @@ using Architect.Objects.Tools;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
+using GlobalEnums;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -151,6 +152,7 @@ public static class EditorUI
         btn.onClick.AddListener(() =>
         {
             _currentType = type;
+            UIManager.instance.uiState = type == EditorType.Map ? UIState.PAUSED : UIState.OPTIONS;
             Deletable.DeleteButton.SetActive(false);
         });
         label.textComponent.fontSize = 10;
@@ -455,6 +457,7 @@ public static class EditorUI
         if (legacy)
         {
             _currentType = EditorType.Map;
+            UIManager.instance.uiState = UIState.PAUSED;
             Deletable.DeleteButton.SetActive(false);
         }
         else

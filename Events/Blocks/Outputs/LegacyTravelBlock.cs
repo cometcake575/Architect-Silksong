@@ -117,8 +117,8 @@ public class LegacyTravelBlock : ScriptBlock
         ("Dest 12", "Travel")
     ];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Travel List (Legacy)";
 
     public string Title = "Sample Text";
@@ -211,8 +211,8 @@ public class TravelLoc : ScriptBlock
     protected override IEnumerable<(string, string)> OutputVars => [("This", "Travel")];
     protected override IEnumerable<string> Outputs => ["OnChoose"];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Travel Point (Legacy)";
 
     public string ListName = "Sample Text";

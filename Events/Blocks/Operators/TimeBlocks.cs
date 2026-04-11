@@ -13,7 +13,6 @@ public abstract class TimeBlockType : ScriptBlock
 
 public class TimeBlock : TimeBlockType
 {
-    protected override Color Color => Color.yellow;
     protected override string Name => "Time Block";
 
     protected override IEnumerable<(string, string)> OutputVars =>
@@ -39,7 +38,6 @@ public class TimeBlock : TimeBlockType
 
 public class DayBlock : TimeBlockType
 {
-    protected override Color Color => Color.yellow;
     protected override string Name => "Day Block";
 
     protected override IEnumerable<(string, string)> OutputVars =>

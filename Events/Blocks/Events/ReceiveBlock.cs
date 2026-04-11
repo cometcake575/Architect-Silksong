@@ -7,8 +7,6 @@ public class ReceiveBlock : LocalBlock
 {
     protected override IEnumerable<string> Outputs => ["OnReceive"];
 
-    private static readonly Color DefaultColor = new(0.8f, 0.2f, 0.8f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Receive";
     
     public string ActualEventName = string.Empty;

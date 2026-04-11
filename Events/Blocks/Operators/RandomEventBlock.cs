@@ -6,8 +6,6 @@ namespace Architect.Events.Blocks.Operators;
 
 public class RandomEventBlock : CollectionBlock<RandomEventBlock.TriggerBlock>
 {
-    private static readonly Color DefaultColor = new(0.9f, 0.7f, 0.3f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Random Event";
     
     protected override IEnumerable<string> Inputs => ["Trigger", "DisableAll", "EnableAll"];
@@ -47,7 +45,7 @@ public class RandomEventBlock : CollectionBlock<RandomEventBlock.TriggerBlock>
 
     public class TriggerBlock : ChildBlock
     {
-        protected override Color Color => DefaultColor;
+        
 
         public float Chance;
         public bool Enabled = true;

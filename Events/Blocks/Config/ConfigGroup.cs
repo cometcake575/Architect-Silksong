@@ -292,6 +292,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Needolin =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<NeedolinBlock>("Detection", "needolin_detection", 
+                (b, f) => b.DetectionType = f.GetValue())
+                .WithOptions("All", "Beastling", "Elegy").WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> ShopItem =
     [
         ConfigurationManager.RegisterConfigType(
@@ -653,14 +662,14 @@ public static class ConfigGroup
     public static readonly List<ConfigType> SongDisplay =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<NeedolinBlock>("Text", "song_text", 
+            new StringConfigType<SongBlock>("Text", "song_text", 
                 (b, f) =>
                 {
                     b.Text = f.GetValue();
                 }).WithDefaultValue("Sample Text")
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<NeedolinBlock>("Duration", "song_duration", 
+            new FloatConfigType<SongBlock>("Duration", "song_duration", 
                 (b, f) =>
                 {
                     b.Delay = f.GetValue();

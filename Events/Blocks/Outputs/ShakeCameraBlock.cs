@@ -8,8 +8,8 @@ public class ShakeCameraBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Shake"];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Camera Shake";
     
     public int ShakeType;

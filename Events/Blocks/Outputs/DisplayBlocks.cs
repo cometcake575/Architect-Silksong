@@ -11,8 +11,8 @@ public class TitleBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display", "Cancel"];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Title Display";
     
     public string Header = "";
@@ -33,8 +33,8 @@ public class TextBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Display", "Stop"];
     protected override IEnumerable<string> Outputs => ["OnClose"];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Text Display";
 
     private TextDisplay _display;
@@ -83,8 +83,8 @@ public class ChoiceBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Display"];
     protected override IEnumerable<string> Outputs => ["Yes", "No"];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Choice Display";
     
     public string Text;
@@ -121,8 +121,8 @@ public class InputBlock : ScriptBlock
     protected override IEnumerable<string> Outputs => ["OnSubmit"];
     protected override IEnumerable<(string, string)> OutputVars => [("Input", "Text")];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Input Display";
     
     public string Text;
@@ -182,12 +182,10 @@ public class InputBlock : ScriptBlock
     }
 }
 
-public class NeedolinBlock : ScriptBlock
+public class SongBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display"];
-
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
     protected override string Name => "Song Display";
 
     public string Text = "";

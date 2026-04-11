@@ -17,8 +17,8 @@ public class TimeSlowerBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Slow"];
     protected override IEnumerable<string> Outputs => ["End"];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Time Slowdown";
     
     public float ChangeTime;

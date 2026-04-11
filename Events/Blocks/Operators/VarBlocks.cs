@@ -15,8 +15,8 @@ public class BoolVarBlock : LocalBlock
     private static readonly Dictionary<string, bool> TempVars = [];
     public static readonly Dictionary<string, bool> SemiVars = [];
     
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Variable (Bool)";
 
     public string Id = "";
@@ -78,8 +78,8 @@ public class NumVarBlock : LocalBlock
     private static readonly Dictionary<string, float> TempVars = [];
     public static readonly Dictionary<string, float> SemiVars = [];
     
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Variable (Number)";
 
     public string Id = "";
@@ -140,8 +140,8 @@ public class StringVarBlock : LocalBlock
     private static readonly Dictionary<string, string> TempVars = [];
     public static readonly Dictionary<string, string> SemiVars = [];
     
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Variable (Text)";
 
     public string Id = "";

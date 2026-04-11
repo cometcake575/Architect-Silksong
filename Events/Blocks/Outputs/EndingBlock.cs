@@ -12,8 +12,8 @@ public class EndingBlock : LocalBlock
 {
     protected override IEnumerable<string> Inputs => ["GrantEnding", "PlayCredits"];
 
-    private static readonly Color DefaultColor = new(0.2f, 0.4f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Ending Control";
 
     public string CustomSprite = string.Empty;

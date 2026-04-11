@@ -8,7 +8,6 @@ public class TimerBlock : ToggleableBlock
 {
     protected override IEnumerable<string> Inputs => ["Reset",  "Disable", "Enable"];
     protected override IEnumerable<string> Outputs => ["OnCall"];
-    protected override Color Color => Color.green;
     protected override string Name => "Timer";
 
     public float StartDelay = 1;

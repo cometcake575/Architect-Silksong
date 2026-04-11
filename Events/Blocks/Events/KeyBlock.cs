@@ -11,7 +11,6 @@ public class KeyBlock : ToggleableBlock
     protected override IEnumerable<string> Outputs => ["OnPress", "OnRelease"];
     protected override IEnumerable<string> Inputs => ["Disable", "Enable"];
     protected override IEnumerable<(string, string)> OutputVars => [("Held", "Boolean")];
-    protected override Color Color => Color.green;
     protected override string Name => "Key Listener";
 
     public KeyCode Key = KeyCode.None;

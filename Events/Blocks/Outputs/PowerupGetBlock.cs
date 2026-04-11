@@ -44,8 +44,8 @@ public class PowerupGetBlock : ScriptBlock
         DescBotText = "";
     }
 
-    private static readonly Color DefaultColor = new(0.9f, 0.2f, 0.2f);
-    protected override Color Color => DefaultColor;
+    
+    
     protected override string Name => "Powerup Display";
 
     public string PrefixText = "";

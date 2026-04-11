@@ -10,9 +10,7 @@ public class AnimatorBlock : ScriptBlock
     protected override IEnumerable<string> Outputs => ["Stop"];
     protected override IEnumerable<(string, string)> InputVars => [("Target", "Object")];
     protected override IEnumerable<(string, string)> OutputVars => [("Current", "Text")];
-
-    private static readonly Color DefaultColor = new(0.2f, 0.2f, 0.8f);
-    protected override Color Color => DefaultColor;
+    
     protected override string Name => "Animator Controller";
     
     public string ClipName;

@@ -9,6 +9,7 @@ public class EnemyHook : MonoBehaviour
 {
     public string path;
     public HealthManager hm;
+    public int index;
     
     private void Start()
     {
@@ -24,7 +25,7 @@ public class EnemyHook : MonoBehaviour
 
     public void DoCheck()
     {
-        var obj = ObjectUtils.FindGameObject(path);
+        var obj = ObjectUtils.FindGameObject(path, index);
         if (obj) hm = obj.GetComponent<HealthManager>();
 
         if (!hm) return;

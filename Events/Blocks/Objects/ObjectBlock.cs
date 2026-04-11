@@ -77,7 +77,7 @@ public class ObjectBlock : ScriptBlock
 
     internal static readonly Color ValidColor = new(0.7f, 0.3f, 0.9f);
     private static readonly Color InvalidColor = new(0.6f, 0, 0);
-    protected override Color Color => IsValid ? ValidColor : InvalidColor;
+    public override Color Color => IsValid ? ValidColor : InvalidColor;
     
     protected override string Name => IsValid ? $"{ObjectType?.GetName() ?? "Deleted"} ({TargetId})" :
         $"{ObjectType?.GetName() ?? "Deleted"} (Invalid)";

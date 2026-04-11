@@ -12,8 +12,6 @@ public class ConvertBlock : ScriptBlock
         ("ToBool", "Boolean")
     ];
 
-    private static readonly Color DefaultColor = new(0.9f, 0.5f, 0.2f);
-    protected override Color Color => DefaultColor;
     protected override string Name => "Convert";
 
     protected override object GetValue(string id)

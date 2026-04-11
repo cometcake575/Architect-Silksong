@@ -7,7 +7,6 @@ public class EveryFrameBlock : ToggleableBlock
 {
     protected override IEnumerable<string> Inputs => ["Disable", "Enable"];
     protected override IEnumerable<string> Outputs => ["OnCall"];
-    protected override Color Color => Color.green;
     protected override string Name => "Every Frame";
 
     private TimerEvent _te;

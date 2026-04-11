@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Editor;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Events;
@@ -41,8 +42,12 @@ public static class ScriptManager
     public static void Init()
     {
         EventBlocks.Init();
-        OperatorBlocks.Init();
         ActionBlocks.Init();
+        OperatorBlocks.Init();
+        foreach (var c in Category.Categories)
+        {
+            Category.All.Blocks.AddRange(c.Blocks);
+        }
         
         BlockTypes["object"] = () => new ObjectBlock { Type = "object" };
     }
@@ -50,37 +55,12 @@ public static class ScriptManager
     public static Start CurrentStart;
     public static bool InSwapMode;
     
-    public static readonly List<(Func<ScriptBlock>, string)> InputBlocks = [];
-    
-    public static readonly List<(Func<ScriptBlock>, string)> ProcessBlocks = [];
-    
-    public static readonly List<(Func<ScriptBlock>, string)> OutputBlocks = [];
-    
     public static readonly Dictionary<string, Func<ScriptBlock>> BlockTypes = [];
 
-    public static BlockType CurrentType = BlockType.Output;
+    public static Category CurrentCategory = Category.All;
     
-    public static List<(Func<ScriptBlock>, string)> CurrentBlocks
-    {
-        get
-        {
-            return CurrentType switch
-            {
-                BlockType.Input => InputBlocks,
-                BlockType.Process => ProcessBlocks,
-                BlockType.Output => OutputBlocks,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-    }
+    public static List<(Func<ScriptBlock>, string)> CurrentBlocks => CurrentCategory.Blocks;
 
-    public enum BlockType
-    {
-        Input,
-        Process,
-        Output
-    }
-    
     public static readonly Dictionary<string, ScriptBlock> Blocks = [];
     
     public static readonly Dictionary<(string, string, string, string), GameObject> Links = [];
@@ -326,53 +306,7 @@ public static class ScriptManager
     }
 
     public static Vector3 BlockSpawnPos =>
-        ScriptEditorUI.Blocks.transform.InverseTransformPoint(Screen.width / 2f, Screen.height / 2f, 0); 
-
-    public static void RegisterInputBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
-    {
-        var func = () => new T
-        {
-            Type = name, 
-            Config = configGroup,
-            Position = BlockSpawnPos
-        };
-        InputBlocks.Add((func, name));
-        BlockTypes[name] = func;
-    }
-
-    public static void RegisterProcessBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
-    {
-        var func = () => new T
-        {
-            Type = name, 
-            Config = configGroup,
-            Position = BlockSpawnPos
-        };
-        ProcessBlocks.Add((func, name));
-        BlockTypes[name] = func;
-    }
-
-    public static void RegisterOutputBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
-    {
-        var func = () => new T
-        {
-            Type = name, 
-            Config = configGroup,
-            Position = BlockSpawnPos
-        };
-        OutputBlocks.Add((func, name));
-        BlockTypes[name] = func;
-    }
-
-    public static void RegisterHiddenBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
-    {
-        BlockTypes[name] = () => new T
-        {
-            Type = name, 
-            Config = configGroup,
-            Position = BlockSpawnPos
-        };
-    }
+        ScriptEditorUI.Blocks.transform.InverseTransformPoint(Screen.width / 2f, Screen.height / 2f, 0);
 
     public static void AddToScript(ObjectPlacement obj)
     {
