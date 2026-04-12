@@ -58,8 +58,11 @@ public static class ScriptManager
     public static readonly Dictionary<string, Func<ScriptBlock>> BlockTypes = [];
 
     public static Category CurrentCategory = Category.All;
-    
-    public static List<(Func<ScriptBlock>, string)> CurrentBlocks => CurrentCategory.Blocks;
+
+    public static string Filter = string.Empty;
+    public static (Func<ScriptBlock>, string)[] CurrentBlocks => CurrentCategory.Blocks.Where(c => 
+            c.Item2.Contains(Filter, StringComparison.InvariantCultureIgnoreCase))
+        .ToArray();
 
     public static readonly Dictionary<string, ScriptBlock> Blocks = [];
     

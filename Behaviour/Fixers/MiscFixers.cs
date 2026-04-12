@@ -222,6 +222,15 @@ public static class MiscFixers
                 var water = self.GetComponent<Water>();
                 return water ? water.abyss : orig(self);
             });
+        
+        typeof(GameManager).Hook("EnterHero", OnSceneLoad);
+    }
+
+    private static void OnSceneLoad(Action<GameManager> orig, GameManager self)
+    {
+        orig(self);
+        if (self.entryGateName == "door_fastTravelExit" && !PlayerData.instance.defeatedBellBeast)
+            ToolItemManager._activeState = ToolsActiveStates.Active;
     }
 
     public static string SubstituteVars(string txt)

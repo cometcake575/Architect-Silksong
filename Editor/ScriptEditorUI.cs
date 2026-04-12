@@ -136,7 +136,7 @@ public static class ScriptEditorUI
             var i1 = i;
             btn.onClick.AddListener(() =>
             {
-                if (index + i1 >= ScriptManager.CurrentBlocks.Count) return;
+                if (index + i1 >= ScriptManager.CurrentBlocks.Length) return;
                 var block = ScriptManager.CurrentBlocks[index + i1].Item1();
                 block.Setup(true, true);
 
@@ -153,10 +153,9 @@ public static class ScriptEditorUI
         lb.textComponent.fontSize = 11;
         lb.transform.localScale = Vector3.one;
 
-        var filter = string.Empty;
         tb.onValueChanged.AddListener(s =>
         {
-            filter = s;
+            ScriptManager.Filter = s;
             index = 0;
             DoRefresh();
         });
@@ -164,15 +163,15 @@ public static class ScriptEditorUI
         left.onClick.AddListener(() =>
         {
             index -= 8;
-            if (index < 0) index += Mathf.CeilToInt(ScriptManager.CurrentBlocks.Count / 8f) * 8;
+            if (index < 0) index += Mathf.CeilToInt(ScriptManager.CurrentBlocks.Length / 8f) * 8;
 
             DoRefresh();
         });
         right.onClick.AddListener(() =>
         {
             index += 8;
-            if (index >= ScriptManager.CurrentBlocks.Count) 
-                index -= Mathf.CeilToInt(ScriptManager.CurrentBlocks.Count / 8f) * 8;
+            if (index >= ScriptManager.CurrentBlocks.Length) 
+                index -= Mathf.CeilToInt(ScriptManager.CurrentBlocks.Length / 8f) * 8;
 
             DoRefresh();
         });
@@ -222,10 +221,7 @@ public static class ScriptEditorUI
 
         void DoRefresh()
         {
-            var blocks = ScriptManager.CurrentBlocks
-                .Where(c => 
-                    c.Item2.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
-                .ToArray();
+            var blocks = ScriptManager.CurrentBlocks;
             for (var i = 0; i < labels.Count; i++)
             {
                 labels[i].text = blocks.Length <= index + i ? "" :

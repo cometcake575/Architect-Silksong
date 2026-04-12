@@ -2442,8 +2442,16 @@ public static class EnemyFixers
 
     public class Shardillard : Wakeable
     {
+        private bool _shouldWake = true;
+
+        public override void DoUnwake()
+        {
+            _shouldWake = false;
+        }
+
         public override void DoWake()
         {
+            _shouldWake = false;
             GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
             GetComponent<DamageHero>().damageDealt = 1;
             
@@ -2454,6 +2462,11 @@ public static class EnemyFixers
             }, 3);
             
             fsm.SendEvent("ALERT");
+        }
+
+        private void Start()
+        {
+            if (_shouldWake) DoWake();
         }
     }
 

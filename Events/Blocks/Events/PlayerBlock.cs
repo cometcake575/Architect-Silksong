@@ -120,6 +120,8 @@ public class ActionBlock : PlayerBlock
     ];
 
     protected override IEnumerable<(string, string)> OutputVars => [
+        ("X", "Number"),
+        ("Y", "Number"),
         ("Sprinting", "Boolean"),
         ("Floating", "Boolean"),
         ("Clawlining", "Boolean"),
