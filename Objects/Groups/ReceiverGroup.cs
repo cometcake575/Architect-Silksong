@@ -350,9 +350,11 @@ public static class ReceiverGroup
     ]);
     
     public static readonly List<EventReceiverType> BlackThreader = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("do_black_thread", "Activate", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("do_black_thread", "Activate", (o, b) =>
         {
-            o.GetComponent<BlackThreader>().BlackThread();
+            HealthManager hm = null;
+            if (b != null) hm = b.GetVariable<HealthManager>("New Enemy");
+            o.GetComponent<BlackThreader>().BlackThread(hm);
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("queue_bts", "Queue Attack", o =>
         {

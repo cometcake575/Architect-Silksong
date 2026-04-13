@@ -49,6 +49,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateMemoryToggle());
         
         Categories.Utility.Add(CreateEnemyBarrier());
+        Categories.Utility.Add(CreatePlayerBarrier());
         Categories.Utility.Add(CreateVignetteDisabler());
         Categories.Utility.Add(CreateObjectRemover("enemy_remover", "Disable Enemy", 
                 FindObjectsToDisable<HealthManager>, "Removes the nearest enemy.\n\n" +
@@ -279,6 +280,7 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource("black_threader", ppu:64))
             .WithConfigGroup(ConfigGroup.BlackThreader)
             .WithBroadcasterGroup(BroadcasterGroup.BlackThreader)
+            .WithInputGroup(InputGroup.EnemyHook)
             .WithReceiverGroup(ReceiverGroup.BlackThreader);
     }
 
@@ -560,6 +562,24 @@ public static class UtilityObjects
                         "This object is only a barrier, it does not function like terrain.",
             sprite:ResourceUtils.LoadSpriteResource("enemy_blocker", ppu:60))
             .WithConfigGroup(ConfigGroup.Stretchable);
+    }
+
+    private static PlaceableObject CreatePlayerBarrier()
+    {
+        var playerBarrier = new GameObject("Player Barrier");
+        var heroOnly = LayerMask.NameToLayer("Hero Detector");
+
+        playerBarrier.AddComponent<BoxCollider2D>().size = new Vector2(3.2f, 3.2f);
+        playerBarrier.layer = heroOnly;
+
+        playerBarrier.SetActive(false);
+        Object.DontDestroyOnLoad(playerBarrier);
+
+        return new CustomObject("Player Barrier", "player_blocker", playerBarrier,
+            description:"A barrier that the player cannot pass through, but enemies can.\n\n" +
+                        "This object is similar to terrain but does not block enemies.",
+            sprite:ResourceUtils.LoadSpriteResource("player_blocker", ppu:60))
+            .WithConfigGroup(ConfigGroup.PlayerBarrier);
     }
 
     private static PlaceableObject CreateVignetteDisabler()

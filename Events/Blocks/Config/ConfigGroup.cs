@@ -418,7 +418,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<BoolVarBlock>("Persistence", "var_persistence_bool", 
                 (b, f) => b.PType = f.GetValue())
-                .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
+                .WithOptions("None", "Bench", "Global", "Universal").WithDefaultValue(2)
         ),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType<BoolVarBlock>("Default", "var_default_bool", 
@@ -441,7 +441,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<NumVarBlock>("Persistence", "var_persistence_num", 
                 (b, f) => b.PType = f.GetValue())
-                .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
+                .WithOptions("None", "Bench", "Global", "Universal").WithDefaultValue(2)
         ),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<NumVarBlock>("Default", "var_default_num", 
@@ -464,7 +464,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<StringVarBlock>("Persistence", "var_persistence_str", 
                 (b, f) => b.PType = f.GetValue())
-                .WithOptions("None", "Bench", "Global").WithDefaultValue(2)
+                .WithOptions("None", "Bench", "Global", "Universal").WithDefaultValue(2)
         ),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<StringVarBlock>("Default", "var_default_str", 

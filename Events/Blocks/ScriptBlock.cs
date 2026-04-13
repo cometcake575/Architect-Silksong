@@ -224,6 +224,8 @@ public abstract class ScriptBlock
     
     protected virtual void SetupBlock(bool newBlock, int width, int height)
     {
+        if (BlockObject) Object.Destroy(BlockObject);
+        
         var cfgOffset = (width - 250) / 2;
 
         var img = UIUtils.MakeImage(

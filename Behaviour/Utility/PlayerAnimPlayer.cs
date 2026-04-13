@@ -12,6 +12,8 @@ public interface IAnimPlayer
 {
     public void Play();
     public void Stop();
+
+    public string GetClip();
 }
 
 public class AnimPlayer : MonoBehaviour, IAnimPlayer
@@ -25,6 +27,8 @@ public class AnimPlayer : MonoBehaviour, IAnimPlayer
     public float animTime;
 
     private float _animTimeRemaining;
+    
+    public string GetClip() => animator ? animator.currentClip?.name ?? "" : "";
     
     public static void Init()
     {
@@ -74,6 +78,8 @@ public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
     public float animTime;
 
     private float _animTimeRemaining;
+    
+    public string GetClip() => HeroController.instance.animCtrl.animator.currentClip?.name ?? "";
 
     public static void Init()
     {

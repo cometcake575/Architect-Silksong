@@ -4,6 +4,7 @@ using System.Linq;
 using Architect.Editor;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Functions;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
@@ -48,6 +49,8 @@ public static class ScriptManager
         {
             Category.All.Blocks.AddRange(c.Blocks);
         }
+
+        FunctionManager.Init();
         
         BlockTypes["object"] = () => new ObjectBlock { Type = "object" };
     }
@@ -60,9 +63,8 @@ public static class ScriptManager
     public static Category CurrentCategory = Category.All;
 
     public static string Filter = string.Empty;
-    public static (Func<ScriptBlock>, string)[] CurrentBlocks => CurrentCategory.Blocks.Where(c => 
-            c.Item2.Contains(Filter, StringComparison.InvariantCultureIgnoreCase))
-        .ToArray();
+    public static IEnumerable<(Func<ScriptBlock>, string)> CurrentBlocks => CurrentCategory.Blocks.Where(c => 
+            c.Item2.Contains(Filter, StringComparison.InvariantCultureIgnoreCase));
 
     public static readonly Dictionary<string, ScriptBlock> Blocks = [];
     

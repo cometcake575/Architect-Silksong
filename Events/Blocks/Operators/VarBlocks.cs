@@ -15,8 +15,6 @@ public class BoolVarBlock : LocalBlock
     private static readonly Dictionary<string, bool> TempVars = [];
     public static readonly Dictionary<string, bool> SemiVars = [];
     
-    
-    
     protected override string Name => "Variable (Bool)";
 
     public string Id = "";
@@ -53,6 +51,9 @@ public class BoolVarBlock : LocalBlock
             case 2:
                 ArchitectData.Instance.BoolVariables[Id] = val;
                 break;
+            case 3:
+                GlobalArchitectData.Instance.BoolVariables[Id] = val;
+                break;
         }
     }
 
@@ -64,6 +65,8 @@ public class BoolVarBlock : LocalBlock
             1 => SemiVars.ContainsKey(Id) && SemiVars[Id],
             2 => ArchitectData.Instance.BoolVariables.ContainsKey(Id) &&
                  ArchitectData.Instance.BoolVariables[Id],
+            3 => GlobalArchitectData.Instance.BoolVariables.ContainsKey(Id) &&
+                 GlobalArchitectData.Instance.BoolVariables[Id],
             _ => Default
         };
     }
@@ -77,8 +80,6 @@ public class NumVarBlock : LocalBlock
 
     private static readonly Dictionary<string, float> TempVars = [];
     public static readonly Dictionary<string, float> SemiVars = [];
-    
-    
     
     protected override string Name => "Variable (Number)";
 
@@ -116,6 +117,9 @@ public class NumVarBlock : LocalBlock
             case 2:
                 ArchitectData.Instance.FloatVariables[Id] = val;
                 break;
+            case 3:
+                GlobalArchitectData.Instance.FloatVariables[Id] = val;
+                break;
         }
     }
 
@@ -126,6 +130,7 @@ public class NumVarBlock : LocalBlock
             0 => TempVars.GetValueOrDefault(Id, Default),
             1 => SemiVars.GetValueOrDefault(Id, Default),
             2 => ArchitectData.Instance.FloatVariables.GetValueOrDefault(Id, Default),
+            3 => GlobalArchitectData.Instance.FloatVariables.GetValueOrDefault(Id, Default),
             _ => Default
         };
     }
@@ -178,6 +183,9 @@ public class StringVarBlock : LocalBlock
             case 2:
                 ArchitectData.Instance.StringVariables[Id] = val;
                 break;
+            case 3:
+                GlobalArchitectData.Instance.StringVariables[Id] = val;
+                break;
         }
     }
 
@@ -197,6 +205,7 @@ public class StringVarBlock : LocalBlock
             0 => TempVars.GetValueOrDefault(Id, Default),
             1 => SemiVars.GetValueOrDefault(Id, Default),
             2 => ArchitectData.Instance.StringVariables.GetValueOrDefault(Id, Default),
+            3 => GlobalArchitectData.Instance.StringVariables.GetValueOrDefault(Id, Default),
             _ => Default
         };
     }

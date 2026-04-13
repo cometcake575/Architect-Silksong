@@ -51,7 +51,7 @@ public class AnimatorBlock : ScriptBlock
 
     protected override object GetValue(string id)
     {
-        return HeroController.instance.animCtrl.animator.currentClip?.name ?? "";
+        return _player.GetClip();
     }
 
     protected override void Trigger(string id)

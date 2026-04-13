@@ -924,6 +924,15 @@ public static class ConfigGroup
             (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); },
             (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); }))
     ]);
+    
+    public static readonly List<ConfigType> PlayerBarrier = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(new BoolConfigType("Can Slide On", "player_barrier_slider",
+                (o, value) =>
+                {
+                    if (!value.GetValue()) o.AddComponent<NonSlider>();
+                })
+            .WithDefaultValue(true))
+    ]);
 
     public static readonly List<ConfigType> Updraft = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
@@ -935,7 +944,15 @@ public static class ConfigGroup
             new FloatConfigType("Height", "updraft_height",
                 (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue() * 2); },
                 (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); })
-                .WithDefaultValue(5).WithPriority(-1))
+                .WithDefaultValue(5).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Functionality", "updraft_functional",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    var fsm = o.GetComponent<PlayMakerFSM>();
+                    fsm.GetState(fsm.ActiveStateName).transitions = [];
+                }).WithDefaultValue(true))
     ]);
     
     public static readonly List<ConfigType> Wind =  GroupUtils.Merge(Stretchable, [
@@ -1367,6 +1384,25 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> PersistentBreakable = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Broken", "breakable_stay"))
+    ]);
+
+    public static readonly List<ConfigType> Statue = GroupUtils.Merge(PersistentBreakable, [
+        ConfigurationManager.RegisterConfigType(new IntConfigType(
+            "Hits To Break", "statue_total_hits", (o, value) =>
+            {
+                var bh = o.GetComponent<BreakableHolder>();
+                bh.totalHits = bh.hitsLeft = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(new IntConfigType(
+            "Shards Per Hit", "statue_shards_per", (o, value) =>
+            {
+                o.GetComponent<BreakableHolder>().payoutPerHit = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(new IntConfigType(
+            "Final Hit Shards", "statue_shards_final", (o, value) =>
+            {
+                o.GetComponent<BreakableHolder>().finalPayout = value.GetValue();
+            }))
     ]);
 
     public static readonly List<ConfigType> BodySack = GroupUtils.Merge(Visible, [

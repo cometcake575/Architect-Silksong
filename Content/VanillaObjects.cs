@@ -3497,10 +3497,7 @@ public static class VanillaObjects
             {
                 o.transform.SetScale2D(Vector2.one);
                 o.transform.SetRotation2D(0);
-            }, postSpawnAction: o =>
-            {
-                o.LocateMyFSM("Control").GetState("Die").AddAction(() => o.BroadcastEvent("OnBreak"));
-            }).WithBroadcasterGroup(BroadcasterGroup.Breakable));
+            }).WithBroadcasterGroup(BroadcasterGroup.Killable));
 
         Categories.Misc.Add(new PreloadObject("Moss Ball", "moss_ball_break",
                 ("Tut_02", "moss_ball_break (11)"),
@@ -3675,7 +3672,7 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
-            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Misc.Add(new PreloadObject("Egg Statue Side", "shard_statue_2", 
@@ -3683,7 +3680,7 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
-            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Misc.Add(new PreloadObject("Pilgrim Statue", "shard_statue_5", 
@@ -3691,7 +3688,7 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
-            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Misc.Add(new PreloadObject("Spiral Statue", "shard_statue_3", 
@@ -3699,21 +3696,21 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
-            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Misc.Add(new PreloadObject("Marrowmaw Statue", "shard_statue_1", 
             ("Coral_36", "Shell Shard Fossil Beast"),
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
-            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Misc.Add(new PreloadObject("Fixer Statue", "flick_statue",
                 ("Bonetown", "Black Thread States/Normal World/fixer_constructs/fixer_statue/Shell Shard Fossil Big"),
                 postSpawnAction: MiscFixers.FixFixerStatue)
             .WithRotationGroup(RotationGroup.Eight)
-            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
     }
 

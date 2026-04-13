@@ -64,14 +64,18 @@ public class BlackThreader : MonoBehaviour
         }
     }
 
-    public void BlackThread()
+    public void BlackThread(HealthManager hm = null)
     {
-        if (_blackThreaded) return;
+        if (_blackThreaded && !hm) return;
         if (requireAct3 && !PlayerData.instance.GetBool("blackThreadWorld")) return;
 
         _blackThreaded = true;
-        
-        if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
+
+        if (!PlacementManager.Objects.TryGetValue(id, out var target))
+        {
+            if (hm) target = hm.gameObject;
+            else return;
+        }
 
         if (!target) return;
         var dupe = target.GetComponent<ObjectDuplicator>();

@@ -136,8 +136,8 @@ public static class ScriptEditorUI
             var i1 = i;
             btn.onClick.AddListener(() =>
             {
-                if (index + i1 >= ScriptManager.CurrentBlocks.Length) return;
-                var block = ScriptManager.CurrentBlocks[index + i1].Item1();
+                if (index + i1 >= ScriptManager.CurrentBlocks.Count()) return;
+                var block = ScriptManager.CurrentBlocks.ElementAt(index + i1).Item1();
                 block.Setup(true, true);
 
                 (ScriptManager.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData())
@@ -163,15 +163,15 @@ public static class ScriptEditorUI
         left.onClick.AddListener(() =>
         {
             index -= 8;
-            if (index < 0) index += Mathf.CeilToInt(ScriptManager.CurrentBlocks.Length / 8f) * 8;
+            if (index < 0) index += Mathf.CeilToInt(ScriptManager.CurrentBlocks.Count() / 8f) * 8;
 
             DoRefresh();
         });
         right.onClick.AddListener(() =>
         {
             index += 8;
-            if (index >= ScriptManager.CurrentBlocks.Length) 
-                index -= Mathf.CeilToInt(ScriptManager.CurrentBlocks.Length / 8f) * 8;
+            var count = ScriptManager.CurrentBlocks.Count();
+            if (index >= count) index -= Mathf.CeilToInt(count / 8f) * 8;
 
             DoRefresh();
         });
@@ -221,7 +221,7 @@ public static class ScriptEditorUI
 
         void DoRefresh()
         {
-            var blocks = ScriptManager.CurrentBlocks;
+            var blocks = ScriptManager.CurrentBlocks.ToArray();
             for (var i = 0; i < labels.Count; i++)
             {
                 labels[i].text = blocks.Length <= index + i ? "" :

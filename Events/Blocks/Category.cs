@@ -19,6 +19,7 @@ public class Category
     public static readonly Category Data = new("Data", new Color(0.9f, 0.5f, 0.2f));
     public static readonly Category Time = new("Time", Color.yellow);
     public static readonly Category Visual = new("Visual / UI", new Color(0.9f, 0.2f, 0.2f));
+    public static readonly Category Functions = new("Functions", new Color(0.2f, 0.8f, 0.8f));
     
     public readonly List<(Func<ScriptBlock>, string)> Blocks = [];
 
@@ -30,18 +31,23 @@ public class Category
         Categories.Add(this);
     }
 
-    public void RegisterBlock<T>(string name, List<ConfigType> configGroup = null, Action init = null) where T : ScriptBlock, new()
+    public void RegisterBlock<T>(string id, List<ConfigType> configGroup = null, Action init = null) where T : ScriptBlock, new()
+    {
+        RegisterBlock<T>(id, id, configGroup, init);
+    }
+
+    public void RegisterBlock<T>(string id, string name, List<ConfigType> configGroup = null, Action init = null) where T : ScriptBlock, new()
     {
         init?.Invoke();
         var func = () => new T
         {
-            Type = name, 
+            Type = id, 
             Config = configGroup,
             Position = ScriptManager.BlockSpawnPos,
             Color = Colour
         };
         Blocks.Add((func, name));
-        ScriptManager.BlockTypes[name] = func;
+        ScriptManager.BlockTypes[id] = func;
     }
 
     public void RegisterHiddenBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
