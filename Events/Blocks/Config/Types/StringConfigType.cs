@@ -36,6 +36,15 @@ public class StringConfigType<T>(
     }
 }
 
+public class RandStringConfigType<T>(string name, string id, Action<T, StringConfigValue<T>> action) 
+    : StringConfigType<T>(name, id, action) where T : ScriptBlock
+{
+    public override ConfigValue GetDefaultValue()
+    {
+        return new StringConfigValue<T>(this, Guid.NewGuid().ToString()[..8]);
+    }
+}
+
 public class StringConfigValue<T>(StringConfigType<T> type, string value) 
     : ConfigValue<StringConfigType<T>>(type)
     where T : ScriptBlock

@@ -24,7 +24,7 @@ public class ConstantNumBlock : ConstantBlock
 
     protected override string Name => "Constant (Number)";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return Value;
     }
@@ -51,7 +51,7 @@ public class ConstantBoolBlock : ConstantBlock
 
     protected override string Name => "Constant (Bool)";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return Value;
     }
@@ -78,7 +78,7 @@ public class ConstantTextBlock : ConstantBlock
 
     protected override string Name => "Constant (Text)";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return Value;
     }

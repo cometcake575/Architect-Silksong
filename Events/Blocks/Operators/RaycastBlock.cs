@@ -72,7 +72,7 @@ public class RaycastBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return id switch
         {

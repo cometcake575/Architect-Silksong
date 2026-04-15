@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Architect.Events.Blocks;
 using Architect.Events.Blocks.Events;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Vars;
@@ -30,7 +29,7 @@ public static class EventManager
     
     public static OutputType GetOutputType(string id)
     {
-        return OutputTypes[id];
+        return OutputTypes.GetValueOrDefault(id);
     }
 
     public static void BroadcastMp(string eventName)

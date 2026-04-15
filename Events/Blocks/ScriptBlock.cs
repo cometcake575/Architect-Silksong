@@ -213,7 +213,8 @@ public abstract class ScriptBlock
         return null;
     }
 
-    [CanBeNull] protected virtual object GetValue(string id) => null;
+    [CanBeNull]
+    public virtual object GetValue(string id) => null;
 
     public void SetupBlock(bool newBlock)
     {
@@ -459,7 +460,7 @@ public abstract class ScriptBlock
                 new Vector2(1, 0));
 
             outputTxt.textComponent.text =
-                (this is ObjectBlock ? EventManager.GetOutputType(output).Name : output) + "\n" + type;
+                (this is ObjectBlock ? EventManager.GetOutputType(output)?.Name ?? output : output) + "\n" + type;
             outputTxt.textComponent.alignment = TextAnchor.MiddleCenter;
 
             outputImg.sprite = Output;

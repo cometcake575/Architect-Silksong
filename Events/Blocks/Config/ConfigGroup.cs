@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Functions;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
@@ -999,5 +1000,13 @@ public static class ConfigGroup
             {
                 o.Value = value.GetValue();
             }))
+    ];
+    
+    public static readonly List<ConfigType> Functions =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new RandStringConfigType<FunctionDefinitionBlock>("Name", "function_name", 
+                (b, f) => b.FunctionName = f.GetValue())
+        )
     ];
 }

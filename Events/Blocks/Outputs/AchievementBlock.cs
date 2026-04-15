@@ -30,7 +30,7 @@ public class AchievementBlock : ScriptBlock
         gs.showNativeAchievementPopups = was;
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return GameManager.instance.achievementHandler.AchievementWasAwarded(AchievementName);
     }

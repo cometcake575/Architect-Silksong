@@ -53,7 +53,7 @@ public class PlayerDataBoolBlock : ScriptBlock
         PlayerData.instance.SetBool(Data, Value);
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PlayerData.instance.GetBool(Data);
     }
@@ -82,7 +82,7 @@ public class PersistentBoolBlock : ScriptBlock
         else SceneData.instance.persistentBools.scenes.Remove(Group);
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return SceneData.instance.persistentBools
             .TryGetValue(Group, Data, out var val) && val.Value;
@@ -117,7 +117,7 @@ public class PlayerDataIntBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PlayerData.instance.GetInt(Data);
     }
@@ -151,7 +151,7 @@ public class PlayerDataFloatBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PlayerData.instance.GetFloat(Data);
     }

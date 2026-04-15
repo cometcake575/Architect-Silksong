@@ -19,7 +19,7 @@ public class CounterBlock : ScriptBlock
         _count = 0;
     }
 
-    protected override object GetValue(string id) => _count;
+    public override object GetValue(string id) => _count;
 
     protected override void Trigger(string trigger)
     {

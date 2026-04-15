@@ -17,7 +17,7 @@ public class CustomNeedleBlock : ScriptBlock
         ArchitectData.Instance.CustomNeedle = trigger == "Set" ? Value : string.Empty;
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return ArchitectData.Instance.CustomNeedle;
     }

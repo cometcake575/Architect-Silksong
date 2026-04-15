@@ -28,7 +28,7 @@ public class HpBlock : PlayerBlock
     
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Amount", "Number"),
-        ("Max", "Number"),
+        ("MaxAmount", "Number"),
         ("Lifeblood", "Number")
     ];
     
@@ -69,7 +69,7 @@ public class HpBlock : PlayerBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return id switch
         {
@@ -152,7 +152,7 @@ public class SilkBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PlayerData.instance.silk;
     }
@@ -186,7 +186,7 @@ public class CurrencyBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return HeroController.instance.GetCurrencyAmount(CurrencyType);
     }
@@ -227,7 +227,7 @@ public class StatusBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return id switch
         {

@@ -22,7 +22,7 @@ public class ItemBlock : ScriptBlock
 
     public string ItemName;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var item = MiscUtils.GetSavedItem(ItemName);
         return item switch

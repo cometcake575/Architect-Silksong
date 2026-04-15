@@ -12,7 +12,7 @@ public class SceneNameBlock : TimeBlockType
         ("Name", "Text")
     ];
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return GameManager.instance.sceneName;
     }

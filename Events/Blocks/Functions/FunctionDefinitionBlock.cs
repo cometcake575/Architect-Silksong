@@ -7,4 +7,6 @@ public class FunctionDefinitionBlock : ScriptBlock
     protected override string Name => "Function";
 
     protected override IEnumerable<string> Outputs => ["OnCall"];
+
+    public string FunctionName = string.Empty;
 }

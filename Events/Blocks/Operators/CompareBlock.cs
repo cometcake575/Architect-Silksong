@@ -12,7 +12,7 @@ public class CompareBlock : ScriptBlock
 
     public int Mode;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var v1 = GetVariable<float>("1");
         var v2 = GetVariable<float>("2");
@@ -37,7 +37,7 @@ public class StringCompareBlock : ScriptBlock
 
     public int Mode;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var v1 = GetVariable<string>("1");
         var v2 = GetVariable<string>("2");

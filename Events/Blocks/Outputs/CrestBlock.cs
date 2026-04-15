@@ -61,7 +61,7 @@ public class CrestBlock : ScriptBlock
 
     public string CrestName;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PlayerData.instance.CurrentCrestID == CrestName;
     }

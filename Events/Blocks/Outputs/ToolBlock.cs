@@ -23,7 +23,7 @@ public class ToolBlock : ScriptBlock
 
     public string ToolName;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var tool = ToolItemManager.Instance.toolItems.GetByName(ToolName);
         return tool && tool.IsEquipped;

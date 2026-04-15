@@ -34,7 +34,7 @@ public class PngBlock : ScriptBlock
         obj.SetActive(true);
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return _renderer.sprite;
     }

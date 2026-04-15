@@ -227,5 +227,5 @@ public class TravelLoc : ScriptBlock
         YPos = -99999;
     }
 
-    protected override object GetValue(string id) => this;
+    public override object GetValue(string id) => this;
 }

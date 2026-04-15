@@ -6,7 +6,13 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Operators;
 
-public class BoolVarBlock : LocalBlock
+public abstract class VarBlock : LocalBlock
+{
+    public string Id = "";
+    public abstract string GetTypeId();
+}
+
+public class BoolVarBlock : VarBlock
 {
     protected override IEnumerable<string> Inputs => ["Set"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Boolean")];
@@ -17,7 +23,6 @@ public class BoolVarBlock : LocalBlock
     
     protected override string Name => "Variable (Bool)";
 
-    public string Id = "";
     public int PType;
 
     public bool Default;
@@ -57,7 +62,9 @@ public class BoolVarBlock : LocalBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override string GetTypeId() => "Boolean";
+
+    public override object GetValue(string id)
     {
         return PType switch
         {
@@ -72,7 +79,7 @@ public class BoolVarBlock : LocalBlock
     }
 }
 
-public class NumVarBlock : LocalBlock
+public class NumVarBlock : VarBlock
 {
     protected override IEnumerable<string> Inputs => ["Set"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Number")];
@@ -83,7 +90,6 @@ public class NumVarBlock : LocalBlock
     
     protected override string Name => "Variable (Number)";
 
-    public string Id = "";
     public int PType;
 
     public float Default;
@@ -123,7 +129,7 @@ public class NumVarBlock : LocalBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PType switch
         {
@@ -134,9 +140,11 @@ public class NumVarBlock : LocalBlock
             _ => Default
         };
     }
+
+    public override string GetTypeId() => "Number";
 }
 
-public class StringVarBlock : LocalBlock
+public class StringVarBlock : VarBlock
 {
     protected override IEnumerable<string> Inputs => ["Set"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Text")];
@@ -145,11 +153,8 @@ public class StringVarBlock : LocalBlock
     private static readonly Dictionary<string, string> TempVars = [];
     public static readonly Dictionary<string, string> SemiVars = [];
     
-    
-    
     protected override string Name => "Variable (Text)";
 
-    public string Id = "";
     public int PType;
 
     public string Default = string.Empty;
@@ -198,7 +203,7 @@ public class StringVarBlock : LocalBlock
                         .ToString())));
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return PType switch
         {
@@ -209,4 +214,6 @@ public class StringVarBlock : LocalBlock
             _ => Default
         };
     }
+
+    public override string GetTypeId() => "Text";
 }

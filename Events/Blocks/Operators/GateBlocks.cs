@@ -10,7 +10,7 @@ public class NotBlock : ScriptBlock
     
     protected override string Name => "Not";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return !GetVariable<bool>("Value");
     }
@@ -23,7 +23,7 @@ public class AndBlock : ScriptBlock
     
     protected override string Name => "And";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return GetVariable<bool>("1") && GetVariable<bool>("2");
     }
@@ -36,7 +36,7 @@ public class OrBlock : ScriptBlock
     
     protected override string Name => "Or";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return GetVariable<bool>("1") || GetVariable<bool>("2");
     }

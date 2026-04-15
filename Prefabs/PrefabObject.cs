@@ -152,6 +152,7 @@ public class Prefab : PreviewableBehaviour
     public string id;
     public List<GameObject> spawns = [];
     private readonly Dictionary<string, ReceiveBlock> _receivers = [];
+    private readonly Dictionary<string, VarBlock> _vars = [];
     private readonly Dictionary<string, string> _constants = [];
 
     public int visibility;
@@ -230,6 +231,10 @@ public class Prefab : PreviewableBehaviour
                     rb.ActualEventName = ((ReceiveBlock)block).EventName;
                     _receivers[rb.ActualEventName] = rb;
                     break;
+                case VarBlock rb:
+                    if (!rb.Local) continue;
+                    _vars[((VarBlock)block).Id] = rb;
+                    break;
                 case ConstantBlock cb:
                     if (!cb.Public) continue;
                     if (_constants.TryGetValue(block.BlockId, out var value)) cb.Load(value);
@@ -244,6 +249,11 @@ public class Prefab : PreviewableBehaviour
         }
     }
 
+    public object GetVar(string varId)
+    {
+        return _vars.TryGetValue(varId, out var var) ? var.GetValue("Value") : null;
+    }
+    
     public void Receive(string eName)
     {
         if (!_receivers.TryGetValue(eName, out var receiver)) return;

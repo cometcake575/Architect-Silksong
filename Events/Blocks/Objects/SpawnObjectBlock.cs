@@ -49,8 +49,8 @@ public class SpawnObjectBlock : ScriptBlock
     }
 
     private GameObject _last;
-    
-    protected override object GetValue(string id) => _last;
+
+    public override object GetValue(string id) => _last;
 
     private IEnumerator DoSpawn(PlaceableObject placeable)
     {

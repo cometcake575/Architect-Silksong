@@ -44,7 +44,7 @@ public class PlayerBlock : ToggleableBlock
         te.Block = this;
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return id switch
         {

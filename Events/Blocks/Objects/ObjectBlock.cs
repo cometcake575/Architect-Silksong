@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Architect.Editor;
 using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Placeable;
 using Architect.Placements;
@@ -70,9 +71,33 @@ public class ObjectBlock : ScriptBlock
             }
         }
     }
+
+    protected override IEnumerable<(string, string)> OutputVars
+    {
+        get
+        {
+            switch (ObjectType)
+            {
+                case null:
+                    return [];
+                case PrefabObject prefab:
+                {
+                    if (!PrefabManager.Prefabs.TryGetValue(prefab.Name, out var o)) 
+                        o = PrefabManager.Prefabs[prefab.Name] = StorageManager.LoadScene($"Prefab_{prefab.Name}");
+                    foreach (var sb in o.ScriptBlocks) 
+                    foreach (var (_, c) in sb.CurrentConfig) c.Setup(sb);
+                    return o.ScriptBlocks
+                        .Where(block => block is VarBlock { Local: true })
+                        .Cast<VarBlock>()
+                        .Select(rb => (rb.Id, rb.GetTypeId()))
+                        .Distinct();
+                }
+                default:
+                    return ObjectType.OutputGroup.Select(o => (o.Id, o.GetTypeId()));
+            }
+        }
+    }
     
-    protected override IEnumerable<(string, string)> OutputVars => 
-        ObjectType?.OutputGroup.Select(o => (o.Id, o.GetTypeId())) ?? [];
     protected override IEnumerable<(string, string)> InputVars => ObjectType?.InputGroup ?? [];
 
     internal static readonly Color ValidColor = new(0.7f, 0.3f, 0.9f);
@@ -149,10 +174,20 @@ public class ObjectBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
+        if (!_referencedObject) return null;
+
+        var prefab = _referencedObject.GetComponent<Prefab>();
+        if (prefab)
+        {
+            var i = prefab.GetVar(id);
+            if (i != null) return i;
+        }
+        
         var output = EventManager.GetOutputType(id);
-        return _referencedObject ? output.GetValue(_referencedObject) : null;
+
+        return output?.GetValue(_referencedObject);
     }
 
     public class ObjectBlockReference : MonoBehaviour

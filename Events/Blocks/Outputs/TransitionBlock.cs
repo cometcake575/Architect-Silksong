@@ -18,7 +18,7 @@ public class TransitionBlock : ScriptBlock
     public string Scene = "Tut_01";
     public string Door = "placeholder";
 
-    protected override object GetValue(string id) => Scene == GameManager.instance.sceneName;
+    public override object GetValue(string id) => Scene == GameManager.instance.sceneName;
 
     protected override void Trigger(string trigger)
     {

@@ -31,7 +31,7 @@ public class JournalEntryBlock : ScriptBlock
         else entry.Get(entry.killsRequired);
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var entry = EnemyJournalManager.Instance.recordList.list.FirstOrDefault(o => o.name == EntryName);
         if (!entry) return null;

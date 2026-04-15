@@ -86,7 +86,7 @@ public class ObjectMoverBlock : ScriptBlock
         }
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var obj = GetVariable<GameObject>("Target");
         if (!obj) return 0;

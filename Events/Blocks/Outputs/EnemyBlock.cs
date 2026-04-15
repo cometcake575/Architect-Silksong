@@ -23,7 +23,7 @@ public class EnemyBlock : ScriptBlock
         AttackType = AttackTypes.Generic;
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var target = GetVariable<HealthManager>("Target");
         return target ? target.transform.GetPath() : "";

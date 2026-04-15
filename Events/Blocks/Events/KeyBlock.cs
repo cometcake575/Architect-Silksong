@@ -44,7 +44,7 @@ public class KeyBlock : ToggleableBlock
          
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         if (Keybind != null) Key = GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(Keybind.Id, Keybind.Default);
         return Input.GetKeyDown(Key) || (PlayerAction?.IsPressed ?? false);

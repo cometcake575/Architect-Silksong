@@ -14,7 +14,7 @@ public class MathsBlock : ScriptBlock
 
     public int Mode;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var v1 = GetVariable<float>("1");
         var v2 = GetVariable<float>("2");
@@ -46,7 +46,7 @@ public class TrigBlock : ScriptBlock
     public int Mode;
     public bool IsDegrees;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var v1 = GetVariable<float>("Value");
         return Mode switch
@@ -77,7 +77,7 @@ public class NormaliseBlock : ScriptBlock
     
     public float Angle;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var v1 = GetVariable<float>("X");
         var v2 = GetVariable<float>("Y");

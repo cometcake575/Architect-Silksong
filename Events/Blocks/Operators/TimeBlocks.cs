@@ -23,7 +23,7 @@ public class TimeBlock : TimeBlockType
         ("Seconds", "Number")
     ];
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var diff = GetNow() - DateTime.UnixEpoch;
         return Convert.ToSingle(id switch
@@ -50,7 +50,7 @@ public class DayBlock : TimeBlockType
         ("Ms", "Number")
     ];
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var now = GetNow();
         return id switch

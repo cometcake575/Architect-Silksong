@@ -13,7 +13,7 @@ public class ConvertBlock : ScriptBlock
 
     protected override string Name => "Convert";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var inp = GetVariable<object>("Value").ToString();
         return id switch

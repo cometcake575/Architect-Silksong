@@ -11,7 +11,7 @@ public class RandomBoolBlock : ScriptBlock
     
     protected override string Name => "Random (Bool)";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         return Random.value > 0.5f;
     }
@@ -27,7 +27,7 @@ public class RandomNumBlock : ScriptBlock
     public float UpperBound;
     public bool WholeNumber;
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         if (UpperBound <= LowerBound) return LowerBound;
         return WholeNumber ?
@@ -47,7 +47,7 @@ public class RandomTextBlock : ScriptBlock
     public string Pool = string.Empty;
     public string Delimiter = ",";
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         try
         {

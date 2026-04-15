@@ -91,7 +91,7 @@ public class NeedolinBlock : ScriptBlock
         ("Duration", "Number")
     ];
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         if (_playing)
         {

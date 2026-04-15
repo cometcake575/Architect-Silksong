@@ -19,7 +19,7 @@ public class Category
     public static readonly Category Data = new("Data", new Color(0.9f, 0.5f, 0.2f));
     public static readonly Category Time = new("Time", Color.yellow);
     public static readonly Category Visual = new("Visual / UI", new Color(0.9f, 0.2f, 0.2f));
-    public static readonly Category Functions = new("Functions", new Color(0.2f, 0.8f, 0.8f));
+    //public static readonly Category Functions = new("Functions", new Color(0.2f, 0.8f, 0.8f));
     
     public readonly List<(Func<ScriptBlock>, string)> Blocks = [];
 

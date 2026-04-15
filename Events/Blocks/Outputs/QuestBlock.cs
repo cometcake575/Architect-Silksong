@@ -133,7 +133,7 @@ public class QuestBlock : ScriptBlock
         HeroController.instance.RegainControl();
     }
 
-    protected override object GetValue(string id)
+    public override object GetValue(string id)
     {
         var quest = QuestManager.instance.masterList.GetByName(QuestName) as FullQuestBase;
         if (!quest) return false;
