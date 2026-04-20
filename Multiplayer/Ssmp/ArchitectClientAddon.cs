@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Architect.Editor;
 using Architect.Events;
 using Architect.Multiplayer.Ssmp.Data;
+using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
@@ -84,33 +86,41 @@ public class ArchitectClientAddon : ClientAddon
         if (packet.IsFullScene)
         {
             var levelData = StorageManager.DeserializeLevel(json);
-
-            if (packet.IsScriptOnly)
-            {
-                var scene = StorageManager.LoadScene(packet.SceneName);
-                scene.ScriptBlocks.Clear();
-                scene.Comments.Clear();
-                scene.ScriptBlocks.AddRange(levelData.ScriptBlocks);
-                scene.Comments.AddRange(levelData.Comments);
-                StorageManager.SaveScene(packet.SceneName, scene);
-            }
-            else
-            {
-                StorageManager.WipeScheduledEdits(packet.SceneName);
-                StorageManager.SaveScene(packet.SceneName, levelData);
-            }
-
-            if (packet.SceneName == GameManager.instance.sceneName || packet.SceneName == StorageManager.GLOBAL)
-            {
-                PlacementManager.InvalidateScene();
-                EditManager.ReloadRequired = true;
-            }
+            ArchitectPlugin.Instance.StartCoroutine(SaveData(levelData, packet));
         }
         else
         {
             var action = new PlaceObjects(StorageManager.DeserializePlacements(json));
             if (packet.SceneName == GameManager.instance.sceneName) ActionManager.ReceiveAction(action);
             else action.Execute(packet.SceneName);
+        }
+    }
+
+    private static IEnumerator SaveData(LevelData levelData, PlacePacketData packet)
+    {
+        if (packet.IsScriptOnly)
+        {
+            var scene = StorageManager.LoadScene(packet.SceneName);
+            scene.ScriptBlocks.Clear();
+            scene.Comments.Clear();
+            scene.ScriptBlocks.AddRange(levelData.ScriptBlocks);
+            scene.Comments.AddRange(levelData.Comments);
+            StorageManager.SaveScene(packet.SceneName, scene);
+        }
+        else
+        {
+            foreach (var placement in levelData.Placements
+                         .Where(p => p.GetPlacementType() is PreloadObject { Loaded: false })) 
+                yield return placement.GetPlacementType().EnsureLoaded();
+            StorageManager.WipeScheduledEdits(packet.SceneName);
+            StorageManager.SaveScene(packet.SceneName, levelData);
+        }
+
+        if (packet.SceneName == GameManager.instance.sceneName || packet.SceneName == StorageManager.GLOBAL)
+        {
+            PlacementManager.InvalidateScene();
+            PlacementManager.VerifyLevelData();
+            EditManager.ReloadRequired = true;
         }
     }
 

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Architect.Prefabs;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Objects;
@@ -47,41 +49,67 @@ public class ObjectMoverBlock : ScriptBlock
         var x = GetVariable<float>("X");
         var y = GetVariable<float>("Y");
         var z = GetVariable<float>("Z");
-        var rb2d = obj.GetComponent<Rigidbody2D>();
+        
+        IEnumerable<Rigidbody2D> rb2ds = obj.GetComponentsInChildren<Rigidbody2D>();
+
+        var prefab = obj.GetComponent<Prefab>();
+
         switch (trigger)
         {
             case "MoveTo":
                 var tx = GetVariable<float>("X", obj.transform.GetPositionX());
                 var ty = GetVariable<float>("Y", obj.transform.GetPositionY());
                 var tz = GetVariable<float>("Z", obj.transform.GetPositionZ());
-                obj.transform.position = new Vector3(tx, ty, tz);
+
+                var pos = new Vector3(tx, ty, tz);
+                if (prefab) prefab.Move(pos);
+                else obj.transform.position = pos;
+                
                 break;
             case "MoveBy":
-                obj.transform.position += new Vector3(x, y, z);
+                var target = obj.transform.position + new Vector3(x, y, z);
+
+                if (prefab) prefab.Move(target);
+                else obj.transform.position = target;
+
                 break;
             case "AddForce":
-                if (!rb2d) return;
-                rb2d.linearVelocityX += x;
-                rb2d.linearVelocityY += y;
+                if (prefab) rb2ds = prefab.spawns.SelectMany(o => o.GetComponentsInChildren<Rigidbody2D>());
+                foreach (var rb2d in rb2ds)
+                {
+                    rb2d.linearVelocityX += x;
+                    rb2d.linearVelocityY += y;
+                }
+
                 break;
             case "SetVelocity":
-                if (!rb2d) return;
-                var vx = GetVariable<float>("X", rb2d.linearVelocityX);
-                var vy = GetVariable<float>("Y", rb2d.linearVelocityY);
-                rb2d.linearVelocityX = vx;
-                rb2d.linearVelocityY = vy;
+                if (prefab) rb2ds = prefab.spawns.SelectMany(o => o.GetComponentsInChildren<Rigidbody2D>());
+                foreach (var rb2d in rb2ds)
+                {
+                    var vx = GetVariable<float>("X", rb2d.linearVelocityX);
+                    var vy = GetVariable<float>("Y", rb2d.linearVelocityY);
+                    rb2d.linearVelocityX = vx;
+                    rb2d.linearVelocityY = vy;
+                }
+
                 break;
             case "SetRotation":
-                obj.transform.SetRotation2D(rot);
+                if (prefab) prefab.SetRotation(rot);
+                else obj.transform.SetRotation2D(rot);
+
                 break;
             case "AddRotation":
-                obj.transform.SetRotation2D(obj.transform.GetRotation2D() + rot);
+                if (prefab) prefab.SetRotation(prefab.rot + rot);
+                else obj.transform.SetRotation2D(obj.transform.GetRotation2D() + rot);
+
                 break;
             case "PointAt":
-                obj.transform.SetRotation2D(
-                    Mathf.Atan((y - obj.transform.GetPositionY()) / (x - obj.transform.GetPositionX())) * Mathf.Rad2Deg
-                    + rot
-                );
+                var newRot = Mathf.Atan((y - obj.transform.GetPositionY()) / (x - obj.transform.GetPositionX())) *
+                    Mathf.Rad2Deg + rot;
+                if (x - obj.transform.GetPositionX() < 0) newRot += 180;
+                if (prefab) prefab.SetRotation(newRot);
+                else obj.transform.SetRotation2D(newRot);
+                
                 break;
         }
     }

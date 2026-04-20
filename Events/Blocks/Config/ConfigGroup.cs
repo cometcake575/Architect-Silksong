@@ -624,6 +624,17 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> InvulHook =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<InvulBlock>("Duration", "invul_amount", 
+                (b, f) =>
+                {
+                    b.Duration = f.GetValue();
+                }).WithDefaultValue(1)
+        )
+    ];
+    
     public static readonly List<ConfigType> SilkHook =
     [
         ConfigurationManager.RegisterConfigType(

@@ -96,11 +96,11 @@ public class SsmpManager : CoopManager
         Task.Run(() => SendSplitPlaceData(bytes, room, false, false));
     }
 
-    public override void ShareScene(string room, bool scriptOnly)
+    public override void ShareScene(string room, bool scriptOnly, LevelData data)
     {
         ArchitectPlugin.Logger.LogInfo("Sending Scene Packet");
         
-        var json = StorageManager.SerializeLevel(PlacementManager.GetLevelData(), Formatting.None);
+        var json = StorageManager.SerializeLevel(data, Formatting.None);
         var bytes = Split(ZipUtils.Zip(json), SPLIT_SIZE);
         
         Task.Run(() => SendSplitPlaceData(bytes, room, true, scriptOnly));

@@ -90,7 +90,8 @@ public class ObjectBlock : ScriptBlock
                         .Where(block => block is VarBlock { Local: true })
                         .Cast<VarBlock>()
                         .Select(rb => (rb.Id, rb.GetTypeId()))
-                        .Distinct();
+                        .Distinct()
+                        .Append(("object_self", "Object"));
                 }
                 default:
                     return ObjectType.OutputGroup.Select(o => (o.Id, o.GetTypeId()));

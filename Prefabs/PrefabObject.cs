@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Utility;
-using Architect.Config;
 using Architect.Config.Types;
 using Architect.Editor;
 using Architect.Events.Blocks;
@@ -55,7 +54,6 @@ public class PrefabObject : PlaceableObject
         RefreshConfig(data);
         
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
-        OutputGroup = Objects.Groups.OutputGroup.Generic;
         RotateAction = Rotate;
         ScaleAction = Scale;
     }
@@ -151,7 +149,7 @@ public class Prefab : PreviewableBehaviour
 {
     public string id;
     public List<GameObject> spawns = [];
-    private readonly Dictionary<string, ReceiveBlock> _receivers = [];
+    private readonly Dictionary<string, List<ReceiveBlock>> _receivers = [];
     private readonly Dictionary<string, VarBlock> _vars = [];
     private readonly Dictionary<string, string> _constants = [];
 
@@ -229,7 +227,8 @@ public class Prefab : PreviewableBehaviour
                 case ReceiveBlock rb:
                     if (!rb.Local) continue;
                     rb.ActualEventName = ((ReceiveBlock)block).EventName;
-                    _receivers[rb.ActualEventName] = rb;
+                    if (!_receivers.ContainsKey(rb.ActualEventName)) _receivers[rb.ActualEventName] = [];
+                    _receivers[rb.ActualEventName].Add(rb);
                     break;
                 case VarBlock rb:
                     if (!rb.Local) continue;
@@ -256,7 +255,28 @@ public class Prefab : PreviewableBehaviour
     
     public void Receive(string eName)
     {
-        if (!_receivers.TryGetValue(eName, out var receiver)) return;
-        receiver.Event("OnReceive");
+        if (!_receivers.TryGetValue(eName, out var receivers)) return;
+        foreach (var receiver in receivers) receiver.Event("OnReceive");
+    }
+
+    public void Move(Vector3 pos)
+    {
+        var change = pos - transform.position;
+        foreach (var spawn in spawns)
+        {
+            spawn.transform.position += change;
+        }
+
+        transform.position = pos;
+    }
+
+    public void SetRotation(float r)
+    {
+        foreach (var spawn in spawns)
+        {
+            spawn.transform.RotateAround(transform.position, new Vector3(0, 0, 1), r - rot);
+        }
+
+        rot = r;
     }
 }

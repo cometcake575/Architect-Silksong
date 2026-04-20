@@ -28,7 +28,9 @@ public class HpBlock : PlayerBlock
     
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Amount", "Number"),
+        Space,
         ("MaxAmount", "Number"),
+        Space,
         ("Lifeblood", "Number")
     ];
     
@@ -78,6 +80,51 @@ public class HpBlock : PlayerBlock
             "Lifeblood" => PlayerData.instance.healthBlue,
             _ => 0
         };
+    }
+}
+
+public class InvulBlock : ScriptBlock
+{
+    public static bool Invulnerable;
+
+    public static void Init()
+    {
+        HookUtils.OnHeroAwake += _ => Invulnerable = false;
+    }
+
+    public float Duration;
+    
+    protected override string Name => "Invulnerable Control";
+    
+    protected override IEnumerable<string> Inputs => [
+        "MakeInvulnerable",
+        "MakeVulnerable",
+        "SetInvulTime"
+    ];
+    
+    protected override IEnumerable<(string, string)> OutputVars => [("Duration", "Number")];
+    
+    protected override void Trigger(string trigger)
+    {
+        switch (trigger)
+        {
+            case "MakeInvulnerable":
+                Invulnerable = true;
+                PlayerData.instance.isInvincible = true;
+                break;
+            case "MakeVulnerable":
+                Invulnerable = false;
+                PlayerData.instance.isInvincible = false;
+                break;
+            case "SetInvulTime":
+                HeroController.instance.StartInvulnerable(Duration);
+                break;
+        }
+    }
+
+    public override object GetValue(string id)
+    {
+        return HeroController.instance.invulnerableDuration;
     }
 }
 

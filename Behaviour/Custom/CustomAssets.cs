@@ -389,7 +389,7 @@ public class WavObject : SoundMaker, IPlayable
             yield break;
         }
         _started = true;
-        PlaySound(sound, Volume, pitch, globalSound, loop);
+        PlaySound(sound, Volume, pitch, globalSound, loop, false);
         
         if (!syncId.IsNullOrWhiteSpace() && Syncs.TryGetValue(syncId, out var v))
         {

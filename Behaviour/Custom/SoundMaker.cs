@@ -12,11 +12,11 @@ public class SoundMaker : MonoBehaviour
     public virtual void Awake()
     {
         if (muted) return;
-        Source = gameObject.AddComponent<AudioSource>();
+        Source = gameObject.GetOrAddComponent<AudioSource>();
         Source.minDistance = 10;
     }
 
-    public void PlaySound(AudioClip clip, float volume = 1, float pitch = 1, bool global = false, bool loop = false)
+    public void PlaySound(AudioClip clip, float volume = 1, float pitch = 1, bool global = false, bool loop = false, bool setVol = true)
     {
         if (muted) return;
 
@@ -24,7 +24,7 @@ public class SoundMaker : MonoBehaviour
         
         Source.pitch = pitch;
         Source.clip = clip;
-        Source.volume = volume * GameManager.instance.GetImplicitCinematicVolume();
+        if (setVol) Source.volume = volume * GameManager.instance.GetImplicitCinematicVolume();
         Source.loop = loop;
         
         Source.Play();

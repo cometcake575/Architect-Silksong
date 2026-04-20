@@ -135,11 +135,14 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Remove Normal Activators", "remove_vanilla_disablers", (o, value) =>
             {
-                if (value.GetValue()) EnemyFixers.KeepActive(o);
-                o.RemoveComponent<ActivateIfPlayerdataFalse>();
-                o.RemoveComponent<ActivateIfPlayerdataTrue>();
-                o.AddComponent<IgnoreDisablers>();
-                o.RemoveComponent<Disabler>();
+                if (value.GetValue())
+                {
+                    EnemyFixers.KeepActive(o);
+                    o.RemoveComponent<ActivateIfPlayerdataFalse>();
+                    o.RemoveComponent<ActivateIfPlayerdataTrue>();
+                    o.AddComponent<IgnoreDisablers>();
+                    o.RemoveComponent<Disabler>();
+                }
             }).WithDefaultValue(false))
     ];
     
@@ -342,6 +345,25 @@ public static class ConfigGroup
                     o.LocateMyFSM("Break").GetState("Return Currency").DisableAction(0);
                 }
             }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> Teleporter = GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Target ID", "weaver_teleporter_target", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.WeaverLiftModifier>().target = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "weaver_teleporter_mode", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.WeaverLiftModifier>().mode = value.GetValue();
+            }).WithDefaultValue(0).WithOptions("Top", "Bottom")),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Teleport Duration", "weaver_teleporter_duration", (o, value) =>
+            {
+                o.GetComponent<WeaverLift>().teleportDuration = value.GetValue();
+            }))
     ]);
     
     public static readonly List<ConfigType> VerticalRing = GroupUtils.Merge(Visible,
@@ -1324,6 +1346,19 @@ public static class ConfigGroup
     public static readonly List<ConfigType> BlurPlane = GroupUtils.Merge(Generic, [
         ZOffset
     ]);
+    
+    private static readonly int HeatSpeed = Shader.PropertyToID("_SpeedY");
+
+    public static readonly List<ConfigType> HeatPlane = GroupUtils.Merge(Stretchable, [
+        ZOffset,
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Speed", "heat_speed",
+                (o, value) =>
+                {
+                    var mr = o.GetComponent<MeshRenderer>();
+                    mr.material.SetFloat(HeatSpeed, -0.5f * value.GetValue());
+                }).WithDefaultValue(1).WithPriority(-1))
+    ]);
 
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
         RenderLayer,
@@ -1337,7 +1372,7 @@ public static class ConfigGroup
             new FloatConfigType("Colour R", "png_col_r",
                 (o, value) =>
                 {
-                    var sr = o.GetComponent<SpriteRenderer>();
+                    var sr = o.GetComponentInChildren<SpriteRenderer>();
                     var c = sr.color;
                     c.r = value.GetValue();
                     sr.color = c;
@@ -1346,7 +1381,7 @@ public static class ConfigGroup
             new FloatConfigType("Colour G", "png_col_g",
                 (o, value) =>
                 {
-                    var sr = o.GetComponent<SpriteRenderer>();
+                    var sr = o.GetComponentInChildren<SpriteRenderer>();
                     var c = sr.color;
                     c.g = value.GetValue();
                     sr.color = c;
@@ -1355,7 +1390,7 @@ public static class ConfigGroup
             new FloatConfigType("Colour B", "png_col_b",
                 (o, value) =>
                 {
-                    var sr = o.GetComponent<SpriteRenderer>();
+                    var sr = o.GetComponentInChildren<SpriteRenderer>();
                     var c = sr.color;
                     c.b = value.GetValue();
                     sr.color = c;
@@ -1364,7 +1399,7 @@ public static class ConfigGroup
             new FloatConfigType("Colour A", "png_col_a",
                 (o, value) =>
                 {
-                    var sr = o.GetComponent<SpriteRenderer>();
+                    var sr = o.GetComponentInChildren<SpriteRenderer>();
                     var c = sr.color;
                     c.a = value.GetValue();
                     sr.color = c;
@@ -2499,6 +2534,8 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
+    public static readonly List<ConfigType> WakeableBosses = GroupUtils.Merge(Wakeable,  GroupUtils.Merge(Bosses, []));
+    
     public static readonly List<ConfigType> Moorwing = GroupUtils.Merge(Bosses, [DamagesEnemies]);
     
     public static readonly List<ConfigType> Boran = GroupUtils.Merge(Wakeable, [DamagesEnemies]);
@@ -2810,6 +2847,58 @@ public static class ConfigGroup
 
     public static readonly List<ConfigType> PhysicalPng = GroupUtils.Merge(Png,
         GroupUtils.Merge(StretchColourDecor, []));
+    
+    private static readonly int SwaySpeed = Shader.PropertyToID("_SwaySpeed");
+    private static readonly int SwayAmount = Shader.PropertyToID("_SwayAmount");
+    private static readonly int SwayMultiplier = Shader.PropertyToID("_SwayMultiplier");
+    
+    public static readonly List<ConfigType> Sway = GroupUtils.Merge(PhysicalPng,
+        [
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Sway Speed", "sway_speed",
+                        (o, value) =>
+                        {
+                            o.GetComponentInChildren<SpriteRenderer>().material.SetFloat(SwaySpeed, value.GetValue());
+                        })
+                    .WithDefaultValue(0.4f)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Sway Amount", "sway_amount",
+                        (o, value) =>
+                        {
+                            o.GetComponentInChildren<SpriteRenderer>().material.SetFloat(SwayAmount, value.GetValue());
+                        })
+                    .WithDefaultValue(0.018f)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Sway Multiplier", "sway_multiplier",
+                        (o, value) =>
+                        {
+                            o.GetComponentInChildren<SpriteRenderer>().material.SetFloat(SwayMultiplier, value.GetValue());
+                        })
+                    .WithDefaultValue(1)),
+            ConfigurationManager.RegisterConfigType(
+                new BoolConfigType("Sway on Contact", "sway_hitbox",
+                        (o, value) =>
+                        {
+                            if (value.GetValue()) o.RemoveComponent<GrassBehaviour>();
+                        })
+                    .WithDefaultValue(true)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Collider Width", "sway_width",
+                        (o, value) =>
+                        {
+                            var bc2d = o.GetComponent<BoxCollider2D>();
+                            bc2d.size = new Vector2(value.GetValue(), bc2d.size.y);
+                        })
+                    .WithDefaultValue(1)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Collider Height", "sway_height",
+                        (o, value) =>
+                        {
+                            var bc2d = o.GetComponent<BoxCollider2D>();
+                            bc2d.size = new Vector2(bc2d.size.x, value.GetValue());
+                        })
+                    .WithDefaultValue(1))
+        ]);
 
     public static readonly List<ConfigType> FullPng = GroupUtils.Merge(PhysicalPng, 
         [
@@ -2869,7 +2958,8 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Volume Type", "wav_volume_mode",
                 (o, value) => { o.GetComponent<WavObject>().soundType = value.GetValue(); })
-                .WithOptions("Master", "Music", "Sound").WithDefaultValue(0)),
+                .WithOptions("Master", "Music", "Sound").WithDefaultValue(0)
+                .WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Loop Sound", "wav_loop",
                 (o, value) => { o.GetComponent<WavObject>().loop = value.GetValue(); })

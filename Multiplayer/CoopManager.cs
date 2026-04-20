@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Architect.Events;
 using Architect.Multiplayer.Ssmp;
 using Architect.Placements;
 using UnityEngine;
@@ -32,7 +31,7 @@ public abstract class CoopManager
     
     public abstract void PlaceObjects(string room, List<ObjectPlacement> placements);
     
-    public abstract void ShareScene(string room, bool scriptOnly);
+    public abstract void ShareScene(string room, bool scriptOnly, LevelData data);
     
     public abstract void RefreshRoom();
     

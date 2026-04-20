@@ -3769,4 +3769,30 @@ public static class EnemyFixers
         
         fsm.GetState("Home Dir").AddAction(() => fsm.SendEvent(Random.value > 0.5f ? "L" : "R"));
     }
+
+    public class Lace : Wakeable
+    {
+        public override void DoWake()
+        {
+            var fsm = gameObject.LocateMyFSM("Control");
+            fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("ENTER"));
+            fsm.SendEvent("ENTER");
+        }
+    }
+
+    public static void FixLace1(GameObject obj)
+    {
+        RemoveConstrainPosition(obj);
+        obj.AddComponent<Lace>();
+
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+
+        var fsm = obj.LocateMyFSM("Control");
+        fsm.GetState("Encountered?").AddAction(() => fsm.SendEvent("REFIGHT"), 0);
+        fsm.GetState("Dormant").AddAction(() => rb2d.linearVelocityY = 0, 0);
+        
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        RemoveConstrainPosition(ede.GetInstantiatedCorpse(AttackTypes.Generic));
+    }
 }

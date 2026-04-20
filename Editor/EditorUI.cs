@@ -11,6 +11,7 @@ using Architect.Objects;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
 using Architect.Objects.Tools;
+using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
@@ -283,9 +284,9 @@ public static class EditorUI
             "Share Script", 
             $"Share Script ({CoopManager.Instance.Name})",
             _scriptUI,
-            new Vector3(60, 20),
-            new Vector2(0, 0),
-            new Vector2(0, 0),
+            new Vector3(0, 20),
+            new Vector2(0.5f, 0),
+            new Vector2(0.5f, 0),
             size: new Vector2(250, 35)
             );
         _shareScriptButton = shareScriptBtn.Item1.gameObject;
@@ -295,13 +296,14 @@ public static class EditorUI
         shareBtn.Item1.onClick.AddListener(() =>
         {
             if (!CoopManager.Instance.IsActive()) return;
-            CoopManager.Instance.ShareScene(GameManager.instance.sceneName, false);
+            CoopManager.Instance.ShareScene(GameManager.instance.sceneName, false, PlacementManager.GetLevelData());
         });
         shareScriptBtn.Item1.onClick.AddListener(() =>
         {
             if (!CoopManager.Instance.IsActive()) return;
             CoopManager.Instance.ShareScene(ScriptManager.IsLocal ? 
-                GameManager.instance.sceneName : StorageManager.GLOBAL, true);
+                GameManager.instance.sceneName : StorageManager.GLOBAL, true,
+                ScriptManager.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData());
         });
 
         var middle = new Vector2(0.5f, 0.5f);

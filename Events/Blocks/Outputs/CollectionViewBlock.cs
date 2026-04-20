@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class CollectionViewBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 {
-    
-    
     protected override string Name => "Collection View";
 
     private static GameObject _deskPrefab;
@@ -41,8 +39,6 @@ public class CollectionViewBlock : CollectionBlock<ShopBlock.ShopItemBlock>
     
     public class CollectionItemBlock : ChildBlock
     {
-        
-        
         public string ItemId = "Rosary_Set_Small";
 
         public override void SetupReference()

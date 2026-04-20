@@ -47,7 +47,7 @@ public class KeyBlock : ToggleableBlock
     public override object GetValue(string id)
     {
         if (Keybind != null) Key = GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(Keybind.Id, Keybind.Default);
-        return Input.GetKeyDown(Key) || (PlayerAction?.IsPressed ?? false);
+        return Input.GetKey(Key) || (PlayerAction?.IsPressed ?? false);
     }
 
     public class KeyEvent : MonoBehaviour

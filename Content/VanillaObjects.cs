@@ -382,8 +382,15 @@ public static class VanillaObjects
             ("Dust_05", "Roachkeeper")).DoFlipX();
 
         Categories.Interactable.Add(new PreloadObject("Temporary Gate", "greymoor_flip_bridge",
-                ("Dust_02", "greymoor_flip_bridge (1)"))
-            .WithRotationGroup(RotationGroup.Four));
+                ("Dust_02", "greymoor_flip_bridge (1)"),
+                postSpawnAction: o =>
+                {
+                    var trapdoor = o.GetComponent<Trapdoor>();
+                    trapdoor.OnOpen.AddListener(() => o.BroadcastEvent("OnOpen"));
+                    trapdoor.OnClose.AddListener(() => o.BroadcastEvent("OnClose"));
+                })
+            .WithRotationGroup(RotationGroup.Four)
+            .WithBroadcasterGroup(BroadcasterGroup.TempGate));
 
         Categories.Interactable.Add(new PreloadObject("Gong", "gong",
                 ("Dust_Chef", "Battle Parent/Kitchen Pipe Gong/kitchen_string_offset/kitchen_string"), 
@@ -548,7 +555,8 @@ public static class VanillaObjects
             notSceneBundle: true,
             preloadAction: EnemyFixers.FixChoristor);
         
-        AddEnemy("Envoy", "envoy", ("Song_17", "March Group Control/March Group R/Song Pilgrim 01"));
+        AddEnemy("Envoy", "envoy", ("Song_17", "March Group Control/March Group R/Song Pilgrim 01"),
+            preloadAction: o => o.LocateMyFSM("call_handmaiden").enabled = false);
         AddEnemy("Choir Flyer", "choir_flyer", ("Song_11", "Pilgrim 04 Song (2)"),
                 preloadAction:EnemyFixers.FixPatroller)
             .WithConfigGroup(ConfigGroup.Patroller);
@@ -841,6 +849,12 @@ public static class VanillaObjects
             ("Cradle_03", "cradle_spike_plat (10)/art/Cradle__0004_moving_plat (9)"),
             postSpawnAction: HazardFixers.FixCradleSpikes)
             .WithRotationGroup(RotationGroup.All));
+
+        /*AddEnemy("Lace 1", "lace_1", ("Bone_East_12", "Boss Scene/Lace Boss1"),
+            postSpawnAction: EnemyFixers.FixLace1)
+            .WithConfigGroup(ConfigGroup.WakeableBosses)
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .WithReceiverGroup(ReceiverGroup.Wakeable).DoFlipX();*/
 
         /*AddEnemy("Grand Mother Silk", "gms_boss", ("Cradle_03", "Boss Scene/Silk Boss"),
             postSpawnAction: EnemyFixers.FixGms);*/
@@ -1439,6 +1453,11 @@ public static class VanillaObjects
                 ("Slab_05", "spike_trap_slab_jail/pressure_plate"), postSpawnAction: InteractableFixers.FixSlabPlate)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
 
+        Categories.Hazards.Add(new PreloadObject("Slab Trap", "slab_trap",
+                ("Slab_05", "spike_trap_slab_jail"),
+                preloadAction: o => 
+                    o.transform.GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>()));
+
         Categories.Interactable.Add(new PreloadObject("Slab Lever", "jail_lever",
                 ("Slab_22", "slab_jail_lever"), postSpawnAction: InteractableFixers.FixLever)
             .WithBroadcasterGroup(BroadcasterGroup.Levers)
@@ -1543,7 +1562,8 @@ public static class VanillaObjects
                 ("Peak_05", "peak_storm_set_mid_strength"),
                 description: "Affects the whole room.\n" +
                              "Rotate the object to rotate the direction of the storm.",
-                preloadAction: MiscFixers.FixSnow,
+                preloadAction: MiscFixers.FixDecoration,
+                postSpawnAction: MiscFixers.FixSnow,
                 sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 377.5f)))
             .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
             .WithConfigGroup(ConfigGroup.Particle).WithRotationGroup(RotationGroup.All);
@@ -1700,6 +1720,13 @@ public static class VanillaObjects
             ("Shadow_12", "Swamp Muckman All Control/Swamp Muckman Tall Control/Activation Folder/Swamp Muckman Tall"),
             postSpawnAction: EnemyFixers.FixStilkinTrapper)
             .WithBroadcasterGroup(BroadcasterGroup.Ambushers).DoFlipX();
+
+        Categories.Attacks.Add(new PreloadObject("Stilkin Dart", "stilkin_dart",
+            ("localpoolprefabs_assets_areaswamp", "Assets/Prefabs/Hornet Enemies/Swamp Muckman Dart.prefab"),
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.Velocity)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
 
         AddEnemy("Mothleaf Lagnia", "mothleaf", ("Shadow_26", "Swamp Drifter"));
 
@@ -2105,6 +2132,18 @@ public static class VanillaObjects
                 sprite: ResourceUtils.LoadSpriteResource("memory", ppu: 155))
             .WithConfigGroup(ConfigGroup.PhysicalPng));
 
+        Categories.Effects.Add(new PreloadObject("Sway Effect", "sway_effect",
+                ("Tut_02", "green_grass_tri (6)"),
+                preloadAction: o =>
+                {
+                    o.RemoveComponent<GrassCut>();
+                    o.transform.GetChild(0).gameObject.AddComponent<PngObject>().ignoreGlow = true;
+                    o.transform.GetChild(0).localPosition = Vector3.zero;
+                    o.transform.SetPositionZ(-0.1f);
+                    o.transform.SetRotation2D(0);
+                })
+            .WithConfigGroup(ConfigGroup.Sway));
+
         Categories.Effects.Add(new PreloadObject("Grass Effect", "grass_effect",
                 ("Tut_02", "green_grass_tri (6)/Green Grass A"),
                 sprite: ResourceUtils.LoadSpriteResource("grass_burst", ppu:250),
@@ -2183,6 +2222,10 @@ public static class VanillaObjects
 
                 o.transform.GetChild(19).gameObject.AddComponent<PlaceableObject.SpriteSource>();
             }).WithConfigGroup(ConfigGroup.NeedolinGate));
+
+        Categories.Interactable.Add(new PreloadObject("Weaver Lift", "weaver_teleporter", 
+            ("Weave_02", "Group/weaver_lift_mid"),
+            preloadAction: MiscFixers.FixWeaverLift).WithConfigGroup(ConfigGroup.Teleporter));
         
         AddEnemy("Servitor Ignim", "servitor_small", ("Weave_04", "Weaver Servitor (2)"),
             preloadAction: EnemyFixers.FixServitorIgnim);
@@ -2947,9 +2990,14 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Hazards)
             .WithRotationGroup(RotationGroup.All));
 
-        Categories.Interactable.Add(new PreloadObject("Hunter's March Pressure Plate", "hunter_trap_plate",
+        Categories.Interactable.Add(new PreloadObject("Skarr Pressure Plate", "hunter_trap_plate",
                 ("Ant_04", "Hunter Trap Plate"), postSpawnAction: InteractableFixers.FixMarchPlate)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)).DoFlipX();
+        
+        Categories.Interactable.Add(new PreloadObject("Skarr Cage", "ant_trap_cage", 
+            ("Ant_04", "Hunter Trap Cage (1)"))
+            .WithReceiverGroup(ReceiverGroup.Trap)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
 
         Categories.Attacks.Add(new PreloadObject("Skarr Sickle", "sickle_attack_s",
                 ("localpoolprefabs_assets_areaant", "Assets/Prefabs/Hornet Enemies/Hunter Child Sickle.prefab"),
@@ -3172,6 +3220,12 @@ public static class VanillaObjects
         
         AddEnemy("Flintflame Flyer", "dock_bomber", ("Dock_02", "Dock Bomber"),
             postSpawnAction: EnemyFixers.FixFlintFlyer);
+
+        Categories.Effects.Add(new PreloadObject("Heat Effect", "heat_plane",
+            ("Dock_02", "HeatPlane"), 
+            sprite: ResourceUtils.LoadSpriteResource("heat", ppu:20),
+            preloadAction: o => o.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f))
+            .WithConfigGroup(ConfigGroup.HeatPlane));
         
         Categories.Attacks.Add(new PreloadObject("Flintbomb", "flintflame_bomb",
                 ("localpoolprefabs_assets_areadocks", 
@@ -3470,6 +3524,7 @@ public static class VanillaObjects
             ("Weave_03", "Boss Scene/MossBone Crawler Summon"),
             preloadAction: o =>
             {
+                o.GetComponent<HealthManager>().hasSpecialDeath = false;
                 var anim = o.GetComponent<tk2dSpriteAnimator>();
                 anim.defaultClipId = anim.GetClipIdByName("SummonFall");
             },
@@ -3633,7 +3688,7 @@ public static class VanillaObjects
             preloadAction: MiscFixers.FixRotation)
             .DoFlipX();
 
-        AddSolid("Moss Grotto Platform 1", "bone_plat_03",
+        AddSolid("Moss Grotto Platform 1", "moss_plat_01",
             ("Weave_03", "bone_plat_01 (6)"));
         AddSolid("Moss Grotto Platform 2", "bone_plat_01",
             ("Tut_02", "bone_plat_01"));

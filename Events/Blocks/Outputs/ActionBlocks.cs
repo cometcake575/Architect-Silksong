@@ -8,6 +8,7 @@ public static class ActionBlocks
     public static void Init()
     {
         Category.World.RegisterBlock<HpBlock>("Health Control", ConfigGroup.HealthHook);
+        Category.World.RegisterBlock<InvulBlock>("Invulnerable Control", ConfigGroup.InvulHook, InvulBlock.Init);
         Category.World.RegisterBlock<SilkBlock>("Silk Control", ConfigGroup.SilkHook, SilkBlock.Init);
         Category.World.RegisterBlock<CurrencyBlock>("Currency Control", ConfigGroup.CurrencyHook);
         Category.World.RegisterBlock<StatusBlock>("Status Control");

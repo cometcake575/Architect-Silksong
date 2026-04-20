@@ -44,12 +44,12 @@ public static class PlacementManager
         return _globalData;
     }
 
-    private static void VerifyLevelData()
+    public static void VerifyLevelData()
     {
         var sceneName = GameManager.instance.sceneName;
         if (_sceneName == sceneName) return;
 
-        if (EditManager.IsEditing)
+        if (EditManager.IsEditing && _sceneName != "Invalid")
         {
             StorageManager.SaveScene(_sceneName, _levelData);
             StorageManager.SaveScene(StorageManager.GLOBAL, _globalData);

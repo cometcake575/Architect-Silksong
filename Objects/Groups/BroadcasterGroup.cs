@@ -14,6 +14,8 @@ public static class BroadcasterGroup
     
     public static readonly List<string> Exploding = ["OnExplode"];
     
+    public static readonly List<string> TempGate = ["OnOpen", "OnClose"];
+    
     public static readonly List<string> Ventrica = ["OnEnter"];
     
     public static readonly List<string> Enemies = ["OnDeath", "FirstDeath", "LoadedDead", "OnDamage"];

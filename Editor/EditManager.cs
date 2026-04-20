@@ -8,6 +8,7 @@ using System.Linq;
 using Architect.Config;
 using Architect.Config.Types;
 using Architect.Content.Preloads;
+using Architect.Events.Blocks.Outputs;
 using Architect.Multiplayer;
 using Architect.Objects;
 using Architect.Objects.Categories;
@@ -125,9 +126,9 @@ public static class EditManager
                 return orig(self); 
             });
         
-        typeof(HeroController).Hook(nameof(HeroController.CanTakeDamage), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanTakeDamage), BlockActionOrInvul);
         
-        typeof(HeroController).Hook(nameof(HeroController.CanTakeDamageIgnoreInvul), BlockAction);
+        typeof(HeroController).Hook(nameof(HeroController.CanTakeDamageIgnoreInvul), BlockActionOrInvul);
 
         typeof(HeroController).Hook(nameof(HeroController.CanOpenInventory), 
             (Func<HeroController, bool> orig, HeroController self) => 
@@ -161,6 +162,8 @@ public static class EditManager
     }
 
     private static bool BlockAction(Func<HeroController, bool> orig, HeroController self) => !IsEditing && orig(self);
+    
+    private static bool BlockActionOrInvul(Func<HeroController, bool> orig, HeroController self) => !InvulBlock.Invulnerable && !IsEditing && orig(self);
 
     public static void TryFindEmptySlot()
     {
@@ -481,6 +484,8 @@ public static class EditManager
                      .SelectMany(o => o.GetComponentsInChildren<TransitionPoint>())) 
             o.gameObject.SetActive(false);
         IsEditing = !IsEditing;
+
+        InvulBlock.Invulnerable = false;
 
         EditorUI.DoRefreshCurrentPage();
         

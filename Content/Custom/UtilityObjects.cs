@@ -235,29 +235,27 @@ public static class UtilityObjects
 
     private static PlaceableObject CreateFinalHit()
     {
-        var roar = new GameObject("Roar Spawner");
-        Object.DontDestroyOnLoad(roar);
-        roar.SetActive(false);
+        var hit = new GameObject("Final Hit");
+        Object.DontDestroyOnLoad(hit);
+        hit.SetActive(false);
 
-        roar.AddComponent<RoarEffect>();
+        hit.AddComponent<RoarEffect>();
         
-        return new CustomObject("Roar Effect", "roar_effect", roar,
-                sprite:ResourceUtils.LoadSpriteResource("roar", ppu:64))
-            .WithConfigGroup(ConfigGroup.Roar)
+        return new CustomObject("Final Hit Effect", "final_hit", hit,
+                sprite:ResourceUtils.LoadSpriteResource("final_hit", ppu:64))
             .WithReceiverGroup(ReceiverGroup.Roar);
     }
 
     private static PlaceableObject CreateBossExplosion()
     {
-        var roar = new GameObject("Roar Spawner");
-        Object.DontDestroyOnLoad(roar);
-        roar.SetActive(false);
+        var explosion = new GameObject("Boss Explosion");
+        Object.DontDestroyOnLoad(explosion);
+        explosion.SetActive(false);
 
-        roar.AddComponent<RoarEffect>();
+        explosion.AddComponent<RoarEffect>();
         
-        return new CustomObject("Roar Effect", "roar_effect", roar,
-                sprite:ResourceUtils.LoadSpriteResource("roar", ppu:64))
-            .WithConfigGroup(ConfigGroup.Roar)
+        return new CustomObject("Boss Explosion Effect", "boss_explosion", explosion,
+                sprite:ResourceUtils.LoadSpriteResource("boss_explosion", ppu:64))
             .WithReceiverGroup(ReceiverGroup.Roar);
     }
 

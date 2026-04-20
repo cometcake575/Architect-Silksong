@@ -199,7 +199,7 @@ public abstract class ScriptBlock
         if (typeof(T) == typeof(HealthManager) && val is GameObject go)
         {
             if (!go) val = GetDefaultValue<T>();
-            else return (T)(object)go.GetComponent<HealthManager>();
+            else return (T)(object)go.GetComponentInChildren<HealthManager>();
         }
         
         return (T)val;

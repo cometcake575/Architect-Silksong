@@ -108,6 +108,11 @@ public class StateBlock : PlayerBlock
 public class ActionBlock : PlayerBlock
 {
     protected override string Name => "Player Movement";
+
+    protected override IEnumerable<string> Inputs => [
+        "RefreshDash",
+        "RefreshDoubleJump"
+    ];
     
     protected override IEnumerable<string> Outputs => [
         "OnJump",
@@ -127,6 +132,16 @@ public class ActionBlock : PlayerBlock
         ("Clawlining", "Boolean"),
         ("Self", "Object")
     ];
+
+    protected override void Trigger(string id)
+    {
+        if (id == "RefreshDash")
+        {
+            HeroController.instance.airDashed = false;
+            HeroController.instance.dashCooldownTimer = 0;
+        }
+        else HeroController.instance.doubleJumped = false;
+    }
 }
 
 public class AttackBlock : PlayerBlock

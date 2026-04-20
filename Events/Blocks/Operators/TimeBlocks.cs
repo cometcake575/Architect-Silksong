@@ -20,7 +20,8 @@ public class TimeBlock : TimeBlockType
         ("Days", "Number"),
         ("Hours", "Number"),
         ("Minutes", "Number"),
-        ("Seconds", "Number")
+        ("Seconds", "Number"),
+        ("Delta", "Number")
     ];
 
     public override object GetValue(string id)
@@ -31,7 +32,8 @@ public class TimeBlock : TimeBlockType
             "Days" => diff.TotalDays,
             "Hours" => diff.TotalHours,
             "Minutes" => diff.TotalMinutes,
-            _ => diff.TotalSeconds
+            "Seconds" => diff.TotalSeconds,
+            _ => Time.deltaTime
         });
     }
 }

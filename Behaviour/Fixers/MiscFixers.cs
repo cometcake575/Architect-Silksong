@@ -10,6 +10,7 @@ using Architect.Editor;
 using Architect.Events.Blocks;
 using Architect.Events.Blocks.Operators;
 using Architect.Objects.Placeable;
+using Architect.Placements;
 using Architect.Utils;
 using GlobalSettings;
 using HutongGames.PlayMaker;
@@ -223,7 +224,11 @@ public static class MiscFixers
                 return water ? water.abyss : orig(self);
             });
         
-        typeof(GameManager).Hook("EnterHero", OnSceneLoad);
+        if (typeof(ToolItemManager)
+                .GetField("_activeState", BindingFlags.NonPublic | BindingFlags.Instance) != null)
+        {
+            typeof(GameManager).Hook("EnterHero", OnSceneLoad);
+        }
     }
 
     private static void OnSceneLoad(Action<GameManager> orig, GameManager self)
@@ -592,6 +597,48 @@ public static class MiscFixers
         roar.DisableAction(7);
         
         obj.transform.Find("Citadel Library NPC").gameObject.SetActive(false);
+    }
+
+    public static void FixWeaverLift(GameObject obj)
+    {
+        obj.transform.SetPositionZ(-0.2807f);
+        obj.transform.GetChild(7).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+        for (var i = 1; i <= 6; i++) obj.transform.GetChild(i).gameObject.SetActive(false);
+        for (var i = 10; i <= 11; i++) obj.transform.GetChild(i).gameObject.SetActive(false);
+        obj.transform.GetChild(17).gameObject.SetActive(false);
+
+        var wl = obj.GetComponent<WeaverLift>();
+        var pb = obj.AddComponent<PersistentBoolItem>();
+        pb.itemData = new PersistentBoolItem.PersistentBoolData { Value = true };
+        wl.isUnlockedTarget = pb;
+        
+        obj.AddComponent<WeaverLiftModifier>().wl = wl;
+    }
+
+    public class WeaverLiftModifier : MonoBehaviour
+    {
+        public WeaverLift wl;
+        public string target = string.Empty;
+
+        public int mode;
+        
+        private bool _started;
+
+        private void Update()
+        {
+            wl.cameraYPos = transform.GetPositionY();
+            
+            if (_started) return;
+            _started = true;
+            
+            if (PlacementManager.Objects.TryGetValue(target, out var targetObj))
+            {
+                var t = targetObj.GetComponent<WeaverLift>();
+                if (!t) return;
+                if (mode == 0) wl.liftUp = t;
+                else wl.liftDown = t;
+            }
+        }
     }
 
     public static void FixBasicNpc(GameObject obj)
@@ -1384,7 +1431,6 @@ public static class MiscFixers
 
     public static void FixSnow(GameObject obj)
     {
-        FixDecoration(obj);
         var vars = obj.LocateMyFSM("FSM").FsmVariables;
         vars.FindFsmFloat("X Min").Value = -1000;
         vars.FindFsmFloat("Y Min").Value = -1000;
