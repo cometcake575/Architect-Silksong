@@ -652,6 +652,12 @@ public static class MiscFixers
         obj.AddComponent<ForgeDaughter>();
     }
 
+    public static void FixPavo(GameObject obj)
+    {
+        EnemyFixers.KeepActive(obj);
+        obj.AddComponent<Pavo>();
+    }
+
     public static void FixSadPavo(GameObject obj)
     {
         EnemyFixers.KeepActive(obj);
@@ -847,6 +853,36 @@ public static class MiscFixers
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
             fsm.GetState("End Dialogue").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+        }
+    }
+    
+    public class Pavo : Npc
+    {
+        public float walkL;
+        public float walkR;
+
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("Dialogue");
+            fsm.GetState("Convo").AddAction(() => fsm.SendEvent("FINISHED"), 5);
+            fsm.GetState("Check Twisted Bud Convo").AddAction(() => fsm.SendEvent("TRUE"), 0);
+            var tbd = fsm.GetState("Twisted Bud Convo");
+            tbd.DisableAction(0);
+            var dialogue = (RunDialogue)tbd.actions[1];
+            dialogue.Sheet = "ArchitectMod";
+            dialogue.Key = text;
+            fsm.GetState("End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+
+            fsm.FsmVariables.FindFsmGameObject("Turn Marker Left").Value = 
+                new GameObject(name + " Turn Marker Left")
+            {
+                transform = { position = transform.position + new Vector3(-walkL, 0) }
+            };
+            fsm.FsmVariables.FindFsmGameObject("Turn Marker Right").Value = 
+                new GameObject(name + " Turn Marker Right")
+            {
+                transform = { position = transform.position + new Vector3(walkR, 0) }
+            };
         }
     }
     
@@ -1551,17 +1587,16 @@ public static class MiscFixers
         }
     }
 
-    public static void FixPreacher(GameObject obj)
+    public static void FixSongclavePilgrim(GameObject obj)
     {
-        obj.LocateMyFSM("State Control").enabled = false;
+        foreach (var fsm in obj.GetComponents<PlayMakerFSM>())
+        {
+            fsm.enabled = false;
+        }
 
         obj.AddComponent<BasicNpcFix>();
         obj.RemoveComponent<BasicNPCRepeatDialogueLeaveCondition>();
-    }
-
-    public static void FixFlick(GameObject obj)
-    {
-        obj.AddComponent<Flick>();
+        obj.RemoveComponent<NPCEncounterStateController>();
     }
 
     public static void FixRotation(GameObject obj)

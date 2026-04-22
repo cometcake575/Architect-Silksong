@@ -51,6 +51,10 @@ public static class EnemyFixers
     private static GameObject _squirmSingArea;
     private static GameObject _squirmArea;
     
+    // Unravelled
+    private static GameObject _corpseProjectiles;
+    private static GameObject _attackSpears;
+    
     // Khann
     private static readonly List<string> Spears = [
         "Long Spear",
@@ -99,6 +103,26 @@ public static class EnemyFixers
                 orig(self);
             });
         
+        typeof(SendMessage).Hook(nameof(SendMessage.OnEnter),
+            (Action<SendMessage> orig, SendMessage self) =>
+            {
+                if (self.functionCall.FunctionName.Contains("FreezeMoment") &&
+                    self.fsmComponent.GetComponent<DisableDeathSlowdown>())
+                {
+                    self.Finish();
+                }
+                else orig(self);
+            });
+        
+        typeof(CreateObject).Hook(nameof(CreateObject.OnEnter),
+            (Action<CreateObject> orig, CreateObject self) =>
+            {
+                var go = self.gameObject.value;
+                if (go && go.GetComponent<FreezeMomentOnEnable>() &&
+                    self.fsmComponent.GetComponent<DisableDeathSlowdown>()) self.Finish();
+                else orig(self);
+            });
+        
         PreloadManager.RegisterPreload(new BasicPreload("Bonetown_boss", "Boss Scene/Boulders Battle", 
             o => _bouldersPrefab = o));
         PreloadManager.RegisterPreload(new BasicPreload("Slab_16b", 
@@ -135,6 +159,13 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Coral_36", 
             "Judge Children Trigger",
             o => _squirmArea = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Ward_02_boss", 
+            "Boss Scene/Corpse Projectiles",
+            o => _corpseProjectiles = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Ward_02_boss", 
+            "Boss Scene/Attack Spears",
+            o => _attackSpears = o));
         
         PreloadManager.RegisterPreload(new BasicPreload("Library_13", 
             "Grand Stage Scene/Boss Scene TormentedTrobbio/Flare Glitter",
@@ -591,6 +622,7 @@ public static class EnemyFixers
 
     public class DisableHealthScaling : MonoBehaviour;
     public class DisableBossTitle : MonoBehaviour;
+    public class DisableDeathSlowdown : MonoBehaviour;
 
     public static void FixDuctsucker(GameObject obj)
     {
@@ -2260,7 +2292,7 @@ public static class EnemyFixers
             obj.GetComponent<tk2dSpriteAnimator>().Play("Death Stagger");
             fsm.SetState("Blood Stream");
             pin.SetActive(false);
-            GameManager.instance.FreezeMoment(FreezeMomentTypes.BossDeathSlow);
+            if (!obj.GetComponent<DisableDeathSlowdown>()) GameManager.instance.FreezeMoment(FreezeMomentTypes.BossDeathSlow);
         }, 0);
         var de = fsm.GetState("Death Explode");
         de.transitions = [];
@@ -3794,5 +3826,30 @@ public static class EnemyFixers
         var ede = obj.GetComponent<EnemyDeathEffects>();
         ede.PreInstantiate();
         RemoveConstrainPosition(ede.GetInstantiatedCorpse(AttackTypes.Generic));
+    }
+
+    public class Unravelled : Wakeable
+    {
+        public PlayMakerFSM fsm;
+        
+        public override void DoWake()
+        {
+            fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("WAKE"));
+            fsm.SendEvent("WAKE");
+        }
+    }
+
+    public static void FixUnravelled(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        obj.AddComponent<Unravelled>().fsm = fsm;
+
+        var attackSpears = Object.Instantiate(_attackSpears);
+        attackSpears.name = obj.name + " Attack Spears";
+        fsm.FsmVariables.FindFsmGameObject("Attack Spears").Value = attackSpears;
+
+        var corpseProjectiles = Object.Instantiate(_corpseProjectiles);
+        corpseProjectiles.name = obj.name + " Corpse Projectiles";
+        fsm.FsmVariables.FindFsmGameObject("Corpse Projectiles").Value = corpseProjectiles;
     }
 }

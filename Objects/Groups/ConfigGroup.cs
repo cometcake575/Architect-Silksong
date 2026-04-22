@@ -946,6 +946,15 @@ public static class ConfigGroup
             (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); },
             (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); }))
     ]);
+
+    /*public static readonly List<ConfigType> VoidTendrils = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(new BoolConfigType("Ignore Everbloom", "tendrils_ignore_flower",
+            (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.LocateMyFSM("Control").GetState("Needolin Wait").DisableAction(2);
+            }).WithDefaultValue(true))
+    ]);*/
     
     public static readonly List<ConfigType> PlayerBarrier = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(new BoolConfigType("Can Slide On", "player_barrier_slider",
@@ -1272,6 +1281,19 @@ public static class ConfigGroup
         ZOffset
     ]));
 
+    public static readonly List<ConfigType> Pavo = GroupUtils.Merge(Visible, GroupUtils.Merge(Npcs, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Distance L", "pavo_dist_l", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Pavo>().walkL = value.GetValue();
+            }).WithDefaultValue(2)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Distance R", "pavo_dist_r", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.Pavo>().walkR = value.GetValue();
+            }).WithDefaultValue(2))
+    ]));
+
     public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Start Awake", "zi_awake", (o, value) =>
@@ -1349,7 +1371,11 @@ public static class ConfigGroup
     
     private static readonly int HeatSpeed = Shader.PropertyToID("_SpeedY");
 
-    public static readonly List<ConfigType> HeatPlane = GroupUtils.Merge(Stretchable, [
+    public static readonly List<ConfigType> HeatPlane = GroupUtils.Merge(Generic, [
+        Width,
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Height", "heat_height",
+            (o, value) => { o.transform.SetScaleZ(o.transform.GetScaleZ() * value.GetValue()); },
+            (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); })),
         ZOffset,
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Speed", "heat_speed",
@@ -2369,7 +2395,24 @@ public static class ConfigGroup
                 }).WithDefaultValue(false))
     ]);
     
-    public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> Slowdown = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Death Slowdown", "boss_slowdown",
+                (o, value) =>
+                {
+                    if (value.GetValue()) return;
+                    o.GetOrAddComponent<EnemyFixers.DisableDeathSlowdown>();
+                    var ede = o.GetComponentInChildren<EnemyDeathEffects>(true);
+                    if (ede)
+                    {
+                        ede.PreInstantiate();
+                        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+                        if (corpse) corpse.GetOrAddComponent<EnemyFixers.DisableDeathSlowdown>();
+                    }
+                }).WithDefaultValue(true))
+    ]);
+    
+    public static readonly List<ConfigType> Bosses = GroupUtils.Merge(Slowdown, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Show Boss Title", "boss_title",
                 (o, value) =>
@@ -2407,7 +2450,7 @@ public static class ConfigGroup
             }))
     ]);
 
-    public static readonly List<ConfigType> GarmondBoss = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> GarmondBoss = GroupUtils.Merge(Slowdown, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Lethal Damage", "garmond_lethal",
                 (o, value) =>
@@ -2419,7 +2462,7 @@ public static class ConfigGroup
         DamagesEnemies
     ]);
 
-    public static readonly List<ConfigType> ShakraBoss = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> ShakraBoss = GroupUtils.Merge(Slowdown, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Lethal Damage", "shakra_lethal",
                 (o, value) =>
@@ -3598,8 +3641,19 @@ public static class ConfigGroup
             new BoolConfigType("Start Grown", "start_grown",
                     (o, value) =>
                     {
-                        o.GetComponent<BouncePod>().startActive = value.GetValue();
+                        o.GetComponent<ActivatingBase>().startActive = value.GetValue();
                     }).WithDefaultValue(false))
+    ]);
+
+    public static readonly List<ConfigType> BellPod = GroupUtils.Merge(CloverPod, [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Pitch", "bell_pod_pitch",
+                    (o, value) =>
+                    {
+                        var bs = o.GetComponentInChildren<BouncePod>(true).bounceSounds;
+                        bs.PitchMin = value.GetValue();
+                        bs.PitchMax = value.GetValue();
+                    }).WithDefaultValue(1))
     ]);
 
     public static readonly List<ConfigType> FallingBell = GroupUtils.Merge(Hazards, [

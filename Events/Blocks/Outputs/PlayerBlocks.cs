@@ -11,6 +11,8 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class HpBlock : PlayerBlock
 {
+    public static int LastHit;
+    
     protected override IEnumerable<string> Inputs => [
         "Max", 
         "Give", 
@@ -27,6 +29,8 @@ public class HpBlock : PlayerBlock
         "OnHealFail"];
     
     protected override IEnumerable<(string, string)> OutputVars => [
+        ("LastHit", "Number"),
+        Space,
         ("Amount", "Number"),
         Space,
         ("MaxAmount", "Number"),
@@ -76,6 +80,7 @@ public class HpBlock : PlayerBlock
         return id switch
         {
             "Amount" => PlayerData.instance.health,
+            "LastHit" => LastHit,
             "MaxAmount" => PlayerData.instance.maxHealth,
             "Lifeblood" => PlayerData.instance.healthBlue,
             _ => 0

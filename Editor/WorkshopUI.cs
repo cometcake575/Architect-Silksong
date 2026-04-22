@@ -143,7 +143,8 @@ public static class WorkshopUI
         
         savBtn.onClick.AddListener(() =>
         {
-            if (_idField.text.IsNullOrWhiteSpace() || _idField.text.StartsWith("Prefab"))
+            if (_idField.text.IsNullOrWhiteSpace() || _idField.text.StartsWith("Prefab")
+                || _idField.text.EndsWith("_Boss") || _idField.text.EndsWith("_Title"))
             {
                 issue.text = "Invalid ID";
                 return;

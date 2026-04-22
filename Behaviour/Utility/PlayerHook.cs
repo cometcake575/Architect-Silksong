@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Architect.Events.Blocks.Events;
+using Architect.Events.Blocks.Outputs;
 using Architect.Utils;
 using GlobalEnums;
 using PrepatcherPlugin;
@@ -97,6 +98,7 @@ public class PlayerHook : MonoBehaviour
                 bool hasBlue, bool breakMask) =>
             {
                 orig(self, amount, hasBlue, breakMask);
+                HpBlock.LastHit = amount;
                 PlayerEvent("OnDamage");
             });
 

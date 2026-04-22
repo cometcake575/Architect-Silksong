@@ -619,11 +619,13 @@ public static class VanillaObjects
         
         AddEnemy("Trobbio", "trobbio",
             ("Library_13", "Grand Stage Scene/Boss Scene Trobbio/Trobbio"),
-            postSpawnAction: EnemyFixers.FixRegularTrobbio).DoFlipX();
+            postSpawnAction: EnemyFixers.FixRegularTrobbio)
+            .WithConfigGroup(ConfigGroup.Slowdown).DoFlipX();
 
         AddEnemy("Tormented Trobbio", "tormented_trobbio",
             ("Library_13", "Grand Stage Scene/Boss Scene TormentedTrobbio/Tormented Trobbio"),
-            postSpawnAction: EnemyFixers.FixTormentedTrobbio).DoFlipX();
+            postSpawnAction: EnemyFixers.FixTormentedTrobbio)
+            .WithConfigGroup(ConfigGroup.Slowdown).DoFlipX();
         
         PreloadManager.RegisterPreload(new BasicPreload(
             "localpoolprefabs_assets_areahang.bundle", 
@@ -1384,6 +1386,11 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.MaskAndSpool)
             .WithReceiverGroup(ReceiverGroup.MaskAndSpool)
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+        
+        /*AddEnemy("The Unravelled", "the_unravelled",
+            ("Ward_02_boss", "Boss Scene/Conductor Boss"),
+            postSpawnAction: EnemyFixers.FixUnravelled)
+            .WithConfigGroup(ConfigGroup.Wakeable);*/
     }
 
     private static void AddSlabObjects()
@@ -1834,7 +1841,8 @@ public static class VanillaObjects
             });
         AddEnemy("Phantom", "phantom", ("Organ_01", "Boss Scene/Phantom"),
             postSpawnAction: EnemyFixers.FixPhantom)
-            .WithBroadcasterGroup(BroadcasterGroup.SlamEnemies);
+            .WithBroadcasterGroup(BroadcasterGroup.SlamEnemies)
+            .WithConfigGroup(ConfigGroup.Slowdown);
 
         Categories.Hazards.Add(new PreloadObject("Pressure Plate Trap", "dust_trap_spike_plate",
             ("Dust_Maze_01", "Mist Maze Controller/Trap Sets/Trap Set/Dust Trap Spike Plate")));
@@ -2108,7 +2116,8 @@ public static class VanillaObjects
                              "in the same way as the Custom PNG for custom mirror shapes.",
                 preloadAction: MiscFixers.FixSpecialPngs,
                 sprite: ResourceUtils.LoadSpriteResource("reflection", ppu: 155))
-            .WithConfigGroup(ConfigGroup.Mirror));
+            .WithConfigGroup(ConfigGroup.Mirror)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Effects.Add(new PreloadObject("Silhouette Effect", "silhouette_effect",
                 ("Shadow_02", "Shakra Trail Quest Parent/Active/Tracking Trail (2)/Silhouettes Parent/Silhoutte"),
@@ -2116,13 +2125,15 @@ public static class VanillaObjects
                              "in the same way as the Custom PNG for custom shapes.",
                 preloadAction: MiscFixers.FixSpecialPngs,
                 sprite: ResourceUtils.LoadSpriteResource("silhouette", ppu: 155))
-            .WithConfigGroup(ConfigGroup.PhysicalPng));
+            .WithConfigGroup(ConfigGroup.PhysicalPng)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Effects.Add(new PreloadObject("Vignette Cutout Effect", "vignette_cutout_effect",
                 ("Belltown", "Vignette Cutout (3)"),
                 description: "Cuts out part of the vignette, can be used to make areas visible in darkness.",
                 preloadAction: MiscFixers.FixSpecialPngs)
-            .WithConfigGroup(ConfigGroup.Png));
+            .WithConfigGroup(ConfigGroup.Png)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Effects.Add(new PreloadObject("Memory Silk Effect", "memory_silk_effect",
                 ("Coral_Tower_01", "Memory Group/before/thread_memory/thread_memory_starter/strand1/strandbacking (1)"),
@@ -2130,7 +2141,8 @@ public static class VanillaObjects
                              "in the same way as the Custom PNG for custom shapes.",
                 preloadAction: MiscFixers.FixSpecialPngs,
                 sprite: ResourceUtils.LoadSpriteResource("memory", ppu: 155))
-            .WithConfigGroup(ConfigGroup.PhysicalPng));
+            .WithConfigGroup(ConfigGroup.PhysicalPng)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Effects.Add(new PreloadObject("Sway Effect", "sway_effect",
                 ("Tut_02", "green_grass_tri (6)"),
@@ -2142,11 +2154,12 @@ public static class VanillaObjects
                     o.transform.SetPositionZ(-0.1f);
                     o.transform.SetRotation2D(0);
                 })
-            .WithConfigGroup(ConfigGroup.Sway));
+            .WithConfigGroup(ConfigGroup.Sway)
+            .WithRotationGroup(RotationGroup.All));
 
         Categories.Effects.Add(new PreloadObject("Grass Effect", "grass_effect",
                 ("Tut_02", "green_grass_tri (6)/Green Grass A"),
-                sprite: ResourceUtils.LoadSpriteResource("grass_burst", ppu:250),
+                sprite: ResourceUtils.LoadSpriteResource("grass_burst", ppu:62.5f),
                 description: "Appears when the 'Burst' trigger is run.",
                 preloadAction: o =>
                 {
@@ -2158,7 +2171,7 @@ public static class VanillaObjects
                     em.enabled = false;
                 })
             .WithConfigGroup(ConfigGroup.Particle)
-            .WithReceiverGroup(ReceiverGroup.Grass));
+            .WithReceiverGroup(ReceiverGroup.Grass)).DoIgnoreScale();
 
         Categories.Npcs.Add(new PreloadObject("Gilly NPC", "gilly_npc",
                 ("Ant_17", "Gilly"), 
@@ -2333,7 +2346,49 @@ public static class VanillaObjects
         Categories.Npcs.Add(new PreloadObject("Pilgrim Preacher", "pilgrim_preacher",
                 ("Song_Enclave",
                     "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Simple NPC Tall"),
-                postSpawnAction: MiscFixers.FixPreacher)
+                preloadAction: MiscFixers.FixSongclavePilgrim)
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
+
+        Categories.Npcs.Add(new PreloadObject("Humble Pilgrim", "humble_pilgrim",
+                ("Song_Enclave",
+                    "Black Thread States/Normal World/Enclave States/States/Level 2/Enclave Simple NPC Short Horned"),
+                preloadAction: MiscFixers.FixSongclavePilgrim)
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
+
+        Categories.Npcs.Add(new PreloadObject("Dejected Pilgrim", "dejected_pilgrim",
+                ("Song_Enclave",
+                    "Black Thread States/Black Thread World/Enclave Act 3 basic talk NPC/Present/Enclave Simple NPC Standard"),
+                preloadAction: o =>
+                {
+                    o.transform.SetPositionZ(0.005f);
+                    o.transform.GetChild(4).gameObject.SetActive(false);
+                    MiscFixers.FixSongclavePilgrim(o);
+                })
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
+
+        Categories.Npcs.Add(new PreloadObject("Worried Pilgrim", "worried_pilgrim",
+                ("Song_Enclave",
+                    "Black Thread States/Black Thread World/Enclave Simple NPC Large"),
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(2).gameObject.SetActive(false);
+                    MiscFixers.FixSongclavePilgrim(o);
+                })
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
+
+        Categories.Npcs.Add(new PreloadObject("Scared Pilgrim", "scared_pilgrim",
+                ("Song_Enclave",
+                    "Black Thread States/Normal World/Enclave States/States/Level 1/Enclave Pilgrim Small"),
+                preloadAction: o =>
+                {
+                    o.transform.GetChild(4).gameObject.SetActive(false);
+                    o.transform.GetChild(5).gameObject.SetActive(false);
+                    MiscFixers.FixSongclavePilgrim(o);
+                })
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
@@ -2678,6 +2733,15 @@ public static class VanillaObjects
         AddSolid("Cogworks Platform 2", "cog_plat_2", 
             ("Cog_04", "cog_plat_float (2)"),
             preloadAction: MiscFixers.FocusFirstChild);
+
+        Categories.Interactable.Add(new PreloadObject("Bell Lock", "bell_lock",
+            ("Arborium_10", "Music Box Sequence - EDITED/bells/music_box_support"),
+            preloadAction: o => o.transform.SetPositionZ(0.1237f),
+            postSpawnAction: o => 
+                o.GetComponentInChildren<BouncePod>().BounceHit += () => o.BroadcastEvent("OnHit"))
+            .WithConfigGroup(ConfigGroup.BellPod)
+            .WithReceiverGroup(ReceiverGroup.BellPod)
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
     }
 
     private static void AddBellObjects()
@@ -2733,11 +2797,13 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
 
-        /*Categories.Misc.Add(new PreloadObject("Pavo", "pavo_normal",
+        Categories.Npcs.Add(new PreloadObject("Pavo NPC", "pavo_normal",
             ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter NPC"),
-            postSpawnAction: MiscFixers.FixBasicNpc)
-            .WithConfigGroup(ConfigGroup.Npcs));*/
-        Categories.Npcs.Add(new PreloadObject("Sad Pavo", "pavo_sad",
+            postSpawnAction: MiscFixers.FixPavo)
+            .WithConfigGroup(ConfigGroup.Pavo)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs).DoFlipX());
+            
+        Categories.Npcs.Add(new PreloadObject("Sad Pavo NPC", "pavo_sad",
             ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter Act3"),
             postSpawnAction: MiscFixers.FixSadPavo)
             .WithConfigGroup(ConfigGroup.Npcs)
@@ -3377,7 +3443,8 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four)
             .DoFlipX();
         AddEnemy("Craggler", "craggler", ("Crawl_04", "Roof Crab"),
-            postSpawnAction: EnemyFixers.FixCraggler);
+            postSpawnAction: EnemyFixers.FixCraggler)
+            .WithConfigGroup(ConfigGroup.Slowdown);
 
         AddEnemy("Gromling", "gromling", ("Crawl_01", "Crypt Worms/GameObject/Crypt Worm (9)"),
                 postSpawnAction: o =>
@@ -3718,7 +3785,7 @@ public static class VanillaObjects
         Categories.Npcs.Add(new PreloadObject("Flick NPC", "flick_npc",
             ("Bonetown", 
                 "Black Thread States/Normal World/RestBench Control/Bench Getting Repaired/Fixer Pilgrim Bench Repair"),
-            postSpawnAction: MiscFixers.FixFlick))
+            postSpawnAction: MiscFixers.AddComponent<MiscFixers.Flick>))
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs);
 

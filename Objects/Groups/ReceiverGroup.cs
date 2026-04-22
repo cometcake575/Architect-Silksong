@@ -281,6 +281,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> BellPod = GroupUtils.Merge(Activatable, [
+        EventManager.RegisterReceiverType(new EventReceiverType("bell_pod_ring", "Ring", o =>
+        {
+            o.GetComponentInChildren<BouncePod>(true).Ring();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> MaskAndSpool = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("collect_mask", "Collect", o =>
         {
