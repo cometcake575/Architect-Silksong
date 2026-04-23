@@ -217,12 +217,21 @@ public static class WorkshopManager
             }
         }
     }
+
+    private static readonly List<WorkshopData> ExtWorkshops = [];
     
     public static void Setup()
     {
         CustomAchievement.Init();
         SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
+        foreach (var item in ExtWorkshops.SelectMany(data => data.Items)
+                     .OrderBy(i => i is CustomQuest ? 1 : 0)) item.Register();
+    }
+
+    public static void LoadExtWorkshop(WorkshopData data)
+    {
+        ExtWorkshops.Add(data);
     }
 
     public static void LoadWorkshop(WorkshopData data)

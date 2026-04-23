@@ -1593,6 +1593,7 @@ public static class MiscFixers
         {
             fsm.enabled = false;
         }
+        EnemyFixers.KeepActive(obj);
 
         obj.AddComponent<BasicNpcFix>();
         obj.RemoveComponent<BasicNPCRepeatDialogueLeaveCondition>();

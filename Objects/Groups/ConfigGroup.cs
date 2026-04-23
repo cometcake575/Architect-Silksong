@@ -1981,7 +1981,13 @@ public static class ConfigGroup
                 {
                     o.GetComponent<ComponentHook>().mode = value.GetValue();
                 }
-            ).WithOptions("Destroy", "Disable", "Enable").WithDefaultValue(0))
+            ).WithOptions("Destroy", "Disable", "Enable", "None").WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("Field Name", "component_hook_field", 
+                (o, value) => 
+                {
+                    o.GetComponent<ComponentHook>().fieldName = value.GetValue();
+                }
+            ))
     ]);
 
     public static readonly List<ConfigType> ObjectAnchor = GroupUtils.Merge(Generic, [
@@ -3650,9 +3656,11 @@ public static class ConfigGroup
             new FloatConfigType("Pitch", "bell_pod_pitch",
                     (o, value) =>
                     {
-                        var bs = o.GetComponentInChildren<BouncePod>(true).bounceSounds;
+                        var bp = o.GetComponentInChildren<BouncePod>(true);
+                        var bs = bp.bounceSounds;
                         bs.PitchMin = value.GetValue();
                         bs.PitchMax = value.GetValue();
+                        bp.bounceSounds = bs;
                     }).WithDefaultValue(1))
     ]);
 

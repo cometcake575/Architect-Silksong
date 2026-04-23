@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Architect.Api;
 using Architect.Config.Types;
 using Architect.Content.Preloads;
 using Architect.Editor;
@@ -69,7 +70,11 @@ public static class StorageManager
 
     private static string GetScenePath(string scene)
     {
-        return DataPath + (scene.StartsWith("Prefab_") ? "Prefabs/" : "Scenes/") + scene + ".architect.json";
+        if (scene.StartsWith("Prefab_"))
+        {
+            return MapLoader.GetPrefab(scene) ?? $"{DataPath}Prefabs/{scene}.architect.json";
+        }
+        return $"{DataPath}Scenes/{scene}.architect.json";
     }
     
     public static void SaveScene(string scene, LevelData level)
@@ -205,9 +210,9 @@ public static class StorageManager
         return [];
     }
 
-    public static List<PrefabObject> LoadPrefabs()
+    public static List<PrefabObject> LoadPrefabs(string dp)
     {
-        var path = DataPath + "/Prefabs";
+        var path = dp + "/Prefabs";
         List<PrefabObject> prefabs = [];
         foreach (var file in Directory.GetFiles(path))
         {
@@ -219,17 +224,24 @@ public static class StorageManager
         return prefabs;
     }
 
+    public static readonly List<string> Directories = [];
+
     public static void FindLoadRequirements()
+    {
+        FindLoadRequirements(DataPath);
+        foreach (var dir in Directories) FindLoadRequirements(dir);
+    }
+
+    public static void FindLoadRequirements(string dp)
     {
         foreach (var s in new[] { "Scenes/", "Prefabs/" })
         {
-            foreach (var file in Directory.GetFiles(DataPath + s))
+            var path = Path.Combine(dp, s);
+            if (!Directory.Exists(path)) continue;
+            foreach (var file in Directory.GetFiles(path))
             {
-                var name = Path.GetFileName(file);
-                if (!name.EndsWith(".architect.json")) continue;
-
-                var n = name.Replace(".architect.json", "");
-                var scene = LoadScene(n);
+                if (!file.EndsWith(".architect.json")) continue;
+                var scene = DeserializeLevel(File.ReadAllText(file));
                 if (scene == null) continue;
                 foreach (var o in scene.Placements.Where(o => o != null))
                 {
@@ -388,7 +400,7 @@ public static class StorageManager
         var elapsed = Time.realtimeSinceStartup - startTime;
         if (elapsed < 1) yield return new WaitForSeconds(1 - elapsed);
 
-        PrefabsCategory.Prefabs = LoadPrefabs();
+        PrefabsCategory.Prefabs = LoadPrefabs(DataPath);
         WorkshopManager.LoadWorkshop(workshop);
         SaveWorkshopData();
 
@@ -470,7 +482,7 @@ public static class StorageManager
                 File.Copy(path + "workshop.json", DataPath + "workshop.json", true);
             }
 
-            PrefabsCategory.Prefabs = LoadPrefabs();
+            PrefabsCategory.Prefabs = LoadPrefabs(DataPath);
             LoadWorkshopData();
 
             if (!Settings.LoadAllAssets.Value)

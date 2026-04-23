@@ -192,6 +192,11 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("component_hook_apply", "Apply", o =>
         {
             o.GetComponent<ComponentHook>().Setup();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("component_hook_set", "Set", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<ComponentHook>().SetValue(b.GetVariable<object>("New Value"));
         }))
     ]);
     

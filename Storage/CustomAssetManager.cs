@@ -26,6 +26,8 @@ public static class CustomAssetManager
     public static readonly HashSet<string> LoadingSounds = [];
     public static readonly HashSet<string> LoadingSprites = [];
 
+    public static readonly List<string> AssetPaths = [];
+
     public static async Task<bool> SaveFile(string url, string path)
     {
         try
@@ -55,7 +57,7 @@ public static class CustomAssetManager
 
     private static IEnumerator LoadVideo(string url, float? scale, [CanBeNull] VideoPlayer player = null)
     {
-        var path = $"{GetPath(url)}.mov";
+        var path = GetPath($"{url}.mov");
         if (!File.Exists(path))
         {
             var task = Task.Run(() => SaveFile(url, path));
@@ -91,7 +93,7 @@ public static class CustomAssetManager
         if (!Sprites.ContainsKey(id))
         {
             LoadingSprites.Add(id);
-            var path = $"{GetPath(url)}.png";
+            var path = GetPath($"{url}.png");
             var tmp = ResourceUtils.LoadSprites(path, point, ppu, hcount, vcount);
             if (tmp == null)
             {
@@ -125,7 +127,7 @@ public static class CustomAssetManager
         if (!Sounds.ContainsKey(url))
         {
             LoadingSounds.Add(url);
-            var path = $"{GetPath(url)}.wav";
+            var path = GetPath($"{url}.wav");
             if (!File.Exists(path))
             {
                 var task = Task.Run(() => SaveFile(url, path));
@@ -142,10 +144,23 @@ public static class CustomAssetManager
         callback(Sounds[url]);
     }
 
-    public static string GetPath(string url)
+    private static string GetSavePath(string url)
     {
         var pathUrl = Path.GetInvalidFileNameChars()
             .Aggregate(url, (current, c) => current.Replace(c, '_'));
+        return $"{StorageManager.DataPath}Assets/{pathUrl}";
+    }
+
+    private static string GetPath(string file)
+    {
+        var pathUrl = Path.GetInvalidFileNameChars()
+            .Aggregate(file, (current, c) => current.Replace(c, '_'));
+        foreach (var path in AssetPaths)
+        {
+            var fullPath = Path.Combine(path, pathUrl);
+            if (File.Exists(fullPath)) return fullPath;
+        }
+        
         return $"{StorageManager.DataPath}Assets/{pathUrl}";
     }
 
@@ -162,7 +177,7 @@ public static class CustomAssetManager
         else return;
 
         var url = config.GetValue();
-        var b = await SaveFile(url, GetPath(url) + fileType);
+        var b = await SaveFile(url, GetSavePath(url) + fileType);
         DownloadingAssets -= 1;
         Downloaded += 1;
         status.text = "Downloading Assets...\n" +
@@ -178,7 +193,7 @@ public static class CustomAssetManager
         else return;
 
         var url = config.GetValue();
-        var b = await SaveFile(url, GetPath(url) + fileType);
+        var b = await SaveFile(url, GetSavePath(url) + fileType);
         DownloadingAssets -= 1;
         Downloaded += 1;
         status.text = "Downloading Assets...\n" +
@@ -202,7 +217,7 @@ public static class CustomAssetManager
                 return;
         }
 
-        var b = await SaveFile(url, GetPath(url) + fileType);
+        var b = await SaveFile(url, GetSavePath(url) + fileType);
         DownloadingAssets -= 1;
         Downloaded += 1;
         status.text = "Downloading Assets...\n" +

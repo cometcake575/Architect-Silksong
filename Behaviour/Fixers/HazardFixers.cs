@@ -1,5 +1,6 @@
 using System;
 using Architect.Content.Preloads;
+using Architect.Editor;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
@@ -15,7 +16,7 @@ public static class HazardFixers
     private static GameObject _lavaBox;
     private static GameObject _coalRegion;
     private static GameObject _tendrilDamager;
-    private static GameObject _carverDamager;
+    private static PlayMakerFSM _carverDamagerFsm;
     private static GameObject _cradleSpikes;
     private static GameObject _voltHazard;
 
@@ -41,7 +42,15 @@ public static class HazardFixers
             o => _tendrilDamager = o));
         
         PreloadManager.RegisterPreload(new BasicPreload("Coral_11", "Sand Centipede Hero Damager", 
-            o => _carverDamager = o));
+            o =>
+            {
+                var cd = Object.Instantiate(o);
+                cd.SetActive(true);
+                cd.RemoveComponent<EventRegister>();
+                Object.DontDestroyOnLoad(cd);
+                
+                _carverDamagerFsm = cd.LocateMyFSM("Control");
+            }));
         
         PreloadManager.RegisterPreload(new BasicPreload("Bone_East_03", "Coal Region", 
             o => _coalRegion = o));
@@ -326,14 +335,12 @@ public static class HazardFixers
         _currentTendrilDamager.SetActive(true);
     }
 
-    private static GameObject _currentCarverDamager;
-
     public static void FixCarvers(GameObject obj)
     {
-        if (_currentCarverDamager) return;
-        _currentCarverDamager = Object.Instantiate(_carverDamager, obj.transform);
-        _currentCarverDamager.name = "[Architect] " + _currentCarverDamager.name;
-        _currentCarverDamager.SetActive(true);
+        if (EditManager.IsEditing) return;
+        var tee = obj.GetComponentInChildren<TriggerEnterEvent>();
+        tee.fsmTarget = _carverDamagerFsm;
+        tee.fsmEvent = "CENTIPEDE DAMAGE";
     }
 
     public static void FixCradleSpikes(GameObject obj)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Architect.Api;
 using Architect.Behaviour.Fixers;
 using Architect.Content;
 using Architect.Content.Custom;
@@ -17,12 +19,13 @@ using Architect.Utils;
 using Architect.Workshop;
 using BepInEx;
 using BepInEx.Logging;
+using Newtonsoft.Json;
 using Silksong.DataManager;
 using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.25.10")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.26.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -98,6 +101,48 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
                 StringVarBlock.SemiVars.Clear();
                 orig(self);
             });
+        
+        FindMaps();
+    }
+    
+    private static void FindMaps()
+    {
+        foreach (var dir in Directory.GetDirectories(
+                     Paths.PluginPath, 
+                     "Architect",
+                     SearchOption.AllDirectories))
+        {
+            if (dir == Path.Combine(Paths.PluginPath, "Architect")) continue;
+
+            var scenes = Path.Combine(dir, "Scenes");
+            if (Directory.Exists(scenes)) foreach (var path in Directory.GetFiles(scenes))
+            {
+                if (!path.EndsWith(".architect.json")) continue;
+                var sceneName = Path.GetFileNameWithoutExtension(path).Replace(".architect", "");
+                MapLoader.LoadStandaloneMap(sceneName, path);
+            }
+
+            var prefabs = Path.Combine(dir, "Prefabs");
+            if (Directory.Exists(prefabs)) foreach (var path in Directory.GetFiles(prefabs))
+            {
+                if (!path.EndsWith(".architect.json")) continue;
+                var sceneName = Path.GetFileNameWithoutExtension(path).Replace(".architect", "");
+                MapLoader.LoadStandalonePrefab(sceneName, path);
+            }
+            
+            var assets = Path.Combine(dir, "Assets");
+            if (Directory.Exists(assets)) CustomAssetManager.AssetPaths.Add(assets);
+            StorageManager.LoadPrefabs(dir);
+            
+            var workshop = Path.Combine(dir, "workshop.json");
+            if (File.Exists(workshop))
+            {
+                var data = File.ReadAllText(workshop);
+                WorkshopManager.LoadExtWorkshop(JsonConvert.DeserializeObject<WorkshopData>(data));
+            }
+
+            StorageManager.Directories.Add(dir);
+        }
     }
 
     private void Start()

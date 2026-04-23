@@ -2737,8 +2737,12 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Bell Lock", "bell_lock",
             ("Arborium_10", "Music Box Sequence - EDITED/bells/music_box_support"),
             preloadAction: o => o.transform.SetPositionZ(0.1237f),
-            postSpawnAction: o => 
-                o.GetComponentInChildren<BouncePod>().BounceHit += () => o.BroadcastEvent("OnHit"))
+            postSpawnAction: o =>
+            {
+                var bp = o.GetComponentInChildren<BouncePod>();
+                bp.InertHit += () => o.BroadcastEvent("OnHit");
+                bp.BounceHit += () => o.BroadcastEvent("OnHit");
+            })
             .WithConfigGroup(ConfigGroup.BellPod)
             .WithReceiverGroup(ReceiverGroup.BellPod)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable));

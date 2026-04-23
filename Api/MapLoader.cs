@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Architect.Placements;
 using Architect.Storage;
@@ -9,16 +10,38 @@ namespace Architect.Api;
 
 public static class MapLoader
 {
+    // Embedded maps inside other mods
     private static readonly Dictionary<string, Dictionary<Assembly, string>> ModMaps = [];
+    
+    // Non-embedded external maps in the plugins folder
+    private static readonly Dictionary<string, List<string>> StandaloneMaps = [];
+    private static readonly Dictionary<string, string> StandalonePrefabs = [];
+
+    // Conditional map loaders
+    private static readonly Dictionary<string, HashSet<Func<LevelData>>> ExtMapLoadersByScene = [];
+    private static readonly HashSet<Func<string, LevelData>> ExtMapLoaders = [];
     
     public static void LoadMap(Assembly asm, string sceneName, string mapPath)
     {
         if (!ModMaps.ContainsKey(sceneName)) ModMaps[sceneName] = [];
         ModMaps[sceneName][asm] = mapPath;
     }
+    
+    public static void LoadStandaloneMap(string sceneName, string mapPath)
+    {
+        if (!StandaloneMaps.ContainsKey(sceneName)) StandaloneMaps[sceneName] = [];
+        StandaloneMaps[sceneName].Add(mapPath);
+    }
+    
+    public static void LoadStandalonePrefab(string prefabName, string mapPath)
+    {
+        StandalonePrefabs[prefabName] = mapPath;
+    }
 
-    private static readonly Dictionary<string, HashSet<Func<LevelData>>> ExtMapLoadersByScene = [];
-    private static readonly HashSet<Func<string, LevelData>> ExtMapLoaders = [];
+    public static string GetPrefab(string prefabName)
+    {
+        return StandalonePrefabs.GetValueOrDefault(prefabName);
+    }
 
     public static void AddMapLoader(string scene, Func<LevelData> mapLoader)
     {
@@ -77,6 +100,14 @@ public static class MapLoader
                     var json = Encoding.UTF8.GetString(buffer);
                     return StorageManager.DeserializeLevel(json);
                 });
+            }
+        }
+
+        if (StandaloneMaps.TryGetValue(scene, out var maps))
+        {
+            foreach (var mapPath in maps)
+            {
+                TryLoadMap(() => StorageManager.DeserializeLevel(File.ReadAllText(mapPath)));
             }
         }
 

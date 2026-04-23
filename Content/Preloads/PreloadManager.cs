@@ -110,7 +110,7 @@ public static class PreloadManager
         
         FavouritesCategory.Favourites = StorageManager.LoadFavourites();
         SavedCategory.Objects = StorageManager.LoadSavedObjects();
-        PrefabsCategory.Prefabs = StorageManager.LoadPrefabs();
+        PrefabsCategory.Prefabs = StorageManager.LoadPrefabs(StorageManager.DataPath);
     }
 
     private static IEnumerator Prepare(IPreload preload, ManagedAsset<GameObject> asset)

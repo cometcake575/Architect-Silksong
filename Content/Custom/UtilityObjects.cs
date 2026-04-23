@@ -352,7 +352,8 @@ public static class UtilityObjects
                 "'Recursive' will get components of child objects too.",
                 sprite:ResourceUtils.LoadSpriteResource("component_hook", FilterMode.Point, ppu:64))
             .WithConfigGroup(ConfigGroup.ComponentHook)
-            .WithReceiverGroup(ReceiverGroup.ComponentHook);
+            .WithReceiverGroup(ReceiverGroup.ComponentHook)
+            .WithInputGroup(InputGroup.ComponentHook);
     }
 
     private static PlaceableObject CreatePlasmifier()
