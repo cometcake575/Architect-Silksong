@@ -335,10 +335,13 @@ public static class HazardFixers
         _currentTendrilDamager.SetActive(true);
     }
 
+    private static readonly LayerMask HeroBoxMask = LayerMask.GetMask("Hero Box");
+
     public static void FixCarvers(GameObject obj)
     {
         if (EditManager.IsEditing) return;
         var tee = obj.GetComponentInChildren<TriggerEnterEvent>();
+        tee.checkLayer = HeroBoxMask;
         tee.fsmTarget = _carverDamagerFsm;
         tee.fsmEvent = "CENTIPEDE DAMAGE";
     }
@@ -374,6 +377,8 @@ public static class HazardFixers
         air.DisableAction(11);
         var timeUp = (BoolAllTrue)air.actions[18];
         timeUp.boolVariables = [timeUp.boolVariables[2]];
+        
+        fsm.GetState("Antic").DisableAction(7);
     }
 
     public class Flintbomb : MonoBehaviour

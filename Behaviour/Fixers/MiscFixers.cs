@@ -128,6 +128,13 @@ public static class MiscFixers
             });
         #endregion
         
+        typeof(WeaverLift).Hook(nameof(WeaverLift.Teleport),
+            (Action<WeaverLift> orig, WeaverLift self) =>
+            {
+                orig(self);
+                self.gameObject.BroadcastEvent("OnActivate");
+            });
+        
         typeof(BasicNPC).Hook(nameof(BasicNPC.OnEndDialogue),
             (Action<BasicNPC> orig, BasicNPC self) =>
             {
@@ -1983,5 +1990,14 @@ public static class MiscFixers
             
             fsm.GetState("Dialogue End No").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
+    }
+
+    public static void FixTrobbiwork(GameObject obj)
+    {
+        obj.GetComponent<Animator>().enabled = false;
+        obj.RemoveComponent<DeactivateAfterDelay>();
+        obj.transform.GetChild(2).gameObject.SetActive(false);
+        obj.transform.GetChild(3).gameObject.SetActive(false);
+        obj.transform.GetChild(4).gameObject.SetActive(false);
     }
 }

@@ -50,7 +50,7 @@ public class ObjectMoverBlock : ScriptBlock
         var y = GetVariable<float>("Y");
         var z = GetVariable<float>("Z");
         
-        IEnumerable<Rigidbody2D> rb2ds = obj.GetComponentsInChildren<Rigidbody2D>();
+        IEnumerable<Rigidbody2D> rb2ds = [obj.GetComponentInChildren<Rigidbody2D>()];
 
         var prefab = obj.GetComponent<Prefab>();
 

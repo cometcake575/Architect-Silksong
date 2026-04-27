@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Behaviour.Abilities;
 using Architect.Objects.Categories;
 using Architect.Storage;
 using Architect.Utils;
@@ -107,6 +108,7 @@ public static class PreloadManager
         HasPreloaded = true;
         Object.Destroy(_canvasObj);
         WorkshopManager.Setup();
+        CrestBinding.InitItcHook();
         
         FavouritesCategory.Favourites = StorageManager.LoadFavourites();
         SavedCategory.Objects = StorageManager.LoadSavedObjects();

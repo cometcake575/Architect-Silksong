@@ -10,9 +10,14 @@ public class ObjectHook : MonoBehaviour
     public int start;
     public int index;
 
+    public void FindObject()
+    {
+        if (!o) o = ObjectUtils.FindGameObject(path, index);
+    }
+
     private void Start()
     {
-        o = ObjectUtils.FindGameObject(path, index);
+        FindObject();
         switch (start)
         {
             case 1:

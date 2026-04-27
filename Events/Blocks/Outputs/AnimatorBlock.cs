@@ -16,6 +16,8 @@ public class AnimatorBlock : ScriptBlock
     public string ClipName;
 
     public bool TakeCtrl;
+    public bool ClearXVel = true;
+    public bool ClearYVel = false;
     
     public bool OverrideAnimTime;
     public float AnimTime;
@@ -42,6 +44,8 @@ public class AnimatorBlock : ScriptBlock
 
             player.clipName = ClipName;
             player.takeCtrl = TakeCtrl;
+            player.clearXVel = ClearXVel;
+            player.clearYVel = ClearYVel;
             player.overrideAnimTime = OverrideAnimTime;
             player.animTime = AnimTime;
 

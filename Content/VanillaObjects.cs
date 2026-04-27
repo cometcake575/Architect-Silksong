@@ -256,6 +256,12 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.CoralNut)
             .WithRotationGroup(RotationGroup.Eight));
 
+        Categories.Effects.Add(new PreloadObject("Coral Branch", "coral_crust_tree_branch",
+                ("Coral_24", "coral_crust_tree (9)/BG Activate Parent/Branch 1/Coral Crust Tree Branch"))
+            .WithReceiverGroup(ReceiverGroup.Activatable)
+            .WithConfigGroup(ConfigGroup.CloverPod)
+            .WithRotationGroup(RotationGroup.All));
+
         Categories.Hazards.Add(new PreloadObject("Coral Spike S", "stomp_spire",
                 ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)/Stomp Spire L"),
                 description: "This spike starts hidden, the 'Activate' trigger will\n" +
@@ -596,6 +602,25 @@ public static class VanillaObjects
                 anim.defaultClipId = anim.GetClipIdByName("Tornado Projectile");
             },
         notSceneBundle: true));
+
+        /*
+        Categories.Attacks.Add(new PreloadObject("Trobbiflare", "trobbio_flare",
+            ("Library_13", "Grand Stage Scene/Boss Scene Trobbio/Flare Glitter/Flare Glitter 1")));
+
+        Categories.Attacks.Add(new PreloadObject("Tormented Trobbiflare", "t_trobbio_flare",
+            ("Library_13", "Grand Stage Scene/Boss Scene TormentedTrobbio/Flare Glitter/Flare Glitter 1")));
+*/
+        Categories.Attacks.Add(new PreloadObject("Trobbiwork", "trobbio_firework",
+            ("Library_13", "Grand Stage Scene/Boss Scene Trobbio/Trapdoor Bursts/Bursts/Burst A"),
+            preloadAction: MiscFixers.FixTrobbiwork,
+            sprite: ResourceUtils.LoadSpriteResource("trapdoor", ppu:80))
+            .WithReceiverGroup(ReceiverGroup.Trobbiwork));
+
+        Categories.Attacks.Add(new PreloadObject("Tormented Trobbiwork", "t_trobbio_firework",
+            ("Library_13", "Grand Stage Scene/Boss Scene TormentedTrobbio/Trapdoor Bursts/Bursts/Burst A"),
+            preloadAction: MiscFixers.FixTrobbiwork,
+            sprite: ResourceUtils.LoadSpriteResource("trapdoor", ppu:80))
+            .WithReceiverGroup(ReceiverGroup.Trobbiwork));
         
         Categories.Attacks.Add(new PreloadObject("Trobbibomb", "trobbio_bomb",
             ("localpoolprefabs_assets_trobbio", "Assets/Prefabs/Hornet Bosses/Trobbio Bomb.prefab"),
@@ -603,6 +628,8 @@ public static class VanillaObjects
                          "Best used with the Object Spawner.",
             notSceneBundle: true, 
             postSpawnAction: HazardFixers.FixTrobbioBomb)
+            .WithRotateAction((o, r) => 
+                o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Rotation").Value = r)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
@@ -613,6 +640,8 @@ public static class VanillaObjects
                          "Best used with the Object Spawner.",
             notSceneBundle: true, 
             postSpawnAction: HazardFixers.FixTrobbioCrossBomb)
+            .WithRotateAction((o, r) => 
+                o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Rotation").Value = r)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
             .WithReceiverGroup(ReceiverGroup.Velocity));
@@ -1783,6 +1812,35 @@ public static class VanillaObjects
                 }).DoFlipX().WithRotationGroup(RotationGroup.All)
             .WithReceiverGroup(ReceiverGroup.Trap));
 
+        var terrainMask = LayerMask.GetMask("Terrain");
+        Categories.Hazards.Add(new PreloadObject("Falling Spike Ball", "falling_spike_ball",
+                ("Shadow_11", "stake_trap_spikeball_loose Scene/stake_trap_spikeball_loose"),
+                preloadAction: o => o.RemoveComponent<PersistentBoolItem>(),
+                postSpawnAction: o =>
+                {
+                    var fsm = o.LocateMyFSM("Control");
+                    
+                    var ro = fsm.GetState("Roll Out");
+                    ro.DisableAction(6);
+                    ro.AddAction(() => fsm.SendEvent("NEXT"), 6);
+                    
+                    var falling = fsm.GetState("Falling");
+                    falling.DisableAction(0);
+                    falling.AddAction(() =>
+                    {
+                        if (Physics2D.Raycast(
+                                o.transform.position, 
+                                Vector2.down, 
+                                1.5f * o.transform.localScale.y, 
+                                terrainMask))
+                        {
+                            fsm.SendEvent("NEXT");
+                        }
+                    }, 0, true);
+                })
+            .WithReceiverGroup(ReceiverGroup.Trap)
+            .WithConfigGroup(ConfigGroup.Hazards));
+
         Categories.Hazards.Add(new PreloadObject("Spike Ball", "swing_trap_small",
                 ("Shadow_10", "Spike Ball Folder/stake_trap_swing"), preloadAction: o =>
                 {
@@ -2238,7 +2296,9 @@ public static class VanillaObjects
 
         Categories.Interactable.Add(new PreloadObject("Weaver Lift", "weaver_teleporter", 
             ("Weave_02", "Group/weaver_lift_mid"),
-            preloadAction: MiscFixers.FixWeaverLift).WithConfigGroup(ConfigGroup.Teleporter));
+            preloadAction: MiscFixers.FixWeaverLift)
+            .WithConfigGroup(ConfigGroup.Teleporter)
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
         
         AddEnemy("Servitor Ignim", "servitor_small", ("Weave_04", "Weaver Servitor (2)"),
             preloadAction: EnemyFixers.FixServitorIgnim);

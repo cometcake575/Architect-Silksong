@@ -28,7 +28,7 @@ public class CrestBinding : Binding
                 }
                 orig(crest);
             });
-        
+
         typeof(ToolItemManager).Hook(nameof(ToolItemManager.SendEquippedChangedEvent),
             (Action<bool> orig, bool force) =>
             {
@@ -47,9 +47,12 @@ public class CrestBinding : Binding
                 ogCallback += _ => RefreshCrest();
                 orig(self, saveSlot, ogCallback, withAutoSave, autoSaveName);
             }, typeof(int), typeof(Action<bool>), typeof(bool), typeof(AutoSaveName));
-        
+    }
+    
+    public static void InitItcHook()
+    {
         _ = new Hook(typeof(InventoryToolCrest).GetProperty(nameof(InventoryToolCrest.IsHidden))!.GetGetMethod(),
-            (Func<InventoryToolCrest, bool> orig, InventoryToolCrest self) => _isOverridingCrest || orig(self));
+            (Func<InventoryToolCrest, bool> orig, InventoryToolCrest self) => orig(self) || _isOverridingCrest);
     }
     
     public override void OnToggle()

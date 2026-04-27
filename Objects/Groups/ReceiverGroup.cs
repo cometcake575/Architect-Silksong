@@ -28,12 +28,16 @@ public static class ReceiverGroup
     public static readonly List<EventReceiverType> ObjectHook = [
         EventManager.RegisterReceiverType(new EventReceiverType("hook_disable_target", "Disable", o =>
         {
-            var target = o.GetComponent<ObjectHook>().o;
+            var oh = o.GetComponent<ObjectHook>();
+            oh.FindObject();
+            var target = oh.o;
             if (target) target.SetActive(false);
         })),
         EventManager.RegisterReceiverType(new EventReceiverType("hook_enable_target", "Enable", o =>
         {
-            var target = o.GetComponent<ObjectHook>().o;
+            var oh = o.GetComponent<ObjectHook>();
+            oh.FindObject();
+            var target = oh.o;
             if (target) target.SetActive(true);
         }))
     ];
@@ -85,6 +89,27 @@ public static class ReceiverGroup
             sp.PlayPossess();
         }))
     ]);
+    
+    public static readonly List<EventReceiverType> Trobbiwork = [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_burst", "Burst", o =>
+        {
+            o.SetActive(false);
+            o.GetComponent<Animator>().enabled = true;
+            o.SetActive(true);
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("trobbiwork_disable", "Disable", o =>
+        {
+            o.SetActive(false);
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("trobbiwork_enable", "Enable", o =>
+        {
+            o.transform.GetChild(2).gameObject.SetActive(false);
+            o.transform.GetChild(3).gameObject.SetActive(false);
+            o.transform.GetChild(4).gameObject.SetActive(false);
+            o.GetComponent<Animator>().enabled = false;
+            o.SetActive(true);
+        }, true))
+    ];
     
     public static readonly List<EventReceiverType> BindSource = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_bind_stab", "Stab", o =>
@@ -513,6 +538,7 @@ public static class ReceiverGroup
             var fsm = o.LocateMyFSM("Control") ?? o.LocateMyFSM("FSM");
             fsm.SendEvent("ACTIVATE");
             fsm.SendEvent("TRAP");
+            fsm.SendEvent("ROLL");
             fsm.SendEvent("ATTACK");
         }))
     ]);

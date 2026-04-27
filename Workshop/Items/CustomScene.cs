@@ -34,7 +34,7 @@ public class CustomScene : SpriteItem
     
     public override void Register()
     {
-        SceneUtils.CustomScenes.Add(Id, this);
+        SceneUtils.CustomScenes[Id] = this;
         
         if (Map) Object.Destroy(Map);
         TrySetupMap();

@@ -72,6 +72,8 @@ public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
     public string clipName;
 
     public bool takeCtrl;
+    public bool clearXVel = true;
+    public bool clearYVel;
     private bool _tookCtrl;
     
     public bool overrideAnimTime;
@@ -129,7 +131,8 @@ public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
         if (_animTimeRemaining <= 0) return;
 
         _animTimeRemaining -= Time.deltaTime;
-        HeroController.instance.rb2d.linearVelocityX = 0;
+        if (clearXVel) HeroController.instance.rb2d.linearVelocityX = 0;
+        if (clearYVel) HeroController.instance.rb2d.linearVelocityY = 0;
         if (_animTimeRemaining <= 0) Stop();
     }
 
@@ -140,15 +143,15 @@ public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
             _active = null;
             _animTimeRemaining = 0;
 
-            if (Block != null) Block.Event("Stop");
-            else gameObject.BroadcastEvent("OnFinish");
-
             if (_tookCtrl)
             {
                 _tookCtrl = false;
                 EditManager.IgnoreControlRelinquished = false;
                 HeroController.instance.RegainControl();
             }
+
+            if (Block != null) Block.Event("Stop");
+            else gameObject.BroadcastEvent("OnFinish");
         }
     }
 

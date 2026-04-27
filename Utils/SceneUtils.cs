@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Architect.Api;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Workshop.Items;
 using GlobalEnums;
-using GlobalSettings;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -85,6 +85,9 @@ public static class SceneUtils
             Object.DontDestroyOnLoad(o);
             o.name = "[Architect] Tilemap Preload";
             _tilemap = o;
+            
+            var map = _tilemap.GetComponent<tk2dTileMap>();
+            Object.Destroy(map.renderData);
         }));
         
         typeof(SceneLoad).Hook(nameof(SceneLoad.BeginRoutine), RedirectLoad);
@@ -457,8 +460,6 @@ public static class SceneUtils
         }
     }
 
-    private static bool _doneTilemapYet;
-
     public static IEnumerator LoadScene(string sceneName)
     {
         var current = GameManager.instance.sceneName;
@@ -478,10 +479,9 @@ public static class SceneUtils
         
         SceneManager.MoveGameObjectToScene(sm, scene);
         SceneManager.MoveGameObjectToScene(CreateManager(), scene);
-        var (tm, rd) = CreateTileMap(info);
-        SceneManager.MoveGameObjectToScene(tm, scene);
-        SceneManager.MoveGameObjectToScene(rd, scene);
+        
         SceneManager.SetActiveScene(scene);
+        CreateTileMap(info);
         
         sm.AddComponent<CustomTransitionPoint>();
         var point = sm.AddComponent<TransitionPoint>();
@@ -494,31 +494,7 @@ public static class SceneUtils
         col.offset = new Vector2(-9999, -9999);
         col.isTrigger = true;
 
-        var gs = 0f;
-        if (!_doneTilemapYet)
-        {
-            gs = HeroController.instance.rb2d.gravityScale;
-            HeroController.instance.rb2d.gravityScale = 0;
-        }
-
         yield return SceneManager.UnloadSceneAsync(current);
-
-        yield return new WaitForSeconds(0.2f);
-
-        if (!_doneTilemapYet)
-        {
-            Object.Destroy(tm);
-            
-            var (tm2, _) = CreateTileMap(info);
-            var map = tm2.GetComponent<tk2dTileMap>();
-            Tilemap = map;
-            GameManager.instance.tilemap = map;
-            map.ForceBuild();
-            
-            HeroController.instance.rb2d.gravityScale = gs;
-
-            _doneTilemapYet = true;
-        }
     }
     
     private static AtmosCue NoAtmosCue => field ??=
@@ -554,7 +530,7 @@ public static class SceneUtils
         return m;
     }
     
-    public static (GameObject, GameObject) CreateTileMap(CustomScene scene)
+    public static void CreateTileMap(CustomScene scene)
     {
         var tm = Object.Instantiate(_tilemap);
         tm.name = "TileMap";
@@ -584,63 +560,38 @@ public static class SceneUtils
         }
         Tilemap.layers[0].spriteChannel.chunks = nsc.ToArray();
         
+        var ext = MapLoader.GetModData(scene.Id);
+        
+        if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
+        {
+            foreach (var (x, y) in ext.TilemapChanges)
+            {
+                try
+                {
+                    if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
+                    else Tilemap.ClearTile(x, y, 0);
+                }
+                catch (Exception)
+                {
+                    // Out of bounds
+                }
+            }
+        }
+
+        var ld = PlacementManager.GetLevelData();
+        if (!ld.TilemapChanges.IsNullOrEmpty()) foreach (var (x, y) in ld.TilemapChanges)
+        {
+            try
+            {
+                if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
+                else Tilemap.ClearTile(x, y, 0);
+            }
+            catch (Exception)
+            {
+                // Out of bounds
+            }
+        }
+        
         Tilemap.Build();
-
-        tm.AddComponent<TilemapLateLoader>().scene = scene.Id;
-        
-        return (tm, Tilemap.renderData);
-    }
-    
-    public static List<(int, int)> TilemapChanges;
-    public static List<(int, int)> ExtTilemapChanges;
-    public static string TilemapScene;
-
-    public class TilemapLateLoader : MonoBehaviour
-    {
-        public string scene;
-        
-        public void Load()
-        {
-            if (!ExtTilemapChanges.IsNullOrEmpty())
-            {
-                foreach (var (x, y) in ExtTilemapChanges)
-                {
-                    try
-                    {
-                        if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
-                        else Tilemap.ClearTile(x, y, 0);
-                    }
-                    catch (Exception)
-                    {
-                        // Out of bounds
-                    }
-                }
-            }
-
-            if (!TilemapChanges.IsNullOrEmpty())
-            {
-                foreach (var (x, y) in TilemapChanges)
-                {
-                    try
-                    {
-                        if (Tilemap.GetTile(x, y, 0) == -1) Tilemap.SetTile(x, y, 0, 0);
-                        else Tilemap.ClearTile(x, y, 0);
-                    }
-                    catch (Exception)
-                    {
-                        // Out of bounds
-                    }
-                }
-            }
-            
-            Tilemap.Build();
-
-            enabled = false;
-        }
-
-        private void Update()
-        {
-            if (scene == TilemapScene) Load();
-        }
     }
 }

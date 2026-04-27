@@ -214,7 +214,7 @@ public static class StorageManager
     {
         var path = dp + "/Prefabs";
         List<PrefabObject> prefabs = [];
-        foreach (var file in Directory.GetFiles(path))
+        if (Directory.Exists(path)) foreach (var file in Directory.GetFiles(path))
         {
             if (!file.EndsWith(".architect.json")) continue;
             prefabs.Add(new PrefabObject(Path.GetFileNameWithoutExtension(file)

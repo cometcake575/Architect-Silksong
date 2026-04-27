@@ -28,7 +28,8 @@ public class CustomTransitionPoint : PreviewableBehaviour
             (Action<TransitionPoint> orig, TransitionPoint self) =>
             {
                 orig(self);
-                if (self.GetComponent<CustomTransitionPoint>()) self.gameObject.BroadcastEvent("OnExit");
+                var ctp = self.GetComponentInParent<CustomTransitionPoint>();
+                if (ctp) ctp.gameObject.BroadcastEvent("OnExit");
             });
         
         PreloadManager.RegisterPreload(new BasicPreload("Memory_Coral_Tower", "Door Get Up/door_wakeInMemory",
@@ -57,6 +58,7 @@ public class CustomTransitionPoint : PreviewableBehaviour
 
         if (pointType == 5)
         {
+            if (GameManager.instance.entryGateName != name) return;
             var wd = Instantiate(_wakeDoor, transform);
             wd.transform.localPosition = Vector3.zero;
             var gateName = name;

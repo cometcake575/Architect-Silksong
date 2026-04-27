@@ -9,8 +9,6 @@ public class EnemyBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Damage", "Heal", "CappedHeal", "Set"];
     protected override IEnumerable<(string, string)> InputVars => [("Target", "Enemy"), ("Multiplier", "Number")];
     protected override IEnumerable<(string, string)> OutputVars => [("Path", "Text")];
-
-    
     
     protected override string Name => "Enemy Control";
 

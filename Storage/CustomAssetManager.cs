@@ -144,26 +144,34 @@ public static class CustomAssetManager
         callback(Sounds[url]);
     }
 
-    private static string GetSavePath(string url)
+    private static string GetSavePath(string file)
     {
-        var pathUrl = Path.GetInvalidFileNameChars()
-            .Aggregate(url, (current, c) => current.Replace(c, '_'));
-        return $"{StorageManager.DataPath}Assets/{pathUrl}";
+        var pathUrl = file.Aggregate(file, (current, c) =>
+            char.IsLetterOrDigit(c) || c == '.' ? current : current.Replace(c, '_'));
+        return Path.Combine(StorageManager.DataPath, "Assets", pathUrl);
     }
 
     private static string GetPath(string file)
     {
-        var pathUrl = Path.GetInvalidFileNameChars()
+        var pathUrlOld = Path.GetInvalidFileNameChars()
             .Aggregate(file, (current, c) => current.Replace(c, '_'));
+
+        var pathUrl = file.Aggregate(file, (current, c) =>
+            char.IsLetterOrDigit(c) || c == '.' ? current : current.Replace(c, '_'));
+        
         foreach (var path in AssetPaths)
         {
+            var fullPathOld = Path.Combine(path, pathUrlOld);
+            if (File.Exists(fullPathOld)) return fullPathOld;
+            
             var fullPath = Path.Combine(path, pathUrl);
             if (File.Exists(fullPath)) return fullPath;
         }
-        
-        return $"{StorageManager.DataPath}Assets/{pathUrl}";
-    }
 
+        var pathOld = Path.Combine(StorageManager.DataPath, "Assets", pathUrlOld);
+        return File.Exists(pathOld) ? pathOld : Path.Combine(StorageManager.DataPath, "Assets", pathUrl);
+    }
+    
     public static int DownloadingAssets;
     public static int Downloaded;
     public static int Failed;

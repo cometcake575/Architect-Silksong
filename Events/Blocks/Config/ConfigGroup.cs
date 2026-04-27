@@ -523,7 +523,17 @@ public static class ConfigGroup
             new BoolConfigType<AnimatorBlock>("Take Control", "anim_take_ctrl", (o, value) =>
             {
                 o.TakeCtrl = value.GetValue();
-            }).WithDefaultValue(true))
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<AnimatorBlock>("Clear Force X", "anim_clear_x_vel", (o, value) =>
+            {
+                o.ClearXVel = value.GetValue();
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<AnimatorBlock>("Clear Force Y", "anim_clear_y_vel", (o, value) =>
+            {
+                o.ClearYVel = value.GetValue();
+            }).WithDefaultValue(false))
     ];
     
     public static readonly List<ConfigType> Broadcast =

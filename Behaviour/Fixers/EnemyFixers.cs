@@ -2493,10 +2493,15 @@ public static class EnemyFixers
                 fsm.SetState("Recover");
             }, 3);
             
+            fsm.GetState("Rest").AddAction(() =>
+            {
+                fsm.SendEvent("ALERT");
+            });
+            
             fsm.SendEvent("ALERT");
         }
 
-        private void Start()
+        private void Update()
         {
             if (_shouldWake) DoWake();
         }

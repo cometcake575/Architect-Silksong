@@ -164,9 +164,9 @@ public static class WorkshopManager
                             default:
                                 break;
                         }
-
-                        ToolBlock.DoBroadcast(self.willThrowTool.name);
                     }
+
+                    ToolBlock.DoBroadcast(self.willThrowTool.name);
                 }
                 orig(self, isAutoThrow);
             });
@@ -226,7 +226,12 @@ public static class WorkshopManager
         SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
         foreach (var item in ExtWorkshops.SelectMany(data => data.Items)
-                     .OrderBy(i => i is CustomQuest ? 1 : 0)) item.Register();
+                     .OrderBy(i => i is CustomQuest ? 1 : 0))
+        {
+            if (WorkshopData.Items.Any(i => i.Id == item.Id)) continue;
+            foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
+            item.Register();
+        }
     }
 
     public static void LoadExtWorkshop(WorkshopData data)
