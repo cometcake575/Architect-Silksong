@@ -134,7 +134,14 @@ public static class StorageManager
 
     public static LevelData DeserializeLevel(string data)
     {
-        return JsonConvert.DeserializeObject<LevelData>(data);
+        try
+        {
+            return JsonConvert.DeserializeObject<LevelData>(data);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public static List<ObjectPlacement> DeserializePlacements(string data)
@@ -240,9 +247,13 @@ public static class StorageManager
             if (!Directory.Exists(path)) continue;
             foreach (var file in Directory.GetFiles(path))
             {
-                if (!file.EndsWith(".architect.json")) continue;
+                if (!file.EndsWith(".architect.json") || file.StartsWith(".")) continue;
                 var scene = DeserializeLevel(File.ReadAllText(file));
-                if (scene == null) continue;
+                if (scene == null)
+                {
+                    ArchitectPlugin.Logger.LogInfo($"Invalid scene found at {file}");
+                    continue;
+                }
                 foreach (var o in scene.Placements.Where(o => o != null))
                 {
                     if (o.GetPlacementType() is PreloadObject preload) 

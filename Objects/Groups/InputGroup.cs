@@ -23,6 +23,8 @@ public static class InputGroup
     
     public static readonly List<(string, string)> EnemyHook = [("New Enemy", "Enemy")];
     
+    public static readonly List<(string, string)> Particles = [("Count", "Number")];
+    
     public static readonly List<(string, string)> BounceFlea = [("Fly Y", "Number"), ("Speed", "Number"), ("Quick", "Boolean")];
     
     public static readonly List<(string, string)> Ventrica = [("To Door", "Text"), ("To Scene", "Text")];

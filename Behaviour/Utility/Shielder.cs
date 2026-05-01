@@ -9,6 +9,8 @@ namespace Architect.Behaviour.Utility;
 public class Shielder : MonoBehaviour
 {
     public string id;
+
+    public bool startApplied;
     
     public bool immuneToBeams;
     public bool immuneToCoal;
@@ -40,10 +42,6 @@ public class Shielder : MonoBehaviour
 
     public void Shield()
     {
-        if (_shielded) return;
-
-        _shielded = true;
-        
         if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
         
         var dupe = target.GetComponent<ObjectDuplicator>();
@@ -67,7 +65,7 @@ public class Shielder : MonoBehaviour
         hm.immuneToWater = immuneToWater;
 
         if (!extraImmunities.IsNullOrEmpty())
-            hm.gameObject.AddComponent<ExtraResistance>().resistances = extraImmunities;
+            hm.gameObject.GetOrAddComponent<ExtraResistance>().resistances = extraImmunities;
     }
 
     public class ExtraResistance : MonoBehaviour
@@ -77,6 +75,11 @@ public class Shielder : MonoBehaviour
 
     private void Update()
     {
-        if (!_shielded) Shield();
+        if (!startApplied) return;
+        if (!_shielded)
+        {
+            _shielded = true;
+            Shield();
+        }
     }
 }

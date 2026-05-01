@@ -593,6 +593,11 @@ public static class ConfigGroup
                 o.GetComponent<Shielder>().id = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Applied", "shielder_start_applied", (o, value) =>
+            {
+                o.GetComponent<Shielder>().startApplied = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Immune to Generic", "shielder_generic", (o, value) =>
             {
                 if (!value.GetValue()) return;
@@ -1214,8 +1219,8 @@ public static class ConfigGroup
                 },
                 (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
             .WithDefaultValue(0));
-        
-    private static readonly ConfigType ZOffset =
+
+    public static readonly ConfigType ZOffset =
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Z Offset", "obj_z",
                 (o, value) => { o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue()); },
@@ -1954,7 +1959,13 @@ public static class ConfigGroup
                 {
                     o.GetComponent<FsmHook>().stateName = value.GetValue();
                 }
-            ))
+            )),
+            ConfigurationManager.RegisterConfigType(new ChoiceConfigType("Detection Mode", "fsm_hook_target_mode", 
+                (o, value) => 
+                {
+                    o.GetComponent<FsmHook>().inject = value.GetValue() == 1;
+                }
+            ).WithOptions("Observe", "Inject").WithDefaultValue(0))
     ]);
 
     public static readonly List<ConfigType> ComponentHook = GroupUtils.Merge(Generic, [
@@ -2790,7 +2801,7 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
 
-    private static readonly ConfigType PngUrl = ConfigurationManager.RegisterConfigType(
+    public static readonly ConfigType PngUrl = ConfigurationManager.RegisterConfigType(
         new StringConfigType("PNG URL", "png_url",
             (o, value) => { o.GetComponentInChildren<PngObject>().url = value.GetValue(); }, (o, value, _) =>
             {
@@ -2807,34 +2818,11 @@ public static class ConfigGroup
                     });
             }).WithPriority(-1));
 
-    private static readonly ConfigType Aa = ConfigurationManager.RegisterConfigType(
+    public static readonly ConfigType Aa = ConfigurationManager.RegisterConfigType(
         new BoolConfigType("Anti Aliasing", "png_antialias",
                 (o, value) => { o.GetComponentInChildren<PngObject>().point = !value.GetValue(); },
                 (o, value, _) => { o.GetOrAddComponent<PngPreview>().point = !value.GetValue(); })
             .WithDefaultValue(true).WithPriority(-2));
-
-    public static readonly List<ConfigType> Particle = GroupUtils.Merge(Decorations, [
-        PngUrl,
-        Aa,
-        ZOffset
-    ]);
-
-    public static readonly List<ConfigType> Fish = GroupUtils.Merge(Particle, [
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Foreground", "fish_fore",
-                    (o, value) =>
-                    {
-                        if (!value.GetValue()) o.transform.GetChild(1).gameObject.SetActive(false);
-                    })
-                .WithDefaultValue(true)),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Background", "fish_back",
-                    (o, value) =>
-                    {
-                        if (!value.GetValue()) o.transform.GetChild(0).gameObject.SetActive(false);
-                    })
-                .WithDefaultValue(true))
-    ]);
 
     public static readonly List<ConfigType> Png = GroupUtils.Merge(Generic, [
         PngUrl,
@@ -2846,16 +2834,22 @@ public static class ConfigGroup
                 .WithDefaultValue(100)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType("Vertical Frame Count", "png_framecount",
-                    (o, value) => { o.GetComponentInChildren<PngObject>().vcount = value.GetValue(); },
-                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().vcount = value.GetValue(); })
-                .WithDefaultValue(1)
-                .WithPriority(-2)),
-        ConfigurationManager.RegisterConfigType(
-            new IntConfigType("Horizontal Frame Count", "png_hframecount",
-                    (o, value) => { o.GetComponentInChildren<PngObject>().hcount = value.GetValue(); },
-                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().hcount = value.GetValue(); })
-                .WithDefaultValue(1)
+            new DoubleIntConfigType("Frame Counts", "png_allframecount",
+                    (o, value) =>
+                    {
+                        var p = o.GetComponentInChildren<PngObject>();
+                        var val = value.GetValue();
+                        p.vcount = val.Item1;
+                        p.hcount = val.Item2;
+                    },
+                    (o, value, _) =>
+                    {
+                        var p = o.GetOrAddComponent<PngPreview>();
+                        var val = value.GetValue();
+                        p.vcount = val.Item1;
+                        p.hcount = val.Item2;
+                    })
+                .WithDefaultValue((1, 1))
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Empty Frame Count", "png_eframecount",
@@ -3798,5 +3792,23 @@ public static class ConfigGroup
         }).WithOptions("False", "Bench", "True");
         cc.WithPriority(-1);
         return cc;
+    }
+
+    public static void Init()
+    {
+        // Deprecated
+
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Vertical Frame Count", "png_framecount",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().vcount = value.GetValue(); },
+                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().vcount = value.GetValue(); })
+                .WithDefaultValue(1)
+                .WithPriority(-2));
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Horizontal Frame Count", "png_hframecount",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().hcount = value.GetValue(); },
+                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().hcount = value.GetValue(); })
+                .WithDefaultValue(1)
+                .WithPriority(-2));
     }
 }

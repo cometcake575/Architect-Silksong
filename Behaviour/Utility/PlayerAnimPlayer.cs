@@ -118,7 +118,7 @@ public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
 
         if (takeCtrl)
         {
-            yield return hero.FreeControl(hc => hc.rb2d.linearVelocity == Vector2.zero);
+            yield return hero.FreeControl();
             if (_active != this) yield break;
             _tookCtrl = true;
             EditManager.IgnoreControlRelinquished = true;

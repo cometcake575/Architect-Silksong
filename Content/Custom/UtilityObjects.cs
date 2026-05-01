@@ -6,6 +6,7 @@ using Architect.Behaviour.Utility;
 using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
+using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
 using JetBrains.Annotations;
@@ -386,7 +387,8 @@ public static class UtilityObjects
         return new CustomObject("Resistance Changer", "shielder", shielder, 
                 "Toggles whether enemies take damage from certain sources.",
                 sprite:ResourceUtils.LoadSpriteResource("shielder", ppu:64))
-            .WithConfigGroup(ConfigGroup.Shielder);
+            .WithConfigGroup(ConfigGroup.Shielder)
+            .WithReceiverGroup(ReceiverGroup.Shielder);
     }
 
     private static PlaceableObject CreateWalkTarget()
@@ -480,7 +482,7 @@ public static class UtilityObjects
                 description:"Creates a custom doorway to another room. Requires a target scene and door id.\n\n" +
                             "Disable 'Collision Trigger' and use the 'Transition' trigger to transition when\n" +
                             "an event is received instead of when touching the door.",
-                sprite:ResourceUtils.LoadSpriteResource("door", ppu:33),
+                sprite:ResourceUtils.LoadSpriteResource(Settings.PrideMode ? "door_trans" : "door", ppu:33),
                 preview:true)
             .WithConfigGroup(ConfigGroup.Transitions)
             .WithReceiverGroup(ReceiverGroup.Transitions)

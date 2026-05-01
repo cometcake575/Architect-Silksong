@@ -120,6 +120,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Shielder = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_shield_apply", "Apply", o =>
+        {
+            o.GetComponent<Shielder>().Shield();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> MushTablet = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("mush_deactivate", "Deactivate", o =>
         {
@@ -586,17 +593,31 @@ public static class ReceiverGroup
         }))
     ]);
     
-    public static readonly List<EventReceiverType> Confetti = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("confetti_burst", "Burst", o =>
+    public static readonly List<EventReceiverType> Particles = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("confetti_burst", "Burst", (o, b) =>
         {
-            o.GetComponentInChildren<ParticleSystem>().Emit(200);
+            o.ApplyToAllComponents<ParticleSystem>(ps => 
+                ps.Emit(Mathf.RoundToInt(b?.GetVariable<float>("Count", 200) ?? 200)));
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("particle_play", "Play", o =>
+        {
+            o.ApplyToAllComponents<ParticleSystem>(ps => ps.Play());
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("particle_pause", "Pause", o =>
+        {
+            o.ApplyToAllComponents<ParticleSystem>(ps => ps.Pause());
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("particle_stop", "Stop", o =>
+        {
+            o.ApplyToAllComponents<ParticleSystem>(ps => ps.Stop());
         }))
     ]);
     
     public static readonly List<EventReceiverType> Grass = GroupUtils.Merge(Generic, [
-        EventManager.RegisterReceiverType(new EventReceiverType("grass_burst", "Burst", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("grass_burst", "Burst", (o, b) =>
         {
-            o.GetComponentInChildren<ParticleSystem>().Emit(20);
+            o.GetComponentInChildren<ParticleSystem>()
+                .Emit(Mathf.RoundToInt(b?.GetVariable<float>("Count", 20) ?? 20));
         }))
     ]);
     

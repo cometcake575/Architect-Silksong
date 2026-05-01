@@ -101,4 +101,9 @@ public static class ObjectUtils
     {
         children.Aggregate(transform, (current, c) => current.GetChild(c)).gameObject.SetActive(false);
     }
+
+    public static void ApplyToAllComponents<T>(this GameObject obj, Action<T> action) where T : Component
+    {
+        foreach (var component in obj.GetComponentsInChildren<T>(true)) action(component);
+    }
 }

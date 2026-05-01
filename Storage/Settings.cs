@@ -41,6 +41,8 @@ public static class Settings
     public static ConfigEntry<bool> ShowRespawnPoint;
     public static ConfigEntry<bool> BlockInventoryInEditMode;
     public static ConfigEntry<bool> LoadAllAssets;
+    
+    public static bool PrideMode = false;
 
     public static ConfigEntry<int> SaveSlot; 
     

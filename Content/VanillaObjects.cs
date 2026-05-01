@@ -340,13 +340,6 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
 
-        Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
-                ("Memory_Coral_Tower", "Fish/Pt Exit"),
-                preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("fish", ppu: 377.5f)))
-            .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
-            .WithConfigGroup(ConfigGroup.Fish);
-
         Categories.Misc.Add(new PreloadObject("Karaka Statue", "karaka_statue",
                 ("Coral_Tower_01", "Coral_Warrior_break"), postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
@@ -931,16 +924,6 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
             postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
-
-        Categories.Effects.Add(new PreloadObject("Surface Dust Effect", "surface_dust",
-                ("Abandoned_town", "collid"),
-                preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("surface_dust", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
-            .WithConfigGroup(ConfigGroup.Particle);
     }
 
     private static void AddDuctObjects()
@@ -969,16 +952,6 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Trapped Wardenfly", "swamp_barnacle_slab_fly",
             ("Aqueduct_04", "Swamp Barnacle Slab Fly")));
-        
-        Categories.Effects.Add(new PreloadObject("Ducts Effect", "wet_particles",
-                ("Aqueduct_03", "waterways_particles (1)"), description: "Affects the whole room.",
-                preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("drip", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
-            .WithConfigGroup(ConfigGroup.Particle);
     }
 
     private static void AddAbyssObjects()
@@ -1594,16 +1567,6 @@ public static class VanillaObjects
                 }).WithConfigGroup(ConfigGroup.Slope)
             .WithRotationGroup(RotationGroup.All));
 
-        Categories.Effects.Add(new PreloadObject("Snow Effect", "snow_effect",
-                ("Peak_05", "peak_storm_set_mid_strength"),
-                description: "Affects the whole room.\n" +
-                             "Rotate the object to rotate the direction of the storm.",
-                preloadAction: MiscFixers.FixDecoration,
-                postSpawnAction: MiscFixers.FixSnow,
-                sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 377.5f)))
-            .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
-            .WithConfigGroup(ConfigGroup.Particle).WithRotationGroup(RotationGroup.All);
-
         /*
         AddEnemy("Pinstress", "pinstress_boss",
             ("Peak_07", "Pinstress Control/Pinstress Scene/Pinstress Boss"),
@@ -1619,21 +1582,6 @@ public static class VanillaObjects
                 ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
                 sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
             .WithConfigGroup(ConfigGroup.Fayforn));
-
-        Categories.Effects.Add(new PreloadObject("Feather Effect", "feather_effect",
-                ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
-                preloadAction: o => o.AddComponent<ParticleObject>(),
-                postSpawnAction: o =>
-                {
-                    o.RemoveComponent<PlayMakerFSM>();
-                    o.RemoveComponent<AnimatorLookAnimNPC>();
-                    o.RemoveComponent<NoiseResponder>();
-                    o.RemoveComponent<AudioSource>();
-                    foreach (var i in (int[]) [0, 1, 2, 3, 4, 6, 7])
-                        o.transform.GetChild(i).gameObject.SetActive(false);
-                },
-                sprite: ResourceUtils.LoadSpriteResource("feather_effect", ppu: 68.75f))
-            .WithConfigGroup(ConfigGroup.Particle));
     }
 
     private static void AddBileObjects()
@@ -1676,20 +1624,6 @@ public static class VanillaObjects
                 col.size = new Vector2(5, 5);
                 col.offset = Vector2.zero;
             }));
-
-        Categories.Effects.Add(new PreloadObject("Splash Effect", "water_effect",
-            ("Hang_09", "coral_river_chunk/particle_barrel_splash"),
-            preloadAction: o => o.AddComponent<ParticleObject>(),
-            sprite: ResourceUtils.LoadSpriteResource("water_effect", ppu:68.75f))
-            .DoIgnoreScale()
-            .WithFlipAction((o, f) =>
-            {
-                if (!f) return;
-                var ps = o.GetComponent<ParticleSystem>();
-                var vol = ps.velocityOverLifetime;
-                vol.xMultiplier *= -1;
-            })
-            .WithConfigGroup(ConfigGroup.Particle));
 
         Categories.Effects.Add(new PreloadObject("Flowing Water", "flowing_water_effect",
             ("Hang_09", "coral_river_chunk/river_top/Base"),
@@ -1787,20 +1721,6 @@ public static class VanillaObjects
             postSpawnAction: MiscFixers.FixBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable)
             .WithConfigGroup(ConfigGroup.BreakableDecor));
-        
-        Categories.Effects.Add(new PreloadObject("Maggot Effect", "maggot_effect",
-                ("localpoolprefabs_assets_shared.bundle", "Assets/Prefabs/Effects/hero_maggoted_effect.prefab"), 
-                description:"Appears when the 'Burst' trigger is run.",
-                notSceneBundle: true, preloadAction: o =>
-                {
-                    o.AddComponent<ParticleObject>();
-                    o.RemoveComponent<PlayParticleEffects>();
-                    o.RemoveComponent<ParticleSystemAutoDisable>();
-                    o.transform.GetChild(1).gameObject.SetActive(false);
-                    o.transform.GetChild(2).gameObject.SetActive(false);
-                }, sprite: ResourceUtils.LoadSpriteResource("maggot_burst", ppu:62.5f)
-                ).WithReceiverGroup(ReceiverGroup.Confetti)
-                .WithConfigGroup(ConfigGroup.Particle));
 
         Categories.Hazards.Add(new PreloadObject("Stake Trap", "bilewater_trap",
                 ("Shadow_10", "Swamp Stake Shooter Folder (1)/Swamp Stake Shooter"),
@@ -2214,22 +2134,6 @@ public static class VanillaObjects
                 })
             .WithConfigGroup(ConfigGroup.Sway)
             .WithRotationGroup(RotationGroup.All));
-
-        Categories.Effects.Add(new PreloadObject("Grass Effect", "grass_effect",
-                ("Tut_02", "green_grass_tri (6)/Green Grass A"),
-                sprite: ResourceUtils.LoadSpriteResource("grass_burst", ppu:62.5f),
-                description: "Appears when the 'Burst' trigger is run.",
-                preloadAction: o =>
-                {
-                    o.transform.localScale = Vector3.one * 4;
-                    o.AddComponent<ParticleObject>();
-                    o.RemoveComponent<ParticleSystemAutoRecycle>();
-
-                    var em = o.GetComponent<ParticleSystem>().emission;
-                    em.enabled = false;
-                })
-            .WithConfigGroup(ConfigGroup.Particle)
-            .WithReceiverGroup(ReceiverGroup.Grass)).DoIgnoreScale();
 
         Categories.Npcs.Add(new PreloadObject("Gilly NPC", "gilly_npc",
                 ("Ant_17", "Gilly"), 
@@ -2702,17 +2606,6 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixGiantFlea)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses)
             .WithConfigGroup(ConfigGroup.HugeFlea);
-
-        Categories.Effects.Add(new PreloadObject("Fly Swarm Effect", "fly_swarm_effect",
-            ("Arborium_02", "ant_tiny_white_bug_swarm"), preloadAction: o =>
-            {
-                o.AddComponent<ParticleObject>();
-                o.transform.GetChild(0).localPosition = Vector3.zero;
-                o.transform.GetChild(1).localPosition = Vector3.zero;
-                o.transform.GetChild(2).gameObject.SetActive(false);
-                o.transform.GetChild(3).gameObject.SetActive(false);
-            }, sprite: ResourceUtils.LoadSpriteResource("fly_swarm", ppu:62.5f))
-            .WithConfigGroup(ConfigGroup.Particle));
     }
     
     private static void AddCogworksObjects()
@@ -3353,6 +3246,7 @@ public static class VanillaObjects
 
         Categories.Effects.Add(new PreloadObject("Heat Effect", "heat_plane",
             ("Dock_02", "HeatPlane"), 
+            description: Settings.PrideMode ? "From Fire" : null,
             sprite: ResourceUtils.LoadSpriteResource("heat", ppu:20),
             preloadAction: o => o.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f))
             .WithConfigGroup(ConfigGroup.HeatPlane));
@@ -3544,6 +3438,7 @@ public static class VanillaObjects
         
         AddEnemy("Plasmid", "plasmid",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),
+            description: Settings.PrideMode ? "Blåhaj" : null,
             postSpawnAction: EnemyFixers.FixPlasmified).DoFlipX();
         AddEnemy("Plasmidas", "plasmidas",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"),
@@ -3588,15 +3483,6 @@ public static class VanillaObjects
 
     private static void AddFleaObjects()
     {
-        Categories.Effects.Add(new PreloadObject("Confetti Burst", "confetti_burst",
-            ("Aqueduct_05_festival", "Caravan_States/Flea_Games_Start_effect/confetti_burst (1)"),
-            description:"Appears when the 'Burst' trigger is run.",
-            sprite: ResourceUtils.LoadSpriteResource("confetti_burst", ppu:1500),
-            preloadAction: MiscFixers.FixConfetti)
-            .WithReceiverGroup(ReceiverGroup.Confetti)
-            .WithConfigGroup(ConfigGroup.Particle)
-            .WithRotationGroup(RotationGroup.All));
-        
         Categories.Misc.AddStart(new PreloadObject("Score Counter", "flea_counter",
             ("Aqueduct_05_festival", "Flea Games Counter"), preloadAction: MiscFixers.FixFleaCounter, 
             description:"If the mode is 'Highest', the score changes colour above each milestone.\n" +
@@ -3904,12 +3790,14 @@ public static class VanillaObjects
         string name,
         string id,
         (string, string) path, 
+        string description = null, 
         bool notSceneBundle = false,
         [CanBeNull] Action<GameObject> preloadAction = null,
         [CanBeNull] Action<GameObject> postSpawnAction = null)
     {
         return Categories.Enemies.Add(new PreloadObject(name, id,
                 path,
+                description,
                 notSceneBundle: notSceneBundle,
                 preloadAction: preloadAction,
                 postSpawnAction: postSpawnAction)

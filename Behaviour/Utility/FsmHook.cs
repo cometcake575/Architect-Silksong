@@ -1,6 +1,7 @@
 using System.Linq;
 using Architect.Placements;
 using Architect.Utils;
+using HutongGames.PlayMaker;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -11,6 +12,7 @@ public class FsmHook : MonoBehaviour
     public string fsmName;
     public string stateName;
     public int index;
+    public bool inject;
     
     private PlayMakerFSM _fsm;
     
@@ -18,6 +20,9 @@ public class FsmHook : MonoBehaviour
 
     private string _state = string.Empty;
     private float _time;
+
+    private FsmState _stateTarget;
+    private FsmStateAction _action;
     
     public string GetState()
     {
@@ -64,7 +69,27 @@ public class FsmHook : MonoBehaviour
         
         _time = Time.time;
         _fsm = target.GetComponentsInChildren<PlayMakerFSM>().FirstOrDefault(o => o.FsmName == fsmName);
+
+        if (_fsm && inject)
+        {
+            _stateTarget = _fsm.GetState(stateName);
+            if (_stateTarget == null) return;
+            _stateTarget.AddAction(OnTarget, 0);
+            _action = _stateTarget.actions[0];
+        }
     }
+
+    private void OnDestroy()
+    {
+        if (_stateTarget != null)
+        {
+            var actions = _stateTarget.actions.ToList();
+            actions.Remove(_action);
+            _stateTarget.actions = actions.ToArray();
+        }
+    }
+
+    public void OnTarget() => gameObject.BroadcastEvent("OnTarget");
 
     private void Update()
     {
@@ -76,10 +101,7 @@ public class FsmHook : MonoBehaviour
                 _state = _fsm.ActiveStateName;
                 _time = Time.time;
                 gameObject.BroadcastEvent("OnChange");
-                if (_state == stateName)
-                {
-                    gameObject.BroadcastEvent("OnTarget");
-                }
+                if (_state == stateName && !inject) OnTarget();
             }
         }
     }

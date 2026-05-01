@@ -11,6 +11,7 @@ using Architect.Events.Blocks;
 using Architect.Events.Blocks.Operators;
 using Architect.Multiplayer;
 using Architect.Objects.Categories;
+using Architect.Objects.Groups;
 using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Sharer;
@@ -25,7 +26,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.26.10")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.27.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -77,6 +78,7 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         AbilityObjects.Init();
         MiscObjects.Init();
         CameraObjects.Init();
+        ParticleObjects.Init();
         // CollectableObjects.Init();
         
         RespawnMarkerManager.Init();
@@ -89,6 +91,8 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         
         PreloadManager.Init();
         EditorUI.Setup();
+        
+        ConfigGroup.Init();
         
         StorageManager.MakeBackup(DateTime.Now.ToString("yy-MM-dd-HH-mm-ss"));
         ProjectManager.Init();
