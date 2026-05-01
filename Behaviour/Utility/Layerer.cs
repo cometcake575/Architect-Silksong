@@ -15,7 +15,7 @@ public class Layerer : MonoBehaviour
 
     private void Start()
     {
-        if (!PlacementManager.Objects.TryGetValue(target, out _target))
+        if (!PlacementManager.TryGetValue(target, out _target))
         {
             _target = ObjectUtils.FindGameObject(target);
         }

@@ -10,7 +10,7 @@ public class Shielder : MonoBehaviour
 {
     public string id;
 
-    public bool startApplied;
+    public bool startApplied = true;
     
     public bool immuneToBeams;
     public bool immuneToCoal;
@@ -42,7 +42,7 @@ public class Shielder : MonoBehaviour
 
     public void Shield()
     {
-        if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
+        if (!PlacementManager.TryGetValue(id, out var target)) return;
         
         var dupe = target.GetComponent<ObjectDuplicator>();
         if (dupe) dupe.shielder = this;

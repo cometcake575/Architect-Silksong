@@ -11,7 +11,9 @@ using Architect.Events.Blocks;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
+using BepInEx;
 using JetBrains.Annotations;
+using Silksong.UnityHelper.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -215,5 +217,10 @@ public static class PlacementManager
         return GetLevelData().Placements.FirstOrDefault(placement => (includeLocked == 1 || 
                                                                       placement.Locked == (includeLocked == 2)) 
                                                                      && placement.Touching(mousePos));
+    }
+
+    public static bool TryGetValue(string path, out GameObject obj)
+    {
+        return Objects.TryGetValue(path, out obj);
     }
 }

@@ -23,6 +23,17 @@ public class ObjectColourer : MonoBehaviour
     public float b;
     public float a;
 
+    public Color Colour
+    {
+        set
+        {
+            r = value.r;
+            g = value.g;
+            b = value.b;
+            a = value.a;
+        }
+    }
+
     public bool startApplied;
     public int particles;
     
@@ -83,7 +94,7 @@ public class ObjectColourer : MonoBehaviour
 
             GameObject t;
             if (target) t = target;
-            else if (!PlacementManager.Objects.TryGetValue(targetId, out t))
+            else if (!PlacementManager.TryGetValue(targetId, out t))
             {
                 t = ObjectUtils.FindGameObject(targetId);
                 if (!t) return;

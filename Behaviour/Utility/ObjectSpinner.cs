@@ -23,7 +23,7 @@ public class ObjectSpinner : PreviewableBehaviour
     {
         if (!_setup)
         {
-            if (!PlacementManager.Objects.TryGetValue(targetId, out _target)) return;
+            if (!PlacementManager.TryGetValue(targetId, out _target)) return;
             _setup = true;
             _startRot = _target.transform.GetRotation2D();
             _anchor = _target.GetComponent<ObjectAnchor>();

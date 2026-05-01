@@ -111,6 +111,19 @@ public static class ParticleObjects
             .WithConfigGroup(Particle)
             .WithInputGroup(InputGroup.Particles)
             .WithReceiverGroup(ReceiverGroup.Particles));
+        
+        Categories.Effects.Add(new PreloadObject("Steam Effect", "steam_effect",
+                ("Song_10", "Spa Region (1)/Spa Steam (1)"), 
+                sprite: ResourceUtils.LoadSpriteResource("steam_effect", FilterMode.Point, ppu:75.5f),
+                preloadAction: o =>
+                {
+                    o.AddComponent<ParticleObject>();
+                    o.transform.SetScale2D(new Vector2(1, 1));
+                })
+            .WithRotationGroup(RotationGroup.All)
+            .WithConfigGroup(Particle)
+            .WithInputGroup(InputGroup.Particles)
+            .WithReceiverGroup(ReceiverGroup.Particles));
 
         Categories.Effects.Add(new PreloadObject("Bubble Lantern Effect", "bubble_lantern_effect",
                 ("Memory_Coral_Tower", "Group (38)/Coral_lamp_hang_single (1)/crystals_immediate_BG (4)"),
@@ -231,7 +244,6 @@ public static class ParticleObjects
     }
     
     public static readonly List<ConfigType> Particle = GroupUtils.Merge(ConfigGroup.Stretchable, [
-        ConfigGroup.Aa,
         ConfigGroup.ZOffset,
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Play on Start", "particles_play_on_awake",
@@ -287,6 +299,9 @@ public static class ParticleObjects
                             vol.x = val.x;
                             vol.y = val.y;
                             vol.z = val.z;
+
+                            var fol = ps.forceOverLifetime;
+                            fol.enabled = false;
                         });
                     }).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
@@ -320,7 +335,24 @@ public static class ParticleObjects
                             main.startLifetime = value.GetValue();
                         });
                     }).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType("Colour", "particles_colour",
+                    (o, value) =>
+                    {
+                        o.ApplyToAllComponents<ParticleSystem>(ps =>
+                        {
+                            var main = ps.main;
+                            main.startColor = value.GetValue();
+                            
+                            var cbs = ps.colorBySpeed;
+                            cbs.enabled = false;
+
+                            var col = ps.colorOverLifetime;
+                            col.enabled = false;
+                        });
+                    }, true).WithPriority(-1)),
         ConfigGroup.PngUrl,
+        ConfigGroup.Aa,
         ConfigurationManager.RegisterConfigType(
             new DoubleIntConfigType("Frame Counts", "particles_allframecount",
                     (o, value) =>

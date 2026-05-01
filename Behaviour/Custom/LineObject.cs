@@ -18,6 +18,17 @@ public class LineObject : MonoBehaviour
     public float b;
     public float a;
 
+    public Color LineColour
+    {
+        set
+        {
+            r = value.r;
+            g = value.g;
+            b = value.b;
+            a = value.a;
+        }
+    }
+
     public float width;
     
     private void OnEnable()

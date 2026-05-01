@@ -457,7 +457,7 @@ public static class VanillaObjects
         AddEnemy("Underworker", "underworker", ("Under_10", "Battle Scene/Wave 1/Understore Small"));
         
         AddEnemy("Underpoke", "underpoke", ("Under_10", "Battle Scene/Wave 2/Understore Poker"),
-            preloadAction: EnemyFixers.FixUnderworksArenaEnemy).DoFlipX();
+            preloadAction: EnemyFixers.FixUnderworksArenaEnemy);
         AddEnemy("Undercrank", "understore_heavy", ("Under_10", "Battle Scene/Wave 6/Understore Heavy (1)"),
             preloadAction: EnemyFixers.FixUndercrank).DoFlipX();
 
@@ -1601,13 +1601,6 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Water));
         
-        Categories.Effects.Add(new PreloadObject("Steam Effect", "steam_effect",
-                ("Song_10", "Spa Region (1)/Spa Steam (1)"), 
-                sprite: ResourceUtils.LoadSpriteResource("steam_effect", FilterMode.Point, ppu:75.5f),
-                preloadAction: o => o.transform.SetScale2D(new Vector2(1, 1)))
-            .WithRotationGroup(RotationGroup.All)
-            .WithConfigGroup(ConfigGroup.WidthOnly));
-        
         Categories.Misc.Add(new PreloadObject("Spa Area", "spa_area",
                 ("Song_10", "Spa Region (1)"), 
                 sprite: ResourceUtils.LoadSpriteResource("spa", FilterMode.Point, ppu:25.6f),
@@ -2649,7 +2642,8 @@ public static class VanillaObjects
             ("Cog_04", "Black Thread States Thread Only Variant/Normal World/Song Automaton 01")).DoFlipX();
         
         AddEnemy("Cogwork Defender", "cogwork_defender",
-            ("Cog_06", "Song Automaton Shield")).DoFlipX();
+            ("Cog_06", "Song Automaton Shield"),
+            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(1)).DoFlipX();
 
         AddEnemy("Cogwork Spine", "cogwork_spine",
             ("Cog_05", "Battle Scene/Wave 2/Song Automaton Fly Spike"),

@@ -71,7 +71,7 @@ public class BlackThreader : MonoBehaviour
 
         _blackThreaded = true;
 
-        if (!PlacementManager.Objects.TryGetValue(id, out var target))
+        if (!PlacementManager.TryGetValue(id, out var target))
         {
             if (hm) target = hm.gameObject;
             else return;

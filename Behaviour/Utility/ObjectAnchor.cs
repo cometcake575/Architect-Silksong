@@ -75,7 +75,7 @@ public class ObjectAnchor : PreviewableBehaviour
 
         GameObject target;
         if (overrideTarget) target = overrideTarget;
-        else if (!PlacementManager.Objects.TryGetValue(targetId, out target))
+        else if (!PlacementManager.TryGetValue(targetId, out target))
         {
             if (_checkSetup) return;
             target = ObjectUtils.FindGameObject(targetId);
@@ -114,7 +114,7 @@ public class ObjectAnchor : PreviewableBehaviour
                 gameObject.SetActive(true);
             }
             
-            if (PlacementManager.Objects.TryGetValue(parentId, out var parent))
+            if (PlacementManager.TryGetValue(parentId, out var parent))
             {
                 var sp = parent.GetComponent<SplineObjects.SplinePoint>();
                 if (sp && sp.spline) SetupSpline(sp);

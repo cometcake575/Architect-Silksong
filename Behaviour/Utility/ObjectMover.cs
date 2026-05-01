@@ -34,7 +34,7 @@ public class ObjectMover : MonoBehaviour
         {
             _setup = true;
             if (overrideTarget) _target = overrideTarget;
-            if (_target || PlacementManager.Objects.TryGetValue(targetId, out _target))
+            if (_target || PlacementManager.TryGetValue(targetId, out _target))
             {
                 if (_target.GetComponent<ObjectAnchor>())
                 {
@@ -45,7 +45,7 @@ public class ObjectMover : MonoBehaviour
                         return;
                     }
                 }
-                if (PlacementManager.Objects.TryGetValue(moveTarget, out var sourceObj)) 
+                if (PlacementManager.TryGetValue(moveTarget, out var sourceObj)) 
                     _source = sourceObj.transform;
                 else _source = moveMode switch
                 {

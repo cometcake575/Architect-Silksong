@@ -46,6 +46,11 @@ public class IdConfigValue(IdConfigType type, string value) : ConfigValue<IdConf
     {
         return Value + (_extraId ?? "");
     }
+    
+    public string GetUnmodifiedValue()
+    {
+        return Value;
+    }
 
     public override string SerializeValue()
     {

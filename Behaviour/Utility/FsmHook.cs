@@ -58,7 +58,7 @@ public class FsmHook : MonoBehaviour
     {
         if (_fsm) return;
         _setup = true;
-        if (!PlacementManager.Objects.TryGetValue(targetId, out var target) && !targetId.StartsWith("Hero_Hornet"))
+        if (!PlacementManager.TryGetValue(targetId, out var target) && !targetId.StartsWith("Hero_Hornet"))
         {
             var o = ObjectUtils.FindGameObject(targetId, index);
             if (!o) return;

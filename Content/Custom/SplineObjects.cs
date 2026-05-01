@@ -132,6 +132,17 @@ public static class SplineObjects
         public float b = 1;
         public float a = 1;
 
+        public Color LineColour
+        {
+            set
+            {
+                r = value.r;
+                g = value.g;
+                b = value.b;
+                a = value.a;
+            }
+        }
+
         public float speed;
         
         public HermiteSpline actualSpline;

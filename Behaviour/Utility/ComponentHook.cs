@@ -23,7 +23,7 @@ public class ComponentHook : MonoBehaviour
 
     public void Setup()
     {
-        if (!PlacementManager.Objects.TryGetValue(id, out var target))
+        if (!PlacementManager.TryGetValue(id, out var target))
         {
             target = ObjectUtils.FindGameObject(id);
             if (!target) return;

@@ -17,7 +17,7 @@ public class Plasmifier : MonoBehaviour
 
         _plasmified = true;
         
-        if (!PlacementManager.Objects.TryGetValue(id, out var target)) return;
+        if (!PlacementManager.TryGetValue(id, out var target)) return;
         
         var dupe = target.GetComponent<ObjectDuplicator>();
         if (dupe) dupe.plasmifier = this;
