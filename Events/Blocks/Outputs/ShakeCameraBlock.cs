@@ -7,8 +7,6 @@ namespace Architect.Events.Blocks.Outputs;
 public class ShakeCameraBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Shake"];
-
-    
     
     protected override string Name => "Camera Shake";
     

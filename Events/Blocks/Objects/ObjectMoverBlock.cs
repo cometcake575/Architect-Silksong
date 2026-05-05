@@ -14,6 +14,7 @@ public class ObjectMoverBlock : ScriptBlock
         "SetVelocity", 
         "SetRotation", 
         "AddRotation",
+        "RotateAround",
         "PointAt"
     ];
 

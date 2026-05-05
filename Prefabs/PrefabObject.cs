@@ -55,6 +55,7 @@ public class PrefabObject : PlaceableObject
         
         ReceiverGroup = Objects.Groups.ReceiverGroup.Prefab;
         RotateAction = Rotate;
+        FlipAction = Flip;
         ScaleAction = Scale;
     }
 
@@ -102,10 +103,15 @@ public class PrefabObject : PlaceableObject
                 }
 
                 var newPos = placement.GetPos() + pos - new Vector3(100, 100);
-                newPos = (newPos - pos) * EditManager.CurrentScale + pos;
+                
+                var offset = (newPos - pos) * EditManager.CurrentScale;
+                if (EditManager.CurrentlyFlipped) offset.x = -offset.x;
+                newPos = offset + pos;
+                
                 newPos = newPos.RotatePointAroundPivot(pos, EditManager.CurrentRotation);
                 rePlacement.SetRotation(rePlacement.GetRotation() + EditManager.CurrentRotation);
                 rePlacement.SetScale(rePlacement.GetScale() * EditManager.CurrentScale);
+                rePlacement.SetFlipped(rePlacement.GetFlipped() != EditManager.CurrentlyFlipped);
                 rePlacement.Move(newPos);
             }
             EditManager.RegisterLastPos(pos);
@@ -139,6 +145,11 @@ public class PrefabObject : PlaceableObject
         self.GetComponent<Prefab>().rot = rot;
     }
 
+    private static void Flip(GameObject self, bool flip)
+    {
+        self.GetComponent<Prefab>().flip = flip;
+    }
+
     private static void Scale(GameObject self, float scale)
     {
         self.GetComponent<Prefab>().scale = scale;
@@ -155,8 +166,9 @@ public class Prefab : PreviewableBehaviour
 
     public int visibility;
 
-    public float scale;
+    public float scale = 1;
     public float rot;
+    public bool flip;
 
     public void Destroy()
     {
@@ -192,13 +204,18 @@ public class Prefab : PreviewableBehaviour
             else
             {
                 var pos = placement.GetPos() + transform.position - new Vector3(100, 100);
-                pos = (pos - transform.position) * scale + transform.position;
+                
+                var offset = (pos - transform.position) * scale;
+                if (flip) offset.x = -offset.x;
+                pos = offset + transform.position;
+                
                 pos = pos.RotatePointAroundPivot(transform.position, rot);
                 var obj = placement.SpawnObject(
                     pos,
                     name,
                     rot,
-                    scale
+                    scale,
+                    flip
                 );
                 PlacementManager.PrefabPlacements[placement.GetId() + name] = placement;
                 if (obj)
@@ -245,6 +262,7 @@ public class Prefab : PreviewableBehaviour
         {
             transform.SetRotation2D(rot);
             transform.localScale *= scale;
+            if (flip) transform.SetScaleX(-transform.GetScaleX());
         }
     }
 

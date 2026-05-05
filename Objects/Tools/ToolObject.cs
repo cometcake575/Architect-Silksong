@@ -20,6 +20,8 @@ public abstract class ToolObject : SelectableObject
         Index = index;
         DisableTransformations = true;
     }
+
+    public virtual bool Highlight => false;
     
     public override Sprite GetUISprite() => _sprite;
 }

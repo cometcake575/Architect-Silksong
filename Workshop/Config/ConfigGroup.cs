@@ -386,8 +386,10 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<CustomTool>("Type", "tool_type", (item, value) =>
             {
-                item.ItemType = (ToolItemType)value.GetValue();
-            }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill")
+                item.IsLiquid = value.GetValue() == 4;
+                if (item.IsLiquid) item.ItemType = ToolItemType.Red;
+                else item.ItemType = (ToolItemType)value.GetValue();
+            }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill", "Liquid")
         )
     ];
     

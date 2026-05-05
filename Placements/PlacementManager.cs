@@ -221,6 +221,13 @@ public static class PlacementManager
 
     public static bool TryGetValue(string path, out GameObject obj)
     {
-        return Objects.TryGetValue(path, out obj);
+        if (!Objects.TryGetValue(path, out obj)) return false;
+        var oh = obj.GetComponent<ObjectHook>();
+        if (oh)
+        {
+            oh.FindObject();
+            if (oh.o) obj = oh.o;
+        }
+        return true;
     }
 }

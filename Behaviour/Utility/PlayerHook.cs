@@ -49,8 +49,9 @@ public class PlayerHook : MonoBehaviour
             {
                 orig(self, start);
                 PlayerEvent("Dash");
+                if (self.dashingDown) PlayerEvent("DownDash");
             });
-
+        
         typeof(HeroController).Hook("BackOnGround",
             (Action<HeroController, bool> orig, HeroController self, bool force) =>
             {

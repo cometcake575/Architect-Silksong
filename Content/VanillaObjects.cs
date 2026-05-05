@@ -58,9 +58,11 @@ public static class VanillaObjects
 
     private static void AddToolObjects()
     {
-        /*Categories.Attacks.Add(new PreloadObject("Ally Wisp", "hero_wisp_fireball",
+        Categories.Attacks.Add(new PreloadObject("Ally Wisp", "hero_wisp_fireball",
             ("localpoolprefabs_assets_shared", "Assets/Prefabs/Heroes/Tools/Hero Wisp Fireball.prefab"),
-            notSceneBundle: true));*/
+            notSceneBundle: true,
+            postSpawnAction: MiscFixers.FixAllyWisp)
+            .WithConfigGroup(ConfigGroup.AllyWisp));
     }
 
     private static void AddVoltObjects()
@@ -474,7 +476,8 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four));
         
         Categories.Interactable.Add(new PreloadObject("Steam Gate", "steam_gate",
-            ("Under_07", "Battle Scene/Gates/steam_vent_short (2)"))
+            ("Under_07", "Battle Scene/Gates/steam_vent_short (2)"),
+            preloadAction: o => o.transform.GetChild(11).gameObject.SetActive(false))
             .WithConfigGroup(ConfigGroup.CloseableGates)
             .WithReceiverGroup(ReceiverGroup.BattleGate));
 
@@ -1834,7 +1837,10 @@ public static class VanillaObjects
         AddSolid("Organ Platform 3", "organ_plat_3", ("Organ_01", "organ_lift_broken_drop/lift_bottom_broken"),
             preloadAction: o => o.transform.GetChild(3).gameObject.SetActive(false));
 
-        Categories.Interactable.Add(new PreloadObject("Silkfly", "silkfly",
+        Categories.Interactable.Add(new PreloadObject("Ambient Silkfly", "silkfly_ambient",
+            ("Mosstown_02", "Silkfly Ambient")));
+
+        Categories.Interactable.Add(new PreloadObject("Mist Silkfly", "silkfly",
             ("localpoolprefabs_assets_areadustmaze", "Assets/Prefabs/Hornet Enemies/Silkfly Mistmaze.prefab"),
             notSceneBundle: true,
             postSpawnAction: MiscFixers.FixSilkfly)
@@ -1932,10 +1938,10 @@ public static class VanillaObjects
             "globalpoolprefabs_assets_all", 
             "Assets/Prefabs/Silk Possession Obj.prefab", o =>
             {
-                var was = o.activeSelf;
-                o.SetActive(false);
-                Object.Instantiate(o, threadEffect.transform).RemoveComponent<DeactivateIfPlayerdataTrue>();
-                if (was) o.SetActive(true);
+                var effect = Object.Instantiate(o, threadEffect.transform);
+                effect.RemoveComponent<DeactivateIfPlayerdataTrue>();
+                effect.transform.GetChild(0).gameObject.AddComponent<MiscFixers.KeepInactive>();
+                effect.SetActive(true);
             }, notSceneBundle: true));
         
         var blackThreadEffect = new GameObject("[Architect] Black Thread Effect");
@@ -2683,7 +2689,11 @@ public static class VanillaObjects
 
         Categories.Interactable.Add(new PreloadObject("Bell Lock", "bell_lock",
             ("Arborium_10", "Music Box Sequence - EDITED/bells/music_box_support"),
-            preloadAction: o => o.transform.SetPositionZ(0.1237f),
+            preloadAction: o =>
+            {
+                o.GetComponentInChildren<Rigidbody2D>(true).constraints = RigidbodyConstraints2D.FreezeAll;
+                o.transform.SetPositionZ(0.1237f);
+            },
             postSpawnAction: o =>
             {
                 var bp = o.GetComponentInChildren<BouncePod>();
@@ -3661,7 +3671,10 @@ public static class VanillaObjects
             ("Mosstown_01", "Pilgrim 01")).DoFlipX();
 
         AddEnemy("Pilgrim Hornfly", "pilgrim_hornfly",
-            ("Bone_East_14b", "Pilgrim 04")).DoFlipX();
+            ("Bone_East_14b", "Pilgrim 04"),
+            preloadAction: MiscFixers.AddComponent<EnemyFixers.Hornfly>)
+            .WithConfigGroup(ConfigGroup.Hornfly)
+            .DoFlipX();
 
         AddEnemy("Pilgrim Hulk", "pilgrim_hulk",
             ("Bone_East_14b", "Pilgrim 02 (1)")).DoFlipX();
@@ -3735,6 +3748,7 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Egg Statue Front", "shard_statue_4", 
             ("Tut_01b", "Shell Shard Fossil Tiny Front"),
+            description: Settings.PrideMode ? "Still cis btw" : null,
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
@@ -3743,6 +3757,7 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Egg Statue Side", "shard_statue_2", 
             ("Coral_36", "Shell Shard Fossil Tiny Egg"),
+            description: Settings.PrideMode ? "Still cis btw" : null,
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)

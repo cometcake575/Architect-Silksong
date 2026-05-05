@@ -14,6 +14,8 @@ public class EraserObject() : ToolObject("eraser", Storage.Settings.Eraser, -2)
         return "Eraser";
     }
 
+    public override bool Highlight => true;
+
     public override string GetDescription()
     {
         return "Click or drag over a placed object to delete it.\n\n" +

@@ -853,6 +853,18 @@ public static class EnemyFixers
         obj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
     }
 
+    public class Hornfly : MonoBehaviour
+    {
+        public Vector2 hopDistance = new(4, 4);
+
+        private void Start()
+        {
+            var fsm = GetComponent<PlayMakerFSM>();
+            fsm.FsmVariables.FindFsmFloat("Min X").Value = transform.GetPositionX() - hopDistance.x;
+            fsm.FsmVariables.FindFsmFloat("Max X").Value = transform.GetPositionX() + hopDistance.y;
+        }
+    }
+
     public static void FixMoorwing(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
@@ -2783,6 +2795,7 @@ public static class EnemyFixers
         fsm.FsmVariables.FindFsmBool("Hornet Dead").Value = false;
         fsm.GetState("Capture").AddAction(() =>
         {
+            obj.BroadcastEvent("FirstDeath");
             obj.BroadcastEvent("OnDeath");
         });
     }

@@ -111,7 +111,9 @@ public class ActionBlock : PlayerBlock
 
     protected override IEnumerable<string> Inputs => [
         "RefreshDash",
-        "RefreshDoubleJump"
+        "RefreshDoubleJump",
+        "Disable",
+        "Enable"
     ];
     
     protected override IEnumerable<string> Outputs => [

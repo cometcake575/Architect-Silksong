@@ -753,9 +753,18 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> Wisp = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(new IntConfigType("Range Multiplier", "wisp_range", (o, value) =>
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Range Multiplier", "wisp_range", (o, value) =>
         {
             var col = o.transform.GetChild(0).GetComponent<CircleCollider2D>();
+            if (value.GetValue() == 0) col.enabled = false;
+            else col.radius *= value.GetValue();
+        }).WithDefaultValue(1).WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> AllyWisp = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Range Multiplier", "wisp_range", (o, value) =>
+        {
+            var col = o.GetComponent<MiscFixers.AllyWisp>().range.GetComponent<CircleCollider2D>();
             if (value.GetValue() == 0) col.enabled = false;
             else col.radius *= value.GetValue();
         }).WithDefaultValue(1).WithPriority(-1))
@@ -784,8 +793,7 @@ public static class ConfigGroup
                 }
                 else
                 {
-                    if (value.GetValue()) return;
-                    o.GetComponent<PlayMakerFSM>().FsmVariables.FindFsmBool("Start Closed").Value = true;
+                    o.GetComponent<PlayMakerFSM>().FsmVariables.FindFsmBool("Start Closed").Value = !value.GetValue();
                 }
             }).WithDefaultValue(false))
     ]);
@@ -936,13 +944,6 @@ public static class ConfigGroup
             }).WithDefaultValue(10)
         )
     ]);
-
-    private static readonly ConfigType Width = ConfigurationManager.RegisterConfigType(
-        new FloatConfigType("Width", "size_width",
-            (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
-            (o, value, _) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); }));
-
-    public static readonly List<ConfigType> WidthOnly = GroupUtils.Merge(Generic, [Width]);
 
     public static readonly List<ConfigType> Stretchable = GroupUtils.Merge(Generic, [
         ConfigurationManager.RegisterConfigType(new Vector2ConfigType("Scale", "object_scale",
@@ -2088,7 +2089,7 @@ public static class ConfigGroup
             new BoolConfigType("Increment Journal", "enemy_increment_journal",
                 (o, value) => {
                 {
-                    o.GetComponentInChildren<HealthManager>(true).WillAwardJournalKill = value.GetValue();
+                    if (!value.GetValue()) o.AddComponent<JournalKillDisablerMarker>();
                 } })),
         Invincible
     ]);
@@ -2154,6 +2155,14 @@ public static class ConfigGroup
             {
                 o.GetComponent<EnemyFixers.Squirm>().musicRange.radius = value.GetValue();
             }).WithDefaultValue(5))
+    ]);
+
+    public static readonly List<ConfigType> Hornfly = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Hop Distance (L/R)", "hornfly_hop_range", (o, value) =>
+            {
+                o.GetComponent<EnemyFixers.Hornfly>().hopDistance = value.GetValue();
+            }).WithDefaultValue(new Vector2(4, 4)))
     ]);
     
     public static readonly List<ConfigType> Aknids = GroupUtils.Merge(Enemies,
@@ -2469,9 +2478,14 @@ public static class ConfigGroup
         _ = new Hook(typeof(HealthManager).GetProperty(nameof(HealthManager.IsInvincible))!.GetGetMethod(),
             (Func<HealthManager, bool> orig, HealthManager self) => 
                 self.GetComponentInParent<EnemyInvulnerabilityMarker>() || orig(self));
+
+        _ = new Hook(typeof(HealthManager).GetProperty(nameof(HealthManager.WillAwardJournalKill))!.GetGetMethod(),
+            (Func<HealthManager, bool> orig, HealthManager self) => 
+                !self.GetComponentInParent<JournalKillDisablerMarker>() && orig(self));
     }
 
     public class EnemyInvulnerabilityMarker : MonoBehaviour;
+    public class JournalKillDisablerMarker : MonoBehaviour;
 
     public static readonly List<ConfigType> Wakeable = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
@@ -2808,7 +2822,7 @@ public static class ConfigGroup
                         })
                     .WithDefaultValue(1)),
             ConfigurationManager.RegisterConfigType(
-                new BoolConfigType("Sway on Contact", "sway_hitbox",
+                new BoolConfigType("Disable Sway on Contact", "sway_hitbox",
                         (o, value) =>
                         {
                             if (value.GetValue()) o.RemoveComponent<GrassBehaviour>();
@@ -3798,6 +3812,15 @@ public static class ConfigGroup
                 mpPos.y = o.transform.GetPositionY() + value.GetValue();
                 mp.Value = mpPos;
             }).WithDefaultValue(5));
+
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Width", "size_width",
+                (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
+                (o, value, _) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); }));
+        
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Height", "size_height",
+            (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); },
+            (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); }));
         
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Height", "heat_height",
             (o, value) => { o.transform.SetScaleZ(o.transform.GetScaleZ() * value.GetValue()); },

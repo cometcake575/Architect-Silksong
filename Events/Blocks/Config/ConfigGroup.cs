@@ -262,6 +262,10 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<ToolBlock>("Tool ID", "tool_id", 
                 (b, f) => b.ToolName = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<ToolBlock>("Amount", "tool_use_amount", 
+                (b, f) => b.Amount = f.GetValue()).WithDefaultValue(1)
         )
     ];
     
@@ -637,7 +641,7 @@ public static class ConfigGroup
     public static readonly List<ConfigType> InvulHook =
     [
         ConfigurationManager.RegisterConfigType(
-            new IntConfigType<InvulBlock>("Duration", "invul_amount", 
+            new FloatConfigType<InvulBlock>("Duration", "invul_amount", 
                 (b, f) =>
                 {
                     b.Duration = f.GetValue();

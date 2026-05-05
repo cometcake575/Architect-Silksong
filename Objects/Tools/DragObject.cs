@@ -14,6 +14,8 @@ public class DragObject() : ToolObject("drag", Settings.Drag, -4)
         return "Drag Tool";
     }
 
+    public override bool Highlight => true;
+
     public override string GetDescription()
     {
         return "Click and drag a placed object to move it.\n\n" +

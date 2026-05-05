@@ -37,7 +37,9 @@ public class ObjectHook : PreviewableBehaviour
     private void Start()
     {
         FindObject();
-        if (!o || (isAPreview && _targetingCustom)) return;
+        if (!o) return;
+        if (isAPreview && _targetingCustom) return;
+        
         switch (start)
         {
             case 1:

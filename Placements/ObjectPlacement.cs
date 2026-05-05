@@ -67,13 +67,16 @@ public class ObjectPlacement(
 
     private float _rotation = rotation;
     private float _scale = scale;
+    private bool _flipped = flipped;
 
     public string GetId() => ID;
     public PlaceableObject GetPlacementType() => type;
     public Vector3 GetPos() => _position;
-    public bool IsFlipped() => flipped;
+    public bool IsFlipped() => _flipped;
     public float GetRotation() => _rotation;
     public void SetRotation(float rot) => _rotation = rot;
+    public bool GetFlipped() => _flipped;
+    public void SetFlipped(bool flip) => _flipped = flip;
     public void SetScale(float sc) => _scale = sc;
     public float GetScale() => _scale;
 
@@ -94,7 +97,7 @@ public class ObjectPlacement(
     private Vector3 _position = position;
     private Vector3 _offset;
     private Vector3 _oldPos;
-    
+
     public void SetDraggedColour()
     {
         if (_previewRenderer)
@@ -181,7 +184,7 @@ public class ObjectPlacement(
             }
         }
 
-        _offset = PreviewUtils.FixPreview(_previewRenderer, type, flipped, rot, _scale);
+        _offset = PreviewUtils.FixPreview(_previewRenderer, type, _flipped, rot, _scale);
         _previewObject.transform.position = pos + _offset;
 
         _previewObject.AddComponent<PreviewObject>().offset = _offset;
@@ -203,7 +206,7 @@ public class ObjectPlacement(
         public Vector3 offset;
     }
     
-    public GameObject SpawnObject(Vector3 pos = default, string extraId = null, float extraRot = 0, float extraScale = 1)
+    public GameObject SpawnObject(Vector3 pos = default, string extraId = null, float extraRot = 0, float extraScale = 1, bool extraFlip = false)
     {
         if (!type.Prefab)
         {
@@ -227,8 +230,8 @@ public class ObjectPlacement(
         
         type.PostSpawnAction?.Invoke(obj);
         
-        if (type.FlipAction != null) type.FlipAction.Invoke(obj, flipped);
-        else if (flipped) obj.transform.SetScaleX(-obj.transform.GetScaleX());
+        if (type.FlipAction != null) type.FlipAction.Invoke(obj, _flipped != extraFlip);
+        else if (_flipped != extraFlip) obj.transform.SetScaleX(-obj.transform.GetScaleX());
         
         if (type.RotateAction != null) type.RotateAction.Invoke(obj, _rotation + extraRot);
         else obj.transform.SetRotation2D(_rotation + obj.transform.GetRotation2D() + extraRot);

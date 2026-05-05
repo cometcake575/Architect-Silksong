@@ -35,6 +35,7 @@ public class CollectionViewBlock : CollectionBlock<ShopBlock.ShopItemBlock>
     
     protected override void Trigger(string trigger)
     {
+        
     }
     
     public class CollectionItemBlock : ChildBlock

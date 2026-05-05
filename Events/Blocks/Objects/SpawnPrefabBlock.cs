@@ -13,7 +13,8 @@ public class SpawnPrefabBlock : ScriptBlock
         ("X", "Number"), 
         ("Y", "Number"), 
         ("Rot", "Number"),
-        ("Scale", "Number")];
+        ("Scale", "Number"),
+        ("Flip", "Boolean"),];
 
     public override Color Color => ObjectBlock.ValidColor;
     protected override string Name => "Spawn Prefab";
@@ -41,6 +42,7 @@ public class SpawnPrefabBlock : ScriptBlock
         }.AddComponent<Prefab>();
         prefab.rot = GetVariable<float>("Rot");
         prefab.scale = GetVariable<float>("Scale", 1);
+        prefab.flip = GetVariable<bool>("Flip");
         prefab.id = Prefab;
     }
 }

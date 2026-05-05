@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Architect.Events.Blocks.Events;
 
-public class NeedolinBlock : ScriptBlock
+public class NeedolinBlock : ToggleableBlock
 {
     private static readonly List<NeedolinBlockRef> Refs = [];
     

@@ -15,6 +15,8 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     {
         return "Cursor";
     }
+    
+    public override bool Highlight => true;
 
     public override string GetDescription()
     {

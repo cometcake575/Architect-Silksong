@@ -253,8 +253,7 @@ public static class EditManager
             }
         }
 
-        // Applying transformation and saving prefabs
-        var clearHover = HoveredObject != null;
+        var hover = false;
         if (CurrentObject is PlaceableObject placeable)
         {
             if (!paused) ApplyEditChanges(placeable);
@@ -265,22 +264,21 @@ public static class EditManager
                 if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.DoRefreshCurrentPage();
             }
 
-            if (!paused && (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed))
+            if (Settings.Overwrite.IsPressed || Settings.GrabId.IsPressed) hover = true;
+        }
+
+        if (!paused && (hover || CurrentObject is ToolObject { Highlight: true }))
+        {
+            var newObj = PlacementManager.FindObject(Input.mousePosition);
+            if (HoveredObject != newObj)
             {
-                var newObj = PlacementManager.FindObject(Input.mousePosition);
-                if (HoveredObject != newObj)
-                {
-                    if (clearHover) HoveredObject.ClearColour();
+                HoveredObject?.ClearColour();
 
-                    newObj?.SetHoverColour();
-                    HoveredObject = newObj;
-                }
-
-                clearHover = false;
+                newObj?.SetHoverColour();
+                HoveredObject = newObj;
             }
         }
-        
-        if (clearHover)
+        else if (HoveredObject != null)
         {
             HoveredObject.ClearColour();
             HoveredObject = null;

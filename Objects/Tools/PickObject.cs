@@ -12,6 +12,8 @@ public class PickObject() : ToolObject("pick", Storage.Settings.Pick, -3)
     {
         return "Pick Tool";
     }
+    
+    public override bool Highlight => true;
 
     public override string GetDescription()
     {

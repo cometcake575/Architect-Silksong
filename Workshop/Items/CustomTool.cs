@@ -15,6 +15,7 @@ public class CustomTool : SpriteItem
     public LocalStr ItemName = string.Empty;
     public LocalStr ItemDesc = string.Empty;
     public ToolItemType ItemType = ToolItemType.Red;
+    public bool IsLiquid;
     
     public string HIconUrl = string.Empty;
     public bool HPoint;
@@ -105,6 +106,31 @@ public class CustomTool : SpriteItem
     }
 
     public class CustomToolItem : ToolItemBasic
+    {
+        public Sprite fullSprite;
+
+        public int cost = 5;
+        
+        public override Sprite GetHudSprite(IconVariants iconVariant)
+        {
+            var orig = base.GetHudSprite(iconVariant);
+            if (!IsEmpty) return fullSprite ?? orig;
+            return orig;
+        }
+
+        public override bool TryReplenishSingle(
+            bool doReplenish,
+            float inCost,
+            out float outCost,
+            out int reserveCost)
+        {
+            base.TryReplenishSingle(doReplenish, inCost, out outCost, out reserveCost);
+            outCost = cost;
+            return true;
+        }
+    }
+
+    public class CustomLiquidToolItem : ToolItemStatesLiquid
     {
         public Sprite fullSprite;
 

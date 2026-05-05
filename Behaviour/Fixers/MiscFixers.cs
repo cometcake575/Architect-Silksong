@@ -1629,6 +1629,8 @@ public static class MiscFixers
         sp.possessedEnemy = obj;
         sp.audioSource = HeroController.instance.audioSource;
         obj.AddComponent<ThreadEffect>().sp = sp;
+        
+        sp.transform.localPosition = Vector3.zero;
     }
 
     public class ThreadEffect : MonoBehaviour
@@ -1999,5 +2001,70 @@ public static class MiscFixers
         obj.transform.GetChild(2).gameObject.SetActive(false);
         obj.transform.GetChild(3).gameObject.SetActive(false);
         obj.transform.GetChild(4).gameObject.SetActive(false);
+    }
+
+    public class AllyWispRange : MonoBehaviour
+    {
+        public GameObject source;
+        private readonly List<GameObject> _targets = [];
+        
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!other.GetComponent<HealthManager>()) return;
+            _targets.Add(other.gameObject);
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            _targets.Remove(other.gameObject);
+        }
+
+        private void Update()
+        {
+            if (!source) return;
+            transform.position = source.transform.position;
+        }
+
+        public GameObject GetObject()
+        {
+            _targets.RemoveAll(t => !t);
+            return _targets.OrderBy(t => (t.transform.position - transform.position).magnitude)
+                .FirstOrDefault();
+        }
+    }
+
+    public class AllyWisp : MonoBehaviour
+    {
+        public AllyWispRange range;
+    }
+
+    public static void FixAllyWisp(GameObject obj)
+    {
+        var range = new GameObject($"{obj.name} Range");
+        
+        var cc2d = range.AddComponent<CircleCollider2D>();
+        cc2d.isTrigger = true;
+        cc2d.radius = 10;
+        var aw = range.AddComponent<AllyWispRange>();
+        aw.source = obj;
+
+        obj.AddComponent<AllyWisp>().range = aw;
+
+        var fsm = obj.LocateMyFSM("Control");
+        var nt = fsm.GetState("New Target");
+        var rt = fsm.GetState("Retry Target");
+        nt.DisableAction(0);
+        rt.DisableAction(0);
+        var target = fsm.FsmVariables.FindFsmGameObject("Target");
+        nt.AddAction(() => target.Value = aw.GetObject(), 0);
+        rt.AddAction(() => target.Value = aw.GetObject(), 0);
+    }
+
+    public class KeepInactive : MonoBehaviour
+    {
+        private void Update()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
