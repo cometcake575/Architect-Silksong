@@ -23,6 +23,7 @@ public class ObjectPlacement(
     float rotation,
     float scale,
     bool locked,
+    int layer,
     (string, string)[] broadcasters,
     (string, string, int)[] receivers,
     ConfigValue[] config)
@@ -58,7 +59,7 @@ public class ObjectPlacement(
 
     public bool IsWithinZone(Vector2 pos1, Vector2 pos2)
     {
-        if (!_previewObject || Locked) return false;
+        if (!_previewObject || IsLocked()) return false;
         
         var withinX = (_position.x > pos1.x && _position.x < pos2.x) || (_position.x < pos1.x && _position.x > pos2.x);
         var withinY = (_position.y > pos1.y && _position.y < pos2.y) || (_position.y < pos1.y && _position.y > pos2.y);
@@ -82,10 +83,29 @@ public class ObjectPlacement(
 
     public bool Locked = locked;
 
+    public bool IsLocked()
+    {
+        return Locked || !IsCurrentLayer();
+    }
+
+    public bool IsCurrentLayer() => _layer == EditManager.Layer;
+    
+    private bool ShowCurrentLayer() => IsCurrentLayer() || 
+                                       EditManager.FlippedLayers.Contains(_layer) != EditManager.ShowLayersByDefault;
+    
+    public void SetLayer(int layer) => _layer = layer;
+
     public void ToggleLocked()
     {
         Locked = !Locked;
-        if (_previewRenderer) _previewRenderer.color = _previewRenderer.color.Where(a: Locked ? 0.2f : 0.5f);
+        RefreshLockColour();
+    }
+
+    public void RefreshLockColour()
+    {
+        if (!_previewRenderer) return;
+        
+        _previewRenderer.color = _previewRenderer.color.Where(a: ShowCurrentLayer() ? IsLocked() ? 0.2f : 0.5f : 0);
     }
 
     public readonly (string, string)[] Broadcasters = broadcasters;
@@ -98,19 +118,26 @@ public class ObjectPlacement(
     private Vector3 _offset;
     private Vector3 _oldPos;
 
+    private bool _setColour;
+    private int _layer = layer;
+
     public void SetDraggedColour()
     {
         if (_previewRenderer)
         {
+            ClearColour();
+            _setColour = true;
             _previewColour = _previewRenderer.color;
             _previewRenderer.color = DraggedColour;
         }
     }
-
+    
     public void SetHoverColour()
     {
         if (_previewRenderer)
         {
+            ClearColour();
+            _setColour = true;
             _previewColour = _previewRenderer.color;
             _previewRenderer.color = HoverColour;
         }
@@ -118,6 +145,8 @@ public class ObjectPlacement(
 
     public void ClearColour()
     {
+        if (!_setColour) return;
+        _setColour = false;
         if (_previewRenderer) _previewRenderer.color = _previewColour ?? DefaultColour;
     }
 
@@ -194,7 +223,7 @@ public class ObjectPlacement(
             config.SetupPreview(_previewObject, ConfigurationManager.PreviewContext.Placement);
         }
 
-        if (Locked) _previewRenderer.color = _previewRenderer.color.Where(a: 0.2f);
+        RefreshLockColour();
 
         if (store) PlacementManager.Objects[ID] = _previewObject; 
         
@@ -326,6 +355,9 @@ public class ObjectPlacement(
             writer.WritePropertyName("scale");
             writer.WriteValue(placement.GetScale());
 
+            writer.WritePropertyName("layer");
+            writer.WriteValue(placement._layer);
+
             writer.WriteEndObject();
         }
 
@@ -339,6 +371,7 @@ public class ObjectPlacement(
             var flipped = true;
             var rotation = 0f;
             var scale = 1f;
+            var layer = 0;
             var locked = false;
 
             (string, string)[] broadcasters = [];
@@ -387,6 +420,10 @@ public class ObjectPlacement(
                                     reader.ReadAsDouble();
                                     scale = (float)(double)reader.Value;
                                     break;
+                                case "layer":
+                                    reader.ReadAsInt32();
+                                    layer = (int)reader.Value;
+                                    break;
                             }
 
                             reader.Read();
@@ -407,14 +444,14 @@ public class ObjectPlacement(
                         config = DeserializeConfig(serializer.Deserialize<Dictionary<string, string>>(reader));
                         break;
                 }
-
+                
                 reader.Read();
             }
 
             pid ??= Guid.NewGuid().ToString()[..8];
             if (!PlaceableObject.RegisteredObjects.TryGetValue(id, out var obj)) return null;
             var placement = new ObjectPlacement(obj,
-                pos, pid, flipped, rotation, scale, locked, broadcasters, receivers, config);
+                pos, pid, flipped, rotation, scale, locked, layer, broadcasters, receivers, config);
 
             return placement;
         }

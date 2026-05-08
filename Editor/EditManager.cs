@@ -29,6 +29,22 @@ public static class EditManager
     public static bool IsEditing;
     public static bool ReloadRequired;
     public static bool IgnoreControlRelinquished;
+    
+    public static int Layer
+    {
+        get;
+        set
+        {
+            field = value;
+            EditorUI.LayerName.text = $"Layer\n{value}";
+            EditorUI.LayerToggle.text = FlippedLayers.Contains(value) != ShowLayersByDefault ? "X" : "";
+            foreach (var o in SelectedObjects) o.SetLayer(value);
+            foreach (var obj in PlacementManager.GetLevelData().Placements) obj.RefreshLockColour();
+        }
+    }
+    
+    public static bool ShowLayersByDefault = true;
+    public static readonly List<int> FlippedLayers = [];
 
     public static readonly List<Func<bool>> ToggleChecks = [];
     
@@ -400,6 +416,7 @@ public static class EditManager
                 obj.GetRotation(),
                 obj.GetScale(),
                 false,
+                Layer,
                 obj.Broadcasters,
                 obj.Receivers,
                 updatedConfig.ToArray()

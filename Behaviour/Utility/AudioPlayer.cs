@@ -95,8 +95,8 @@ public class AudioPlayer : MonoBehaviour
     private static AudioMixerSnapshot NormalSnapshot => field ??=
         Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
             .FirstOrDefault(o => o.name == "Normal" && o.audioMixer && o.audioMixer.name == "Music");
-    
-    private static AudioMixerSnapshot AtmosSnapshot => field ??=
+
+    public static AudioMixerSnapshot AtmosSnapshot => field ??=
         Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
             .FirstOrDefault(o => o.name == "at All Layers");
 

@@ -22,6 +22,9 @@ public class CustomJournalEntry : SpriteItem
     public EnemyJournalRecord.RequiredTypes Required = EnemyJournalRecord.RequiredTypes.Required;
 
     public int KillsRequired = 1;
+    public int Priority;
+
+    public override int GetPriority() => Priority;
 
     public override void Register()
     {

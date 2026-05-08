@@ -70,6 +70,13 @@ public static class ConfigGroup
             {
                 item.InsertBefore = value.GetValue();
             })
+        ),
+        (NoteConfigType) "Entries with higher priorities are loaded earlier",
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomJournalEntry>("Load Priority", "journal_priority", (item, value) =>
+            {
+                item.Priority = -value.GetValue();
+            }).WithDefaultValue(0)
         )
     ];
     
@@ -389,7 +396,7 @@ public static class ConfigGroup
                 item.IsLiquid = value.GetValue() == 4;
                 if (item.IsLiquid) item.ItemType = ToolItemType.Red;
                 else item.ItemType = (ToolItemType)value.GetValue();
-            }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill", "Liquid")
+            }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill")
         )
     ];
     

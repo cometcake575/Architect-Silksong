@@ -58,12 +58,15 @@ public static class BroadcasterHooks
             (Action<HealthManager> orig, HealthManager self) =>
             {
                 var component = self.GetComponent<PersistentBoolItem>();
-                if (!component) return;
-                component.OnSetSaveState += value =>
+                if (component)
                 {
-                    if (value) self.gameObject.BroadcastEvent("OnDeath");
-                    if (value) self.gameObject.BroadcastEvent("LoadedDead");
-                };
+                    component.OnSetSaveState += value =>
+                    {
+                        if (value) self.gameObject.BroadcastEvent("OnDeath");
+                        if (value) self.gameObject.BroadcastEvent("LoadedDead");
+                    };
+                }
+
                 orig(self);
             }
         );

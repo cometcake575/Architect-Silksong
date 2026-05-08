@@ -218,6 +218,7 @@ public abstract class PlaceableObject : SelectableObject
             EditManager.CurrentRotation,
             EditManager.CurrentScale,
             false,
+            EditManager.Layer,
             EditManager.Broadcasters.ToArray(),
             EditManager.Receivers.ToArray(),
             EditManager.Config.Values.ToArray()

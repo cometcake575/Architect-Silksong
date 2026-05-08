@@ -112,6 +112,7 @@ public class PrefabObject : PlaceableObject
                 rePlacement.SetRotation(rePlacement.GetRotation() + EditManager.CurrentRotation);
                 rePlacement.SetScale(rePlacement.GetScale() * EditManager.CurrentScale);
                 rePlacement.SetFlipped(rePlacement.GetFlipped() != EditManager.CurrentlyFlipped);
+                rePlacement.SetLayer(EditManager.Layer);
                 rePlacement.Move(newPos);
             }
             EditManager.RegisterLastPos(pos);

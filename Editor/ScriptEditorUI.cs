@@ -217,6 +217,21 @@ public static class ScriptEditorUI
 
         ScriptManager.IsLocal = true;
         DoRefresh();
+
+        if (Settings.PrideMode)
+        {
+            var img1 = UIUtils.MakeImage("Flag", LocalParent, new Vector2(360, 0),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
+            img1.sprite = ResourceUtils.LoadSpriteResource("rainbow", FilterMode.Point, ppu: 10);
+            img1.transform.SetAsFirstSibling();
+            img1.transform.SetRotation2D(90);
+            
+            var img2 = UIUtils.MakeImage("Flag", GlobalParent, new Vector2(360, 0),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
+            img2.sprite = ResourceUtils.LoadSpriteResource("trans", FilterMode.Point, ppu: 10);
+            img2.transform.SetAsFirstSibling();
+            img2.transform.SetRotation2D(90);
+        }
         return;
 
         void DoRefresh()

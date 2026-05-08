@@ -48,7 +48,10 @@ public static class OperatorBlocks
         Category.Data.RegisterBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);
         Category.Data.RegisterBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);
         Category.World.RegisterBlock<RaycastBlock>("Raycast", ConfigGroup.Raycast);
-        Category.World.RegisterBlock<SceneNameBlock>("Scene Name");
+        
+        Category.World.RegisterHiddenBlock<SceneNameBlock>("Scene Name");
+        Category.World.RegisterHiddenBlock<GameplayBlock>("Gameplay");
+        
         Category.Logic.RegisterBlock<AndBlock>("And");
         Category.Logic.RegisterBlock<OrBlock>("Or");
         Category.Logic.RegisterBlock<NotBlock>("Not");

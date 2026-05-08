@@ -511,7 +511,7 @@ public static class SceneUtils
         csm.mapZone = MapZone.NONE;
         csm.environmentType = EnvironmentTypes.NoEffect;
         csm.actorSnapshot = GameManager.instance.actorSnapshotUnpaused;
-        csm.atmosSnapshot = GameManager.instance.noAtmosSnapshot;
+        csm.atmosSnapshot = AudioPlayer.AtmosSnapshot;
         csm.atmosCue = NoAtmosCue;
         csm.musicCue = GameManager.instance.noMusicCue;
         csm.darknessLevel = 0;

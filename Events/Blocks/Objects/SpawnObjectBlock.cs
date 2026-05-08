@@ -61,7 +61,7 @@ public class SpawnObjectBlock : ScriptBlock
                 GetVariable<float>("Y") + OffsetY,
                 placeable.ZPosition
             ), BlockId, GetVariable<bool>("Flipped"), GetVariable<float>("Rot"),
-            GetVariable<float>("Scale", 1), false, [], [],
+            GetVariable<float>("Scale", 1), false, 0, [], [],
             placeable.ConfigGroup.Select(c => c.GetDefaultValue())
                 .Where(c => c != null).ToArray());
 

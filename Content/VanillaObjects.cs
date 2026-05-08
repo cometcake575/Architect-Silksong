@@ -900,6 +900,12 @@ public static class VanillaObjects
             new Vector2(2.353f, 0.813f),
             new Vector2(3.454f, -1.574f)
         ]));
+
+        /*Categories.Npcs.Add(new PreloadObject("Mr Mushroom NPC", "mr_mushroom_npc",
+            ("Cradle_Destroyed_Challenge_01", "Mr Mushroom NPC"),
+            preloadAction: MiscFixers.AddComponent<MiscFixers.MrMushroom>)
+            .WithConfigGroup(ConfigGroup.Npcs)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));*/
         
         AddSolid("Surface Platform", "plat_float_06", ("Abandoned_town", "plat_float_06"));
         

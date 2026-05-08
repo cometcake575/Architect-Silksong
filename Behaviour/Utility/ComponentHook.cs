@@ -1,8 +1,8 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using Architect.Placements;
 using Architect.Utils;
-using Mono.WebBrowser;
 using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
@@ -66,7 +66,10 @@ public class ComponentHook : MonoBehaviour
                 if (c) _fieldInfo.SetValue(c, data);
             }
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            //
+        }
     }
 
     private void Update()

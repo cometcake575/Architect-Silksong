@@ -85,6 +85,7 @@ public static class EditorUI
         SetupPreciseSettings();
         SetupAttributeSettings();
         SetupHotbar();
+        SetupLayers();
 
         RefreshItem();
     }
@@ -884,18 +885,18 @@ public static class EditorUI
         }
 
         var rot = 0f;
-        icon.transform.SetScaleX(1);
-        icon.transform.SetScaleY(1);
+        icon.transform.SetScaleX(1.25f);
+        icon.transform.SetScaleY(1.25f);
 
         if (EditManager.CurrentObject is PlaceableObject placeable)
         {
             switch (placeable.GetUISprite().packingRotation)
             {
                 case SpritePackingRotation.FlipHorizontal:
-                    icon.transform.SetScaleX(-1);
+                    icon.transform.SetScaleX(-1.25f);
                     break;
                 case SpritePackingRotation.FlipVertical:
-                    icon.transform.SetScaleY(-1);
+                    icon.transform.SetScaleY(-1.25f);
                     break;
                 case SpritePackingRotation.Rotate180:
                     rot += 180;
@@ -903,8 +904,6 @@ public static class EditorUI
             }
 
             rot += placeable.Rotation + placeable.ChildRotation + placeable.Tk2dRotation;
-            
-            icon.transform.SetScale2D(new Vector2(1.25f, 1.25f));
         }
         else icon.transform.SetScale2D(new Vector2(1, 1));
 
@@ -1145,6 +1144,80 @@ public static class EditorUI
             EnableWhenPlaying.Add(img.gameObject);
             EnableWhenPlaying.Add(lbl.gameObject);
         }
+    }
+
+    public static Text LayerName;
+    public static Text LayerToggle;
+
+    private static void SetupLayers()
+    {
+        var layerParent = new GameObject("Layers")
+        {
+            transform = { parent = _mapUI.transform }
+        };
+        layerParent.RemoveOffset().anchoredPosition = new Vector2(0, -20);
+        
+        LayerName = UIUtils.MakeLabel("Layer Name", layerParent,
+            new Vector2(0, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0)).textComponent;
+        LayerName.fontSize = 14;
+        LayerName.text = $"Layer\n{EditManager.Layer}";
+        LayerName.alignment = TextAnchor.MiddleCenter;
+        
+        var (bsa, sa) = UIUtils.MakeTextButton("Show All", "Show All", layerParent,
+            new Vector2(75, 55), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(120, 35));
+        sa.textComponent.fontSize = 10;
+        
+        var (bha, ha) = UIUtils.MakeTextButton("Hide All", "Hide All", layerParent,
+            new Vector2(75, 35), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(120, 35));
+        ha.textComponent.fontSize = 10;
+        
+        bsa.onClick.AddListener(() =>
+        {
+            EditManager.ShowLayersByDefault = true;
+            EditManager.FlippedLayers.Clear();
+            EditManager.Layer = EditManager.Layer;
+        });
+        
+        bha.onClick.AddListener(() =>
+        {
+            EditManager.ShowLayersByDefault = false;
+            EditManager.FlippedLayers.Clear();
+            EditManager.Layer = EditManager.Layer;
+        });
+
+        var vl = UIUtils.MakeLabel("Visible Label", layerParent,
+            new Vector2(-75, 52.5f), new Vector2(0.5f, 0), new Vector2(0.5f, 0)).textComponent;
+        vl.fontSize = 10;
+        vl.text = "Always Show";
+        vl.alignment = TextAnchor.MiddleCenter;
+        
+        var (vBtn, vt) = UIUtils.MakeTextButton("Visible", "X", layerParent,
+            new Vector2(-75, 35), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(35, 35));
+        vBtn.onClick.AddListener(() =>
+        {
+            if (!EditManager.FlippedLayers.Remove(EditManager.Layer))
+                EditManager.FlippedLayers.Add(EditManager.Layer);
+            EditManager.Layer = EditManager.Layer;
+        });
+        LayerToggle = vt.textComponent;
+        LayerToggle.fontSize = 10;
+        
+        var (lBtn, lt) = UIUtils.MakeTextButton("Left", "<", layerParent,
+            new Vector2(-35, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(35, 35));
+        lt.textComponent.fontSize = 10;
+        lBtn.onClick.AddListener(() => EditManager.Layer = Math.Max(0, EditManager.Layer - 1));
+        
+        var (rBtn, rt) = UIUtils.MakeTextButton("Right", ">", layerParent,
+            new Vector2(35, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(35, 35));
+        rt.textComponent.fontSize = 10;
+        rBtn.onClick.AddListener(() => EditManager.Layer++);
+        
+        DisableWhenPlaying.Add(layerParent);
     }
 
     private enum AttributeType

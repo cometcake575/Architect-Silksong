@@ -85,6 +85,8 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("do_thread", "Activate", o =>
         {
             var sp = o.GetComponent<MiscFixers.ThreadEffect>().sp;
+            var a = o.GetComponentInChildren<AudioSource>(true);
+            if (a) a.mute = false;
             sp.gameObject.SetActive(true);
             sp.PlayPossess();
         }))

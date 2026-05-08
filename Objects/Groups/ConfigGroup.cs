@@ -762,7 +762,7 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> AllyWisp = GroupUtils.Merge(Visible, [
-        ConfigurationManager.RegisterConfigType(new FloatConfigType("Range Multiplier", "wisp_range", (o, value) =>
+        ConfigurationManager.RegisterConfigType(new FloatConfigType("Range Multiplier", "ally_wisp_range", (o, value) =>
         {
             var col = o.GetComponent<MiscFixers.AllyWisp>().range.GetComponent<CircleCollider2D>();
             if (value.GetValue() == 0) col.enabled = false;

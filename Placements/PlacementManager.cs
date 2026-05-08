@@ -11,9 +11,7 @@ using Architect.Events.Blocks;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
-using BepInEx;
 using JetBrains.Annotations;
-using Silksong.UnityHelper.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -214,7 +212,8 @@ public static class PlacementManager
     [CanBeNull]
     public static ObjectPlacement FindObject(Vector3 mousePos, int includeLocked = 0)
     {
-        return GetLevelData().Placements.FirstOrDefault(placement => (includeLocked == 1 || 
+        return GetLevelData().Placements.FirstOrDefault(placement => placement.IsCurrentLayer() &&
+                                                                     (includeLocked == 1 || 
                                                                       placement.Locked == (includeLocked == 2)) 
                                                                      && placement.Touching(mousePos));
     }

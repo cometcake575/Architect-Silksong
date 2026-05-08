@@ -226,7 +226,7 @@ public static class WorkshopManager
         SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
         foreach (var item in ExtWorkshops.SelectMany(data => data.Items)
-                     .OrderBy(i => i is CustomQuest ? 1 : 0))
+                     .OrderBy(i => i.GetPriority()))
         {
             if (WorkshopData.Items.Any(i => i.Id == item.Id)) continue;
             foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
@@ -245,7 +245,7 @@ public static class WorkshopManager
         if (WorkshopData != null) foreach (var item in WorkshopData.Items) item.Unregister();
 
         WorkshopData = data;
-        foreach (var item in WorkshopData.Items.OrderBy(i => i is CustomQuest ? 1 : 0))
+        foreach (var item in WorkshopData.Items.OrderBy(i => i.GetPriority()))
         {
             foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
             item.Register();

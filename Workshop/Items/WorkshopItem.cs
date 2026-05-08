@@ -20,5 +20,7 @@ public abstract class WorkshopItem
 
     public abstract Sprite GetIcon();
 
+    public virtual int GetPriority() => 0;
+
     public virtual (string, string)[] FilesToDownload => null;
 }

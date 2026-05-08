@@ -43,8 +43,8 @@ public static class ActionBlocks
         Category.Visual.RegisterBlock<ShopBlock>("Shop", init: ShopBlock.Init);
         Category.Visual.RegisterHiddenBlock<ShopBlock.ShopItemBlock>("Shop Item", ConfigGroup.ShopItem);
         
-        Category.Visual.RegisterBlock<CollectionViewBlock>("Collection View", init: CollectionViewBlock.Init);
-        Category.Visual.RegisterHiddenBlock<CollectionViewBlock.CollectionItemBlock>("Collection Item", ConfigGroup.CollectionItem);
+        /*Category.Visual.RegisterBlock<CollectionViewBlock>("Collection View", init: CollectionViewBlock.Init);
+        Category.Visual.RegisterHiddenBlock<CollectionViewBlock.CollectionItemBlock>("Collection Item", ConfigGroup.CollectionItem);*/
         
         Category.Visual.RegisterBlock<QuestboardBlock>("Quest Board", init: QuestboardBlock.Init);
         Category.Visual.RegisterHiddenBlock<QuestboardBlock.QuestBlock>("Quest Item", ConfigGroup.QuestItem);

@@ -46,6 +46,8 @@ public class CustomQuest : SpriteItem
         (GIconUrl, "png")
     ];
     
+    public override int GetPriority() => 1;
+    
     public override void Register()
     {
         _type = QuestType.Create(
