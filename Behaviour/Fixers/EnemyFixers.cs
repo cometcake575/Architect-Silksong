@@ -1138,6 +1138,11 @@ public static class EnemyFixers
         
         // Disable death bool
         fsm.GetState("End").DisableAction(4);
+
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        ede.PreInstantiate();
+        var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+        if (corpse) corpse.LocateMyFSM("Death").GetState("Blow").DisableAction(1);
         
         return;
 

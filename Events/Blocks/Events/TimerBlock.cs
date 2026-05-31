@@ -14,6 +14,7 @@ public class TimerBlock : ToggleableBlock
     public float RepeatDelay = 1;
     public float RandDelay;
     public int MaxCalls = -1;
+    public bool RunWhenPaused;
 
     private TimerEvent _te;
 
@@ -56,6 +57,7 @@ public class TimerBlock : ToggleableBlock
         private void Update()
         {
             if (!Block.Enabled) return;
+            if (!Block.RunWhenPaused && GameManager.instance.isPaused) return;
             
             if (cStartDelay > 0)
             {

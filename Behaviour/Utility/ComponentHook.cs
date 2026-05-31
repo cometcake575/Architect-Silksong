@@ -57,8 +57,9 @@ public class ComponentHook : MonoBehaviour
         {
             if (_fieldInfo.FieldType == typeof(int)) data = (int)f;
             else if (_fieldInfo.FieldType == typeof(double)) data = (double)f;
-        }
-        if (data.GetType() != _fieldInfo.FieldType) return;
+            else if (_fieldInfo.FieldType.IsEnum) data = (int)f;
+            else if (data.GetType() != _fieldInfo.FieldType) return;
+        } else if (data.GetType() != _fieldInfo.FieldType) return;
         try
         {
             foreach (var c in _components)

@@ -11,8 +11,6 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 {
-    
-    
     protected override string Name => "Shop";
 
     private static ShopMenuStock _shopPrefab;
@@ -72,8 +70,6 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
     
     public class ShopItemBlock : ChildBlock
     {
-        
-        
         public string ItemId = "Rosary_Set_Small";
         public string ItemName = string.Empty;
         public string ItemDesc = string.Empty;

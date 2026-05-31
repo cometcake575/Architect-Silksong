@@ -1486,6 +1486,11 @@ public static class MiscFixers
     public static void FixWebDecoration(GameObject obj)
     {
         FixDecoration(obj);
+        FollowCam(obj);
+    }
+
+    public static void FollowCam(GameObject obj)
+    {
         var fc = obj.AddComponent<FollowCamera>();
         fc.followX = true;
         fc.followY = true;

@@ -1016,7 +1016,20 @@ public static class ConfigGroup
             new IntConfigType<TimerBlock>("Max Calls", "timer_limit", (o, value) =>
             {
                 o.MaxCalls = value.GetValue();
-            }))
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<TimerBlock>("Run If Paused", "timer_run_when_paused", (o, value) =>
+            {
+                o.RunWhenPaused = value.GetValue();
+            }).WithDefaultValue(false))
+    ];
+    
+    public static readonly List<ConfigType> EveryFrame =  [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<EveryFrameBlock>("Run If Paused", "ef_run_when_paused", (o, value) =>
+            {
+                o.RunWhenPaused = value.GetValue();
+            }).WithDefaultValue(false))
     ];
     
     public static readonly List<ConfigType> CustomNeedle =  [

@@ -10,8 +10,6 @@ public class ItemBlock : ScriptBlock
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Obtained", "Boolean")
     ];
-
-    
     
     protected override string Name => "Item Control";
 

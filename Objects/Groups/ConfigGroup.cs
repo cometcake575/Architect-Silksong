@@ -204,6 +204,11 @@ public static class ConfigGroup
                 o.GetComponent<AudioPlayer>().isAtmos = value.GetValue() == 1;
             }).WithDefaultValue(0).WithOptions("Music", "Atmos")),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Fade Time", "audio_player_fade_time", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().fadeTime = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Lock", "audio_player_lock", (o, value) =>
             {
                 o.GetComponent<AudioPlayer>().lockMusic = value.GetValue();
@@ -1755,11 +1760,12 @@ public static class ConfigGroup
             (o, value) =>
             {
                 if (value.GetValue()) return;
-                var burst = o.GetComponentsInChildren<PlayMakerFSM>()
-                    .First(fsm => fsm.FsmName == "Bench Control").GetState("Rest Burst");
+                var fsm = o.GetComponentsInChildren<PlayMakerFSM>().First(fsm => fsm.FsmName == "Bench Control");
+                var burst = fsm.GetState("Rest Burst");
                 burst.DisableAction(9);
                 burst.DisableAction(10);
                 burst.DisableAction(11);
+                fsm.FsmVariables.FindFsmBool("Set Respawn").value = false;
             }
         ).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(new Vector3ConfigType("Sit Offset", "bench_offset",
@@ -2245,8 +2251,9 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new Vector2ConfigType("Target Offset", "winged_furm_offset", (o, value) =>
             {
-                o.LocateMyFSM("Tween").FsmVariables.FindFsmVector3("Move Pos").Value = value.GetValue();
-            }).WithDefaultValue(new Vector2(0, 5)))
+                o.LocateMyFSM("Tween").FsmVariables.FindFsmVector3("Move Pos").Value = 
+                    o.transform.position + (Vector3)value.GetValue();
+            }).WithDefaultValue(new Vector2(0, 5)).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> YPatroller = GroupUtils.Merge(Enemies, [
@@ -2455,7 +2462,7 @@ public static class ConfigGroup
                 }).WithOptions("Phase 1", "Phase 2", "Phase 3").WithDefaultValue(0))
     ]);
 
-    public static readonly List<ConfigType> LastClaw = GroupUtils.Merge(Bosses, [
+    public static readonly List<ConfigType> LastClaw = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Throw Attack", "lc_throw",
                 (o, value) =>
@@ -2796,6 +2803,8 @@ public static class ConfigGroup
     
     private static readonly int SwaySpeed = Shader.PropertyToID("_SwaySpeed");
     private static readonly int SwayAmount = Shader.PropertyToID("_SwayAmount");
+    private static readonly int HeightOffset = Shader.PropertyToID("_HeightOffset");
+    private static readonly int PushAmount = Shader.PropertyToID("_PushAmount");
     private static readonly int SwayMultiplier = Shader.PropertyToID("_SwayMultiplier");
     
     public static readonly List<ConfigType> Sway = GroupUtils.Merge(PhysicalPng,
@@ -2814,6 +2823,20 @@ public static class ConfigGroup
                             o.GetComponentInChildren<SpriteRenderer>().material.SetFloat(SwayAmount, value.GetValue());
                         })
                     .WithDefaultValue(0.018f)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Sway Offset", "sway_offset",
+                        (o, value) =>
+                        {
+                            o.GetComponentInChildren<SpriteRenderer>().material.SetFloat(HeightOffset, value.GetValue());
+                        })
+                    .WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(
+                new FloatConfigType("Push Amount", "sway_push",
+                        (o, value) =>
+                        {
+                            o.GetComponentInChildren<SpriteRenderer>().material.SetFloat(PushAmount, value.GetValue());
+                        })
+                    .WithDefaultValue(0)),
             ConfigurationManager.RegisterConfigType(
                 new FloatConfigType("Sway Multiplier", "sway_multiplier",
                         (o, value) =>

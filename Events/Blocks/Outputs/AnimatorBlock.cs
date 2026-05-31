@@ -32,7 +32,15 @@ public class AnimatorBlock : ScriptBlock
             var player = target.AddComponent<AnimPlayer>();
             player.animator = target.GetComponent<tk2dSpriteAnimator>();
             if (!player.animator) return;
-            player.clip = player.animator.GetClipByName(ClipName);
+            try
+            {
+                player.clip = player.animator.GetClipByName(ClipName);
+            }
+            catch
+            {
+                //
+            }
+
             player.overrideAnimTime = OverrideAnimTime;
             player.animTime = AnimTime;
             _player = player;

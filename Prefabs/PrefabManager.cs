@@ -53,6 +53,7 @@ public static class PrefabManager
             ScriptEditorUI.ToggleParent.SetActive(true);
             EditManager.NoclipPos = _oldPos;
             GameManager.instance.ChangeToScene(_oldScene, "", 0);
+            GameCameras.instance.cameraController.SetMode(CameraController.CameraMode.FOLLOWING);
         }
         else
         {

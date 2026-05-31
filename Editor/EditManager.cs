@@ -536,6 +536,7 @@ public static class EditManager
             HeroController.instance.transform.position = _posToLoad;
             LoadPos = false;
             NoclipPos = _posToLoad;
+            GameCameras.instance.cameraController.SetMode(CameraController.CameraMode.FOLLOWING);
 
             if (CoopManager.Instance.IsActive()) CoopManager.Instance.RefreshRoom();
             

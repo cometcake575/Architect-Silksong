@@ -68,12 +68,10 @@ public class BoolVarBlock : VarBlock
     {
         return PType switch
         {
-            0 => TempVars.ContainsKey(Id) && TempVars[Id],
-            1 => SemiVars.ContainsKey(Id) && SemiVars[Id],
-            2 => ArchitectData.Instance.BoolVariables.ContainsKey(Id) &&
-                 ArchitectData.Instance.BoolVariables[Id],
-            3 => GlobalArchitectData.Instance.BoolVariables.ContainsKey(Id) &&
-                 GlobalArchitectData.Instance.BoolVariables[Id],
+            0 => TempVars.GetValueOrDefault(Id, Default),
+            1 => SemiVars.GetValueOrDefault(Id, Default),
+            2 => ArchitectData.Instance.BoolVariables.GetValueOrDefault(Id, Default),
+            3 => GlobalArchitectData.Instance.BoolVariables.GetValueOrDefault(Id, Default),
             _ => Default
         };
     }

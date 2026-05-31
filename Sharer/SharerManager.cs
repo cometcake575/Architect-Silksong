@@ -5,6 +5,7 @@ using Architect.Placements;
 using Architect.Sharer.States;
 using Architect.Storage;
 using Architect.Utils;
+using Architect.Workshop;
 using GlobalEnums;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -203,6 +204,7 @@ public static class SharerManager
             eraseImg.sprite = eraseAll;
             StorageManager.WipeLevelData();
             PlacementManager.InvalidateScene();
+            WorkshopManager.LoadWorkshop(new WorkshopData());
         }
     }
 

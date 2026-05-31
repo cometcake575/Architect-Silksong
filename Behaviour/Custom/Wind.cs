@@ -124,6 +124,7 @@ public class Wind : MonoBehaviour
 
     public static void Init()
     {
+        Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Soft Terrain"));
         Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Enemy Detector"));
         Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Hero Detector"));
         Physics2D.IgnoreLayerCollision(6, LayerMask.NameToLayer("Interactive Object"));

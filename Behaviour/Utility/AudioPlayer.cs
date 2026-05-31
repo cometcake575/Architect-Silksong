@@ -18,6 +18,8 @@ public class AudioPlayer : MonoBehaviour
     public bool lockMusic = true;
     public string cueId;
 
+    public float fadeTime;
+
     public static readonly Dictionary<string, MusicCue> CustomMusicCues = [];
     public static readonly Dictionary<string, AtmosCue> CustomAtmosCues = [];
     
@@ -112,8 +114,8 @@ public class AudioPlayer : MonoBehaviour
             } else if (!CustomAtmosCues.TryGetValue(cueId, out cue)) yield break;
 
             _isUnlocked = true;
-            AudioManager.Instance.ApplyAtmosCue(cue, 0);
-            AudioManager.TransitionToAtmosOverride(AtmosSnapshot, 0);
+            AudioManager.Instance.ApplyAtmosCue(cue, fadeTime);
+            AudioManager.TransitionToAtmosOverride(AtmosSnapshot, fadeTime);
             GameManager.instance.sm.atmosCue = cue;
             GameManager.instance.sm.atmosSnapshot = cue.snapshot;
         }
@@ -127,8 +129,8 @@ public class AudioPlayer : MonoBehaviour
             } else if (!CustomMusicCues.TryGetValue(cueId, out cue)) yield break;
             
             _isUnlocked = true;
-            AudioManager.Instance.ApplyMusicCue(cue, 0, 0, true);
-            AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, 0);
+            AudioManager.Instance.ApplyMusicCue(cue, 0, fadeTime, true);
+            AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, fadeTime);
             GameManager.instance.sm.musicCue = cue;
             GameManager.instance.sm.musicSnapshot = cue.snapshot;
         }

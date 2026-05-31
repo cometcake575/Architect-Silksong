@@ -9,6 +9,7 @@ public class EveryFrameBlock : ToggleableBlock
     protected override IEnumerable<string> Outputs => ["OnCall"];
     protected override string Name => "Every Frame";
 
+    public bool RunWhenPaused;
     private TimerEvent _te;
 
     protected override void Trigger(string trigger)
@@ -35,6 +36,7 @@ public class EveryFrameBlock : ToggleableBlock
         private void Update()
         {
             if (!Block.Enabled) return;
+            if (!Block.RunWhenPaused && GameManager.instance.isPaused) return;
             Block.Event("OnCall");
         }
     }

@@ -95,20 +95,28 @@ public class ObjectMoverBlock : ScriptBlock
 
                 break;
             case "SetRotation":
-                if (prefab) prefab.SetRotation(rot);
+                if (prefab) prefab.SetRotation(rot, prefab.transform.position);
                 else obj.transform.SetRotation2D(rot);
 
                 break;
             case "AddRotation":
-                if (prefab) prefab.SetRotation(prefab.rot + rot);
+                if (prefab) prefab.SetRotation(prefab.rot + rot, prefab.transform.position);
                 else obj.transform.SetRotation2D(obj.transform.GetRotation2D() + rot);
+
+                break;
+            case "RotateAround":
+                var rx = GetVariable<float>("X", obj.transform.GetPositionX());
+                var ry = GetVariable<float>("Y", obj.transform.GetPositionY());
+                var rpos = new Vector2(rx, ry);
+                if (prefab) prefab.SetRotation(prefab.rot + rot, rpos);
+                else obj.transform.RotateAround(rpos, new Vector3(0, 0, 1), rot);
 
                 break;
             case "PointAt":
                 var newRot = Mathf.Atan((y - obj.transform.GetPositionY()) / (x - obj.transform.GetPositionX())) *
                     Mathf.Rad2Deg + rot;
                 if (x - obj.transform.GetPositionX() < 0) newRot += 180;
-                if (prefab) prefab.SetRotation(newRot);
+                if (prefab) prefab.SetRotation(newRot, prefab.transform.position);
                 else obj.transform.SetRotation2D(newRot);
                 
                 break;

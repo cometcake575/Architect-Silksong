@@ -16,6 +16,11 @@ public class CustomCrest : SpriteItem
 {
     private static readonly Dictionary<string, CustomCrest> Crests = [];
 
+    public override int GetPriority()
+    {
+        return 1;
+    }
+
     public static void Init()
     {
         typeof(HeroController).Hook(nameof(HeroController.Start),

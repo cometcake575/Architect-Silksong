@@ -1103,6 +1103,26 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod));
 
+        Categories.Platforming.Add(new PreloadObject("Clover Vine 1", "clover_vine_1",
+                ("Clover_02c", "grove_pod (2)/Vine Parent/Branch R/grove_pod_branch_left"))
+            .WithReceiverGroup(ReceiverGroup.Activatable)
+            .WithConfigGroup(ConfigGroup.CloverPod));
+
+        Categories.Platforming.Add(new PreloadObject("Clover Vine 2", "clover_vine_2",
+                ("Clover_02c", "grove_pod (2)/Vine Parent/Branch R/grove_pod_branch_right (5)"),
+                preloadAction: o =>
+                {
+                    o.transform.SetScale2D(Vector2.one);
+                    o.transform.SetRotation2D(0);
+                })
+            .WithReceiverGroup(ReceiverGroup.Activatable)
+            .WithConfigGroup(ConfigGroup.CloverPod));
+
+        Categories.Platforming.Add(new PreloadObject("Clover Knob", "clover_knob",
+                ("Clover_02c", "grove_pod (2)/Vine Parent/Branch R/grove_knob (4)"))
+            .WithReceiverGroup(ReceiverGroup.Activatable)
+            .WithConfigGroup(ConfigGroup.CloverPod));
+
         Categories.Platforming.Add(new PreloadObject("Memory Platform", "memory_ground_plat",
             ("Memory_Red", "Scenery Groups/Entry Scenery/memory_ground_plat (6)"),
             preloadAction: MiscFixers.FixMemoryPlat));
@@ -1921,15 +1941,15 @@ public static class VanillaObjects
     {
         Categories.Effects.Add(new PreloadObject("Blur Plane", "blur_plane",
             ("Belltown", "BlurPlane"), 
-            sprite: ResourceUtils.LoadSpriteResource("blur", ppu: 3775),
-            preview: true,
+            sprite: ResourceUtils.LoadSpriteResource("blur", ppu: 37.75f),
             description: "Having multiple blur planes together can cause issues.\n" +
                          "It is recommended to disable the vanilla BlurPlane when using a custom one.\n\n" +
                          "Blur Planes can sometimes cause unusual distortion,\n" +
                          "if this happens try adjusting the Blur Plane's scale.",
-            preloadAction: o => o.transform.localScale = new Vector3(100, 100, 1),
-            postSpawnAction: o => o.transform.localScale *= 1000000))
-            .WithConfigGroup(ConfigGroup.BlurPlane);
+            preloadAction: MiscFixers.FollowCam)
+            .WithScaleAction((_, _) => {})
+            .WithConfigGroup(ConfigGroup.BlurPlane))
+            .DoIgnoreScale();
         
         var threadEffect = new GameObject("[Architect] Thread Effect");
         threadEffect.SetActive(false);
@@ -2558,7 +2578,8 @@ public static class VanillaObjects
                              "Use <color>, <b>, <i>, <s> and <u> to format text.\n" +
                              "For example: '<b><color=#FF0000>YOU</color></b>'",
                 preloadAction: o =>
-                    o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>())
+                    o.transform.GetChild(1).GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>(),
+                postSpawnAction: o => o.transform.GetChild(0).name = o.name + " Bone Sign")
             .WithConfigGroup(ConfigGroup.DoubleLoreTablet));
 
         Categories.Misc.Add(new PreloadObject("Harp Tablet", "weaver_harp_sign",
@@ -3350,6 +3371,7 @@ public static class VanillaObjects
             ("Bone_East_14", "Explode Floor Scene/DropBomb Rock (2)"),
             preloadAction: o => o.transform.SetPositionZ(0),
             postSpawnAction: InteractableFixers.FixFallingRock)
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
             .WithReceiverGroup(ReceiverGroup.FallingRock));
 

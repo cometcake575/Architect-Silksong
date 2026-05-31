@@ -289,11 +289,11 @@ public class Prefab : PreviewableBehaviour
         transform.position = pos;
     }
 
-    public void SetRotation(float r)
+    public void SetRotation(float r, Vector2 point)
     {
         foreach (var spawn in spawns)
         {
-            spawn.transform.RotateAround(transform.position, new Vector3(0, 0, 1), r - rot);
+            spawn.transform.RotateAround(point, new Vector3(0, 0, 1), r - rot);
         }
 
         rot = r;

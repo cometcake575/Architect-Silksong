@@ -44,6 +44,7 @@ public class AnimPlayer : MonoBehaviour, IAnimPlayer
     
     public void Play()
     {
+        if (clip == null) return;
         _animTimeRemaining = overrideAnimTime ? animTime : clip.Duration;
         animator.Play(clip);
         isLocked = true;

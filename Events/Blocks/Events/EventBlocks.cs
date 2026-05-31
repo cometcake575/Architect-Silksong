@@ -9,7 +9,7 @@ public static class EventBlocks
     {
         Category.Events.RegisterBlock<StartBlock>("Start");
         Category.Events.RegisterBlock<TimerBlock>("Timer", ConfigGroup.Timer);
-        Category.Events.RegisterBlock<EveryFrameBlock>("Every Frame");
+        Category.Events.RegisterBlock<EveryFrameBlock>("Every Frame", ConfigGroup.EveryFrame);
         Category.Events.RegisterBlock<KeyBlock>("Key Listener", ConfigGroup.KeyListener);
         Category.Events.RegisterBlock<ReceiveBlock>("Receive", ConfigGroup.Receive);
         Category.Events.RegisterBlock<BroadcastBlock>("Broadcast", ConfigGroup.Broadcast);

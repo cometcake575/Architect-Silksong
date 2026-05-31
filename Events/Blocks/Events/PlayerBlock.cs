@@ -56,6 +56,7 @@ public class PlayerBlock : ToggleableBlock
             "Benched" => PlayerData.instance.atBench,
             "Sprinting" => HeroController.instance.sprintFSM.ActiveStateName.Contains("Sprint"),
             "Floating" => HeroController.instance.umbrellaFSM.ActiveStateName == "Float Idle",
+            "OnWall" => HeroController.instance.IsOnWall(),
             "Clawlining" => HeroController.instance.harpoonDashFSM.ActiveStateName == "Catch" 
                             || HeroController.instance.harpoonDashFSM.ActiveStateName == "Dash",
             "X" => HeroController.instance.transform.GetPositionX(),
@@ -132,6 +133,7 @@ public class ActionBlock : PlayerBlock
         ("Sprinting", "Boolean"),
         ("Floating", "Boolean"),
         ("Clawlining", "Boolean"),
+        ("OnWall", "Boolean"),
         ("Self", "Object")
     ];
 
