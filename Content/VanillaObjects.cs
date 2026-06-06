@@ -96,7 +96,7 @@ public static class VanillaObjects
         
         Categories.Hazards.Add(new PreloadObject("Voltgrass", "voltgrass",
             ("Coral_29", "coral_zap_mounds_shortest (10)"),
-            sprite: ResourceUtils.LoadSpriteResource("voltgrass", ppu:64),
+            uiSprite: ResourceUtils.LoadSpriteResource("voltgrass", ppu:64),
             postSpawnAction: HazardFixers.FixVoltgrass)
             .WithRotationGroup(RotationGroup.All)
             .WithFlipAction((o, f) =>
@@ -262,7 +262,7 @@ public static class VanillaObjects
                 ("Coral_24", "coral_crust_tree (9)/BG Activate Parent/Branch 1/Coral Crust Tree Branch"))
             .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod)
-            .WithRotationGroup(RotationGroup.All));
+            .WithRotationGroup(RotationGroup.All)).SpritePreview = true;
 
         Categories.Hazards.Add(new PreloadObject("Coral Spike S", "stomp_spire",
                 ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)/Stomp Spire L"),
@@ -271,7 +271,7 @@ public static class VanillaObjects
                 postSpawnAction: HazardFixers.FixCoralSpike)
             .WithReceiverGroup(ReceiverGroup.CoralSpike)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable)
-            .WithRotationGroup(RotationGroup.Eight));
+            .WithRotationGroup(RotationGroup.Eight)).SpritePreview = true;
 
         Categories.Hazards.Add(new PreloadObject("Coral Spike L", "coral_spike",
                 ("Memory_Coral_Tower", "Boss Scene/Roar Spikes/Spike Holder 1/Coral Spike"),
@@ -280,7 +280,7 @@ public static class VanillaObjects
                 postSpawnAction: HazardFixers.FixCoralSpike)
             .WithReceiverGroup(ReceiverGroup.CoralSpike)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable)
-            .WithRotationGroup(RotationGroup.Eight).DoFlipX());
+            .WithRotationGroup(RotationGroup.Eight).DoFlipX()).SpritePreview = true;
 
         Categories.Platforming.Add(new PreloadObject("Red Coral Spike", "red_coral_spike",
                 ("Coral_24", "coral_crust_tree (5)/Interactive Activate Parent/Branch 1/Coral Crust Tree Spike Red"),
@@ -338,6 +338,7 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
 
         AddEnemy("Crust King Khann", "crust_king", ("Memory_Coral_Tower", "Boss Scene/Coral King"),
+                preloadAction: o => o.GetComponent<MeshRenderer>().enabled = true,
                 postSpawnAction: EnemyFixers.FixKhann)
             .WithConfigGroup(ConfigGroup.Bosses)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses);
@@ -349,6 +350,10 @@ public static class VanillaObjects
 
     private static void AddRoadObjects()
     {
+        Categories.Interactable.Add(new PreloadObject("One Way Wall", "one_way_sinners",
+            ("Dust_11", "One Way Wall (1)"))
+            .WithConfigGroup(ConfigGroup.PersistentBreakable));
+        
         AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
         /*AddEnemy("Slubberlug", "dustroach_pollywog",
             ("Shadow_13", "Dustroach Pollywog Control/Dustroach Pollywog Pool/Dustroach Pollywog"),
@@ -382,6 +387,19 @@ public static class VanillaObjects
         AddEnemy("Roachkeeper", "roachkeeper",
             ("Dust_05", "Roachkeeper")).DoFlipX();
 
+        AddSolid("Swinging Cage 1", "sinner_cage_1",
+            ("Dust_02", "cage_mid_small_longer_sway (3)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("cage_plat_1"));
+        AddSolid("Swinging Cage 2", "sinner_cage_2",
+            ("Dust_Maze_01", "Mist Maze Controller/Level Set/Safe/cage_mid_small_long_sway (2)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("cage_plat_2"));
+        AddSolid("Swinging Cage 3", "sinner_cage_3",
+            ("Dust_02", "cage_mid_small_sway"),
+            uiSprite: ResourceUtils.LoadSpriteResource("cage_plat_3"));
+
+        Categories.Hazards.Add(new PreloadObject("Spike Pendulum", "spike_pendulum",
+            ("Dust_Maze_01", "Spike Pendulum Hanging (8)")));
+
         Categories.Interactable.Add(new PreloadObject("Temporary Gate", "greymoor_flip_bridge",
                 ("Dust_02", "greymoor_flip_bridge (1)"),
                 postSpawnAction: o =>
@@ -396,7 +414,7 @@ public static class VanillaObjects
         Categories.Interactable.Add(new PreloadObject("Gong", "gong",
                 ("Dust_Chef", "Battle Parent/Kitchen Pipe Gong/kitchen_string_offset/kitchen_string"), 
                 postSpawnAction: InteractableFixers.FixGong)
-            .WithBroadcasterGroup(BroadcasterGroup.Activatable));
+            .WithBroadcasterGroup(BroadcasterGroup.Activatable)).SpritePreview = true;
         
         AddEnemy("Roachserver", "roachserver",
             ("Dust_Chef", "Battle Parent/Battle Scene/Wave 1/Roachkeeper Chef Tiny"),
@@ -516,7 +534,7 @@ public static class VanillaObjects
         Categories.Platforming.Add(new PreloadObject("Treadmill", "treadmill",
             ("Under_03d", "Black Thread States/Normal World/Hero Treadmill"),
             preloadAction: o => o.transform.GetChild(0).gameObject.SetActive(false),
-            sprite: ResourceUtils.LoadSpriteResource("treadmill", ppu: 56),
+            uiSprite: ResourceUtils.LoadSpriteResource("treadmill", ppu: 56),
             description: "If the Override Speed is set, the Treadmill will move at a\n" +
                          "constant speed instead of matching the player.")
             .WithFlipAction((o, f) =>
@@ -542,9 +560,19 @@ public static class VanillaObjects
                 o.transform.SetRotation2D(r);
                 o.GetComponentInChildren<ConveyorBelt>().vertical = r % 180 != 0;
             })
-            .WithConfigGroup(ConfigGroup.Treadmill)).Offset += new Vector3(3, 1.5f, 0);
+            .WithConfigGroup(ConfigGroup.Treadmill));
         AddSolid("Underworks Platform 1", "under_plat_1", ("Under_05", "dock_metal_grate_floor_set (1)"),
             preloadAction: MiscFixers.FocusFirstChild);
+
+        AddSolid("Underworks Platform 2", "under_plat_2",
+            ("Under_05", "Barrel Plat Lift"), 
+            uiSprite: ResourceUtils.LoadSpriteResource("under_plat_2"),
+            preloadAction: MiscFixers.DisableLift);
+
+        AddSolid("Underworks Platform 3", "under_plat_3",
+            ("Under_05", "Barrel Plat Lift Thin"), 
+            uiSprite: ResourceUtils.LoadSpriteResource("under_plat_3"),
+            preloadAction: MiscFixers.DisableLift);
     }
     
     private static void AddCitadelObjects()
@@ -609,13 +637,13 @@ public static class VanillaObjects
         Categories.Attacks.Add(new PreloadObject("Trobbiwork", "trobbio_firework",
             ("Library_13", "Grand Stage Scene/Boss Scene Trobbio/Trapdoor Bursts/Bursts/Burst A"),
             preloadAction: MiscFixers.FixTrobbiwork,
-            sprite: ResourceUtils.LoadSpriteResource("trapdoor", ppu:80))
+            uiSprite: ResourceUtils.LoadSpriteResource("trapdoor", ppu:80))
             .WithReceiverGroup(ReceiverGroup.Trobbiwork));
 
         Categories.Attacks.Add(new PreloadObject("Tormented Trobbiwork", "t_trobbio_firework",
             ("Library_13", "Grand Stage Scene/Boss Scene TormentedTrobbio/Trapdoor Bursts/Bursts/Burst A"),
             preloadAction: MiscFixers.FixTrobbiwork,
-            sprite: ResourceUtils.LoadSpriteResource("trapdoor", ppu:80))
+            uiSprite: ResourceUtils.LoadSpriteResource("trapdoor", ppu:80))
             .WithReceiverGroup(ReceiverGroup.Trobbiwork));
         
         Categories.Attacks.Add(new PreloadObject("Trobbibomb", "trobbio_bomb",
@@ -722,7 +750,7 @@ public static class VanillaObjects
         */
         Categories.Interactable.Add(new PreloadObject("Dial Door", "dial_door",
                 ("Song_20b", "Dial Door Bridge"),
-                sprite: ResourceUtils.LoadSpriteResource("cog_door", ppu:64),
+                uiSprite: ResourceUtils.LoadSpriteResource("cog_door", ppu:64),
                 preloadAction: InteractableFixers.FixDialDoor)
             .WithRotateAction(InteractableFixers.FixDialDoorRot)
             .WithReceiverGroup(ReceiverGroup.DialDoor)
@@ -760,6 +788,8 @@ public static class VanillaObjects
             ("Song_12", "Black Thread States/Normal World/sc_plat_float_fat (1)"));
         AddSolid("Citadel Platform 4", "citadel_plat_4",
             ("Song_01", "sc_plat_float_tall"));
+        AddSolid("Citadel Platform 5", "citadel_plat_5",
+            ("Song_20b", "Black Thread States/Normal World/sc_outside_floating_plat (3)"));
         
         Categories.Interactable.Add(new PreloadObject("Ring Switch", "harpoon_gate", 
             ("Cog_Dancers", "Black Thread States/Normal World/harpoon_ring_gate"), 
@@ -792,7 +822,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Levers)
             .WithBroadcasterGroup(BroadcasterGroup.Levers);
 
-        Categories.Interactable.Add(new PreloadObject("Ventrica Tube", "ventrica_tube",
+        var vt = Categories.Interactable.Add(new PreloadObject("Ventrica Tube", "ventrica_tube",
             ("Bellway_City", "City Travel Tube"), preloadAction: o =>
             {
                 for (var i = 2; i <= 7; i++) o.transform.GetChild(3).GetChild(i).gameObject.SetActive(false);
@@ -827,7 +857,9 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Ventrica)
             .WithInputGroup(InputGroup.Ventrica)
             .WithBroadcasterGroup(BroadcasterGroup.Ventrica)
-            .WithReceiverGroup(ReceiverGroup.Ventrica)).Offset -= new Vector3(0, 1.5f);
+            .WithReceiverGroup(ReceiverGroup.Ventrica));
+        vt.SpritePreview = true;
+        vt.Offset -= new Vector3(0, 1.5f);
     }
 
     private static void AddVaultsObjects()
@@ -1060,8 +1092,8 @@ public static class VanillaObjects
             {
                 o.transform.SetRotation2D(0);
                 o.transform.SetPositionZ(0.006f);
+                o.transform.localScale *= 1.2f;
             })
-            .WithScaleAction((o, s) => o.transform.localScale *= s * 1.2f)
             .WithConfigGroup(ConfigGroup.StretchColourDecor));
     }
 
@@ -1130,11 +1162,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Web Effect", "web_effect",
                 ("Memory_Red", "thread_memory_region/web_particles (1)"), description: "Affects the whole room.",
                 preloadAction: MiscFixers.FixWebDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("web", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+                sprite: ResourceUtils.LoadSpriteResource("web", ppu: 75.5f)))
             .WithConfigGroup(ConfigGroup.Decorations);
 
         Categories.Platforming.Add(new PreloadObject("Silk Pod", "silk_pod",
@@ -1315,8 +1343,13 @@ public static class VanillaObjects
             postSpawnAction:EnemyFixers.FixMoorwing)
             .WithConfigGroup(ConfigGroup.Moorwing)
             .WithBroadcasterGroup(BroadcasterGroup.Bosses).DoFlipX();
+        
+        Categories.Hazards.Add(new PreloadObject("Greymoor Mill", "grey_mill",
+                ("Greymoor_06", "Greymoor_windmill_cog"),
+                uiSprite: ResourceUtils.LoadSpriteResource("grey_mill"))
+            .WithRotationGroup(RotationGroup.All));
 
-        Categories.Hazards.Add(new PreloadObject("Mill Trap", "mill_trap",
+        Categories.Hazards.Add(new PreloadObject("Mill Spike", "mill_trap",
                 ("Greymoor_06", "Greymoor_windmill_cog (1)/GameObject/dustpen_trap_shine0000"),
                 preloadAction: HazardFixers.FixMillTrap).WithConfigGroup(ConfigGroup.Hazards)
             .WithRotationGroup(RotationGroup.All));
@@ -1339,11 +1372,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Rain Effect", "rain_effect",
                 ("Greymoor_07", "Greymoor_Rain_Tiled_Set"), description: "Affects a large area.",
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("rain", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+                sprite: ResourceUtils.LoadSpriteResource("rain", ppu: 75.5f)))
             .WithConfigGroup(ConfigGroup.Decorations);
         
         AddSolid("Greymoor Platform 1", "moor_plat_1",
@@ -1352,6 +1381,13 @@ public static class VanillaObjects
             {
                 for (var i = 4; i <= 6; i++) o.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);
             });
+        
+        AddSolid("Greymoor Platform 2", "moor_plat_2",
+            ("Greymoor_03", "Black Thread States Thread Only Variant/Normal World/Strut Structure/Tilt Platupper"),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(1).GetChild(8).gameObject.SetActive(false);
+            }, uiSprite: ResourceUtils.LoadSpriteResource("grey_plat_2"));
     }
 
     private static void AddWhitewardObjects()
@@ -1549,6 +1585,11 @@ public static class VanillaObjects
                 postSpawnAction: MiscFixers.FixRing).DoFlipX())
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings);
 
+        Categories.Platforming.Add(new PreloadObject("Water Wheel", "harpoon_water_wheel",
+                ("Hang_08", "hanging_garden_waterwheel (4)"),
+                uiSprite: ResourceUtils.LoadSpriteResource("water_wheel"))
+            .WithRotationGroup(RotationGroup.All));
+        
         Categories.Misc.Add(new PreloadObject("Coldshard", "snow_chunk",
                 ("Bellway_Peak_02", "Snowflake Chunk (82)"),
                 preloadAction: o =>
@@ -1609,7 +1650,7 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Fayforn (Ground)", "fayforn_npc",
                 ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
-                sprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
+                uiSprite: ResourceUtils.LoadSpriteResource("fayforn_preview", ppu: 64))
             .WithConfigGroup(ConfigGroup.Fayforn));
     }
 
@@ -1649,7 +1690,7 @@ public static class VanillaObjects
 
         Categories.Effects.Add(new PreloadObject("Flowing Water", "flowing_water_effect",
             ("Hang_09", "coral_river_chunk/river_top/Base"),
-            sprite: ResourceUtils.LoadSpriteResource("water_flow", FilterMode.Point, ppu:215),
+            uiSprite: ResourceUtils.LoadSpriteResource("water_flow", FilterMode.Point, ppu:215),
             preloadAction: o =>
             {
                 o.transform.SetRotation2D(0);
@@ -1660,7 +1701,7 @@ public static class VanillaObjects
 
         Categories.Effects.Add(new PreloadObject("Waterfall A", "waterfall_effect",
             ("Hang_09", "coral_river_chunk/waterfall/Base"),
-            sprite: ResourceUtils.LoadSpriteResource("water_fall", FilterMode.Point, ppu:215),
+            uiSprite: ResourceUtils.LoadSpriteResource("water_fall", FilterMode.Point, ppu:215),
             preloadAction: o =>
             {
                 o.transform.GetChild(1).gameObject.SetActive(false);
@@ -1677,7 +1718,7 @@ public static class VanillaObjects
                     o.transform.SetPositionZ(0.01f);
                     o.transform.localScale = new Vector3(6, 6, 1);
                 },
-                sprite: ResourceUtils.LoadSpriteResource("water_fall_b", FilterMode.Point, ppu:215))
+                uiSprite: ResourceUtils.LoadSpriteResource("water_fall_b", FilterMode.Point, ppu:215))
             .WithConfigGroup(ConfigGroup.FlowingWater));
         
         Categories.Effects.Add(new PreloadObject("Waterfall C", "water_waterfall_tiled",
@@ -1690,7 +1731,7 @@ public static class VanillaObjects
                 o.transform.GetChild(1).SetLocalPositionX(0);
                 o.transform.GetChild(0).localScale = new Vector3(6, 6, 1);
             },
-            sprite: ResourceUtils.LoadSpriteResource("water_fall_c", FilterMode.Point, ppu:35.83f))
+            uiSprite: ResourceUtils.LoadSpriteResource("water_fall_c", FilterMode.Point, ppu:35.83f))
             .WithConfigGroup(ConfigGroup.FlowingWater));
         
         Categories.Effects.Add(new PreloadObject("Waterfall D", "coral_river_tiled_thin_waterfall",
@@ -1701,7 +1742,7 @@ public static class VanillaObjects
                 o.transform.GetChild(0).localScale = Vector3.one;
                 o.transform.SetPositionZ(0.01f);
             },
-            sprite: ResourceUtils.LoadSpriteResource("water_fall_d", FilterMode.Point, ppu:215))
+            uiSprite: ResourceUtils.LoadSpriteResource("water_fall_d", FilterMode.Point, ppu:215))
             .WithConfigGroup(ConfigGroup.FlowingWater));
         
         AddEnemy("Stilkin", "stilkin",
@@ -1833,6 +1874,14 @@ public static class VanillaObjects
 
     private static void AddMistObjects()
     {
+        AddSolid("Mist Platform 1", "mist_plat_1",
+            ("Dust_Maze_01", "grey_metal_floor_plat_float_thin (1)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("mist_plat_1"));
+        
+        AddSolid("Mist Platform 2", "mist_plat_2",
+            ("Dust_Maze_01", "grey_metal_floor_plat_float (3)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("mist_plat_2"));
+        
         AddEnemy("Wraith", "wraith", ("Dust_Maze_01", "Wraith"),
             preloadAction: EnemyFixers.RemoveConstrainPosition,
             postSpawnAction: o =>
@@ -1914,11 +1963,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Sandstorm Effect", "sand_effect",
                 ("Coral_32", "blown_sand_tiled_set"),
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("sand", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+                sprite: ResourceUtils.LoadSpriteResource("sand", ppu: 75.5f)))
             .WithConfigGroup(ConfigGroup.Decorations);
 
         Categories.Hazards.Add(new PreloadObject("Sandcarvers", "sandcarver_group",
@@ -1948,7 +1993,7 @@ public static class VanillaObjects
                          "if this happens try adjusting the Blur Plane's scale.",
             preloadAction: MiscFixers.FollowCam)
             .WithScaleAction((_, _) => {})
-            .WithConfigGroup(ConfigGroup.BlurPlane))
+            .WithConfigGroup(ConfigGroup.Generic))
             .DoIgnoreScale();
         
         var threadEffect = new GameObject("[Architect] Thread Effect");
@@ -2033,7 +2078,7 @@ public static class VanillaObjects
                 {
                     o.transform.GetChild(2).GetChild(2).gameObject.AddComponent<PlaceableObject.SpriteSource>();
                 }, postSpawnAction: MiscFixers.FixBreakableWindow,
-                sprite: ResourceUtils.LoadSpriteResource("window", ppu:70))
+                uiSprite: ResourceUtils.LoadSpriteResource("window", ppu:70))
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
             .WithRotationGroup(RotationGroup.Four).DoFlipX());
@@ -2049,7 +2094,7 @@ public static class VanillaObjects
         Categories.Misc.AddStart(new PreloadObject("Toll Bench", "toll_bench",
                 ("Under_08", "Understore Toll Bench (2)"),
                 preloadAction: MiscFixers.FixTollBench,
-                postSpawnAction: MiscFixers.AddBenchEvent, preview: true)
+                postSpawnAction: MiscFixers.AddBenchEvent)
             .WithConfigGroup(ConfigGroup.Benches)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
 
@@ -2072,8 +2117,7 @@ public static class VanillaObjects
         Categories.Misc.AddStart(new PreloadObject("Bell Bench", "bell_bench",
                 ("Bone_East_15", "bell_bench/RestBench"),
                 preloadAction: MiscFixers.FixBench,
-                postSpawnAction: MiscFixers.AddBenchEvent,
-                preview: true)
+                postSpawnAction: MiscFixers.AddBenchEvent)
             .WithConfigGroup(ConfigGroup.BellBench)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
 
@@ -2102,8 +2146,7 @@ public static class VanillaObjects
         Categories.Misc.AddStart(new PreloadObject("Bed", "bellhome_bed",
                 ("Belltown_Room_Spare", "furnishings/bed/RestBench"),
                 preloadAction: MiscFixers.FixBench,
-                postSpawnAction: MiscFixers.AddBenchEvent,
-                preview: true)
+                postSpawnAction: MiscFixers.AddBenchEvent)
             .WithConfigGroup(ConfigGroup.Benches)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
 
@@ -2283,7 +2326,7 @@ public static class VanillaObjects
             }, description: "Activates when the 'Fire' trigger is run, just the blast effect")
             .WithRotationGroup(RotationGroup.All)
             .WithReceiverGroup(ReceiverGroup.Blast)
-            .WithConfigGroup(ConfigGroup.Damager));
+            .WithConfigGroup(ConfigGroup.Damager)).SpritePreview = true;
 
         Categories.Interactable.Add(new PreloadObject("Silk Lever", "silk_lever",
             ("Weave_12", "weaver_lift_power_chamber/switches/Lever_Left"), 
@@ -2321,7 +2364,7 @@ public static class VanillaObjects
             {
                 o.transform.GetChild(0).GetChild(0).GetChild(0).name = "[Architect] Lamp Part";
                 EnemyFixers.KeepActive(o);
-            }));
+            })).SpritePreview = true;
 
         Categories.Npcs.Add(new PreloadObject("Second Sentinel NPC (Ally)", "second_sentinel_ally",
             ("Song_25", "Song Knight Control/Song Knight Present/Song Knight BattleEncounter"),
@@ -2432,12 +2475,18 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses).DoFlipX();
 
         Categories.Effects.Add(new PreloadObject("Black Thread Strand", "black_thread_strand",
-                ("Song_19_Entrance", "Black Thread States/Black Thread World/black_thread_strand"),
+                ("Song_19_entrance", "Black Thread States/Black Thread World/black_thread_strand"),
                 preloadAction: MiscFixers.FixBlackStrand,
                 sprite: ResourceUtils.LoadSpriteResource("black_thread_strand", ppu: 75.5f)))
             .DoIgnoreScale()
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.BlackStrand);
+
+        Categories.Platforming.Add(new PreloadObject("Scales of Judgement", "scales_platforms",
+            ("Song_19_entrance", "Scales Plat (2)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("scales"))
+            .WithConfigGroup(ConfigGroup.Scales)
+            .WithReceiverGroup(ReceiverGroup.Scales));
         
         Categories.Misc.Add(new PreloadObject("Greymoor Lamp", "greymoor_lamp",
                 ("Greymoor_03", "break_grey_lamp_dual_twist (1)"), postSpawnAction: MiscFixers.FixBreakable)
@@ -2515,7 +2564,7 @@ public static class VanillaObjects
                 ("Song_15", "Black Thread States/Black Thread World/Black_Thread_Core_Citadel"),
                 preloadAction: o => o.transform.rotation = Quaternion.Euler(0, 0, -15),
                 postSpawnAction: EnemyFixers.KeepActive,
-                sprite: ResourceUtils.LoadSpriteResource("void_mass", ppu: 64))
+                uiSprite: ResourceUtils.LoadSpriteResource("void_mass", ppu: 64))
             .WithReceiverGroup(ReceiverGroup.Enemies)
             .WithBroadcasterGroup(BroadcasterGroup.Enemies)
             .WithConfigGroup(ConfigGroup.Enemies)
@@ -2569,7 +2618,7 @@ public static class VanillaObjects
             notSceneBundle: true)
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Cocoon)
-            .WithBroadcasterGroup(BroadcasterGroup.Hittable));
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable)).SpritePreview = true;
 
         Categories.Misc.Add(new PreloadObject("Double Harp Tablet", "weaver_harp_sign_double",
                 ("Mosstown_02", "lore_tablet"),
@@ -2929,11 +2978,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
                 ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 75.5f)))
             .WithConfigGroup(ConfigGroup.Decorations);
 
         Categories.Misc.Add(new PreloadObject("Pond Skipper Body", "pond_skipper_body",
@@ -2956,6 +3001,11 @@ public static class VanillaObjects
 
     private static void AddMarchObjects()
     {
+        AddSolid("Hunter's March Platform 1", "march_plat_1",
+            ("Ant_04", "Black Thread States Thread Only Variant/Normal World/ant_plat_wide_mid"),
+            uiSprite: ResourceUtils.LoadSpriteResource("march_plat_1"),
+            preloadAction: MiscFixers.FixRotation);
+        
         AddEnemy("Skarrlid", "bone_hunter_tiny",
             ("Ant_04", "Black Thread States Thread Only Variant/Normal World/Bone Hunter Tiny"),
             preloadAction: MiscFixers.FixRotation);
@@ -3098,7 +3148,7 @@ public static class VanillaObjects
         AddEnemy("Skull Tyrant", "skull_tyrant", ("Bonetown_boss", "Boss Scene/Skull King"),
             postSpawnAction: EnemyFixers.FixSkullTyrant)
             .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.SkullTyrant);
+            .WithBroadcasterGroup(BroadcasterGroup.SkullTyrant).SpritePreview = true;
 
         Categories.Misc.Add(new PreloadObject("Skull", "bone_goomba_skull",
             ("Bone_East_03", "bone_goomba_skull_break"),
@@ -3275,6 +3325,11 @@ public static class VanillaObjects
         AddEnemy("Flintflame Flyer", "dock_bomber", ("Dock_02", "Dock Bomber"),
             postSpawnAction: EnemyFixers.FixFlintFlyer);
 
+        Categories.Platforming.Add(new PreloadObject("Coal Bucket Platform", "coal_bucket_plat",
+            ("Dock_02", "Bridge Group/Lift Dropper L/Coal Bucket Plat (7)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("coal_bucket_plat", ppu: 64),
+            preloadAction: MiscFixers.DisableLift));
+
         Categories.Effects.Add(new PreloadObject("Heat Effect", "heat_plane",
             ("Dock_02", "HeatPlane"), 
             description: Settings.PrideMode ? "From Fire" : null,
@@ -3333,16 +3388,17 @@ public static class VanillaObjects
                 o.transform.SetPositionZ(-0.002f);
             },
             postSpawnAction: HazardFixers.FixLava,
-            sprite: ResourceUtils.LoadSpriteResource("lava", FilterMode.Point, ppu: 128))
+            uiSprite: ResourceUtils.LoadSpriteResource("lava", FilterMode.Point, ppu: 128))
             .WithConfigGroup(ConfigGroup.StretchableHazards));
 
-        Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
+        var fl = Categories.Hazards.Add(new PreloadObject("Falling Lava", "falling_lava",
                 ("Under_19", "Lava_Waterfall Set (4)"),
                 preloadAction: o =>
                     o.transform.GetChild(0).GetChild(0).GetChild(0).gameObject
                         .AddComponent<PlaceableObject.SpriteSource>())
-                .WithConfigGroup(ConfigGroup.Hazards))
-            .Offset -= new Vector3(0, 8, 0);
+            .WithConfigGroup(ConfigGroup.Hazards));
+        fl.Offset -= new Vector3(0, 8, 0);
+        fl.SpritePreview = true;
 
         AddEnemy("Forebrother Signis", "forebrother_signis", ("Dock_09", "Boss Scene/Dock Guard Slasher"),
                 postSpawnAction: EnemyFixers.FixSignis)
@@ -3483,7 +3539,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Bosses);
 
         Categories.Misc.Add(new PreloadObject("Lifeblood Pustule", "life_pustule",
-            ("Crawl_03", "PUSTULE_States/Active/pustule_set_small (1)/PUSTULE"))
+                ("Crawl_03", "PUSTULE_States/Active/pustule_set_small (1)/PUSTULE"))
             .WithRotateAction((o, f) =>
             {
                 o.transform.GetChild(0).SetLocalRotation2D(f);
@@ -3497,7 +3553,7 @@ public static class VanillaObjects
                 o.transform.GetChild(0).localScale *= s;
                 o.transform.GetChild(0).localPosition *= s;
                 o.GetComponent<CircleCollider2D>().radius *= s;
-            })).Offset += new Vector3(0, -0.6f);
+            }));
         
         Categories.Misc.Add(new PreloadObject("Lifeblood Cocoon", "health_cocoon",
                 ("Crawl_09", "Area_States/Infected/Health Cocoon"))
@@ -3582,7 +3638,7 @@ public static class VanillaObjects
                 var fsm = o.LocateMyFSM("Summon Control");
                 fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("SPAWN"), 0);
                 fsm.GetState("Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-            });
+            }).SpritePreview = true;
         AddEnemy("Massive Mossgrub", "mossbone_crawler_fat",
             ("Arborium_09", "MossBone Crawler Fat"));
 
@@ -3844,10 +3900,13 @@ public static class VanillaObjects
             .WithOutputGroup(OutputGroup.Enemies));
     }
 
-    private static PlaceableObject AddSolid(string name, string id, (string, string) path,
+    private static PlaceableObject AddSolid(string name, string id, 
+        (string, string) path,
+        Sprite uiSprite = null,
         [CanBeNull] Action<GameObject> preloadAction = null)
     {
         return Categories.Solids.Add(new PreloadObject(name, id, path, preloadAction: preloadAction, 
+                uiSprite: uiSprite,
                 postSpawnAction: o =>
                 {
                     var sf = o.AddComponent<SpriteFlash>();

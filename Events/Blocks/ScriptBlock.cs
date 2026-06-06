@@ -124,7 +124,7 @@ public abstract class ScriptBlock
         return clone;
     }
 
-    public virtual void Setup(bool visual, bool newBlock = false)
+    public virtual void Setup(bool visual, bool newBlock = false, bool noReference = false)
     {
         ScriptManager.Blocks[BlockId] = this;
         if (visual)
@@ -136,7 +136,7 @@ public abstract class ScriptBlock
         {
             Reset();
             foreach (var cfg in CurrentConfig.Values) cfg.Setup(this);
-            SetupReference();
+            if (!noReference) SetupReference();
         }
     }
     

@@ -32,11 +32,10 @@ public class PreloadObject : PlaceableObject, IPreload
         string description = null,
         Action<GameObject> postSpawnAction = null, 
         Action<GameObject> preloadAction = null,
-        bool preview = false,
         bool notSceneBundle = false,
         Sprite sprite = null,
         Sprite uiSprite = null)
-        : base(name, id, description, postSpawnAction, preview, sprite, uiSprite)
+        : base(name, id, description, postSpawnAction, sprite, uiSprite)
     {
         Scene = path.Item1;
         Path = path.Item2;

@@ -13,6 +13,7 @@ using Architect.Utils;
 using BepInEx;
 using JetBrains.Annotations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Objects.Placeable;
 
@@ -20,13 +21,13 @@ public abstract class PlaceableObject : SelectableObject
 {
     public static readonly Dictionary<string, PlaceableObject> RegisteredObjects = [];
     
-    public readonly bool Preview;
+    public bool SpritePreview;
     public Action<GameObject> PostSpawnAction;
 
     public GameObject Prefab;
     
     public Sprite Sprite;
-    private readonly Sprite _uiSprite;
+    private Sprite _uiSprite;
     
     public Vector3 Offset;
     public Vector3 ChildOffset;
@@ -61,7 +62,6 @@ public abstract class PlaceableObject : SelectableObject
         string id,
         string description = null,
         Action<GameObject> postSpawnAction = null,
-        bool preview = false,
         Sprite sprite = null,
         Sprite uiSprite = null)
     {
@@ -70,7 +70,6 @@ public abstract class PlaceableObject : SelectableObject
         _description = description;
 
         PostSpawnAction = postSpawnAction;
-        Preview = preview;
         
         Sprite = sprite;
         _uiSprite = uiSprite;
@@ -93,6 +92,7 @@ public abstract class PlaceableObject : SelectableObject
             var pos = Prefab.transform.position;
             pos.z = setZ.z;
             Prefab.transform.position = pos;
+            Object.Destroy(setZ);
         }
         
         ZPosition = Prefab.transform.position.z;
@@ -100,8 +100,16 @@ public abstract class PlaceableObject : SelectableObject
         Prefab.RemoveComponent<BlackThreadState>();
         
         ParentScale = Prefab.transform.lossyScale;
-        if (Sprite) LossyScale = ParentScale;
-        else Sprite = RetrieveSprite();
+        if (Sprite)
+        {
+            LossyScale = ParentScale;
+            SpritePreview = true;
+        }
+        else
+        {
+            if (!_uiSprite) _uiSprite = RetrieveSprite();
+            if (SpritePreview) Sprite = _uiSprite;
+        }
 
         if (IgnoreScale)
         {
@@ -109,7 +117,7 @@ public abstract class PlaceableObject : SelectableObject
             LossyScale = Vector3.one;
         }
         
-        if (!Sprite) ArchitectPlugin.Logger.LogError($"No sprite found for {_name}");
+        if (!Sprite && !_uiSprite) ArchitectPlugin.Logger.LogError($"No sprite found for {_name}");
     }
 
     public PlaceableObject WithRotationGroup(RotationGroup group)
@@ -187,7 +195,7 @@ public abstract class PlaceableObject : SelectableObject
         }
 
         var pos = EditManager.GetWorldPos(mousePosition, true);
-        pos.z = ZPosition;
+        pos.z = EditManager.CurrentZ;
         var obj = PreparePlacement(pos);
         if (Settings.StartLocked.IsPressed) obj.ToggleLocked();
         

@@ -31,6 +31,12 @@ public static class ScriptManager
             ScriptEditorUI.LocalParent.SetActive(value);
             ScriptEditorUI.GlobalParent.SetActive(!value);
 
+            if (ScriptEditorUI.Rainbow && ScriptEditorUI.Trans)
+            {
+                ScriptEditorUI.Rainbow.SetActive(value);
+                ScriptEditorUI.Trans.SetActive(!value);
+            }
+
             if (CurrentStart)
             {
                 CurrentStart.img.color = CurrentStart.color;

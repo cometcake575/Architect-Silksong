@@ -36,6 +36,7 @@ public class WhiteSpikes : SoundMaker
 
     private void Start()
     {
+        if (isAPreview) muted = true;
         _renderer = GetComponent<SpriteRenderer>();
         _damageCollider = GetComponentInChildren<Collider2D>();
 

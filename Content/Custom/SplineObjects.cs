@@ -28,7 +28,6 @@ public static class SplineObjects
 
         return new CustomObject("Track Start Point", "start_node",
                 node,
-                preview: true,
                 sprite: ResourceUtils.LoadSpriteResource("track_start", FilterMode.Point, ppu:15),
                 description: "The start of a track.\n" +
                              "Place Track Points with the same Track ID to link together and form a track.\n\n" +
@@ -48,7 +47,6 @@ public static class SplineObjects
 
         return new CustomObject("Track Point", "node",
                 node,
-                preview: true,
                 sprite: ResourceUtils.LoadSpriteResource("track_node", FilterMode.Point, ppu:15),
                 description: "A point on a track.\n" +
                              "Use the Track Start Point to start a track.")
@@ -145,7 +143,7 @@ public static class SplineObjects
 
         public float speed;
         
-        public HermiteSpline actualSpline;
+        public SplineBase actualSpline;
         
         public List<SplinePoint> splines = [];
         public List<Transform> points = [];
@@ -175,11 +173,14 @@ public static class SplineObjects
             points = points.OrderBy(o => o != _startPoint).ToList();
 
             hasSetup = true;
-            actualSpline = gameObject.AddComponent<HermiteSpline>();
+
+            var hs = gameObject.AddComponent<HermiteSpline>();
+            hs.controlPoints = points;
+            hs.subdivisions = 25;
+            actualSpline = hs;
+
             actualSpline.preventCulling = true;
-            actualSpline.controlPoints = points;
             actualSpline.InternalPoints = [];
-            actualSpline.subdivisions = 25;
 
             var material = MiscObjects.LineMaterial;
             var color = new Color(r, g, b, a);

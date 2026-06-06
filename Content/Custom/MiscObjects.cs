@@ -1,4 +1,3 @@
-using System;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
@@ -192,7 +191,11 @@ public static class MiscObjects
 
         col.points = points;
 
-        obj.AddComponent<CustomDamager>().damageAmount = 1;
+        var dh = obj.AddComponent<DamageHero>();
+        obj.AddComponent<NonBouncer>();
+        dh.damageDealt = 1;
+        dh.hazardType = HazardType.SPIKES;
+        
         obj.AddComponent<SpriteRenderer>().sprite = ResourceUtils.LoadSpriteResource(id, ppu:64);
 
         return new CustomObject(name, id, obj)
@@ -320,8 +323,7 @@ public static class MiscObjects
                 description:
                 $"Places a custom {name} in the game.\n\n" +
                 "URL should be a direct download anyone can access\n" +
-                "in order to work with the level sharer." + extDesc,
-                preview: preview)
+                "in order to work with the level sharer." + extDesc)
             .WithRotationGroup(RotationGroup.All);
     }
 

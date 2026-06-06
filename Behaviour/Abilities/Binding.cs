@@ -28,6 +28,11 @@ public class Binding : SoundMaker
     private void Start()
     {
         _renderer = GetComponent<SpriteRenderer>();
+        if (isAPreview)
+        {
+            enabled = false;
+            return;
+        }
         
         if (!AbilityObjects.ActiveBindings.TryGetValue(bindingType, out var binders))
         {
@@ -64,6 +69,7 @@ public class Binding : SoundMaker
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isAPreview) return;
         if (_used) return;
         if (!other.gameObject.GetComponent<HeroController>()) return;
 

@@ -25,6 +25,9 @@ public static class ScriptEditorUI
     public static GameObject GlobalParent;
     public static GameObject LocalParent;
     
+    public static GameObject Rainbow;
+    public static GameObject Trans;
+    
     private static GameObject _localBlocks;
     private static GameObject _localLines;
     
@@ -220,17 +223,21 @@ public static class ScriptEditorUI
 
         if (Settings.PrideMode)
         {
-            var img1 = UIUtils.MakeImage("Flag", LocalParent, new Vector2(360, 0),
+            var img1 = UIUtils.MakeImage("Rainbow Flag", scripts, new Vector2(360, 0),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
             img1.sprite = ResourceUtils.LoadSpriteResource("rainbow", FilterMode.Point, ppu: 10);
             img1.transform.SetAsFirstSibling();
             img1.transform.SetRotation2D(90);
+
+            Rainbow = img1.gameObject;
             
-            var img2 = UIUtils.MakeImage("Flag", GlobalParent, new Vector2(360, 0),
+            var img2 = UIUtils.MakeImage("Trans Flag", scripts, new Vector2(360, 0),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
             img2.sprite = ResourceUtils.LoadSpriteResource("trans", FilterMode.Point, ppu: 10);
             img2.transform.SetAsFirstSibling();
             img2.transform.SetRotation2D(90);
+
+            Trans = img2.gameObject;
         }
         return;
 

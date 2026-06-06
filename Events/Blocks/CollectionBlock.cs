@@ -75,9 +75,9 @@ public abstract class CollectionBlock<T> : LinkedBlock
         Children.NeedsGap = NeedsGap;
     }
 
-    public override void Setup(bool visual, bool newBlock = false)
+    public override void Setup(bool visual, bool newBlock = false, bool noReference = false)
     {
-        base.Setup(visual, newBlock);
+        base.Setup(visual, newBlock, noReference);
         
         foreach (var child in Children.Blocks)
         {

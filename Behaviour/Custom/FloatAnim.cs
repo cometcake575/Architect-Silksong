@@ -1,8 +1,9 @@
+using Architect.Behaviour.Utility;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;
 
-public class FloatAnim : MonoBehaviour
+public class FloatAnim : PreviewableBehaviour
 {
     public bool active = true;
     
@@ -10,6 +11,12 @@ public class FloatAnim : MonoBehaviour
     
     private void Awake()
     {
+        if (isAPreview)
+        {
+            enabled = false;
+            return;
+        }
+        
         _startY = transform.localPosition.y;
     }
 

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class ObjectColourer : MonoBehaviour
+public class ObjectColourer : PreviewableBehaviour
 {
     public string targetId;
 
@@ -87,6 +87,8 @@ public class ObjectColourer : MonoBehaviour
 
     private void Update()
     {
+        if (isAPreview) return;
+        
         if (!_setup)
         {
             _setup = true;

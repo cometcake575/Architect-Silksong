@@ -21,7 +21,7 @@ public static class UtilityObjects
     
     public static void Init()
     {
-        Categories.Utility.Add(CreateItem());
+        Categories.Utility.Add(CreateItem()).SpritePreview = true;
         Categories.Utility.Add(CreateWalkArea());
         Categories.Utility.Add(CreateVoider());
         Categories.Utility.Add(CreatePlasmifier());
@@ -313,7 +313,6 @@ public static class UtilityObjects
         return new CustomObject("Object Hook", "object_hook", hook, 
                 "Allows using vanilla objects in the Script Editor.\n\n" +
                 "The path to an object can be found with tools such as Unity Explorer.",
-                preview: true,
                 sprite:ResourceUtils.LoadSpriteResource("object_hook", FilterMode.Point, ppu:100))
             .WithConfigGroup(ConfigGroup.ObjectHook)
             .WithReceiverGroup(ReceiverGroup.ObjectHook)
@@ -482,8 +481,7 @@ public static class UtilityObjects
                 description:"Creates a custom doorway to another room. Requires a target scene and door id.\n\n" +
                             "Disable 'Collision Trigger' and use the 'Transition' trigger to transition when\n" +
                             "an event is received instead of when touching the door.",
-                sprite:ResourceUtils.LoadSpriteResource(Settings.PrideMode ? "door_trans" : "door", ppu:33),
-                preview:true)
+                sprite:ResourceUtils.LoadSpriteResource(Settings.PrideMode ? "door_trans" : "door", ppu:33))
             .WithConfigGroup(ConfigGroup.Transitions)
             .WithReceiverGroup(ReceiverGroup.Transitions)
             .WithBroadcasterGroup(BroadcasterGroup.Transitions);
@@ -543,8 +541,7 @@ public static class UtilityObjects
         return new CustomObject("Scene Border Remover", "scene_border_remover", sceneBorderRemover,
                 description:"Removes the borders of a room, making it possible\n" +
                             "to build out of bounds without needing to lock the camera.",
-                sprite:ResourceUtils.LoadSpriteResource("scene_border_remover"),
-                preview:true);
+                sprite:ResourceUtils.LoadSpriteResource("scene_border_remover"));
     }
 
     private static PlaceableObject CreateEnemyBarrier()
@@ -689,8 +686,7 @@ public static class UtilityObjects
                              "Set the Parent ID to make the anchor follow the parent,\n" +
                              "or set it to a Track Point to make the anchor move along the track.\n\n" +
                              "Find the ID of the object and parent by clicking them with the Cursor tool\n" +
-                             "or holding the 'I' key and clicking the object.",
-                preview: true)
+                             "or holding the 'I' key and clicking the object.")
             .WithConfigGroup(ConfigGroup.ObjectAnchor)
             .WithReceiverGroup(ReceiverGroup.ObjectAnchor)
             .WithOutputGroup(OutputGroup.ObjectAnchor)
@@ -708,8 +704,7 @@ public static class UtilityObjects
         return new CustomObject("Object Layer Changer", "object_layerer",
                 layerer,
                 sprite: ResourceUtils.LoadSpriteResource("object_layerer", FilterMode.Point),
-                description: "Changes the layer of the target object, affecting things like collision.",
-                preview: true)
+                description: "Changes the layer of the target object, affecting things like collision.")
             .WithConfigGroup(ConfigGroup.ObjectLayerer)
             .WithReceiverGroup(ReceiverGroup.ObjectLayerer);
     }
@@ -750,8 +745,7 @@ public static class UtilityObjects
                 description: "Used to rotate objects at configurable speeds.\n" +
                              "May cause unusual behaviour with objects that are not intended to be rotated.\n\n" +
                              "Find the ID of the object to rotate by clicking it with the Cursor tool.\n\n" +
-                             "Hold the 'P' keybind to preview the movement of placed objects.",
-                preview: true)
+                             "Hold the 'P' keybind to preview the movement of placed objects.")
             .WithConfigGroup(ConfigGroup.ObjectSpinner)
             .WithReceiverGroup(ReceiverGroup.ObjectSpinner);
     }
@@ -900,7 +894,7 @@ public static class UtilityObjects
         var sprite = ResourceUtils.LoadSpriteResource(id, FilterMode.Point);
         obj.transform.position = new Vector3(0, 0, -2);
 
-        return new CustomObject(name, id, obj, desc, sprite:sprite, preview:true)
+        return new CustomObject(name, id, obj, desc, sprite:sprite)
             .WithReceiverGroup(ReceiverGroup.Generic);
     }
 
@@ -917,7 +911,7 @@ public static class UtilityObjects
 
         return new CustomObject("Enable Object", "object_enabler", obj, 
                 "Enables a disabled object.\n\n" +
-                "The path to an object can be found with tools such as Unity Explorer.", sprite:sprite, preview:true)
+                "The path to an object can be found with tools such as Unity Explorer.", sprite:sprite)
             .WithReceiverGroup(ReceiverGroup.Generic)
             .WithConfigGroup(ConfigGroup.ObjectEnabler);
     }
@@ -977,8 +971,7 @@ public static class UtilityObjects
         
         return new CustomObject("Hazard Respawn Point", "hazard_respawn_point", point, 
             sprite:ResourceUtils.LoadSpriteResource("hazard_respawn_point"),
-            description:"A point that the player can respawn at after taking hazard damage.",
-            preview:true)
+            description:"A point that the player can respawn at after taking hazard damage.")
             .WithConfigGroup(ConfigGroup.HazardRespawn)
             .WithReceiverGroup(ReceiverGroup.HazardRespawn);
     }
@@ -995,8 +988,7 @@ public static class UtilityObjects
         return new CustomObject("Respawn Point", "respawn_point", point, 
             sprite:ResourceUtils.LoadSpriteResource("respawn_point", ppu: 50),
             description:"A point that the player can respawn at after dying.\n\n" +
-                        "To set the player's spawn use the 'SetSpawn' trigger.",
-            preview:true)
+                        "To set the player's spawn use the 'SetSpawn' trigger.")
             .WithFlipAction((o, f) =>
             {
                 if (f) o.GetComponent<RespawnMarker>().respawnFacingRight = true;

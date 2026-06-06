@@ -38,6 +38,7 @@ public class PickObject() : ToolObject("pick", Storage.Settings.Pick, -3)
 
         EditManager.SetRotation(obj.GetRotation());
         EditManager.SetScale(obj.GetScale());
+        EditManager.SetZ(obj.GetPos().z);
         EditManager.CurrentlyFlipped = obj.IsFlipped();
 
         EditManager.CurrentObject = obj.GetPlacementType();

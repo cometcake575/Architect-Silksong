@@ -38,11 +38,12 @@ public static class Settings
 
     public static ConfigEntry<bool> LegacyEventSystem;
     public static ConfigEntry<bool> TestMode;
+    public static ConfigEntry<bool> HitboxesInEditor;
     public static ConfigEntry<bool> ShowRespawnPoint;
     public static ConfigEntry<bool> BlockInventoryInEditMode;
     public static ConfigEntry<bool> LoadAllAssets;
     
-    public static bool PrideMode = false;
+    public static bool PrideMode = true;
 
     public static ConfigEntry<int> SaveSlot; 
     
@@ -255,6 +256,13 @@ public static class Settings
             "TestMode",
             false,
             "Stops the game from storing persistent data in such as enemies being killed"
+        );
+        
+        HitboxesInEditor = config.Bind(
+            "Options",
+            "HitboxesInEditor",
+            false,
+            "Determines whether objects in edit mode should have hitboxes"
         );
         
         LegacyEventSystem = config.Bind(

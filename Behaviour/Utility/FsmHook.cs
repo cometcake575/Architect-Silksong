@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class FsmHook : MonoBehaviour
+public class FsmHook : PreviewableBehaviour
 {
     public string targetId;
     public string fsmName;
@@ -56,6 +56,8 @@ public class FsmHook : MonoBehaviour
 
     private void Setup()
     {
+        if (isAPreview) return;
+        
         if (_fsm) return;
         _setup = true;
         if (!PlacementManager.TryGetValue(targetId, out var target) && !targetId.StartsWith("Hero_Hornet"))

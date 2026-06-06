@@ -38,6 +38,6 @@ public class SavedObject : SelectableObject
 
     public override Sprite GetUISprite()
     {
-        return _extraSprite ?? PlaceableObject.Sprite;
+        return _extraSprite ?? PlaceableObject.GetUISprite();
     }
 }

@@ -347,6 +347,7 @@ public class WavObject : SoundMaker, IPlayable
         get;
         set
         {
+            if (!Source) return;
             _gmVol = GmVol;
             Source.volume = value * _gmVol;
             field = value;

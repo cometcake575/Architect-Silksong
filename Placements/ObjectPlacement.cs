@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Architect.Behaviour.Utility;
+using Architect.Behaviour.Fixers;
 using Architect.Config;
 using Architect.Config.Types;
 using Architect.Editor;
@@ -28,33 +28,18 @@ public class ObjectPlacement(
     (string, string, int)[] receivers,
     ConfigValue[] config)
 {
-    private static readonly Color DefaultColour = new (1, 1, 1, 0.5f);
-    private static readonly Color DraggedColour = new (0.2f, 1, 0.2f, 0.5f);
-    private static readonly Color HoverColour = new (0.2f, 0.2f, 1, 0.5f);
-
     public string ID = id;
     
-    private Color? _previewColour;
-    
     private GameObject _previewObject;
-    private SpriteRenderer _previewRenderer;
+    private PreviewUtils.Preview _preview;
 
     public bool Touching(Vector3 mousePos)
     {
-        if (!_previewObject || !_previewRenderer || !_previewRenderer.sprite) return false;
+        if (!_preview) return false;
 
         var pos = EditManager.GetWorldPos(mousePos, offset:_previewObject.transform.position.z);
-        
-        var size = _previewRenderer.sprite.bounds.size;
-        var width = size.x / 2 * Mathf.Abs(_previewObject.transform.GetScaleX());
-        var height = size.y / 2 * Mathf.Abs(_previewObject.transform.GetScaleY());
 
-        var objPos = _previewObject.transform.position;
-        var objRotation = _previewObject.transform.rotation;
-
-        var localPos = Quaternion.Inverse(objRotation) * (pos - objPos);
-
-        return Mathf.Abs(localPos.x) <= width && Mathf.Abs(localPos.y) <= height;
+        return _preview.Touching(pos);
     }
 
     public bool IsWithinZone(Vector2 pos1, Vector2 pos2)
@@ -83,7 +68,7 @@ public class ObjectPlacement(
 
     public bool Locked = locked;
 
-    public bool IsLocked()
+    private bool IsLocked()
     {
         return Locked || !IsCurrentLayer();
     }
@@ -98,14 +83,29 @@ public class ObjectPlacement(
     public void ToggleLocked()
     {
         Locked = !Locked;
-        RefreshLockColour();
+        RefreshColour();
     }
 
-    public void RefreshLockColour()
+    private bool _hovered;
+    private bool _dragged;
+
+    public void RefreshColour()
     {
-        if (!_previewRenderer) return;
-        
-        _previewRenderer.color = _previewRenderer.color.Where(a: ShowCurrentLayer() ? IsLocked() ? 0.2f : 0.5f : 0);
+        if (!_preview) return;
+
+        var r = 1f;
+        var g = 1f;
+        var b = 1f;
+        if (_dragged)
+        {
+            r *= 0.2f;
+            b *= 0.2f;
+        } else if (_hovered)
+        {
+            r *= 0.2f;
+            g *= 0.2f;
+        }
+        _preview.Settings = new PreviewUtils.PreviewSettings(r, g, b, ShowCurrentLayer() ? IsLocked() ? 0.2f : 0.5f : 0);
     }
 
     public readonly (string, string)[] Broadcasters = broadcasters;
@@ -118,36 +118,30 @@ public class ObjectPlacement(
     private Vector3 _offset;
     private Vector3 _oldPos;
 
-    private bool _setColour;
     private int _layer = layer;
 
     public void SetDraggedColour()
     {
-        if (_previewRenderer)
-        {
-            ClearColour();
-            _setColour = true;
-            _previewColour = _previewRenderer.color;
-            _previewRenderer.color = DraggedColour;
-        }
+        _dragged = true;
+        RefreshColour();
     }
     
     public void SetHoverColour()
     {
-        if (_previewRenderer)
-        {
-            ClearColour();
-            _setColour = true;
-            _previewColour = _previewRenderer.color;
-            _previewRenderer.color = HoverColour;
-        }
+        _hovered = true;
+        RefreshColour();
     }
 
-    public void ClearColour()
+    public void ClearDraggedColour()
     {
-        if (!_setColour) return;
-        _setColour = false;
-        if (_previewRenderer) _previewRenderer.color = _previewColour ?? DefaultColour;
+        _dragged = false;
+        RefreshColour();
+    }
+    
+    public void ClearHoverColour()
+    {
+        _hovered = false;
+        RefreshColour();
     }
 
     // Begins dragging the object, storing its old position and the offset from the cursor
@@ -172,60 +166,44 @@ public class ObjectPlacement(
             .Where(z: _previewObject.transform.position.z);
     }
 
+    private bool _spawningPreview;
+
     public GameObject PlaceGhost(Vector3 pos = default, bool store = true, string extraId = null)
     {
-        var rot = _rotation + type.Rotation;
-        
         if (pos == default) pos = _position;
-        else pos.z = _position.z;
-
-        _previewObject = new GameObject($"[Architect] {type.GetName()} ({ID}) Preview")
-            { transform = { localScale = type.LossyScale } };
-
-        _previewRenderer = _previewObject.AddComponent<SpriteRenderer>();
-
-        _previewRenderer.color = DefaultColour;
         
-        _previewRenderer.sprite = type.Sprite;
-        _previewObject.transform.localScale *= _scale;
-        _previewObject.transform.SetRotation2D(rot + type.ChildRotation + type.Tk2dRotation);
-
-        if (type.Preview)
+        _spawningPreview = true;
+        var obj = SpawnObject(pos, extraId);
+        _previewObject = obj;
+        
+        if (type.SpritePreview)
         {
-            var preview = SpawnObject(extraId: extraId);
-            if (preview)
-            {
-                preview.transform.SetParent(_previewObject.transform);
-
-                foreach (var renderer in preview.GetComponentsInChildren<Renderer>())
-                {
-                    renderer.enabled = false;
-                }
-
-                foreach (var behaviour in preview.GetComponentsInChildren<PreviewableBehaviour>())
-                {
-                    behaviour.isAPreview = true;
-                }
-                
-                preview.SetActive(true);
-                preview.transform.localPosition = Vector3.zero;
-                preview.transform.localScale = Vector3.one;
-            }
+            _previewObject = PreviewUtils.MakeSpritePreview(
+                _previewObject, 
+                type, 
+                _flipped, _rotation, _scale, 
+                out _offset);
+            _previewObject.transform.position = pos + _offset;
+            _previewObject.AddComponent<PreviewObject>().offset = _offset;
+        }
+        
+        _preview = _previewObject.AddComponent<PreviewUtils.Preview>();
+        _preview.Setup(type);
+        
+        if (store) PlacementManager.Objects[ID] = _previewObject;
+        
+        RefreshColour();
+        _spawningPreview = false;
+        
+        obj.SetActive(true);
+            
+        foreach (var rb2d in _previewObject.GetComponentsInChildren<Rigidbody2D>(true))
+        {
+            rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
         }
 
-        _offset = PreviewUtils.FixPreview(_previewRenderer, type, _flipped, rot, _scale);
-        _previewObject.transform.position = pos + _offset;
-
-        _previewObject.AddComponent<PreviewObject>().offset = _offset;
-        
-        foreach (var config in Config.OrderBy(configVal => configVal.GetPriority()))
-        {
-            config.SetupPreview(_previewObject, ConfigurationManager.PreviewContext.Placement);
-        }
-
-        RefreshLockColour();
-
-        if (store) PlacementManager.Objects[ID] = _previewObject; 
+        foreach (var configVal in Config.OrderBy(configVal => configVal.GetPriority())) 
+            configVal.SetupPreview(_previewObject, ConfigurationManager.PreviewContext.Placement);
         
         return _previewObject;
     }
@@ -234,8 +212,9 @@ public class ObjectPlacement(
     {
         public Vector3 offset;
     }
-    
-    public GameObject SpawnObject(Vector3 pos = default, string extraId = null, float extraRot = 0, float extraScale = 1, bool extraFlip = false)
+
+    public GameObject SpawnObject(Vector3 pos = default, string extraId = null, float extraRot = 0,
+        float extraScale = 1, bool extraFlip = false)
     {
         if (!type.Prefab)
         {
@@ -256,46 +235,53 @@ public class ObjectPlacement(
 
         FixId<int>(obj, cId);
         FixId<bool>(obj, cId);
-        
+
         type.PostSpawnAction?.Invoke(obj);
-        
+
         if (type.FlipAction != null) type.FlipAction.Invoke(obj, _flipped != extraFlip);
         else if (_flipped != extraFlip) obj.transform.SetScaleX(-obj.transform.GetScaleX());
-        
+
         if (type.RotateAction != null) type.RotateAction.Invoke(obj, _rotation + extraRot);
         else obj.transform.SetRotation2D(_rotation + obj.transform.GetRotation2D() + extraRot);
-        
+
         if (type.ScaleAction != null) type.ScaleAction.Invoke(obj, _scale * extraScale);
         else obj.transform.localScale *= _scale * extraScale;
 
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() < 0)
                      .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj, extraId);
 
-        obj.SetActive(true);
-        
-        foreach (var receiver in Receivers)
+        if (_spawningPreview)
         {
-            var eri = obj.AddComponent<LegacyReceiver>();
-            eri.eventName = receiver.Item1.ToLower();
-            eri.ReceiverType = EventManager.GetReceiverType(receiver.Item2);
-            eri.requiredCalls = receiver.Item3;
-            
-            EventManager.RegisterReceiver(eri);
-        }
+            obj.AddComponent<MiscFixers.AlphaClamp>();
+        } else
+        {
+            obj.SetActive(true);
 
-        foreach (var broadcaster in Broadcasters)
-        {
-            var ebi = obj.AddComponent<LegacyBroadcaster>();
-            ebi.triggerName = broadcaster.Item1;
-            ebi.eventName = broadcaster.Item2.ToLower();
+            foreach (var receiver in Receivers)
+            {
+                var eri = obj.AddComponent<LegacyReceiver>();
+                eri.eventName = receiver.Item1.ToLower();
+                eri.ReceiverType = EventManager.GetReceiverType(receiver.Item2);
+                eri.requiredCalls = receiver.Item3;
+
+                EventManager.RegisterReceiver(eri);
+            }
+
+            foreach (var broadcaster in Broadcasters)
+            {
+                var ebi = obj.AddComponent<LegacyBroadcaster>();
+                ebi.triggerName = broadcaster.Item1;
+                ebi.eventName = broadcaster.Item2.ToLower();
+            }
         }
 
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() >= 0)
                      .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj, extraId);
+
         return obj;
     }
 
-    public void FixId<T>(GameObject obj, string cId) where T : IEquatable<T>
+    private static void FixId<T>(GameObject obj, string cId) where T : IEquatable<T>
     {
         var comp = obj.GetComponent<PersistentItem<T>>();
         if (comp) comp.ItemData.ID = cId;

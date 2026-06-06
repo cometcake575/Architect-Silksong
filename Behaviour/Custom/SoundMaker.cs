@@ -1,9 +1,10 @@
+using Architect.Behaviour.Utility;
 using Architect.Utils;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;
 
-public class SoundMaker : MonoBehaviour
+public class SoundMaker : PreviewableBehaviour
 {
     protected AudioSource Source;
     
@@ -11,7 +12,6 @@ public class SoundMaker : MonoBehaviour
     
     public virtual void Awake()
     {
-        if (muted) return;
         Source = gameObject.GetOrAddComponent<AudioSource>();
         Source.minDistance = 10;
     }

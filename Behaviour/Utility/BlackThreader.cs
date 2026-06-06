@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Architect.Behaviour.Utility;
 
-public class BlackThreader : MonoBehaviour
+public class BlackThreader : PreviewableBehaviour
 {
     public string id;
     public int mode;
@@ -66,6 +66,8 @@ public class BlackThreader : MonoBehaviour
 
     public void BlackThread(HealthManager hm = null)
     {
+        if (isAPreview) return;
+        
         if (_blackThreaded && !hm) return;
         if (requireAct3 && !PlayerData.instance.GetBool("blackThreadWorld")) return;
 

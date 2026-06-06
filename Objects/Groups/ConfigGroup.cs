@@ -10,9 +10,11 @@ using Architect.Config.Types;
 using Architect.Content.Custom;
 using Architect.Editor;
 using Architect.Events;
+using Architect.Objects.Placeable;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
+using BepInEx.Configuration;
 using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
@@ -225,6 +227,7 @@ public static class ConfigGroup
             new BoolConfigType("Visible", "is_visible", (o, value) =>
             {
                 if (value.GetValue()) return;
+                if (o.GetComponent<MiscFixers.AlphaClamp>()) return;
                 o.RemoveComponent<MiscFixers.ColorLock>();
                 
                 foreach (var renderer in o.GetComponentsInChildren<tk2dSprite>(true))
@@ -932,6 +935,17 @@ public static class ConfigGroup
                 zp.DisableAction(2);
             }).WithDefaultValue(1))
     ]);
+    
+    public static readonly List<ConfigType> Scales =  GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Start Tilt", "zap_delay", (o, value) =>
+            {
+                if (value.GetValue() == 0) return;
+                var fsm = o.transform.Find("Arm").GetComponent<PlayMakerFSM>();
+                fsm.FsmVariables.FindFsmBool("Start R").value = true;
+                fsm.FsmVariables.FindFsmBool("Start L").value = false;
+            }).WithOptions("Left", "Right").WithDefaultValue(0))
+    ]);
 
     public static readonly List<ConfigType> Levers = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Pulled", "lever_stay_pulled"))
@@ -955,10 +969,11 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     o.transform.SetScale2D(o.transform.localScale * value.GetValue());
-                },
-                (o, value, _) =>
+                }, (o, value, ctx) =>
                 {
-                    o.transform.SetScale2D(o.transform.localScale * value.GetValue());
+                    if (ctx != ConfigurationManager.PreviewContext.Cursor) return;
+                    if (EditManager.CurrentObject is not PlaceableObject placeable) return;
+                    o.transform.SetScale2D(placeable.Prefab.transform.localScale * value.GetValue() * EditManager.CurrentScale);
                 })
             .WithDefaultValue(Vector2.one))
     ]);
@@ -984,13 +999,23 @@ public static class ConfigGroup
     public static readonly List<ConfigType> Updraft = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Width", "updraft_width",
-                (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
-                (o, value, _) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); })
+                    (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
+                    (o, value, ctx) =>
+                    {
+                        if (ctx == ConfigurationManager.PreviewContext.Placement) return;
+                        o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue());
+                    })
                 .WithDefaultValue(1.5f).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Height", "updraft_height",
-                (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue() * 2); },
-                (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); })
+                    (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue() * 2); },
+                    (o, value, ctx) =>
+                    {
+                        if (ctx == ConfigurationManager.PreviewContext.Placement)
+                        {
+                            o.transform.SetScaleY(o.transform.GetScaleY() / 2);
+                        } else o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue());
+                    })
                 .WithDefaultValue(5).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Functionality", "updraft_functional",
@@ -1227,26 +1252,11 @@ public static class ConfigGroup
                 {
                     foreach (var comp in o.GetComponentsInChildren<Renderer>())
                         comp.sortingOrder = value.GetValue();
-                },
-                (o, value, _) => { o.GetComponent<SpriteRenderer>().sortingOrder = value.GetValue(); })
+                })
             .WithDefaultValue(0));
-
-    public static readonly ConfigType ZOffset =
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Z Offset", "obj_z",
-                (o, value) => { o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue()); },
-                (o, value, arg3) =>
-                {
-                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
-                    {
-                        CursorManager.Offset.z += value.GetValue();
-                    }
-                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
-                }).WithDefaultValue(0));
     
     public static readonly List<ConfigType> Sandcarver = GroupUtils.Merge(Visible,
     [
-        ZOffset,
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Appear Range", "sandcarver_range", (o, value) =>
             {
@@ -1255,7 +1265,6 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> CameraView = GroupUtils.Merge(Stretchable, [
-        ZOffset,
         RenderLayer,
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("On UI", "ui_camera_target_on_ui",
@@ -1300,8 +1309,7 @@ public static class ConfigGroup
             {
                 if (value.GetValue()) return;
                 o.RemoveComponentsInChildren<NeedolinTextOwner>();
-            }).WithDefaultValue(true)),
-        ZOffset
+            }).WithDefaultValue(true))
     ]));
 
     public static readonly List<ConfigType> Pavo = GroupUtils.Merge(Visible, GroupUtils.Merge(Npcs, [
@@ -1361,7 +1369,6 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> Silkfly = GroupUtils.Merge(Visible, [
-        ZOffset,
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("X Direction", "silkfly_x", (o, value) =>
             {
@@ -1384,12 +1391,7 @@ public static class ConfigGroup
                 {
                     Object.Destroy(featherChild.gameObject);
                 }
-            }).WithDefaultValue(true)),
-        ZOffset
-    ]);
-
-    public static readonly List<ConfigType> BlurPlane = GroupUtils.Merge(Generic, [
-        ZOffset
+            }).WithDefaultValue(true))
     ]);
     
     private static readonly int HeatSpeed = Shader.PropertyToID("_SpeedY");
@@ -1403,12 +1405,13 @@ public static class ConfigGroup
                     o.transform.SetScaleX(o.transform.GetScaleX() * val.x);
                     o.transform.SetScaleZ(o.transform.GetScaleZ() * val.y);
                 },
-                (o, value, _) =>
+                (o, value, ctx) =>
                 {
-                    o.transform.SetScale2D(o.transform.localScale * value.GetValue());
+                    if (ctx != ConfigurationManager.PreviewContext.Cursor) return;
+                    if (EditManager.CurrentObject is not PlaceableObject placeable) return;
+                    o.transform.SetScale2D(placeable.Prefab.transform.localScale * value.GetValue() * EditManager.CurrentScale);
                 })
             .WithDefaultValue(Vector2.one)),
-        ZOffset,
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Speed", "heat_speed",
                 (o, value) =>
@@ -1419,8 +1422,7 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> Decorations = GroupUtils.Merge(Visible, [
-        RenderLayer,
-        ZOffset
+        RenderLayer
     ]);
 
     public static readonly List<ConfigType> StretchDecor = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, []));
@@ -1430,7 +1432,9 @@ public static class ConfigGroup
             new ColourConfigType("Colour", "png_sprite_colour",
                 (o, value) =>
                 {
-                    o.GetComponentInChildren<SpriteRenderer>().color = value.GetValue();
+                    var col = value.GetValue();
+                    if (o.GetComponent<MiscFixers.AlphaClamp>()) col.a = Mathf.Max(col.a, 0.1f);
+                    o.GetComponentInChildren<SpriteRenderer>().color = col;
                 }, true).WithDefaultValue(Color.white).WithPriority(-1))
     ]);
     
@@ -1530,8 +1534,7 @@ public static class ConfigGroup
             new ColourConfigType("Colour", "track_colour", (o, value) =>
             {
                 o.GetComponent<SplineObjects.Spline>().LineColour = value.GetValue();
-            }, true).WithDefaultValue(new Color(1, 1, 1, 0.1f))),
-        ZOffset
+            }, true).WithDefaultValue(new Color(1, 1, 1, 0.1f)))
     ]));
 
     private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
@@ -1607,14 +1610,10 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Colour", "sprite_colour", (o, value) =>
             {
-                o.GetComponent<SpriteRenderer>().color = value.GetValue();
-            }, true, (o, value, arg3) =>
-            {
-                if (arg3 == ConfigurationManager.PreviewContext.Cursor) return;
-                var val = value.GetValue();
-                if (val.a < 0.1f) val.a = 0.1f;
-                o.GetComponent<SpriteRenderer>().color = val;
-            }).WithDefaultValue(Color.white))
+                var col = value.GetValue();
+                if (o.GetComponent<MiscFixers.AlphaClamp>()) col.a = Mathf.Max(col.a, 0.1f);
+                o.GetComponent<SpriteRenderer>().color = col;
+            }, true).WithDefaultValue(Color.white))
     ]));
     
     public static readonly List<ConfigType> Line = GroupUtils.Merge(Colliders, [
@@ -2067,22 +2066,6 @@ public static class ConfigGroup
                         foreach (var t in o.GetComponentsInChildren<Transform>(true)) 
                             t.gameObject.AddComponent<NonBouncer>();
                     } })),
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Z Offset", "enemy_z",
-                (o, value) =>
-                {
-                    var sz = o.GetComponent<SetZ>();
-                    if (sz) sz.z += value.GetValue();
-                    o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
-                },
-                (o, value, arg3) =>
-                {
-                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
-                    {
-                        CursorManager.Offset.z += value.GetValue();
-                    }
-                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
-                }).WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Recoil Speed", "enemy_recoil_speed",
                 (o, value) =>
@@ -2723,7 +2706,11 @@ public static class ConfigGroup
                 CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, hcount, vcount,
                     sprites =>
                     {
-                        if (o) o.GetComponent<SpriteRenderer>().sprite = sprites[0];
+                        if (o)
+                        {
+                            var sr = o.GetComponent<SpriteRenderer>();
+                            if (sr) sr.sprite = sprites[0];
+                        }
                         EditorUI.RefreshItem();
                     });
             }).WithPriority(-1));
@@ -3187,9 +3174,6 @@ public static class ConfigGroup
                 if (EditManager.IsEditing) return;
                 var bc2d = o.GetComponent<BoxCollider2D>();
                 bc2d.size = bc2d.size.Where(x: value.GetValue());
-            }, (o, value, _) =>
-            {
-                o.transform.SetScaleX(value.GetValue());
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Collision Height", "hrp_height", (o, value) =>
@@ -3197,9 +3181,6 @@ public static class ConfigGroup
                 if (EditManager.IsEditing) return;
                 var bc2d = o.GetComponent<BoxCollider2D>();
                 bc2d.size = bc2d.size.Where(y: value.GetValue());
-            }, (o, value, _) =>
-            {
-                o.transform.SetScaleY(value.GetValue());
             }).WithDefaultValue(1))
     ]);
     
@@ -3601,7 +3582,6 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> BlackStrand = GroupUtils.Merge(Generic, [
-        ZOffset,
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Require Act 3", "require_act_3_blackstrand",
                     (o, value) => 
@@ -3838,12 +3818,10 @@ public static class ConfigGroup
 
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Width", "size_width",
-                (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); },
-                (o, value, _) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); }));
+                (o, value) => { o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()); }));
         
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Height", "size_height",
-            (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); },
-            (o, value, _) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); }));
+            (o, value) => { o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()); }));
         
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Height", "heat_height",
             (o, value) => { o.transform.SetScaleZ(o.transform.GetScaleZ() * value.GetValue()); },
@@ -3857,13 +3835,6 @@ public static class ConfigGroup
                 var color = sr.color;
                 color.r = value.GetValue();
                 sr.color = color;
-            }, (o, value, arg3) =>
-            {
-                if (arg3 == ConfigurationManager.PreviewContext.Cursor) return;
-                var sr = o.GetComponent<SpriteRenderer>();
-                var color = sr.color;
-                color.r = value.GetValue();
-                sr.color = color;
             }).WithDefaultValue(1));
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Colour G", "colour_green", (o, value) =>
@@ -3872,24 +3843,10 @@ public static class ConfigGroup
                 var color = sr.color;
                 color.g = value.GetValue();
                 sr.color = color;
-            }, (o, value, arg3) =>
-            {
-                if (arg3 == ConfigurationManager.PreviewContext.Cursor) return;
-                var sr = o.GetComponent<SpriteRenderer>();
-                var color = sr.color;
-                color.g = value.GetValue();
-                sr.color = color;
             }).WithDefaultValue(1));
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Colour B", "colour_blue", (o, value) =>
             {
-                var sr = o.GetComponent<SpriteRenderer>();
-                var color = sr.color;
-                color.b = value.GetValue();
-                sr.color = color;
-            }, (o, value, arg3) =>
-            {
-                if (arg3 == ConfigurationManager.PreviewContext.Cursor) return;
                 var sr = o.GetComponent<SpriteRenderer>();
                 var color = sr.color;
                 color.b = value.GetValue();
@@ -3990,5 +3947,34 @@ public static class ConfigGroup
             {
                 o.GetComponent<ObjectColourer>().b = value.GetValue();
             }).WithDefaultValue(1));
+
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Z Offset", "obj_z",
+                (o, value) => { o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue()); },
+                (o, value, arg3) =>
+                {
+                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
+                    {
+                        CursorManager.Offset.z += value.GetValue();
+                    }
+                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                }).WithDefaultValue(0));
+
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Z Offset", "enemy_z",
+                (o, value) =>
+                {
+                    var sz = o.GetComponent<SetZ>();
+                    if (sz) sz.z += value.GetValue();
+                    o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                },
+                (o, value, arg3) =>
+                {
+                    if (arg3 == ConfigurationManager.PreviewContext.Cursor)
+                    {
+                        CursorManager.Offset.z += value.GetValue();
+                    }
+                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                }).WithDefaultValue(0));
     }
 }

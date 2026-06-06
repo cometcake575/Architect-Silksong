@@ -77,7 +77,7 @@ public static class OutputGroup
     [
         EventManager.RegisterOutputType(
             new OutputType("trigger_inside", "Inside", "Boolean", 
-                o => o.GetComponent<TriggerZone>().inside)
+                o => o.GetComponent<TriggerZone>().inside > 0)
         )
     ]);
 

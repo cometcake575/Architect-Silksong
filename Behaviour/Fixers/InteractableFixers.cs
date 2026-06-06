@@ -165,6 +165,8 @@ public static class InteractableFixers
     {
         for (var i = 4; i <= 8; i++) obj.transform.GetChild(i).gameObject.SetActive(false);
         obj.RemoveComponentsInChildren<CameraLockArea>();
+        obj.transform.GetChild(0).SetRotation2D(0);
+        obj.transform.GetChild(1).SetRotation2D(0);
     }
 
     public static void FixDialDoorRot(GameObject obj, float rot)
@@ -181,7 +183,7 @@ public static class InteractableFixers
         {
             if (_started) return;
             _started = true;
-            GetComponent<DialDoorBridge>().SetInitialRotation(rot % 180 != 0);
+            GetComponent<DialDoorBridge>().SetInitialRotation(rot % 180 == 0);
         }
     }
 

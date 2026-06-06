@@ -43,6 +43,12 @@ public class AbilityCrystal : SoundMaker
         _renderer = GetComponentInChildren<SpriteRenderer>();
         _float = GetComponentInChildren<FloatAnim>();
         
+        if (isAPreview)
+        {
+            enabled = false;
+            return;
+        }
+        
         _activeSprite = _renderer.sprite;
         _inactiveSprite = count switch
         {
@@ -71,6 +77,8 @@ public class AbilityCrystal : SoundMaker
 
     private void OnTriggerStay2D(Collider2D other)
     {
+        if (isAPreview) return;
+        
         if (_remainingTime > 0) return;
         if (!other.gameObject.GetComponent<HeroController>()) return;
 

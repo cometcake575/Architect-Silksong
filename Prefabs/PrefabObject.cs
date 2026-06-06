@@ -44,7 +44,6 @@ public class PrefabObject : PlaceableObject
         "References a prefab, changes to the prefab will\n" +
         "update every copy of this object.\n\n" +
         "Hold Left Alt when placing to disconnect the objects from the prefab.",
-        preview: true,
         sprite: PrefabManager.PrefabIcon)
     {
         FinishSetup(_prefabObject);
@@ -107,6 +106,8 @@ public class PrefabObject : PlaceableObject
                 var offset = (newPos - pos) * EditManager.CurrentScale;
                 if (EditManager.CurrentlyFlipped) offset.x = -offset.x;
                 newPos = offset + pos;
+
+                newPos.z += EditManager.CurrentZ;
                 
                 newPos = newPos.RotatePointAroundPivot(pos, EditManager.CurrentRotation);
                 rePlacement.SetRotation(rePlacement.GetRotation() + EditManager.CurrentRotation);
@@ -234,7 +235,7 @@ public class Prefab : PreviewableBehaviour
         foreach (var block in o.ScriptBlocks)
         {
             var clone = block.Clone(name);
-            clone.Setup(false);
+            clone.Setup(false, noReference: isAPreview);
             switch (clone)
             {
                 case BroadcastBlock bb:

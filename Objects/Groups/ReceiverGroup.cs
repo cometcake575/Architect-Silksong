@@ -173,6 +173,17 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Scales = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("scales_tilt_l", "TiltLeft", o =>
+        {
+            o.transform.Find("Arm").GetComponent<PlayMakerFSM>().SendEvent("TILT L");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("scales_tilt_r", "TiltRight", o =>
+        {
+            o.transform.Find("Arm").GetComponent<PlayMakerFSM>().SendEvent("TILT R");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Blast = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("servitor_blast", "Fire", o =>
         {

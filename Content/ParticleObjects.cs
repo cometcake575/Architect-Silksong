@@ -40,8 +40,7 @@ public static class ParticleObjects
         Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
                 ("Memory_Coral_Tower", "Fish/Pt Exit"),
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("fish", ppu: 377.5f)))
-            .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
+                sprite: ResourceUtils.LoadSpriteResource("fish", ppu: 75.5f)))
             .WithInputGroup(InputGroup.Particles)
             .WithReceiverGroup(ReceiverGroup.Particles)
             .WithConfigGroup(Fish);
@@ -159,8 +158,7 @@ public static class ParticleObjects
                              "Rotate the object to rotate the direction of the storm.",
                 preloadAction: MiscFixers.FixDecoration,
                 postSpawnAction: MiscFixers.FixSnow,
-                sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 377.5f)))
-            .WithScaleAction((o, f) => { o.transform.SetScale2D(new Vector2(f, f)); })
+                sprite: ResourceUtils.LoadSpriteResource("snow", ppu: 75.5f)))
             .WithConfigGroup(Particle)
             .WithInputGroup(InputGroup.Particles)
             .WithReceiverGroup(ReceiverGroup.Particles)
@@ -169,11 +167,7 @@ public static class ParticleObjects
         Categories.Effects.Add(new PreloadObject("Ducts Effect", "wet_particles",
                 ("Aqueduct_03", "waterways_particles (1)"), description: "Affects the whole room.",
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("drip", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+                sprite: ResourceUtils.LoadSpriteResource("drip", ppu: 75.5f)))
             .WithConfigGroup(Particle)
             .WithInputGroup(InputGroup.Particles)
             .WithReceiverGroup(ReceiverGroup.Particles);
@@ -181,11 +175,7 @@ public static class ParticleObjects
         Categories.Effects.Add(new PreloadObject("Surface Dust Effect", "surface_dust",
                 ("Abandoned_town", "collid"),
                 preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("surface_dust", ppu: 377.5f)))
-            .WithScaleAction((o, f) =>
-            {
-                o.transform.SetScale2D(new Vector2(f, f));
-            })
+                sprite: ResourceUtils.LoadSpriteResource("surface_dust", ppu: 75.5f)))
             .WithConfigGroup(Particle)
             .WithInputGroup(InputGroup.Particles)
             .WithReceiverGroup(ReceiverGroup.Particles);
@@ -244,7 +234,6 @@ public static class ParticleObjects
     }
     
     public static readonly List<ConfigType> Particle = GroupUtils.Merge(ConfigGroup.Stretchable, [
-        ConfigGroup.ZOffset,
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Play on Start", "particles_play_on_awake",
                     (o, value) =>

@@ -1479,7 +1479,7 @@ public static class MiscFixers
     public static void FixDecoration(GameObject obj)
     {
         obj.AddComponent<ParticleObject>();
-        obj.transform.SetScale2D(Vector2.one * 5);
+        obj.transform.SetScale2D(Vector2.one);
         obj.transform.SetPositionZ(0.006f);
     }
 
@@ -2090,5 +2090,13 @@ public static class MiscFixers
         {
             gameObject.SetActive(false);
         }
+    }
+
+    public class AlphaClamp : MonoBehaviour;
+
+    public static void DisableLift(GameObject obj)
+    {
+        obj.GetComponent<PlayMakerFSM>().enabled = false;
+        obj.RemoveComponentsInChildren<HeroPlatformStick>();
     }
 }

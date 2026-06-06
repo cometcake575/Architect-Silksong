@@ -61,7 +61,7 @@ public class ObjectAnchor : PreviewableBehaviour
     private bool _previewInMotion;
     private TrailRenderer _previewTrail;
 
-    private void Awake()
+    private void Start()
     {
         if (isAPreview) return;
         var anchorParent = new GameObject("[Architect] Anchor Parent").transform;
@@ -136,27 +136,31 @@ public class ObjectAnchor : PreviewableBehaviour
 
         // Moving platform fix so the player sticks to the platform
         // Uses a Motion Parent object as the parent and not the anchor itself as the anchor can be disabled
-        var b = target.layer == 8 && target.GetComponent<Collider2D>();
-        var stickTarget = target;
-        foreach (var col in target.GetComponentsInChildren<Collider2D>())
+        if (!isAPreview)
         {
-            if (b) break;
-            stickTarget = col.gameObject;
-            b = stickTarget.layer == 8;
-        }
-        if (b && stickPlayer)
-        {
-            if (!target.transform.parent)
+            var b = target.layer == 8 && target.GetComponent<Collider2D>();
+            var stickTarget = target;
+            foreach (var col in target.GetComponentsInChildren<Collider2D>())
             {
-                var motionParent = new GameObject("[Architect] Motion Parent").transform;
-                target.transform.position = Vector3.zero;
-                target.transform.SetParent(motionParent);
+                if (b) break;
+                stickTarget = col.gameObject;
+                b = stickTarget.layer == 8;
             }
-            
-            stickTarget.AddComponent<StickPlayer>().target = target.transform.parent;
-            target = target.transform.parent.gameObject;
+
+            if (b && stickPlayer)
+            {
+                if (!target.transform.parent)
+                {
+                    var motionParent = new GameObject("[Architect] Motion Parent").transform;
+                    target.transform.position = Vector3.zero;
+                    target.transform.SetParent(motionParent);
+                }
+
+                stickTarget.AddComponent<StickPlayer>().target = target.transform.parent;
+                target = target.transform.parent.gameObject;
+            }
         }
-        
+
         foreach (var spl in target.GetComponentsInChildren<SplineBase>())
         {
             spl.preventCulling = true;

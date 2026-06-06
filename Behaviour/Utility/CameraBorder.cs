@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class CameraBorder : MonoBehaviour
+public class CameraBorder : PreviewableBehaviour
 {
     private static readonly List<CameraBorder> Borders = [];
 
@@ -40,6 +40,7 @@ public class CameraBorder : MonoBehaviour
                      .Where(bord => bord.activeType == 0 || 
                                     bord.activeType == 1 != Binoculars.BinocularsActive))
         {
+            if (bord.isAPreview) continue;
             switch (bord.type)
             {
                 case 0:
