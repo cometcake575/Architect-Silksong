@@ -230,7 +230,7 @@ public static class ParticleObjects
         return co
             .WithConfigGroup(Particle)
             .WithInputGroup(InputGroup.Particles)
-            .WithReceiverGroup(ReceiverGroup.Particles);
+            .WithReceiverGroup(ReceiverGroup.Particles).DoIgnoreScale();
     }
     
     public static readonly List<ConfigType> Particle = GroupUtils.Merge(ConfigGroup.Stretchable, [

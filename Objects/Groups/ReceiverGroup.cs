@@ -181,6 +181,24 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("scales_tilt_r", "TiltRight", o =>
         {
             o.transform.Find("Arm").GetComponent<PlayMakerFSM>().SendEvent("TILT R");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("scales_lock_l", "LockLeft", o =>
+        {
+            var fsm = o.transform.Find("Arm").GetComponent<PlayMakerFSM>();
+            fsm.FsmVariables.FindFsmString("Lock Event").value = "LOCK L";
+            fsm.SendEvent("DO LOCK");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("scales_lock_r", "LockRight", o =>
+        {
+            var fsm = o.transform.Find("Arm").GetComponent<PlayMakerFSM>();
+            fsm.FsmVariables.FindFsmString("Lock Event").value = "LOCK R";
+            fsm.SendEvent("DO LOCK");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("scales_lock_m", "LockMiddle", o =>
+        {
+            var fsm = o.transform.Find("Arm").GetComponent<PlayMakerFSM>();
+            fsm.FsmVariables.FindFsmString("Lock Event").value = "LOCK M";
+            fsm.SendEvent("DO LOCK");
         }))
     ]);
     

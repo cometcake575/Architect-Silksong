@@ -227,7 +227,7 @@ public static class ConfigGroup
             new BoolConfigType("Visible", "is_visible", (o, value) =>
             {
                 if (value.GetValue()) return;
-                if (o.GetComponent<MiscFixers.AlphaClamp>()) return;
+                if (o.GetComponent<MiscFixers.PreviewState>()) return;
                 o.RemoveComponent<MiscFixers.ColorLock>();
                 
                 foreach (var renderer in o.GetComponentsInChildren<tk2dSprite>(true))
@@ -940,11 +940,10 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Start Tilt", "zap_delay", (o, value) =>
             {
-                if (value.GetValue() == 0) return;
                 var fsm = o.transform.Find("Arm").GetComponent<PlayMakerFSM>();
-                fsm.FsmVariables.FindFsmBool("Start R").value = true;
-                fsm.FsmVariables.FindFsmBool("Start L").value = false;
-            }).WithOptions("Left", "Right").WithDefaultValue(0))
+                fsm.FsmVariables.FindFsmBool("Start R").value = value.GetValue() == 1;
+                fsm.FsmVariables.FindFsmBool("Start L").value = value.GetValue() == 0;
+            }).WithOptions("Left", "Right", "Middle").WithDefaultValue(2))
     ]);
 
     public static readonly List<ConfigType> Levers = GroupUtils.Merge(Visible, [
@@ -974,6 +973,7 @@ public static class ConfigGroup
                     if (ctx != ConfigurationManager.PreviewContext.Cursor) return;
                     if (EditManager.CurrentObject is not PlaceableObject placeable) return;
                     o.transform.SetScale2D(placeable.Prefab.transform.localScale * value.GetValue() * EditManager.CurrentScale);
+                    if (EditManager.CurrentlyFlipped) o.transform.SetScaleX(-o.transform.GetScaleX());
                 })
             .WithDefaultValue(Vector2.one))
     ]);
@@ -1433,7 +1433,7 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     var col = value.GetValue();
-                    if (o.GetComponent<MiscFixers.AlphaClamp>()) col.a = Mathf.Max(col.a, 0.1f);
+                    if (o.GetComponent<MiscFixers.PreviewState>()) col.a = Mathf.Max(col.a, 0.1f);
                     o.GetComponentInChildren<SpriteRenderer>().color = col;
                 }, true).WithDefaultValue(Color.white).WithPriority(-1))
     ]);
@@ -1611,7 +1611,7 @@ public static class ConfigGroup
             new ColourConfigType("Colour", "sprite_colour", (o, value) =>
             {
                 var col = value.GetValue();
-                if (o.GetComponent<MiscFixers.AlphaClamp>()) col.a = Mathf.Max(col.a, 0.1f);
+                if (o.GetComponent<MiscFixers.PreviewState>()) col.a = Mathf.Max(col.a, 0.1f);
                 o.GetComponent<SpriteRenderer>().color = col;
             }, true).WithDefaultValue(Color.white))
     ]));
@@ -2144,6 +2144,19 @@ public static class ConfigGroup
             {
                 o.GetComponent<EnemyFixers.Squirm>().musicRange.radius = value.GetValue();
             }).WithDefaultValue(5))
+    ]);
+
+    public static readonly List<ConfigType> Yumama = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Yumas on Death", "yumama_spawn_yumas", (o, value) =>
+            {
+                if (!value.GetValue())
+                {
+                    var ede = o.GetComponent<EnemyDeathEffects>();
+                    ede.PreInstantiate();
+                    Object.Destroy(ede.GetInstantiatedCorpse(AttackTypes.Generic).transform.GetChild(0).gameObject);
+                }
+            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> Hornfly = GroupUtils.Merge(Enemies, [
@@ -3319,8 +3332,10 @@ public static class ConfigGroup
             {
                 if (value.GetValue()) return;
                 var fsm = o.LocateMyFSM("Control");
-                fsm.GetState("Initiate")
-                    .AddAction(() => { fsm.FsmVariables.FindFsmBool("Start Alert").Value = true; }, 0);
+                fsm.GetState("Initiate").AddAction(() =>
+                    {
+                        fsm.FsmVariables.FindFsmBool("Roosting").Value = false;
+                    }, 0);
             }).WithDefaultValue(false))
     ]);
 

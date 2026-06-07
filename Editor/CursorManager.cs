@@ -1,4 +1,5 @@
 using System.Linq;
+using Architect.Behaviour.Fixers;
 using Architect.Config;
 using Architect.Objects.Placeable;
 using Architect.Utils;
@@ -54,6 +55,8 @@ public static class CursorManager
             obj.name = "[Architect] Cursor";
             Object.DontDestroyOnLoad(obj);
 
+            obj.AddComponent<MiscFixers.PreviewState>();
+            
             type.PostSpawnAction?.Invoke(obj);
             
             _cursorObject = obj;
@@ -84,10 +87,12 @@ public static class CursorManager
         var rot = EditManager.CurrentRotation + type.Prefab.transform.GetRotation2D();
         _cursorObject.transform.SetRotation2D(rot);
 
-        _cursorObject.transform.localScale = type.Prefab.transform.localScale * EditManager.CurrentScale;
+        _cursorObject.transform.localScale = (type.IgnoreScale ? Vector3.one : type.Prefab.transform.localScale)
+                                             * EditManager.CurrentScale;
         
         _cursorObject.transform.SetScaleX((EditManager.CurrentlyFlipped ? -1 : 1) 
-                                          * type.Prefab.transform.GetScaleX() * EditManager.CurrentScale);
+                                          * (type.IgnoreScale ? 1 : type.Prefab.transform.GetScaleX()) 
+                                          * EditManager.CurrentScale);
         
         foreach (var configVal in EditManager.Config.Values
                      .OrderBy(configVal => configVal.GetPriority())) 

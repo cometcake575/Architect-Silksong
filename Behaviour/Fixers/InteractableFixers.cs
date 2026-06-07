@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Architect.Behaviour.Utility;
 using Architect.Events;
 using Architect.Utils;
 using HutongGames.PlayMaker.Actions;
@@ -361,20 +362,23 @@ public static class InteractableFixers
         lift.localPosition = Vector3.zero;
         lift.SetPositionZ(-0.03f);
         
-        lift.gameObject.AddComponent<BoneCarriage>();
+        lift.gameObject.AddComponent<BoneCarriage>().ml = lift.GetComponent<ManualLift>();
     }
 
-    public class BoneCarriage : MonoBehaviour
+    public class BoneCarriage : PreviewableBehaviour
     {
+        public Vector3 startPos;
         public Vector3 leftOffset;
         public Vector3 rightOffset;
+
+        public ManualLift ml;
         
         public void Start()
         {
-            var ml = GetComponent<ManualLift>();
-        
-            ml.leftTargetPos = transform.position + leftOffset;
-            ml.rightTargetPos = transform.position + rightOffset;
+            if (!ml) return;
+            
+            ml.leftTargetPos = startPos + leftOffset;
+            ml.rightTargetPos = startPos + rightOffset;
         }
     }
 }

@@ -235,7 +235,9 @@ public class ObjectPlacement(
 
         FixId<int>(obj, cId);
         FixId<bool>(obj, cId);
-
+        
+        if (_spawningPreview) obj.AddComponent<MiscFixers.PreviewState>();
+        
         type.PostSpawnAction?.Invoke(obj);
 
         if (type.FlipAction != null) type.FlipAction.Invoke(obj, _flipped != extraFlip);
@@ -250,10 +252,7 @@ public class ObjectPlacement(
         foreach (var configVal in Config.Where(configVal => configVal.GetPriority() < 0)
                      .OrderBy(configVal => configVal.GetPriority())) configVal.Setup(obj, extraId);
 
-        if (_spawningPreview)
-        {
-            obj.AddComponent<MiscFixers.AlphaClamp>();
-        } else
+        if (!_spawningPreview)
         {
             obj.SetActive(true);
 

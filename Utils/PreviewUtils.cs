@@ -132,6 +132,7 @@ public static class PreviewUtils
             gameObject.RemoveComponentsInChildren<NestedFadeGroupBase>();
             gameObject.RemoveComponentsInChildren<tk2dSpriteAnimator>();
             gameObject.RemoveComponentsInChildren<PlayFromRandomFrameMecanim>();
+            gameObject.RemoveComponentsInChildren<BlackThreadState>();
             gameObject.RemoveComponentsInChildren<Animator>();
             gameObject.RemoveComponentsInChildren<CurveRotationAnimation>();
             gameObject.RemoveComponentsInChildren<AmbientSway>();

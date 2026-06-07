@@ -1158,6 +1158,7 @@ public static class EnemyFixers
 
     public static void FixSkullTyrant(GameObject obj)
     {
+        if (obj.GetComponent<MiscFixers.PreviewState>()) return;
         var fsm = obj.LocateMyFSM("Behaviour");
         
         // Wake
@@ -1375,6 +1376,7 @@ public static class EnemyFixers
 
     public static void FixKarmelita(GameObject obj)
     {
+        if (obj.GetComponent<MiscFixers.PreviewState>()) return;
         var fsm = obj.LocateMyFSM("Control");
 
         var spikesL = Object.Instantiate(_grindSpikesL);
@@ -1904,6 +1906,7 @@ public static class EnemyFixers
 
     public static void FixFirstSinner(GameObject obj)
     {
+        if (obj.GetComponent<MiscFixers.PreviewState>()) return;
         RemoveConstrainPosition(obj);
 
         var rb2d = obj.GetComponent<Rigidbody2D>();
@@ -2997,6 +3000,7 @@ public static class EnemyFixers
     
     public static void FixKhann(GameObject obj)
     {
+        if (obj.GetComponent<MiscFixers.PreviewState>()) return;
         var fsm = obj.LocateMyFSM("Control");
 
         var spears = new GameObject(obj.name + " Spears");

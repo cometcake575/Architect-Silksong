@@ -38,7 +38,7 @@ public static class MiscObjects
                 "\n\nFrame Count options can be used to split a sprite sheet into an animation.\n" +
                 "Broadcasts 'OnFinish' when the animation ends.\n\n" +
                 "Renders on the HUD, can be used inside of a prefab and\n" +
-                "made to appear in every room using the Spawn Prefab block.", true)
+                "made to appear in every room using the Spawn Prefab block.")
             .WithConfigGroup(ConfigGroup.PngUI)
             .WithReceiverGroup(ReceiverGroup.Png)
             .WithBroadcasterGroup(BroadcasterGroup.Finishable)
@@ -186,6 +186,8 @@ public static class MiscObjects
         
         obj.transform.SetPositionZ(0.01f);
 
+        obj.layer = (int)PhysLayers.ENEMIES;
+
         var col = obj.AddComponent<EdgeCollider2D>();
         col.isTrigger = true;
 
@@ -306,7 +308,7 @@ public static class MiscObjects
     }
 
     private static PlaceableObject CreateAsset<T>(string name, string id, bool addRenderer, 
-        bool addVideo, string extDesc = "", bool preview = false) where T : MonoBehaviour
+        bool addVideo, string extDesc = "") where T : MonoBehaviour
     {
         var asset = new GameObject("Custom Asset");
 

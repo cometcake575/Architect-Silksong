@@ -1764,7 +1764,7 @@ public static class MiscFixers
         });
     }
 
-    public static void FixBreakableWindow(GameObject obj)
+    public static void FixSimpleBreakableWall(GameObject obj)
     {
         FixBreakable(obj);
         obj.GetComponent<PersistentBoolItem>().OnSetSaveState += value =>
@@ -2092,7 +2092,7 @@ public static class MiscFixers
         }
     }
 
-    public class AlphaClamp : MonoBehaviour;
+    public class PreviewState : MonoBehaviour;
 
     public static void DisableLift(GameObject obj)
     {

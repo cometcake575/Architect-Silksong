@@ -241,7 +241,8 @@ public static class VanillaObjects
         AddEnemy("Yumama", "coral_big_jellyfish",
             ("Memory_Coral_Tower",
                 "Battle Scenes/Battle Scene Chamber 3/Wave 15b - double jellyfish/Coral Big Jellyfish"),
-            postSpawnAction: EnemyFixers.FixYumama).DoFlipX();
+            postSpawnAction: EnemyFixers.FixYumama)
+            .WithConfigGroup(ConfigGroup.Yumama).DoFlipX();
 
         AddEnemy("Kakri", "coral_flyer",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 1/Wave 5/Coral Flyer"),
@@ -396,6 +397,10 @@ public static class VanillaObjects
         AddSolid("Swinging Cage 3", "sinner_cage_3",
             ("Dust_02", "cage_mid_small_sway"),
             uiSprite: ResourceUtils.LoadSpriteResource("cage_plat_3"));
+        
+        Categories.Platforming.Add(new PreloadObject("Falling Cage", "sinner_cage_fall",
+            ("Dust_Maze_01", "Mist Maze Controller/Level Set/Break L/cage_mid_small_long_sway drop"),
+            uiSprite: ResourceUtils.LoadSpriteResource("cage_plat_fall")));
 
         Categories.Hazards.Add(new PreloadObject("Spike Pendulum", "spike_pendulum",
             ("Dust_Maze_01", "Spike Pendulum Hanging (8)")));
@@ -740,14 +745,26 @@ public static class VanillaObjects
             notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Clawmaiden)
             .Offset = Vector3.zero;
-
-        /*
-        Categories.Interactable.Add(new PreloadObject("Docks Lift", "bone_carriage",
+        
+        /*Categories.Interactable.Add(new PreloadObject("Docks Lift", "bone_carriage",
                 ("Bone_16", "lift"),
                 preloadAction: InteractableFixers.FixBoneCarriage,
-                postSpawnAction: o => o.transform.GetChild(0).name = o.name + " Lift")
-            .WithConfigGroup(ConfigGroup.DocksLift));
-        */
+                postSpawnAction: o =>
+                {
+                    var bc = o.GetComponentInChildren<InteractableFixers.BoneCarriage>(true);
+                    if (bc.isAPreview)
+                    {
+                        Object.Destroy(bc.ml);
+                        Object.Destroy(bc);
+                    }
+                    else
+                    {
+                        bc.startPos = o.transform.position;
+                        o.transform.GetChild(0).name = o.name + " Lift";
+                    }
+                })
+            .WithConfigGroup(ConfigGroup.DocksLift));*/
+        
         Categories.Interactable.Add(new PreloadObject("Dial Door", "dial_door",
                 ("Song_20b", "Dial Door Bridge"),
                 uiSprite: ResourceUtils.LoadSpriteResource("cog_door", ppu:64),
@@ -923,6 +940,17 @@ public static class VanillaObjects
     {
         Categories.Platforming.Add(new PreloadObject("Cradle Nut", "cradle_nut",
             ("Cradle_Destroyed_Challenge_01", "Cradle Challenge Pea Break")));
+        
+        AddSolid("Thorn Platform 1", "thorn_plat_1",
+            ("Cradle_Destroyed_Challenge_01", "thorn_plat (1)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("thorn_plat_1"));
+        AddSolid("Thorn Platform 2", "thorn_plat_2",
+            ("Cradle_Destroyed_Challenge_01", "thorn_plat (2)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("thorn_plat_2"));
+        AddSolid("Thorn Platform 3", "thorn_plat_3",
+            ("Cradle_Destroyed_Challenge_01", "thorn_plat (9)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("thorn_plat_3"));
+        
         Categories.Hazards.Add(MiscObjects.CreateCustomHazard("Brown Vines", "brown_vines",
         [
             new Vector2(-3.672f, -1.265f),
@@ -1107,6 +1135,10 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Enemies)
             .WithBroadcasterGroup(BroadcasterGroup.Damageable);
 
+        AddSolid("White Palace Platform", "wp_plat_1",
+            ("Memory_Red", "Scenery Groups/End Scenery/red_memory_wall_plat"),
+            uiSprite: ResourceUtils.LoadSpriteResource("wp_plat"));
+
         Categories.Interactable.Add(new PreloadObject("Reusable Lever", "reusable_lever",
                 ("Memory_Red", "Scenery Groups/Deepnest Scenery/Control Lever"),
                 description:"Can be pulled multiple times and does not stay pulled.",
@@ -1135,12 +1167,12 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod));
 
-        Categories.Platforming.Add(new PreloadObject("Clover Vine 1", "clover_vine_1",
+        Categories.Effects.Add(new PreloadObject("Clover Vine 1", "clover_vine_1",
                 ("Clover_02c", "grove_pod (2)/Vine Parent/Branch R/grove_pod_branch_left"))
             .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod));
 
-        Categories.Platforming.Add(new PreloadObject("Clover Vine 2", "clover_vine_2",
+        Categories.Effects.Add(new PreloadObject("Clover Vine 2", "clover_vine_2",
                 ("Clover_02c", "grove_pod (2)/Vine Parent/Branch R/grove_pod_branch_right (5)"),
                 preloadAction: o =>
                 {
@@ -1150,7 +1182,7 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod));
 
-        Categories.Platforming.Add(new PreloadObject("Clover Knob", "clover_knob",
+        Categories.Effects.Add(new PreloadObject("Clover Knob", "clover_knob",
                 ("Clover_02c", "grove_pod (2)/Vine Parent/Branch R/grove_knob (4)"))
             .WithReceiverGroup(ReceiverGroup.Activatable)
             .WithConfigGroup(ConfigGroup.CloverPod));
@@ -1503,7 +1535,8 @@ public static class VanillaObjects
             },
             postSpawnAction: EnemyFixers.FixFirstSinner)
             .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.Bosses);
+            .WithBroadcasterGroup(BroadcasterGroup.Bosses)
+            .SpritePreview = true;
         
         var runeRage = new GameObject("[Architect] Rune Rage");
         runeRage.SetActive(false);
@@ -2077,7 +2110,7 @@ public static class VanillaObjects
                 preloadAction: o =>
                 {
                     o.transform.GetChild(2).GetChild(2).gameObject.AddComponent<PlaceableObject.SpriteSource>();
-                }, postSpawnAction: MiscFixers.FixBreakableWindow,
+                }, postSpawnAction: MiscFixers.FixSimpleBreakableWall,
                 uiSprite: ResourceUtils.LoadSpriteResource("window", ppu:70))
             .WithConfigGroup(ConfigGroup.PersistentBreakable)
             .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable)
@@ -3650,6 +3683,31 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixMossMother)
             .WithConfigGroup(ConfigGroup.MossMother)
             .WithBroadcasterGroup(BroadcasterGroup.SlamBosses).DoFlipX();
+
+        Categories.Misc.Add(new PreloadObject("Shell String", "shell_string",
+            ("Tut_05", "shaman_hang_string_short"),
+            uiSprite: ResourceUtils.LoadSpriteResource("shell_string")));
+        Categories.Misc.Add(new PreloadObject("Shell Wall", "shell_wall",
+            ("Tut_05", "Snail_Collapse_wall (2)"),
+            preloadAction: o =>
+            {
+                o.transform.DisableChild(0);
+                o.transform.DisableChild(1, 0);
+                o.transform.DisableChild(3);
+                o.transform.DisableChild(7);
+                o.transform.DisableChild(12);
+                o.transform.DisableChild(13);
+                o.transform.DisableChild(15);
+                o.transform.DisableChild(17);
+                o.transform.DisableChild(19);
+                o.transform.DisableChild(21);
+                o.transform.DisableChild(22);
+                o.transform.DisableChild(28);
+            },
+            postSpawnAction: MiscFixers.FixSimpleBreakableWall,
+            uiSprite: ResourceUtils.LoadSpriteResource("shell_wall"))
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithBroadcasterGroup(BroadcasterGroup.PersistentBreakable));
 
         Categories.Misc.Add(new PreloadObject("Moss Cocoon", "moss_cocoon",
             ("Tut_03", "Black Thread States/Normal World/Battle Scene/Trap Cocoons/MossBone Cocoon (7)"),

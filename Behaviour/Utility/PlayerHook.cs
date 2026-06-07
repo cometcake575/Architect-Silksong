@@ -23,12 +23,12 @@ public class PlayerHook : MonoBehaviour
                 PlayerEvent(self.cState.facingRight ? "FaceRight" : "FaceLeft");
             });
 
-        typeof(HeroController).Hook("HeroJump",
-            (Action<HeroController, bool> orig, HeroController self, bool checkSprint) =>
+        typeof(HeroController).Hook(nameof(HeroController.OnHeroJumped),
+            (Action<HeroController> orig, HeroController self) =>
             {
-                orig(self, checkSprint);
+                orig(self);
                 PlayerEvent("Jump");
-            }, typeof(bool));
+            });
 
         typeof(HeroController).Hook("DoWallJump",
             (Action<HeroController> orig, HeroController self) =>
