@@ -290,7 +290,7 @@ public static class EditManager
             
             if (Settings.SaveObject.WasPressed && placeable is not PrefabObject)
             {
-                SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(Vector3.zero)));
+                SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(new Vector3(0, 0, CurrentZ))));
                 if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.DoRefreshCurrentPage();
             }
 

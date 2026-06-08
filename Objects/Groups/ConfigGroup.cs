@@ -3187,14 +3187,16 @@ public static class ConfigGroup
                 if (EditManager.IsEditing) return;
                 var bc2d = o.GetComponent<BoxCollider2D>();
                 bc2d.size = bc2d.size.Where(x: value.GetValue());
-            }).WithDefaultValue(1)),
+            }, (o, value, _) => o.transform.SetScaleX(o.transform.GetScaleX() * value.GetValue()))
+                .WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Collision Height", "hrp_height", (o, value) =>
             {
                 if (EditManager.IsEditing) return;
                 var bc2d = o.GetComponent<BoxCollider2D>();
                 bc2d.size = bc2d.size.Where(y: value.GetValue());
-            }).WithDefaultValue(1))
+            }, (o, value, _) => o.transform.SetScaleY(o.transform.GetScaleY() * value.GetValue()))
+                .WithDefaultValue(1))
     ]);
     
     private static readonly int ReflectionOffset = Shader.PropertyToID("_ReflectionOffset");
@@ -3971,8 +3973,7 @@ public static class ConfigGroup
                     if (arg3 == ConfigurationManager.PreviewContext.Cursor)
                     {
                         CursorManager.Offset.z += value.GetValue();
-                    }
-                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                    } else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
 
         ConfigurationManager.RegisterConfigType(
@@ -3988,8 +3989,7 @@ public static class ConfigGroup
                     if (arg3 == ConfigurationManager.PreviewContext.Cursor)
                     {
                         CursorManager.Offset.z += value.GetValue();
-                    }
-                    else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
+                    } else o.transform.SetPositionZ(o.transform.GetPositionZ() + value.GetValue());
                 }).WithDefaultValue(0));
     }
 }

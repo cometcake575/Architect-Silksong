@@ -22,6 +22,7 @@ public abstract class PlaceableObject : SelectableObject
     public static readonly Dictionary<string, PlaceableObject> RegisteredObjects = [];
     
     public bool SpritePreview;
+    public bool HitboxPreview;
     public Action<GameObject> PostSpawnAction;
 
     public GameObject Prefab;
@@ -38,7 +39,6 @@ public abstract class PlaceableObject : SelectableObject
     public int Tk2dRotation;
     public float ZPosition;
 
-    public bool FlipX;
     public bool IgnoreScale;
     
     private readonly string _name;
@@ -156,8 +156,8 @@ public abstract class PlaceableObject : SelectableObject
         return this;
     }
 
-    public PlaceableObject DoFlipX() {
-        FlipX = true;
+    public PlaceableObject DoHitboxPreview() {
+        HitboxPreview = true;
         return this;
     }
 
@@ -211,7 +211,7 @@ public abstract class PlaceableObject : SelectableObject
         string id;
         if (hover != null)
         {
-            pos = hover.GetPos();
+            pos = hover.GetPos().Where(z: pos.z);
             id = hover.GetId();
             ActionManager.PerformAction(new EraseObject([hover]));
             EditManager.HoveredObject = null;

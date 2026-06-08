@@ -18,12 +18,12 @@ public static class PreviewUtils
     {
         if (type.Tk2dRotation / 90 % 2 != 0)
         {
-            renderer.flipY = flipped != type.FlipX;
+            renderer.flipY = false;
             renderer.flipX = type.LossyScale.x < 0;
         }
         else
         {
-            renderer.flipX = flipped != type.FlipX;
+            renderer.flipX = false;
             renderer.flipY = type.LossyScale.y < 0;
         }
 
@@ -122,13 +122,10 @@ public static class PreviewUtils
                 Destroy(tsa);
             }
             
-            gameObject.RemoveComponentsInChildren<PersistentBoolItem>();
             gameObject.RemoveComponentsInChildren<FSMActivator>();
-            gameObject.RemoveComponentsInChildren<PersistentIntItem>();
-            gameObject.RemoveComponentsInChildren<PlayMakerNPC>();
-            gameObject.RemoveComponentsInChildren<HealthManager>();
+            gameObject.RemoveComponentsInChildren<IPersistentItem>();
+            gameObject.RemoveComponentsInChildren<InteractableBase>();
             gameObject.RemoveComponentsInChildren<IHitResponder>();
-            gameObject.RemoveComponentsInChildren<NestedFadeGroupSpriteRenderer>();
             gameObject.RemoveComponentsInChildren<NestedFadeGroupBase>();
             gameObject.RemoveComponentsInChildren<tk2dSpriteAnimator>();
             gameObject.RemoveComponentsInChildren<PlayFromRandomFrameMecanim>();
@@ -138,7 +135,9 @@ public static class PreviewUtils
             gameObject.RemoveComponentsInChildren<AmbientSway>();
             gameObject.RemoveComponentsInChildren<EnemyBullet>();
             gameObject.RemoveComponentsInChildren<ParticleSystemRenderer>();
-            if (!Storage.Settings.HitboxesInEditor.Value)
+            gameObject.RemoveComponentsInChildren<Crawler>();
+            gameObject.RemoveComponentsInChildren<Walker>();
+            if (!Storage.Settings.HitboxesInEditor.Value && !type.HitboxPreview)
             {
                 gameObject.RemoveComponentsInChildren<Collider2D>();
             }

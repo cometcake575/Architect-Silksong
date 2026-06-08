@@ -40,7 +40,11 @@ public static class CursorManager
 
     public static void Refresh(PlaceableObject type)
     {
-        if (ObjectChanged && _cursorObject) Object.Destroy(_cursorObject);
+        if (ObjectChanged && _cursorObject)
+        {
+            Object.Destroy(_cursorObject);
+            _cursorObject = null;
+        }
         ObjectChanged = false;
 
         if (_cursorObject)

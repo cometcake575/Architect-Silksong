@@ -484,7 +484,8 @@ public static class UtilityObjects
                 sprite:ResourceUtils.LoadSpriteResource(Settings.PrideMode ? "door_trans" : "door", ppu:33))
             .WithConfigGroup(ConfigGroup.Transitions)
             .WithReceiverGroup(ReceiverGroup.Transitions)
-            .WithBroadcasterGroup(BroadcasterGroup.Transitions);
+            .WithBroadcasterGroup(BroadcasterGroup.Transitions)
+            .DoHitboxPreview();
     }
 
     private static PlaceableObject CreateCameraBorder()
@@ -973,7 +974,8 @@ public static class UtilityObjects
             sprite:ResourceUtils.LoadSpriteResource("hazard_respawn_point"),
             description:"A point that the player can respawn at after taking hazard damage.")
             .WithConfigGroup(ConfigGroup.HazardRespawn)
-            .WithReceiverGroup(ReceiverGroup.HazardRespawn);
+            .WithReceiverGroup(ReceiverGroup.HazardRespawn)
+            .DoHitboxPreview();
     }
 
     private static PlaceableObject CreateRespawnPoint()
