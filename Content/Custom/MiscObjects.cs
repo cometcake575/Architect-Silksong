@@ -186,7 +186,7 @@ public static class MiscObjects
         
         obj.transform.SetPositionZ(0.01f);
 
-        obj.layer = (int)PhysLayers.ENEMIES;
+        obj.layer = (int)PhysLayers.ENEMY_ATTACK;
 
         var col = obj.AddComponent<EdgeCollider2D>();
         col.isTrigger = true;

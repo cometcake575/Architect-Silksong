@@ -1,4 +1,3 @@
-using System;
 using Architect.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -24,21 +23,28 @@ public class CustomMateriumEntry : SpriteItem
         
         _item.displayName = ItemName;
         _item.description = Desc;
-        
-        var l = MateriumItemManager.Instance.masterList.List;
-        var i = l.FindIndex(o => o.name == InsertBefore);
-        if (i != -1) l.Insert(i, _item);
-        else l.Add(_item);
-        
-        MateriumItemManager.Instance.masterList.UpdateDictionary();
-        
+
+        if (MateriumItemManager.Instance)
+        {
+            var l = MateriumItemManager.Instance.masterList.List;
+            var i = l.FindIndex(o => o.name == InsertBefore);
+            if (i != -1) l.Insert(i, _item);
+            else l.Add(_item);
+
+            MateriumItemManager.Instance.masterList.UpdateDictionary();
+        }
+
         base.Register();
     }
 
     public override void Unregister()
     {
-        MateriumItemManager.Instance.masterList.Remove(_item);
-        MateriumItemManager.Instance.masterList.UpdateDictionary();
+        if (MateriumItemManager.Instance)
+        {
+            MateriumItemManager.Instance.masterList.Remove(_item);
+            MateriumItemManager.Instance.masterList.UpdateDictionary();
+        }
+        
         Object.Destroy(_item);
     }
 

@@ -35,6 +35,7 @@ public static class ActionBlocks
         Category.World.RegisterBlock<SpawnObjectBlock>("Spawn Object", ConfigGroup.SpawnObject);
         Category.World.RegisterBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
         Category.World.RegisterBlock<ObjectMoverBlock>("Move Object");
+        Category.World.RegisterBlock<ToggleLayerBlock>("Toggle Layer", ConfigGroup.ToggleLayer);
         //ScriptManager.RegisterBlock<EndingBlock>("Ending Control");
         
         Category.Visual.RegisterBlock<TravelBlock>("Travel UI", ConfigGroup.TravelUI, TravelBlock.Init);

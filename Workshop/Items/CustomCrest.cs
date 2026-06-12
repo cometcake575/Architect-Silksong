@@ -220,6 +220,11 @@ public class CustomCrest : SpriteItem
         public AttackToolBinding Binding = AttackToolBinding.Neutral;
         public Vector2 Pos;
         public bool Lock;
+
+        public override int GetPriority()
+        {
+            return 2;
+        }
         
         public override void Register()
         {

@@ -68,14 +68,14 @@ public static class PreviewUtils
 
     public class Preview : MonoBehaviour
     {
-        private readonly List<PreviewRenderer> _renderers = [];
+        public readonly List<PreviewRenderer> Renderers = [];
 
         public PreviewSettings Settings
         {
             set
             {
-                _renderers.RemoveAll(r => !r.IsValid());
-                foreach (var renderer in _renderers) renderer.Apply(value);
+                Renderers.RemoveAll(r => !r.IsValid());
+                foreach (var renderer in Renderers) renderer.Apply(value);
             }
         }
 
@@ -83,7 +83,7 @@ public static class PreviewUtils
         {
             if (type.SpritePreview)
             {
-                _renderers.Add(new PreviewSpriteRenderer(GetComponent<SpriteRenderer>()));
+                Renderers.Add(new PreviewSpriteRenderer(GetComponent<SpriteRenderer>()));
                 foreach (var r in GetComponentsInChildren<Renderer>(true)) 
                     if (r.gameObject != gameObject) r.enabled = false;
             }
@@ -92,8 +92,8 @@ public static class PreviewUtils
                 foreach (var mr in GetComponentsInChildren<MeshRenderer>())
                 {
                     var sp = mr.GetComponent<tk2dSprite>();
-                    if (sp) _renderers.Add(new PreviewTk2dSprite(sp, mr));
-                    else _renderers.Add(new PreviewMeshRenderer(mr));
+                    if (sp) Renderers.Add(new PreviewTk2dSprite(sp, mr));
+                    else Renderers.Add(new PreviewMeshRenderer(mr));
                 }
 
                 foreach (var sr in GetComponentsInChildren<SpriteRenderer>())
@@ -101,12 +101,12 @@ public static class PreviewUtils
                     if (sr.name.Contains("haze", StringComparison.InvariantCultureIgnoreCase) 
                         || sr.name.Contains("fader", StringComparison.InvariantCultureIgnoreCase)
                         || sr.name.Contains("Light", StringComparison.InvariantCultureIgnoreCase)) continue;
-                    _renderers.Add(new PreviewSpriteRenderer(sr));
+                    Renderers.Add(new PreviewSpriteRenderer(sr));
                 }
 
                 foreach (var trg in GetComponentsInChildren<TintRendererGroup>())
                 {
-                    _renderers.Add(new PreviewTintRendererGroup(trg));
+                    Renderers.Add(new PreviewTintRendererGroup(trg));
                 }
             }
 
@@ -145,11 +145,11 @@ public static class PreviewUtils
 
         public bool Touching(Vector3 pos)
         {
-            return _renderers.Any(r => r.IsValid() && r.Touching(pos));
+            return Renderers.Any(r => r.IsValid() && r.Touching(pos));
         }
     }
 
-    private abstract class PreviewRenderer(Color startColour)
+    public abstract class PreviewRenderer(Color startColour)
     {
         protected abstract void SetColour(Color color);
         

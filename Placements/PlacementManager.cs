@@ -26,6 +26,7 @@ public static class PlacementManager
     private static tk2dTileMap _tileMap;
 
     public static readonly Dictionary<string, GameObject> Objects = [];
+    public static readonly Dictionary<int, List<GameObject>> Layers = [];
     
     public static readonly Dictionary<string, ObjectPlacement> PrefabPlacements = [];
     
@@ -96,6 +97,7 @@ public static class PlacementManager
         AbilityObjects.RefreshCrystalUI();
         
         Objects.Clear();
+        Layers.Clear();
 
         foreach (var block in ScriptManager.Blocks.Values)
         {
@@ -140,6 +142,7 @@ public static class PlacementManager
             var map = GetTilemap();
             if (map)
             {
+                var build = false;
                 if (ext != null && !ext.TilemapChanges.IsNullOrEmpty())
                 {
                     foreach (var (x, y) in ext.TilemapChanges)
@@ -148,6 +151,7 @@ public static class PlacementManager
                         {
                             if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
                             else map.ClearTile(x, y, 0);
+                            build = true;
                         }
                         catch (Exception)
                         {
@@ -164,15 +168,16 @@ public static class PlacementManager
                         {
                             if (map.GetTile(x, y, 0) == -1) map.SetTile(x, y, 0, 0);
                             else map.ClearTile(x, y, 0);
+                            build = true;
                         }
                         catch (Exception)
                         {
                             // Out of bounds
                         }
                     }
-
-                    map.Build();
                 }
+                
+                if (build) map.Build();
             }
         }
 

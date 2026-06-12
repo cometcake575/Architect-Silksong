@@ -197,11 +197,17 @@ public class Prefab : PreviewableBehaviour
         {
             if (isAPreview)
             {
-                if (visibility == 0 || (visibility == 1 && !placement.Locked)) placement.PlaceGhost(
-                    placement.GetPos() + transform.position - new Vector3(100, 100),
-                    false,
-                    name
-                ).transform.SetParent(transform, true);
+                var preview = GetComponentInParent<PreviewUtils.Preview>();
+
+                if (visibility == 0 || (visibility == 1 && !placement.Locked))
+                {
+                    placement.PlaceGhost(
+                        placement.GetPos() + transform.position - new Vector3(100, 100),
+                        false,
+                        name
+                    ).transform.SetParent(transform, true);
+                    if (preview && placement.Preview) preview.Renderers.AddRange(placement.Preview.Renderers);
+                }
             }
             else
             {

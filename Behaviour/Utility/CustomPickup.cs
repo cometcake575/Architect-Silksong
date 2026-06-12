@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class CustomPickup : MonoBehaviour
+public class CustomPickup : PreviewableBehaviour
 {
     public string item = "";
     public bool ignoreObtained;
@@ -39,6 +39,8 @@ public class CustomPickup : MonoBehaviour
 
     private void Start()
     {
+        if (isAPreview) return;
+        
         _itemPickup = Instantiate(
             touch ? Gameplay.CollectableItemPickupInstantPrefab : Gameplay.CollectableItemPickupPrefab, 
             gameObject.transform);

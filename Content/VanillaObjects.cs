@@ -206,7 +206,7 @@ public static class VanillaObjects
         AddEnemy("Karaka", "coral_warrior",
                 ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 2/Wave 2/Coral Warrior (1)"),
                 postSpawnAction: EnemyFixers.FixKaraka)
-            .WithConfigGroup(ConfigGroup.Karaka);
+            .WithConfigGroup(ConfigGroup.Karaka).SpritePreview = true;
 
         AddEnemy("Corrcrust Karaka", "corrcrust_karaka",
             ("Memory_Coral_Tower", "Battle Scenes/Battle Scene Chamber 4/Wave 3/Coral Bubble Brute"),
@@ -353,7 +353,8 @@ public static class VanillaObjects
     {
         Categories.Interactable.Add(new PreloadObject("One Way Wall", "one_way_sinners",
             ("Dust_11", "One Way Wall (1)"))
-            .WithConfigGroup(ConfigGroup.PersistentBreakable));
+            .WithConfigGroup(ConfigGroup.PersistentBreakable)
+            .WithRotationGroup(RotationGroup.Four));
         
         AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
         /*AddEnemy("Slubberlug", "dustroach_pollywog",
@@ -807,6 +808,8 @@ public static class VanillaObjects
             ("Song_01", "sc_plat_float_tall"));
         AddSolid("Citadel Platform 5", "citadel_plat_5",
             ("Song_20b", "Black Thread States/Normal World/sc_outside_floating_plat (3)"));
+        AddSolid("Citadel Platform 5 (Broken)", "citadel_plat_5_broken",
+            ("Song_20b", "Black Thread States/Black Thread World/sc_outside_floating_plat (4)"));
         
         AddSolid("High Halls Platform 1", "halls_plat_1", ("Hang_08", "hanging_gardens_plat_float_filled_small"));
         AddSolid("High Halls Platform 2", "halls_plat_2", ("Hang_08", "hanging_garden_big_plat (4)"),
@@ -1998,9 +2001,9 @@ public static class VanillaObjects
             ("Song_20b", "sc_plat_hang_bell (5)"), preloadAction: MiscFixers.FixBellSprite)
             .WithConfigGroup(ConfigGroup.Bell));
 
-        AddEnemy("Squirm", "squirm", ("Coral_36", "Judge Child (1)"),
-            postSpawnAction: EnemyFixers.FixSquirm)
-            .WithConfigGroup(ConfigGroup.Squirm);
+        AddEnemy("Squirrm", "squirm", ("Coral_36", "Judge Child (1)"),
+            postSpawnAction: EnemyFixers.FixSquirrm)
+            .WithConfigGroup(ConfigGroup.Squirrm);
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
                 preloadAction: MiscFixers.AddComponent<EnemyFixers.Judge>,

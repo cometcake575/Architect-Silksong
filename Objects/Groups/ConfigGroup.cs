@@ -14,7 +14,6 @@ using Architect.Objects.Placeable;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
-using BepInEx.Configuration;
 using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
@@ -938,7 +937,7 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Scales =  GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType("Start Tilt", "zap_delay", (o, value) =>
+            new ChoiceConfigType("Start Tilt", "scales_start_tilt", (o, value) =>
             {
                 var fsm = o.transform.Find("Arm").GetComponent<PlayMakerFSM>();
                 fsm.FsmVariables.FindFsmBool("Start R").value = value.GetValue() == 1;
@@ -1023,6 +1022,7 @@ public static class ConfigGroup
                 {
                     if (value.GetValue()) return;
                     var fsm = o.GetComponent<PlayMakerFSM>();
+                    if (!fsm) return;
                     fsm.GetState(fsm.ActiveStateName).transitions = [];
                 }).WithDefaultValue(true))
     ]);
@@ -1252,6 +1252,10 @@ public static class ConfigGroup
                 {
                     foreach (var comp in o.GetComponentsInChildren<Renderer>())
                         comp.sortingOrder = value.GetValue();
+                }, (o, value, _) =>
+                {
+                    foreach (var comp in o.GetComponentsInChildren<Renderer>())
+                        comp.sortingOrder = value.GetValue();
                 })
             .WithDefaultValue(0));
     
@@ -1444,7 +1448,7 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     if (value.GetValue()) return;
-                    o.RemoveComponent<CustomDamager>();
+                    o.RemoveComponent<DamageHero>();
                 })
                 .WithDefaultValue(true))
     ]);
@@ -2133,16 +2137,16 @@ public static class ConfigGroup
             }).WithOptions("True", "False", "Random").WithDefaultValue(2))
     ]);
 
-    public static readonly List<ConfigType> Squirm = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> Squirrm = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Hide Range", "squirm_hide_range", (o, value) =>
             {
-                o.GetComponent<EnemyFixers.Squirm>().hideRange.radius = value.GetValue();
+                o.GetComponent<EnemyFixers.Squirrm>().hideRange.radius = value.GetValue();
             }).WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Needolin Range", "squirm_needolin_range", (o, value) =>
             {
-                o.GetComponent<EnemyFixers.Squirm>().musicRange.radius = value.GetValue();
+                o.GetComponent<EnemyFixers.Squirrm>().musicRange.radius = value.GetValue();
             }).WithDefaultValue(5))
     ]);
 
@@ -2559,7 +2563,8 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Invisible Body", "surgeon_no_body", (o, value) =>
             {
-                if (value.GetValue()) o.GetComponent<tk2dSprite>().scale = Vector3.zero;
+                if (value.GetValue() && !o.GetComponent<MiscFixers.PreviewState>()) 
+                    o.GetComponent<tk2dSprite>().scale = Vector3.zero;
             }).WithDefaultValue(false))
     ]);
 

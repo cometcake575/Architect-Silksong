@@ -112,6 +112,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> ToggleLayer =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<ToggleLayerBlock>("Layer Number", "layer_num", 
+                (b, f) => b.LayerNumber = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> Lighting =
     [
         ConfigurationManager.RegisterConfigType(

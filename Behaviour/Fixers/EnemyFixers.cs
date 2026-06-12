@@ -47,9 +47,9 @@ public static class EnemyFixers
     private static GameObject _tfloor;
     private static GameObject _tbursts;
     
-    // Squirm
-    private static GameObject _squirmSingArea;
-    private static GameObject _squirmArea;
+    // Squirrm
+    private static GameObject _squirrmSingArea;
+    private static GameObject _squirrmArea;
     
     // Unravelled
     private static GameObject _corpseProjectiles;
@@ -155,10 +155,10 @@ public static class EnemyFixers
         
         PreloadManager.RegisterPreload(new BasicPreload("Coral_36", 
             "Judge Children Sing Trigger",
-            o => _squirmSingArea = o));
+            o => _squirrmSingArea = o));
         PreloadManager.RegisterPreload(new BasicPreload("Coral_36", 
             "Judge Children Trigger",
-            o => _squirmArea = o));
+            o => _squirrmArea = o));
         
         PreloadManager.RegisterPreload(new BasicPreload("Ward_02_boss", 
             "Boss Scene/Corpse Projectiles",
@@ -1626,12 +1626,14 @@ public static class EnemyFixers
         obj.AddComponent<Freshfly>().pos = obj.transform.position;
     }
 
-    private class Freshfly : MonoBehaviour
+    private class Freshfly : PreviewableBehaviour
     {
         public Vector3 pos;
         
         private void OnEnable()
         {
+            if (isAPreview) return;
+
             var fsm = GetComponent<PlayMakerFSM>();
             if (fsm.enabled) return; 
             transform.position = pos;
@@ -3747,10 +3749,10 @@ public static class EnemyFixers
         fsm.GetState("Set Intro Pos").AddAction(() => fsm.SendEvent("FINISHED"), 0);
     }
 
-    public static void FixSquirm(GameObject obj)
+    public static void FixSquirrm(GameObject obj)
     {
-        var sa = Object.Instantiate(_squirmArea, obj.transform);
-        var ssa = Object.Instantiate(_squirmSingArea, obj.transform);
+        var sa = Object.Instantiate(_squirrmArea, obj.transform);
+        var ssa = Object.Instantiate(_squirrmSingArea, obj.transform);
         sa.transform.localPosition = Vector3.zero;
         ssa.transform.localPosition = Vector3.zero;
 
@@ -3769,17 +3771,17 @@ public static class EnemyFixers
         sa.RemoveComponent<Collider2D>();
         ssa.RemoveComponent<Collider2D>();
 
-        var squirm = obj.AddComponent<Squirm>();
+        var squirrm = obj.AddComponent<Squirrm>();
 
         var c1 = sa.AddComponent<CircleCollider2D>();
         c1.isTrigger = true;
-        squirm.hideRange = c1;
+        squirrm.hideRange = c1;
         var c2 = ssa.AddComponent<CircleCollider2D>();
         c2.isTrigger = true;
-        squirm.musicRange = c2;
+        squirrm.musicRange = c2;
     }
 
-    public class Squirm : MonoBehaviour
+    public class Squirrm : MonoBehaviour
     {
         public CircleCollider2D hideRange;
         public CircleCollider2D musicRange;
