@@ -10,8 +10,6 @@ namespace Architect.Events.Blocks.Outputs;
 public class TitleBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display", "Cancel"];
-
-    
     
     protected override string Name => "Title Display";
     
@@ -32,8 +30,6 @@ public class TextBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display", "Stop"];
     protected override IEnumerable<string> Outputs => ["OnClose"];
-
-    
     
     protected override string Name => "Text Display";
 
@@ -82,8 +78,6 @@ public class ChoiceBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display"];
     protected override IEnumerable<string> Outputs => ["Yes", "No"];
-
-    
     
     protected override string Name => "Choice Display";
     
@@ -120,8 +114,6 @@ public class InputBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Display"];
     protected override IEnumerable<string> Outputs => ["OnSubmit"];
     protected override IEnumerable<(string, string)> OutputVars => [("Input", "Text")];
-
-    
     
     protected override string Name => "Input Display";
     

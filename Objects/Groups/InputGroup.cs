@@ -15,7 +15,7 @@ public static class InputGroup
     
     public static readonly List<(string, string)> FleaCounter = [("New Value", "Number")];
     
-    public static readonly List<(string, string)> FsmHook = [("Event", "Text")];
+    public static readonly List<(string, string)> FsmHook = [("Event", "Text"), ("Action", "Number")];
     
     public static readonly List<(string, string)> EnemyDamager = [("New Damage", "Number")];
     

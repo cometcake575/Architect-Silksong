@@ -65,7 +65,7 @@ public class ObjectAnchor : PreviewableBehaviour
     {
         if (isAPreview) return;
         var anchorParent = new GameObject("[Architect] Anchor Parent").transform;
-        anchorParent.position = transform.position;
+        anchorParent.SetPosition2D(transform.position);
         transform.SetParent(anchorParent, true);
     }
 
@@ -254,7 +254,7 @@ public class ObjectAnchor : PreviewableBehaviour
         if (_anchorRef.activeAnchors > 0) return;
         _constraint.constraintActive = false;
         if (_disableWhenMoving) _disableWhenMoving.enabled = true;
-        if (_rb2d) _rb2d.constraints = _rigidbodyConstraints;
+        if (_rb2d && !isAPreview) _rb2d.constraints = _rigidbodyConstraints;
         
         if (isAPreview) ReleasePreview();
     }

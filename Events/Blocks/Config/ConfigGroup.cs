@@ -665,6 +665,13 @@ public static class ConfigGroup
                 {
                     b.Amount = f.GetValue();
                 }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<SilkBlock>("Take Type", "silk_take_type", 
+                (b, f) =>
+                {
+                    b.TakeSource = (SilkSpool.SilkTakeSource)f.GetValue();
+                }).WithOptions("Normal", "Burn", "Curse").WithDefaultValue(0)
         )
     ];
     

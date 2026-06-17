@@ -1032,7 +1032,8 @@ public static class VanillaObjects
             notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
-            .WithReceiverGroup(ReceiverGroup.Velocity));
+            .WithReceiverGroup(ReceiverGroup.Velocity)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
         AddEnemy("Barnak", "swamp_barnacle", ("Aqueduct_03", "Swamp Barnacle (1)"))
             .WithConfigGroup(ConfigGroup.HideBody);
@@ -1384,7 +1385,8 @@ public static class VanillaObjects
                 preloadAction: o => o.transform.SetPositionZ(0.006f),
                 postSpawnAction: EnemyFixers.FixCrawfather)
             .WithConfigGroup(ConfigGroup.Bosses)
-            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses);
+            .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses)
+            .SpritePreview = true;
 
         Categories.Hazards.Add(new PreloadObject("Craw Chain", "craw_chain",
                 ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather/Chains/Crawfather Attack Chain"),
@@ -2314,8 +2316,15 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.MapperRing)
             .WithInputGroup(InputGroup.Velocity));
         
+        Categories.Misc.Add(new PreloadObject("Partial Silk Spool", "silk_spool_take_partial",
+            ("Dust_Maze_01", "break_spool_upright (2)")).WithConfigGroup(ConfigGroup.PersistentUsable));
+        
         Categories.Misc.Add(new PreloadObject("Silk Spool", "silk_spool_take",
             ("Hang_01", "Thread Spinner")).WithConfigGroup(ConfigGroup.SilkSpool));
+        
+        Categories.Misc.Add(new PreloadObject("Reaper Silk Bundle", "reaper_silk_chunk",
+            ("globalpoolprefabs_assets_all", "Assets/Prefabs/Items/Reaper Silk Bundle.prefab"),
+            notSceneBundle: true));
 
         Categories.Interactable.Add(new PreloadObject("Needolin Gate", "weaver_gate",
             ("Weave_04", "top set/Song_Gate_set (2)"),
@@ -2923,7 +2932,8 @@ public static class VanillaObjects
                 notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
-            .WithReceiverGroup(ReceiverGroup.Velocity));
+            .WithReceiverGroup(ReceiverGroup.Velocity)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Attacks.Add(new PreloadObject("Bell Eater Bomb", "bell_bomb",
                 ("localpoolprefabs_assets_areabellway", "Assets/Prefabs/Hornet Bosses/Giant Centipede Bomb.prefab"),
@@ -3201,7 +3211,8 @@ public static class VanillaObjects
     {
         AddEnemy("Skull Scuttler", "bone_goomba",
             ("Bone_East_03", "Black Thread States Thread Only Variant/Normal World/Bone Goomba"),
-            preloadAction: MiscFixers.FixRotation);
+            preloadAction: MiscFixers.FixRotation)
+            .SpritePreview = true;
 
         AddEnemy("Skullwing", "bone_goomba_bounce_fly",
             ("Weave_05b", "Bone Goomba Bounce Fly (11)"),
@@ -3588,7 +3599,8 @@ public static class VanillaObjects
                 notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
-            .WithReceiverGroup(ReceiverGroup.Velocity));
+            .WithReceiverGroup(ReceiverGroup.Velocity)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
         Categories.Misc.Add(new PreloadObject("Winged Lifeseed", "winged_lifeseed",
             ("localpoolprefabs_assets_lifeblood", "Assets/Prefabs/Items/Health Flyer.prefab"), notSceneBundle: true)
@@ -3841,7 +3853,8 @@ public static class VanillaObjects
                 notSceneBundle: true)
             .WithConfigGroup(ConfigGroup.Velocity)
             .WithInputGroup(InputGroup.Velocity)
-            .WithReceiverGroup(ReceiverGroup.Velocity));
+            .WithReceiverGroup(ReceiverGroup.Velocity)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
         
         AddEnemy("Pilgrim Groveller", "pilgrim_03",
             ("Mosstown_01", "Pilgrim 03 (1)"));

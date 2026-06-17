@@ -127,6 +127,7 @@ public static class BroadcasterHooks
                 orig(self);
             });
         
+        typeof(EnemyBullet).Hook(nameof(EnemyBullet.Collision), BreakEvent);
         
         typeof(HealthFlyer).Hook(nameof(HealthFlyer.Heal), DeathEvent);
     }
@@ -137,6 +138,16 @@ public static class BroadcasterHooks
     {
         self.gameObject.BroadcastEvent("OnDeath");
         var o = orig(self);
+        while (o.MoveNext()) yield return o.Current;
+    }
+
+    private static IEnumerator BreakEvent(
+        Func<EnemyBullet, Vector2, bool, IEnumerator> orig,
+        EnemyBullet self,
+        Vector2 normal, bool doRotation)
+    {
+        self.gameObject.BroadcastEvent("OnBreak");
+        var o = orig(self, normal, doRotation);
         while (o.MoveNext()) yield return o.Current;
     }
 

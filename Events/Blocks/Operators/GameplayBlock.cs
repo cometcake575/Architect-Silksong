@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using PrepatcherPlugin;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Operators;
 
-public class SceneNameBlock : TimeBlockType
+public class SceneNameBlock : ScriptBlock
 {
     protected override string Name => "Scene Name";
 
@@ -18,11 +19,21 @@ public class SceneNameBlock : TimeBlockType
     }
 }
 
-public class GameplayBlock : TimeBlockType
+public class GameplayBlock : ScriptBlock
 {
+    public static void Init()
+    {
+        PlayerDataVariableEvents.OnGetBool += (_, name, current) =>
+        {
+            if (ArchitectData.Instance.HideVanillaMaps && name.StartsWith("Has") && name.EndsWith("Map")
+                && name != "HasAnyMap") return false;
+            return current;
+        };
+    }
+    
     protected override string Name => "Gameplay Control";
 
-    protected override IEnumerable<string> Inputs => ["SetGravity"];
+    protected override IEnumerable<string> Inputs => ["SetGravity", "HideVanillaMaps", "ShowVanillaMaps"];
 
     protected override IEnumerable<(string, string)> InputVars =>
     [
@@ -38,7 +49,11 @@ public class GameplayBlock : TimeBlockType
 
     protected override void Trigger(string trigger)
     {
-        Physics2D.gravity = new Vector2(GetVariable<float>("GravX"), GetVariable<float>("GravY", -60));
+        if (trigger == "SetGravity")
+        {
+            Physics2D.gravity = new Vector2(GetVariable<float>("GravX"), GetVariable<float>("GravY", -60));
+        }
+        else ArchitectData.Instance.HideVanillaMaps = trigger == "HideVanillaMaps";
     }
 
     public override object GetValue(string id)

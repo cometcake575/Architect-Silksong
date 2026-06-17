@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Architect.Utils;
-using UnityEngine;
 
 namespace Architect.Events.Blocks.Outputs;
 

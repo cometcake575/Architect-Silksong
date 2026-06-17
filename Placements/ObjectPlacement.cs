@@ -226,7 +226,6 @@ public class ObjectPlacement(
         if (extraId != null) cId += extraId;
 
         if (pos == default) pos = _position;
-        else pos.z = _position.z;
         var wasPrefabActive = type.Prefab.activeSelf;
         type.Prefab.SetActive(false);
         var obj = Object.Instantiate(type.Prefab, pos, type.Prefab.transform.rotation);
@@ -239,6 +238,7 @@ public class ObjectPlacement(
         if (_spawningPreview) obj.AddComponent<MiscFixers.PreviewState>();
         
         type.PostSpawnAction?.Invoke(obj);
+        if (type.HasSetZ) obj.GetComponent<SetZ>().z = pos.z;
 
         if (type.FlipAction != null) type.FlipAction.Invoke(obj, _flipped != extraFlip);
         else if (_flipped != extraFlip) obj.transform.SetScaleX(-obj.transform.GetScaleX());

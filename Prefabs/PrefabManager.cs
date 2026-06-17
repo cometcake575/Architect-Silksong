@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Editor;
 using Architect.Events.Blocks;
 using Architect.Placements;
@@ -38,6 +39,10 @@ public static class PrefabManager
     
     public static void Toggle(string prefabName)
     {
+        if (Prefabs.Keys.Contains(prefabName, StringComparer.InvariantCultureIgnoreCase))
+        {
+            prefabName = Prefabs.Keys.First(k => k.Equals(prefabName, StringComparison.InvariantCultureIgnoreCase));
+        }
         Last = prefabName;
         if (GameManager.instance.isPaused)
         {

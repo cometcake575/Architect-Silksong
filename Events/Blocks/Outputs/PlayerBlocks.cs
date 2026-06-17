@@ -145,7 +145,7 @@ public class SilkBlock : ScriptBlock
             });
     }
     
-    protected override IEnumerable<string> Inputs => ["Max", "Give", "Take", "BreakCocoon"];
+    protected override IEnumerable<string> Inputs => ["Max", "Give", "GiveParts", "Take", "BreakCocoon"];
     protected override IEnumerable<string> Outputs => ["OnGain"];
     protected override IEnumerable<(string, string)> OutputVars => [("Amount", "Number")];
     
@@ -182,6 +182,7 @@ public class SilkBlock : ScriptBlock
     }
 
     public int Amount;
+    public SilkSpool.SilkTakeSource TakeSource = SilkSpool.SilkTakeSource.Normal;
 
     protected override void Trigger(string trigger)
     {
@@ -193,8 +194,11 @@ public class SilkBlock : ScriptBlock
             case "Give":
                 HeroController.instance.AddSilk(Amount, true);
                 break;
+            case "GiveParts":
+                HeroController.instance.AddSilkParts(Amount, true);
+                break;
             case "Take":
-                HeroController.instance.TakeSilk(Amount);
+                HeroController.instance.TakeSilk(Amount, TakeSource);
                 break;
             case "BreakCocoon":
                 if (PlayerData.instance.HeroCorpseScene.IsNullOrWhiteSpace()) return;

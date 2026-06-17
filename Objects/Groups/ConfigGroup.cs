@@ -971,7 +971,8 @@ public static class ConfigGroup
                 {
                     if (ctx != ConfigurationManager.PreviewContext.Cursor) return;
                     if (EditManager.CurrentObject is not PlaceableObject placeable) return;
-                    o.transform.SetScale2D(placeable.Prefab.transform.localScale * value.GetValue() * EditManager.CurrentScale);
+                    o.transform.SetScale2D((placeable.IgnoreScale ? Vector2.one : placeable.Prefab.transform.localScale) * 
+                                           value.GetValue() * EditManager.CurrentScale);
                     if (EditManager.CurrentlyFlipped) o.transform.SetScaleX(-o.transform.GetScaleX());
                 })
             .WithDefaultValue(Vector2.one))
@@ -1204,6 +1205,10 @@ public static class ConfigGroup
                 {
                     o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Return Time").Value = value.GetValue();
                 }).WithDefaultValue(3))
+    ]);
+
+    public static readonly List<ConfigType> PersistentUsable = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(MakePersistenceConfigType("Stay Used", "usable_stay"))
     ]);
 
     public static readonly List<ConfigType> SilkSpool = GroupUtils.Merge(Visible, [

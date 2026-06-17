@@ -13,6 +13,8 @@ public class ArchitectData
     public Dictionary<string, float> FloatVariables = [];
     public Dictionary<string, bool> BoolVariables = [];
 
+    public bool HideVanillaMaps = false;
+
     public string CustomNeedle = string.Empty;
 }
 
