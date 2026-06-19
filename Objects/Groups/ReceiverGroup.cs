@@ -39,6 +39,22 @@ public static class ReceiverGroup
             oh.FindObject();
             var target = oh.o;
             if (target) target.SetActive(true);
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("hook_rescan", "FindObject", o =>
+        {
+            var oh = o.GetComponent<ObjectHook>();
+            oh.FindObject(true);
+        }))
+    ];
+    
+    public static readonly List<EventReceiverType> CollisionChanger = [
+        EventManager.RegisterReceiverType(new EventReceiverType("collision_changer_disable", "DisableCollision", o =>
+        {
+            o.GetComponent<CollisionChanger>().DisableCollision();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("collision_changer_enable", "EnableCollision", o =>
+        {
+            o.GetComponent<CollisionChanger>().EnableCollision();
         }))
     ];
     

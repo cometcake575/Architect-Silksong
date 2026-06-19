@@ -29,6 +29,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectLayerer());
+        Categories.Utility.Add(CreateObjectCollisionChanger());
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());
         Categories.Utility.Add(CreateObjectSpawner());
@@ -708,6 +709,23 @@ public static class UtilityObjects
                 description: "Changes the layer of the target object, affecting things like collision.")
             .WithConfigGroup(ConfigGroup.ObjectLayerer)
             .WithReceiverGroup(ReceiverGroup.ObjectLayerer);
+    }
+
+    private static PlaceableObject CreateObjectCollisionChanger()
+    {
+        var changer = new GameObject("Object Collision Changer");
+        changer.SetActive(false);
+        Object.DontDestroyOnLoad(changer);
+        
+        changer.AddComponent<CollisionChanger>();
+
+        return new CustomObject("Object Collision Changer", "object_collision_changer",
+                changer,
+                sprite: ResourceUtils.LoadSpriteResource("object_collision_changer", FilterMode.Point),
+                description: "Prevents collision between 2 objects.\n" +
+                             "Cannot enable collision between objects on layers that do not normally collide.")
+            .WithConfigGroup(ConfigGroup.CollisionChanger)
+            .WithReceiverGroup(ReceiverGroup.CollisionChanger);
     }
 
     private static PlaceableObject CreateObjectMover()

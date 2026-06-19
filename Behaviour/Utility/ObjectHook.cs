@@ -16,10 +16,10 @@ public class ObjectHook : PreviewableBehaviour
 
     private bool _targetingCustom;
 
-    public void FindObject()
+    public void FindObject(bool force = false)
     {
         if (path.IsNullOrWhiteSpace()) return;
-        if (!o)
+        if (!o || force)
         {
             if (PlacementManager.TryGetValue(prefabPath, out o)) _targetingCustom = true;
             else o = ObjectUtils.FindGameObject(path, index);

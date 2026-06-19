@@ -2038,7 +2038,8 @@ public static class VanillaObjects
                 o.transform.SetPositionZ(-0.0054f);
                 o.transform.SetRotation2D(0);
             }, postSpawnAction: HazardFixers.FixCarvers)
-            .WithConfigGroup(ConfigGroup.Sandcarver));
+            .WithConfigGroup(ConfigGroup.Sandcarver))
+            .SpritePreview = true;
 
         Categories.Npcs.Add(new PreloadObject("Steel Seer Zi", "steel_seer",
             ("Coral_37", "Room_States/Steel/Steel Sentinel"),

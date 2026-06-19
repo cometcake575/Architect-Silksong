@@ -41,7 +41,7 @@ public class FsmHook : PreviewableBehaviour
         {
             var state = _fsm.GetState(stateName);
             if (state == null) return;
-            if (state.actions.Length >= i) return;
+            if (state.actions.Length <= i) return;
             state.actions[i].enabled = false;
         }
     }
@@ -52,7 +52,7 @@ public class FsmHook : PreviewableBehaviour
         {
             var state = _fsm.GetState(stateName);
             if (state == null) return;
-            if (state.actions.Length >= i) return;
+            if (state.actions.Length <= i) return;
             state.actions[i].enabled = true;
         }
     }
