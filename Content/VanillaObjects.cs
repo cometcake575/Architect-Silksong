@@ -2270,7 +2270,7 @@ public static class VanillaObjects
                     o.transform.SetRotation2D(0);
                 })
             .WithConfigGroup(ConfigGroup.Sway)
-            .WithRotationGroup(RotationGroup.All));
+            .WithRotationGroup(RotationGroup.All)).SpritePreview = true;
 
         Categories.Npcs.Add(new PreloadObject("Gilly NPC", "gilly_npc",
                 ("Ant_17", "Gilly"), 

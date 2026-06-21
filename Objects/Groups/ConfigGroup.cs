@@ -1633,14 +1633,42 @@ public static class ConfigGroup
             color.a = value.GetValue();
             sr.color = color;
         }).WithDefaultValue(1));
-    public static readonly List<ConfigType> Colours = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Colliders, [
+    public static readonly List<ConfigType> ColouredShapes = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Colour", "sprite_colour", (o, value) =>
             {
                 var col = value.GetValue();
                 if (o.GetComponent<MiscFixers.PreviewState>()) col.a = Mathf.Max(col.a, 0.1f);
                 o.GetComponent<SpriteRenderer>().color = col;
-            }, true).WithDefaultValue(Color.white))
+            }, true).WithDefaultValue(Color.white)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Has Physics", "coloured_shapes_has_physics", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                o.AddComponent<Rigidbody2D>().collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Gravity Scale (Physics)", "coloured_shapes_gravity_scale", (o, value) =>
+            {
+                var rb2d = o.GetComponent<Rigidbody2D>();
+                if (!rb2d) return;
+                rb2d.gravityScale = value.GetValue();
+            }).WithPriority(2)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Mass (Physics)", "coloured_shapes_mass", (o, value) =>
+            {
+                var rb2d = o.GetComponent<Rigidbody2D>();
+                if (!rb2d) return;
+                rb2d.mass = value.GetValue();
+            }).WithPriority(2)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Friction (Physics)", "coloured_shapes_friction", (o, value) =>
+            {
+                var rb2d = o.GetComponent<Rigidbody2D>();
+                if (!rb2d) return;
+                if (!rb2d.sharedMaterial) rb2d.sharedMaterial = new PhysicsMaterial2D();
+                rb2d.sharedMaterial.friction = value.GetValue();
+            }).WithPriority(2))
     ]));
     
     public static readonly List<ConfigType> Line = GroupUtils.Merge(Colliders, [

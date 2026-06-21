@@ -358,7 +358,7 @@ public static class MiscObjects
         return new CustomObject("Coloured Square", "coloured_square", square, 
                 "A square that can be coloured or given a hitbox for custom collision.\n\n" +
                 "RGBA colour values should be between 0 and 1.")
-            .WithConfigGroup(ConfigGroup.Colours)
+            .WithConfigGroup(ConfigGroup.ColouredShapes)
             .WithRotationGroup(RotationGroup.All);
     }
 
@@ -384,7 +384,7 @@ public static class MiscObjects
         return new CustomObject("Coloured Circle", "coloured_circle", circle, 
                 "A circle that can be coloured or given a hitbox for custom collision." +
                 "\n\nRGBA colour values should be between 0 and 1.")
-            .WithConfigGroup(ConfigGroup.Colours)
+            .WithConfigGroup(ConfigGroup.ColouredShapes)
             .WithRotationGroup(RotationGroup.All);
     }
     
@@ -432,7 +432,7 @@ public static class MiscObjects
         return new CustomObject("Coloured Triangle", "coloured_triangle", triangle, 
                 "A triangle that can be coloured or given a hitbox for custom collision." +
                 "\n\nRGBA colour values should be between 0 and 1.")
-            .WithConfigGroup(ConfigGroup.Colours)
+            .WithConfigGroup(ConfigGroup.ColouredShapes)
             .WithRotationGroup(RotationGroup.All);
     }
 
