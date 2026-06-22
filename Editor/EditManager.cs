@@ -578,6 +578,12 @@ public static class EditManager
     // Stores the player's current position in _posToLoad in order to keep them in the same place
     public static void ReloadScene()
     {
+        if (HeroController.instance.transform.parent)
+        {
+            ReloadRequired = true;
+            return;
+        }
+        
         ReloadRequired = false;
         IgnoreControlRelinquished = false;
         

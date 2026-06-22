@@ -6,7 +6,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class ToolBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["ActReset", "AddUses", "TakeUses", "AddLiquid", "TakeLiquid"];
+    protected override IEnumerable<string> Inputs => ["ActReset", "AddUses", "TakeUses", "AddLiquid", "TakeLiquid", "AutoEquip"];
     protected override IEnumerable<string> Outputs => ["OnUse"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Equipped", "Boolean")
@@ -119,6 +119,10 @@ public class ToolBlock : ScriptBlock
                     liquid2.LiquidSavedData = lsd;
                 }
                 
+                break;
+            case "AutoEquip":
+                if (!tool) return;
+                ToolItemManager.AutoEquip(tool);
                 break;
         }
     }

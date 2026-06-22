@@ -778,7 +778,7 @@ public static class MiscFixers
             var fsm = gameObject.transform.Find("Victory NPC").gameObject.LocateMyFSM("Dialogue");
             fsm.GetState("Check").AddAction(() => fsm.SendEvent("REPEAT"), 0);
 
-            var ta1 = fsm.GetState("Talk A1");
+            var ta1 = fsm.GetState("Repeat");
             ta1.DisableAction(0);
             var dialogue = (RunDialogue)ta1.actions[1];
             dialogue.Sheet = "ArchitectMod";
@@ -1039,7 +1039,7 @@ public static class MiscFixers
                         anim.Play("Listen");
                         fsm.SendEvent("REPEAT");
                     }
-                }
+                } else choice.AddAction(() => fsm.SendEvent("REPEAT"), 0);
             }
             
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];

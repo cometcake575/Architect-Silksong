@@ -97,6 +97,13 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> EnemyManager = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("enemy_manager_activate_corpse", "EnableCorpse", o =>
+        {
+            o.GetComponent<EnemyManager>().ActivateCorpse();
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> ThreadEffect = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("do_thread", "Activate", o =>
         {

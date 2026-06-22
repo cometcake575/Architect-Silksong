@@ -43,6 +43,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectHook());
         Categories.Utility.Add(CreateFsmHook());
         Categories.Utility.Add(CreateComponentToggler());
+        Categories.Utility.Add(CreateEnemyConfigurer());
         
         Categories.Utility.Add(CreateCocoonSpawn());
         
@@ -355,6 +356,24 @@ public static class UtilityObjects
             .WithConfigGroup(ConfigGroup.ComponentHook)
             .WithReceiverGroup(ReceiverGroup.ComponentHook)
             .WithInputGroup(InputGroup.ComponentHook);
+    }
+
+    private static PlaceableObject CreateEnemyConfigurer()
+    {
+        var hook = new GameObject("Enemy Manager");
+        Object.DontDestroyOnLoad(hook);
+        hook.SetActive(false);
+
+        EnemyManager.Init();
+        hook.AddComponent<EnemyManager>();
+        
+        return new CustomObject("Enemy Manager", "enemy_manager", hook, 
+                "Used to configure enemy details such as hit and death effects,\n" +
+                "and to enable enemy corpses without enabling the enemy.\n" +
+                "Not all options are guaranteed to work on every type of enemy.",
+                sprite:ResourceUtils.LoadSpriteResource("enemy_manager", FilterMode.Point, ppu:64))
+            .WithConfigGroup(ConfigGroup.EnemyManager)
+            .WithReceiverGroup(ReceiverGroup.EnemyManager);
     }
 
     private static PlaceableObject CreatePlasmifier()

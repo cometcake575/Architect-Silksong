@@ -2411,6 +2411,15 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Levers)
             .WithRotationGroup(RotationGroup.Eight));
 
+        Categories.Misc.Add(new PreloadObject("Physics Bell 1", "physics_bell_1",
+            ("Belltown", "pushable_bell_set/Small_Bell_push"))).SpritePreview = true;
+
+        Categories.Misc.Add(new PreloadObject("Physics Bell 2", "physics_bell_2",
+            ("Belltown", "pushable_bell_set/Small_Bell_push (2)"))).SpritePreview = true;
+
+        Categories.Misc.Add(new PreloadObject("Physics Bell 3", "physics_bell_3",
+            ("Belltown", "pushable_bell_set/Small_Bell_push (4)"))).SpritePreview = true;
+
         Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
             ("Ant_04", "Silkcatcher Plant")));
         

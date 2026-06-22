@@ -273,35 +273,6 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
     
-    public static readonly List<ConfigType> Treadmill = GroupUtils.Merge(Visible,
-    [
-        ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Override Speed", "treadmill_speed", (o, value) =>
-            {
-                var val = value.GetValue();
-                
-                var ht = o.GetComponent<HeroTreadmill>();
-                var iht = o.GetComponent<InverseHeroTreadmill>();
-
-                if (ht)
-                {
-                    ht.OnDisable();
-                    Object.Destroy(ht);
-                }
-                if (iht)
-                {
-                    iht.OnDisable();
-                    Object.Destroy(iht);
-                }
-                
-                o.GetComponent<Animator>().speed = val / 5;
-                o.GetComponent<CogRotationController>().rotationMultiplier = val / 5;
-
-                if (o.transform.localScale.x > 0) val = -val;
-                o.GetComponentInChildren<ConveyorBelt>().speed = val;
-            }))
-    ]);
-    
     public static readonly List<ConfigType> DocksLift = GroupUtils.Merge(Visible,
     [
         ConfigurationManager.RegisterConfigType(
@@ -995,6 +966,35 @@ public static class ConfigGroup
                 })
             .WithDefaultValue(Vector2.one))
     ]);
+    
+    public static readonly List<ConfigType> Treadmill = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Visible,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Override Speed", "treadmill_speed", (o, value) =>
+            {
+                var val = value.GetValue();
+                
+                var ht = o.GetComponent<HeroTreadmill>();
+                var iht = o.GetComponent<InverseHeroTreadmill>();
+
+                if (ht)
+                {
+                    ht.OnDisable();
+                    Object.Destroy(ht);
+                }
+                if (iht)
+                {
+                    iht.OnDisable();
+                    Object.Destroy(iht);
+                }
+                
+                o.GetComponent<Animator>().speed = val / 5;
+                o.GetComponent<CogRotationController>().rotationMultiplier = val / 5;
+
+                if (o.transform.localScale.x > 0) val = -val;
+                o.GetComponentInChildren<ConveyorBelt>().speed = val;
+            }))
+    ]));
 
     /*public static readonly List<ConfigType> VoidTendrils = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(new BoolConfigType("Ignore Everbloom", "tendrils_ignore_flower",
@@ -1927,6 +1927,52 @@ public static class ConfigGroup
                     o.GetComponent<FsmHook>().inject = value.GetValue() == 1;
                 }
             ).WithOptions("Observe", "Inject").WithDefaultValue(0))
+    ]);
+
+    public static readonly List<ConfigType> EnemyManager = GroupUtils.Merge(Generic, [
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "enemy_manager_target", 
+                (o, value) => 
+                {
+                    o.GetComponent<EnemyManager>().targetId = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(
+                new IntConfigType("Index", "enemy_manager_index", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().index = value.GetValue();
+                }).WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(
+                new ChoiceConfigType("Corpse Mode", "enemy_manager_corpse_mode", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().corpseMode = value.GetValue();
+                }).WithOptions("Normal", "BounceAway", "FallThrough", "None")),
+            ConfigurationManager.RegisterConfigType(
+                new BoolConfigType("Override Blood Colour", "enemy_manager_override_blood", (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    o.GetComponent<EnemyManager>().overrideBlood = true;
+                }).WithDefaultValue(false)),
+            ConfigurationManager.RegisterConfigType(
+                new ColourConfigType("Blood Colour", "enemy_manager_blood", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().bloodColour = value.GetValue();
+                }, true).WithDefaultValue(Color.white)),
+            ConfigurationManager.RegisterConfigType(
+                new BoolConfigType("Override Hit Colour", "enemy_manager_override_hit", (o, value) =>
+                {
+                    if (!value.GetValue()) return;
+                    o.GetComponent<EnemyManager>().overrideHit = true;
+                }).WithDefaultValue(false)),
+            ConfigurationManager.RegisterConfigType(
+                new ColourConfigType("Blood Colour", "enemy_manager_hit", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().hitColour = value.GetValue();
+                }, true).WithDefaultValue(Color.white)),
+            ConfigurationManager.RegisterConfigType(
+                new StringConfigType("Hit Effects", "enemy_manager_hit_effects", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().hitEffectsProfile = value.GetValue();
+                }))
     ]);
 
     public static readonly List<ConfigType> ComponentHook = GroupUtils.Merge(Generic, [
