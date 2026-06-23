@@ -23,6 +23,7 @@ public class EnemyManager : MonoBehaviour
     public Color hitColour = Color.white;
 
     public string hitEffectsProfile;
+    public string deathEffectsProfile;
 
     private GameObject _enemy;
 
@@ -64,6 +65,33 @@ public class EnemyManager : MonoBehaviour
         "Wraith"
     ];
 
+    private static readonly List<DeathEffectName> DeathEffects =
+    [
+        "Ant",
+        "BigEnemy",
+        "Bone",
+        "Coral",
+        "Crystal",
+        "Lifeblood",
+        "Moss",
+        new("Pure Thread Death Effect NoSteam.asset", "Pure Thread NoSteam"),
+        "Pure Thread",
+        "Regular",
+        "Song Automaton",
+        "Song Automaton Tiny",
+        "Tar",
+        "Uninfected",
+        new("Unthreaded Coral Death Effect Grey.asset", "Unthreaded Coral Grey"),
+        new("Unthreaded Coral Death Effect Orange.asset", "Unthreaded Coral Orange"),
+        "Unthreaded Coral",
+        "Unthreaded Enemy",
+        "Unthreaded NPC",
+        "Unthreaded Void",
+        "Void",
+        "Wood",
+        "Wraith"
+    ];
+
     public class HitEffectName(string name, string alias)
     {
         public readonly string Name = name;
@@ -75,14 +103,33 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    private static readonly Dictionary<string, ManagedAsset<EnemyHitEffectsProfile>> Profiles = [];
+    public class DeathEffectName(string name, string alias)
+    {
+        public readonly string Name = name;
+        public readonly string Alias = alias;
+        
+        public static implicit operator DeathEffectName(string s)
+        {
+            return new DeathEffectName($"{s} Death Effect.asset", s);
+        }
+    }
+
+    private static readonly Dictionary<string, ManagedAsset<EnemyHitEffectsProfile>> HitProfiles = [];
+    private static readonly Dictionary<string, ManagedAsset<EnemyDeathEffectsProfile>> DeathProfiles = [];
 
     public static void Init()
     {
         foreach (var k in HitEffects)
         {
-            Profiles[k.Alias] = ManagedAsset<EnemyHitEffectsProfile>.FromNonSceneAsset(
+            HitProfiles[k.Alias] = ManagedAsset<EnemyHitEffectsProfile>.FromNonSceneAsset(
                 $"Assets/Data Assets/Profiles/Hit Effects/{k.Name}",
+                "dataassets_assets_assets/dataassets/profiles"
+            );
+        }
+        foreach (var k in DeathEffects)
+        {
+            DeathProfiles[k.Alias] = ManagedAsset<EnemyDeathEffectsProfile>.FromNonSceneAsset(
+                $"Assets/Data Assets/Profiles/Death Effects/{k.Name}",
                 "dataassets_assets_assets/dataassets/profiles"
             );
         }
@@ -104,6 +151,7 @@ public class EnemyManager : MonoBehaviour
         if (!_enemy) return;
 
         PrepareCorpse();
+        StartCoroutine(PrepareDeath());
 
         var hitEffects = _enemy.GetComponentInChildren<EnemyHitEffectsRegular>(true);
         if (!hitEffects) return;
@@ -134,9 +182,9 @@ public class EnemyManager : MonoBehaviour
     private IEnumerator PrepareHit(EnemyHitEffectsRegular hitEffects)
     {
         if (!hitEffectsProfile.IsNullOrWhiteSpace() &&
-            Profiles.TryGetValue(hitEffectsProfile, out var profile))
+            HitProfiles.TryGetValue(hitEffectsProfile, out var hProfile))
         {
-            var handle = profile.Load();
+            var handle = hProfile.Load();
             yield return handle;
         
             hitEffects.profile = handle.Result;
@@ -148,6 +196,21 @@ public class EnemyManager : MonoBehaviour
             
             hitEffects.profile.overrideHitFlashColor = true;
             hitEffects.profile.hitFlashColor = hitColour;
+        }
+    }
+    
+    private IEnumerator PrepareDeath()
+    {
+        var deathEffects = _enemy.GetComponentInChildren<EnemyDeathEffectsRegular>();
+        if (!deathEffects) yield break;
+        
+        if (!deathEffectsProfile.IsNullOrWhiteSpace() &&
+            DeathProfiles.TryGetValue(deathEffectsProfile, out var dProfile))
+        {
+            var handle = dProfile.Load();
+            yield return handle;
+        
+            deathEffects.profile = handle.Result;
         }
     }
 

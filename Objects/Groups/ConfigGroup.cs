@@ -1972,6 +1972,11 @@ public static class ConfigGroup
                 new StringConfigType("Hit Effects", "enemy_manager_hit_effects", (o, value) =>
                 {
                     o.GetComponent<EnemyManager>().hitEffectsProfile = value.GetValue();
+                })),
+            ConfigurationManager.RegisterConfigType(
+                new StringConfigType("Death Effects", "enemy_manager_death_effects", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().hitEffectsProfile = value.GetValue();
                 }))
     ]);
 
