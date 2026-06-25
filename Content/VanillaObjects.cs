@@ -472,12 +472,22 @@ public static class VanillaObjects
             ("Under_19", "lava_crumble_plat"))
             .WithConfigGroup(ConfigGroup.CrumblePlat));
 
-        AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"));
+        AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"),
+            postSpawnAction: o =>
+            {
+                o.GetComponent<HealthManager>().hasSpecialDeath = false;
+                o.LocateMyFSM("Control").fsm.globalTransitions = [];
+            });
         AddEnemy("Cogwork Hauler", "understore_auto_ex", 
             ("Under_19", "Understore Automaton EX (9)"));
         
         AddEnemy("Undersweep", "undersweep", ("Under_19", "Pilgrim Staff Understore"));
-        AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"));
+        AddEnemy("Underscrub", "underscrub", ("Under_19", "Pilgrim 03 Understore (1)"),
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("pilgrim_behaviour").fsm;
+                fsm.globalTransitions = fsm.globalTransitions.Where(i => i.EventName != "DORMANT").ToArray();
+            });
         AddEnemy("Underloft", "undercrank", ("Under_19b", "Understore Thrower"));
         
         AddEnemy("Underworker", "underworker", ("Under_10", "Battle Scene/Wave 1/Understore Small"));
@@ -3730,6 +3740,7 @@ public static class VanillaObjects
                 var fsm = o.LocateMyFSM("Summon Control");
                 fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("SPAWN"), 0);
                 fsm.GetState("Position").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                fsm.GetState("Corpse Away").DisableAction(11);
             }).SpritePreview = true;
         AddEnemy("Massive Mossgrub", "mossbone_crawler_fat",
             ("Arborium_09", "MossBone Crawler Fat"));
@@ -3785,7 +3796,8 @@ public static class VanillaObjects
 
         AddEnemy("Aknid Hatchling", "grove_pilgrim_hatchling",
             ("localpoolprefabs_assets_areaclover.bundle", "Assets/Prefabs/Hornet Enemies/Aspid Hatchling.prefab"),
-            notSceneBundle: true)
+            notSceneBundle: true,
+            postSpawnAction: EnemyFixers.FixHatchling)
             .WithConfigGroup(ConfigGroup.Aknids);
         AddEnemy("Aknid", "aspid_collector",
             ("Mosstown_01", "Black Thread States Thread Only Variant/Black Thread World/Aspid Collector"),

@@ -204,6 +204,8 @@ public class RoomClearerConfig : MonoBehaviour
     public bool removeTilemap = true;
     
     public bool removeOther;
+
+    public bool recursive;
 }
 
 public class ObjectRemoverConfig : MonoBehaviour

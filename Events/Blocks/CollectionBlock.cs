@@ -19,6 +19,7 @@ public abstract class CollectionBlock<T> : LinkedBlock
 
     protected abstract string ChildName { get; }
     protected virtual int MaxChildren => -1;
+    protected virtual float AddOffset => 0;
     protected abstract bool NeedsGap { get; }
     
     protected override Dictionary<string, string> SerializeExtraData()
@@ -73,6 +74,7 @@ public abstract class CollectionBlock<T> : LinkedBlock
         Children.Height = height;
         Children.Parent = this;
         Children.NeedsGap = NeedsGap;
+        Children.AddOffset = AddOffset;
     }
 
     public override void Setup(bool visual, bool newBlock = false, bool noReference = false)
@@ -163,6 +165,7 @@ public abstract class CollectionBlock<T> : LinkedBlock
     public class ChildrenGroup
     {
         public ScriptBlock Parent;
+        public float AddOffset;
         public List<ChildBlock> Blocks = [];
         public bool NeedsGap;
         public IEnumerable<T> Children => Blocks.Where(o => o is T).Cast<T>();
@@ -196,7 +199,7 @@ public abstract class CollectionBlock<T> : LinkedBlock
                 else y -= o.BlockHeight;
                 i++;
             }
-            AddBlock.SetLocalPositionY(y + (ng ? 84 : NeedsGap ? 122.5f : 197.5f));
+            AddBlock.SetLocalPositionY(y + (ng ? 84 : NeedsGap ? 122.5f : 197.5f) + AddOffset);
             AddBlock.SetAsLastSibling();
             
             if (MaxChildren > 0) AddBlock.gameObject.SetActive(Blocks.Count < MaxChildren);

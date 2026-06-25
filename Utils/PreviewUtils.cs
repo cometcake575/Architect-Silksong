@@ -99,8 +99,10 @@ public static class PreviewUtils
                 foreach (var sr in GetComponentsInChildren<SpriteRenderer>())
                 {
                     if (sr.name.Contains("haze", StringComparison.InvariantCultureIgnoreCase) 
+                        || sr.name.Contains("glow", StringComparison.InvariantCultureIgnoreCase)
                         || sr.name.Contains("fader", StringComparison.InvariantCultureIgnoreCase)
-                        || sr.name.Contains("Light", StringComparison.InvariantCultureIgnoreCase)) continue;
+                        || sr.name.Contains("light", StringComparison.InvariantCultureIgnoreCase)
+                        || sr.name.Contains("cutout", StringComparison.InvariantCultureIgnoreCase)) continue;
                     Renderers.Add(new PreviewSpriteRenderer(sr));
                 }
 

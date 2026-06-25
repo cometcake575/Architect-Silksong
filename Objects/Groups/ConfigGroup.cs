@@ -1964,10 +1964,10 @@ public static class ConfigGroup
                     o.GetComponent<EnemyManager>().overrideHit = true;
                 }).WithDefaultValue(false)),
             ConfigurationManager.RegisterConfigType(
-                new ColourConfigType("Blood Colour", "enemy_manager_hit", (o, value) =>
+                new ColourConfigType("Hit Flash Colour", "enemy_manager_hit", (o, value) =>
                 {
                     o.GetComponent<EnemyManager>().hitColour = value.GetValue();
-                }, true).WithDefaultValue(Color.white)),
+                }, false).WithDefaultValue(Color.white)),
             ConfigurationManager.RegisterConfigType(
                 new StringConfigType("Hit Effects", "enemy_manager_hit_effects", (o, value) =>
                 {
@@ -2654,7 +2654,7 @@ public static class ConfigGroup
                     o.GetComponent<tk2dSpriteAnimator>().Play("Immolater Idle");
                     var hm = o.GetComponent<HealthManager>();
                     hm.hasSpecialDeath = true;
-                    hm.enemyDeathEffects.doNotSpawnCorpse = true;
+                    o.GetComponent<EnemyDeathEffects>().doNotSpawnCorpse = true;
                     fsm.GetState("State").AddAction(() => fsm.SendEvent("IMMOLATER"), 3);
                 }
                 else fsm.GetState("Patrol Wait").AddAction(() => fsm.SendEvent("WAKE"));
@@ -3556,6 +3556,11 @@ public static class ConfigGroup
             new BoolConfigType("Remove Other", "remove_other",
                     (o, value) => { o.GetOrAddComponent<RoomClearerConfig>().removeOther = value.GetValue(); })
                 .WithDefaultValue(true).WithPriority(-1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Recursive", "recursive_clear_room",
+                    (o, value) => { o.GetOrAddComponent<RoomClearerConfig>().recursive = value.GetValue(); })
+                .WithDefaultValue(false).WithPriority(-1)
         )
     ]);
 

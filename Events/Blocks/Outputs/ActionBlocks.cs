@@ -21,7 +21,12 @@ public static class ActionBlocks
         Category.World.RegisterBlock<EnemyBlock>("Enemy Control", ConfigGroup.EnemyControl);
         Category.Visual.RegisterBlock<TextBlock>("Text Display", ConfigGroup.TextDisplay);
         Category.Visual.RegisterBlock<ChoiceBlock>("Choice Display", ConfigGroup.ChoiceDisplay);
-        // ScriptManager.RegisterBlock<InputBlock>("Input Display", ConfigGroup.InputDisplay);
+        
+        Category.Visual.RegisterBlock<HandInBlock>("Hand In", ConfigGroup.HandIn);
+        Category.Visual.RegisterHiddenBlock<HandInBlock.HandInItemBlock>("Hand In Item", ConfigGroup.HandInItem);
+
+        // Category.Visual.RegisterBlock<InputBlock>("Input Display", ConfigGroup.InputDisplay);
+        
         Category.Visual.RegisterBlock<TitleBlock>("Title Display", ConfigGroup.TitleDisplay);
         Category.Visual.RegisterBlock<SongBlock>("Song Display", ConfigGroup.SongDisplay);
         Category.Visual.RegisterBlock<PngBlock>("Custom PNG", ConfigGroup.Png);

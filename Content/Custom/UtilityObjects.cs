@@ -139,7 +139,13 @@ public static class UtilityObjects
 
                     if (!clearer) return [];
 
-                    var objects = o.scene.GetRootGameObjects().Where(obj =>
+                    IEnumerable<GameObject> os = o.scene.GetRootGameObjects();
+
+                    if (clearer.recursive)
+                        os = os.SelectMany(obj => obj.GetComponentsInChildren<Transform>())
+                            .Select(t => t.gameObject);
+
+                    var objects = os.Where(obj =>
                         !obj.name.StartsWith("[Architect]")
                         && !obj.name.Contains("Hornet Cocoon Corpse")
                         && !obj.name.StartsWith("_SceneManager")

@@ -109,6 +109,62 @@ public class ChoiceBlock : ScriptBlock
     }
 }
 
+public class HandInBlock : CollectionBlock<HandInBlock.HandInItemBlock>
+{
+    protected override string Name => "Hand In";
+
+    protected override IEnumerable<string> Inputs => ["Display"];
+    protected override IEnumerable<string> Outputs => ["Yes", "No"];
+
+    protected override string ChildName => "Hand In Item";
+    protected override bool NeedsGap => false;
+
+    protected override float AddOffset => -50;
+
+    public string Text = string.Empty;
+    public bool TakeItems;
+
+    private ChoiceDisplay _display;
+
+    public override void SetupReference()
+    {
+        _display = new GameObject("[Architect] Text Display").AddComponent<ChoiceDisplay>();
+        _display.Block = this;
+
+        _display.text = Text;
+        _display.takeItem = TakeItems;
+        _display.useItem = true;
+    }
+
+    protected override void Trigger(string trigger)
+    {
+        _display.savedItems.Clear();
+        _display.costs.Clear();
+        
+        foreach (var child in Children.Children)
+        {
+            var i = MiscUtils.GetSavedItem(child.ItemId);
+            if (!i) continue;
+            _display.savedItems.Add(i);
+            _display.costs.Add(child.ItemAmount);
+        }
+        
+        _display.Display();
+    }
+    
+    public class HandInItemBlock : ChildBlock
+    {
+        public string ItemId = "Rosary_Set_Small";
+        public int ItemAmount = 1;
+
+        public override void Reset()
+        {
+            ItemId = "Rosary_Set_Small";
+            ItemAmount = 1;
+        }
+    }
+}
+
 public class InputBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Display"];

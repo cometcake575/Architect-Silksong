@@ -284,6 +284,24 @@ public static class EnemyFixers
         }
     }
 
+    public static void FixHatchling(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+
+        var trans = fsm.fsm.globalTransitions.First(t => t.EventName == "ZERO HP");
+        fsm.AddState("Death");
+        trans.toState = "Death";
+        var death = fsm.GetState("Death");
+        trans.toFsmState = death;
+        
+        death.AddAction(() =>
+        {
+            var breakState = fsm.GetState("Break");
+            breakState.DisableAction(1);
+            fsm.SetState("Break");
+        });
+    }
+
     private class LastJudge : MonoBehaviour
     {
         public bool moveLeft;
@@ -3264,8 +3282,10 @@ public static class EnemyFixers
         wr.DisableAction(0);
         wr.DisableAction(1);
         wr.AddAction(() => fsm.SetState("Start Idle"), 0);
-        
-        fsm.GetState("Death Hit").DisableAction(37);
+
+        var hit = fsm.GetState("Death Hit");
+        hit.DisableAction(3);
+        hit.DisableAction(37);
         fsm.GetState("Death Fling").DisableAction(5);
         fsm.GetState("Death Air").DisableAction(4);
     }

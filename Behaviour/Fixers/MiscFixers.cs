@@ -890,7 +890,7 @@ public static class MiscFixers
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Dialogue");
-            fsm.GetState("Convo").AddAction(() => fsm.SendEvent("FINISHED"), 5);
+            fsm.GetState("Convo").AddAction(() => fsm.SendEvent("FINISHED"), 3);
             fsm.GetState("Check Twisted Bud Convo").AddAction(() => fsm.SendEvent("TRUE"), 0);
             var tbd = fsm.GetState("Twisted Bud Convo");
             tbd.DisableAction(0);

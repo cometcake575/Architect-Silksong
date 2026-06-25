@@ -863,6 +863,32 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ];
 
+    public static readonly List<ConfigType> HandIn = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<HandInBlock>("Text", "handin_text", (o, value) =>
+            {
+                o.Text = value.GetValue();
+            }).WithDefaultValue("Sample Text")),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<HandInBlock>("Take Items", "handin_take_item", (o, value) =>
+            {
+                o.TakeItems = value.GetValue();
+            }).WithDefaultValue(true))
+    ];
+
+    public static readonly List<ConfigType> HandInItem = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<HandInBlock.HandInItemBlock>("Item ID", "handin_item_id", (o, value) =>
+            {
+                o.ItemId = value.GetValue();
+            }).WithDefaultValue("Rosary_Set_Small")),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<HandInBlock.HandInItemBlock>("Cost", "handin_item_cost", (o, value) =>
+            {
+                o.ItemAmount = value.GetValue();
+            }).WithDefaultValue(1))
+    ];
+
     public static readonly List<ConfigType> InputDisplay = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<InputBlock>("Text", "input_display_text", (o, value) =>

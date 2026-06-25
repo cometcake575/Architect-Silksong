@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Architect.Events.Blocks;
 using Architect.Utils;
 using UnityEngine;
@@ -13,6 +14,9 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     public bool useItem;
     public CurrencyType currencyType = CurrencyType.Money;
     public int cost;
+
+    public List<SavedItem> savedItems = [];
+    public List<int> costs = [];
 
     public ScriptBlock Block;
 
@@ -29,10 +33,18 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
 
         if (useItem)
         {
+            if (!savedItems.IsNullOrEmpty())
+            {
+                DialogueYesNoBox.Open(Yes, No, true, text, savedItems, costs, 
+                    true, takeItem, null); 
+                yield break;
+            }
+            
             var i = MiscUtils.GetSavedItem(item);
-            if (i) {
-                DialogueYesNoBox.Open(Yes, No, true, text, MiscUtils.GetSavedItem(item), cost, 
-                true, takeItem); 
+            if (i)
+            {
+                DialogueYesNoBox.Open(Yes, No, true, text, i, cost, 
+                    true, takeItem); 
                 yield break;
             }
         }
