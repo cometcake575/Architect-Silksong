@@ -45,7 +45,7 @@ public class EraserObject() : ToolObject("eraser", Storage.Settings.Eraser, -2)
 
     public override void Release()
     {
-        ActionManager.PerformAction(new EraseObject(_erasedPlacements));
+        ActionManager.SceneActionManager.PerformAction(new EraseObject(_erasedPlacements));
         _erasedPlacements = [];
     }
 }

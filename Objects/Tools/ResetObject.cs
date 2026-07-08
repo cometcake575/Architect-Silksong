@@ -43,7 +43,7 @@ public class ResetObject() : ToolObject("reset_rocket", Storage.Settings.Reset, 
         if (_resetTime >= 3)
         {
             RestartDelay();
-            ActionManager.PerformAction(new ResetRoom());
+            ActionManager.SceneActionManager.PerformAction(new ResetRoom());
             return;
         }
 

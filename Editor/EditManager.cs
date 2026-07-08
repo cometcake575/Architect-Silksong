@@ -354,14 +354,15 @@ public static class EditManager
         
         // Reset room code
         if (!b2 || paused) ResetObject.RestartDelay();
-        
-        if (paused) return;
-        
-        // Click/release code based on input
-        if (b1 || b2) CurrentObject.Click(Input.mousePosition, b1);
-        else if (Input.GetMouseButtonUp(0)) CurrentObject.Release();
-        if (c1) CurrentObject.RightClick(Input.mousePosition);
-        
+
+        if (!paused)
+        {
+            // Click/release code based on input
+            if (b1 || b2) CurrentObject.Click(Input.mousePosition, b1);
+            else if (Input.GetMouseButtonUp(0)) CurrentObject.Release();
+            if (c1) CurrentObject.RightClick(Input.mousePosition);
+        }
+
         // Undo/Redo code
         if (Settings.Undo.WasPressed) ActionManager.UndoLast();
         if (Settings.Redo.WasPressed) ActionManager.RedoLast();
@@ -437,7 +438,7 @@ public static class EditManager
             ));
         }
 
-        ActionManager.PerformAction(new PlaceObjects(newPlacements));
+        ActionManager.SceneActionManager.PerformAction(new PlaceObjects(newPlacements));
         foreach (var obj in newPlacements)
         {
             ToggleSelectedObject(obj, false);
@@ -736,7 +737,7 @@ public static class EditManager
 
         if (_dragging)
         {
-            ActionManager.PerformAction(new MoveObjects(movements));
+            ActionManager.SceneActionManager.PerformAction(new MoveObjects(movements));
             _dragging = false;
         }
 

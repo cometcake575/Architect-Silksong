@@ -237,6 +237,11 @@ public static class ReceiverGroup
         {
             o.GetComponent<TriggerZone>().block = true;
             o.SetActive(false);
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("set_tz_layer", "SetLayer", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<TriggerZone>().layer = Mathf.RoundToInt(b.GetVariable<float>("New Layer"));
         }))
     ]);
     

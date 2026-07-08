@@ -76,42 +76,6 @@ public static class ConfigGroup
                 o.GetComponent<Layerer>().recursive = value.GetValue();
             }).WithDefaultValue(true))
     ];
-    
-    public static readonly List<ConfigType> EnviroRegion = [
-        ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType("Environment Type", "enviro_region_type", (o, value) =>
-            {
-                var val = value.GetStringValue();
-                switch (val)
-                {
-                    case "WaterS":
-                        val = "ShallowWater";
-                        break;
-                    case "WaterRun":
-                        val = "RunningWater";
-                        break;
-                }
-                if (!Enum.TryParse<EnvironmentTypes>(val, out var enviro)) return;
-                o.GetComponent<EnviroRegion>().environmentType = enviro;
-            }).WithOptions(
-                "Dust",
-                "Grass",
-                "Bone",
-                "WaterS",
-                "Metal",
-                "NoEffect",
-                "Moss",
-                "Sand",
-                "Bell",
-                "WetMetal",
-                "ThinMetal",
-                "Wood",
-                "Silk",
-                "WetWood",
-                "WaterRun",
-                "PeakPuff",
-                "FlowerField").WithDefaultValue(0))
-    ];
 
     private static readonly ConfigType Hook = ConfigurationManager.RegisterConfigType(
         new IdConfigType("Path", "enemy_path", (o, value) =>
@@ -967,6 +931,42 @@ public static class ConfigGroup
             .WithDefaultValue(Vector2.one))
     ]);
     
+    public static readonly List<ConfigType> EnviroRegion = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Environment Type", "enviro_region_type", (o, value) =>
+            {
+                var val = value.GetStringValue();
+                switch (val)
+                {
+                    case "WaterS":
+                        val = "ShallowWater";
+                        break;
+                    case "WaterRun":
+                        val = "RunningWater";
+                        break;
+                }
+                if (!Enum.TryParse<EnvironmentTypes>(val, out var enviro)) return;
+                o.GetComponent<EnviroRegion>().environmentType = enviro;
+            }).WithOptions(
+                "Dust",
+                "Grass",
+                "Bone",
+                "WaterS",
+                "Metal",
+                "NoEffect",
+                "Moss",
+                "Sand",
+                "Bell",
+                "WetMetal",
+                "ThinMetal",
+                "Wood",
+                "Silk",
+                "WetWood",
+                "WaterRun",
+                "PeakPuff",
+                "FlowerField").WithDefaultValue(0))
+    ]);
+    
     public static readonly List<ConfigType> Treadmill = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Visible,
     [
         ConfigurationManager.RegisterConfigType(
@@ -1042,7 +1042,9 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     var fsm = o.GetComponent<PlayMakerFSM>();
                     if (!fsm) return;
-                    fsm.GetState(fsm.ActiveStateName).transitions = [];
+                    var state = fsm.GetState(fsm.ActiveStateName);
+                    if (state == null) return;
+                    state.transitions = [];
                 }).WithDefaultValue(true))
     ]);
     
@@ -2704,6 +2706,19 @@ public static class ConfigGroup
             }).WithDefaultValue("door_slabCaged").WithPriority(-1))
     ]);
 
+    public static readonly List<ConfigType> MemoryZone = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Memory Scene", "memory_scene", (o, value) =>
+            {
+                o.GetOrAddComponent<MiscFixers.MemoryZone>().sceneId = value.GetValue();
+            }).WithDefaultValue("Belltown").WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Memory Door ID", "memory_door", (o, value) =>
+            {
+                o.GetOrAddComponent<MiscFixers.MemoryZone>().doorId = value.GetValue();
+            }).WithDefaultValue("door1").WithPriority(-1))
+    ]);
+
     public static readonly List<ConfigType> Hoker = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Roam Around", "hoker_wander", (o, value) =>
@@ -3335,6 +3350,35 @@ public static class ConfigGroup
                     mat.SetFloat(Speed, mat.GetFloat(Speed) * value.GetValue());
                 }
             }).WithDefaultValue(1))
+    ]));
+    
+    private static readonly int SpeedX = Shader.PropertyToID("_SpeedX");
+    private static readonly int SpeedY = Shader.PropertyToID("_SpeedY");
+    
+    public static readonly List<ConfigType> FlowingLava = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Speed", "lava_effect_speed", (o, value) =>
+            {
+                foreach (var mr in o.GetComponentsInChildren<MeshRenderer>())
+                {
+                    var mat = mr.material;
+                    mat.SetFloat(SpeedY, mat.GetFloat(SpeedY) * value.GetValue());
+                }
+            }).WithDefaultValue(1))
+    ]));
+    
+    public static readonly List<ConfigType> Scroller = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Scroll Speed", "scroll_effect_speed", (o, value) =>
+            {
+                var mr = o.GetComponent<MeshRenderer>();
+                var mat = mr.material;
+                var val = value.GetValue();
+                mat.SetFloat(SpeedX, mat.GetFloat(SpeedX) * val.x);
+                mat.SetFloat(SpeedY, mat.GetFloat(SpeedY) * val.y);
+            }).WithDefaultValue(Vector2.zero))
     ]));
 
     public static readonly List<ConfigType> PoleRing = GroupUtils.Merge(Visible, [

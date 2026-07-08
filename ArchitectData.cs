@@ -39,5 +39,5 @@ public class GlobalArchitectData
     public Dictionary<string, float> FloatVariables = [];
     public Dictionary<string, bool> BoolVariables = [];
 
-    public string MapLabel => CurrentMap.IsNullOrWhiteSpace() ? "Map Keybinds" : CurrentMap;
+    public string MapLabel => CurrentMap.IsNullOrWhiteSpace() ? "Map Options" : CurrentMap;
 }

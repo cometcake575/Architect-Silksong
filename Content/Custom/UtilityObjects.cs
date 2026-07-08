@@ -507,7 +507,7 @@ public static class UtilityObjects
                 description:"Creates a custom doorway to another room. Requires a target scene and door id.\n\n" +
                             "Disable 'Collision Trigger' and use the 'Transition' trigger to transition when\n" +
                             "an event is received instead of when touching the door.",
-                sprite:ResourceUtils.LoadSpriteResource(Settings.PrideMode ? "door_trans" : "door", ppu:33))
+                sprite:ResourceUtils.LoadSpriteResource(Settings.TransTransGates.Value ? "door_trans" : "door", ppu:33))
             .WithConfigGroup(ConfigGroup.Transitions)
             .WithReceiverGroup(ReceiverGroup.Transitions)
             .WithBroadcasterGroup(BroadcasterGroup.Transitions)
@@ -832,6 +832,7 @@ public static class UtilityObjects
             .WithBroadcasterGroup(BroadcasterGroup.TriggerZone)
             .WithReceiverGroup(ReceiverGroup.TriggerZone)
             .WithOutputGroup(OutputGroup.TriggerZone)
+            .WithInputGroup(InputGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZones);
     }
 

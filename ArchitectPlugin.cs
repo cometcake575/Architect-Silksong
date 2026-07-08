@@ -141,7 +141,9 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
             if (File.Exists(workshop))
             {
                 var data = File.ReadAllText(workshop);
-                WorkshopManager.LoadExtWorkshop(JsonConvert.DeserializeObject<WorkshopData>(data));
+                var parent = Directory.GetParent(dir);
+                if (parent == null) return;
+                WorkshopManager.LoadExtWorkshop(parent.Name, JsonConvert.DeserializeObject<WorkshopData>(data));
             }
 
             StorageManager.Directories.Add(dir);

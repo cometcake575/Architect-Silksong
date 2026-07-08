@@ -1022,7 +1022,7 @@ public static class ConfigGroup
                 (o, value) =>
                 {
                     var val = value.GetValue();
-                    if (CustomKeybind.Keybinds.TryGetValue(val, out var keybind))
+                    if (CustomConfig.Configs.TryGetValue(val, out var config) && config is CustomKeybind keybind)
                     {
                         o.Keybind = keybind;
                     }

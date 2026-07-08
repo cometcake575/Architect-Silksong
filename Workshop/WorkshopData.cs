@@ -11,6 +11,7 @@ namespace Architect.Workshop;
 public class WorkshopData
 {
     public readonly List<WorkshopItem> Items = [];
+    public string ExternalSource;
     
     public class WorkshopDataConverter : JsonConverter<WorkshopData>
     {

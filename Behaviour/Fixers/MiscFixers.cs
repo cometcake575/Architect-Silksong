@@ -278,19 +278,68 @@ public static class MiscFixers
         obj.AddComponent<CustomBench>();
     }
     
+    public static void FixBed(GameObject obj)
+    {
+        obj.transform.SetPositionZ(-0.0586f);
+        Object.DestroyImmediate(obj.transform.GetChild(2).gameObject);
+        obj.AddComponent<CustomBench>();
+
+        foreach (Transform child in obj.transform)
+        {
+            child.localPosition -= new Vector3(3.1496f, -5.3349f);
+        }
+
+        obj.transform.GetChild(0).gameObject.AddComponent<PlaceableObject.SpriteSource>();
+    }
+    
     public static void FixSackBench(GameObject obj)
     {
         obj.transform.SetPositionZ(0.009f);
         obj.AddComponent<CustomBench>(); 
     }
     
-    public static void AddBenchEvent(GameObject obj)
+    public static PlayMakerFSM PostFixBench(GameObject obj)
     {
         var fsm = obj.GetComponentsInChildren<PlayMakerFSM>().First(o => o.FsmName == "Bench Control");
         fsm.fsmTemplate = null;
         fsm.GetState("Start Rest Anim").AddAction(() => obj.BroadcastEvent("OnSit"), 0);
         fsm.GetState("Get Off").AddAction(() => obj.BroadcastEvent("OnLeave"), 0);
         fsm.GetState("Set Custom Wake Up?").AddAction(() => obj.BroadcastEvent("OnSpawnAt"), 0);
+        return fsm;
+    }
+    
+    public static void AddBenchEvent(GameObject obj)
+    {
+        PostFixBench(obj);
+    }
+    
+    public static void FixBedSpawn(GameObject obj)
+    {
+        var fsm = PostFixBench(obj);
+
+        var sitting = false;
+
+        var hornetFsm = obj.transform.GetChild(1).GetComponent<PlayMakerFSM>();
+        hornetFsm.GetState("Sleep Timer").AddAction(() =>
+        {
+            if (!sitting) hornetFsm.SendEvent("BENCHREST ENDING");
+        }, 0);
+        hornetFsm.GetState("Start Laying Down").AddAction(() =>
+        {
+            if (!sitting) hornetFsm.SendEvent("BENCHREST ENDING");
+        }, 0);
+        
+        fsm.GetState("Start Rest Anim").AddAction(() =>
+        {
+            sitting = true;
+            hornetFsm.SendEvent("BENCHREST START");
+        }, 0);
+        fsm.GetState("Get Off").AddAction(() => sitting = false, 0);
+        fsm.GetState("Set Custom Wake Up?").AddAction(() =>
+        {
+            sitting = true;
+            hornetFsm.SendEvent("BENCHREST INIT");
+        }, 0);
     }
 
     public class CustomBench : MonoBehaviour
@@ -2098,5 +2147,39 @@ public static class MiscFixers
     {
         obj.GetComponent<PlayMakerFSM>().enabled = false;
         obj.RemoveComponentsInChildren<HeroPlatformStick>();
+    }
+
+    public class MemoryZone : MonoBehaviour
+    {
+        public string sceneId = string.Empty;
+        public string doorId = string.Empty;
+
+        private void Start()
+        {
+            var fsm = gameObject.LocateMyFSM("FSM");
+            var send = fsm.GetState("Send Event");
+            send.DisableAction(1);
+            send.AddAction(() =>
+            {
+                GameManager.instance.BeginSceneTransition(new GameManager.SceneLoadInfo
+                {
+                    SceneName = sceneId,
+                    EntryGateName = doorId,
+                    EntryDelay = 0,
+                    Visualization = GameManager.SceneLoadVisualizations.Default,
+                    PreventCameraFadeOut = true,
+                    WaitForSceneTransitionCameraFade = false
+                });
+                GameManager.instance.OnFinishedSceneTransition += HudReturn;
+
+                return;
+
+                void HudReturn()
+                {
+                    GameManager.instance.OnFinishedSceneTransition -= HudReturn;
+                    GameCameras.instance.HUDIn();
+                }
+            });
+        }
     }
 }

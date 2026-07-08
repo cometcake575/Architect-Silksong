@@ -117,7 +117,7 @@ public class PrefabObject : PlaceableObject
                 rePlacement.Move(newPos);
             }
             EditManager.RegisterLastPos(pos);
-            ActionManager.PerformAction(new PlaceObjects(placements));
+            ActionManager.SceneActionManager.PerformAction(new PlaceObjects(placements));
 
             List<ScriptBlock> clones = [];
             foreach (var block in o.ScriptBlocks)

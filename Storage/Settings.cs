@@ -42,9 +42,8 @@ public static class Settings
     public static ConfigEntry<bool> ShowRespawnPoint;
     public static ConfigEntry<bool> BlockInventoryInEditMode;
     public static ConfigEntry<bool> LoadAllAssets;
+    public static ConfigEntry<bool> TransTransGates;
     
-    public static bool PrideMode = true;
-
     public static ConfigEntry<int> SaveSlot; 
     
     public static ConfigEntry<Color> EditorBackgroundColour;
@@ -291,6 +290,13 @@ public static class Settings
             "LoadAllAssets",
             false,
             "Loads all assets on startup instead of when needed"
+        );
+        
+        TransTransGates = config.Bind(
+            "Options",
+            "TransTransGates",
+            false,
+            "Makes transition gates have the trans flag on them (requires reloading the game to apply)"
         );
         
         SaveSlot = config.Bind(

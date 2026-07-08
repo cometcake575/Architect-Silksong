@@ -79,18 +79,26 @@ public static class WorkshopManager
             ConfigGroup.SpriteItem,
             ConfigGroup.MapIconLabel);
         
-        CustomKeybind.Init();
+        CustomConfig.Init();
         Register<CustomKeybind>("Keybind",
             new Vector2(-300, -300),
             ConfigGroup.Keybind);
         
+        Register<CustomOption>("Config",
+            new Vector2(-300, -412.5f),
+            ConfigGroup.ConfigOption);
+        
+        Register<CustomToggle>("Toggle",
+            new Vector2(-100, -412.5f),
+            ConfigGroup.Toggle);
+        
         Register<CustomCue>("Audio Cue",
-            new Vector2(-100, -300),
+            new Vector2(-300, -337.5f),
             ConfigGroup.Cue);
         
         CustomNeedle.Init();
         Register<CustomNeedle>("Needle",
-            new Vector2(-300, -337.5f),
+            new Vector2(-100, -300),
             ConfigGroup.Needle,
             ConfigGroup.SpriteItem);
         
@@ -225,17 +233,21 @@ public static class WorkshopManager
         CustomAchievement.Init();
         SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
-        foreach (var item in ExtWorkshops.SelectMany(data => data.Items)
-                     .OrderBy(i => i.GetPriority()))
+        foreach (var workshop in ExtWorkshops)
         {
-            if (WorkshopData.Items.Any(i => i.Id == item.Id)) continue;
-            foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
-            item.Register();
+            foreach (var item in workshop.Items.OrderBy(i => i.GetPriority()))
+            {
+                if (WorkshopData.Items.Any(i => i.Id == item.Id)) continue;
+                foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
+                item.ExternalSource = workshop.ExternalSource;
+                item.Register();
+            }
         }
     }
 
-    public static void LoadExtWorkshop(WorkshopData data)
+    public static void LoadExtWorkshop(string name, WorkshopData data)
     {
+        data.ExternalSource = name;
         ExtWorkshops.Add(data);
     }
 

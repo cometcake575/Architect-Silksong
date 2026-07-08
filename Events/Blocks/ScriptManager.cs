@@ -20,14 +20,12 @@ namespace Architect.Events.Blocks;
 
 public static class ScriptManager
 {
-    private static bool _local;
-
     public static bool IsLocal
     {
-        get => _local;
+        get;
         set
         {
-            _local = value;
+            field = value;
             ScriptEditorUI.LocalParent.SetActive(value);
             ScriptEditorUI.GlobalParent.SetActive(!value);
 
@@ -45,7 +43,7 @@ public static class ScriptManager
             }
         }
     }
-    
+
     public static void Init()
     {
         EventBlocks.Init();

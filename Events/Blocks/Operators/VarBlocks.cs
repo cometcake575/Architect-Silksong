@@ -197,8 +197,8 @@ public class StringVarBlock : VarBlock
         return TempVars.GetValueOrDefault(id,
             SemiVars.GetValueOrDefault(id, 
                 ArchitectData.Instance.StringVariables.GetValueOrDefault(id, 
-                    GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(id, KeyCode.None)
-                        .ToString())));
+                    GlobalArchitectData.Instance.StringVariables.GetValueOrDefault(id, 
+                            GlobalArchitectData.Instance.Keybinds.GetValueOrDefault(id, KeyCode.None).ToString()))));
     }
 
     public override object GetValue(string id)

@@ -37,6 +37,27 @@ public static class ParticleObjects
             }, sprite: ResourceUtils.LoadSpriteResource("fly_swarm", ppu:62.5f))
             .WithConfigGroup(Particle));
 
+        Categories.Effects.Add(new PreloadObject("Fire Effect", "fire_effect",
+            ("Abyss_09", "Group/lava_particles_02 (1)"), preloadAction: o =>
+            {
+                o.AddComponent<ParticleObject>();
+                o.transform.SetScale2D(Vector2.one);
+            }, sprite: ResourceUtils.LoadSpriteResource("fire_effect", ppu:62.5f),
+            description: "From Heat")
+            .WithConfigGroup(Particle)
+            .WithReceiverGroup(ReceiverGroup.Particles));
+
+        Categories.Effects.Add(new PreloadObject("Coral Shatter Effect", "coral_shatter_effect",
+            ("Coral_24", "coral_crust_tree (5)/Coral Crust Tree Activator/Break Particle Pool/Pt Break Antic"), 
+            preloadAction: o =>
+            {
+                o.AddComponent<ParticleObject>();
+                o.transform.SetScale2D(Vector2.one);
+                o.transform.SetRotation2D(0);
+            }, sprite: ResourceUtils.LoadSpriteResource("coral_shatter", ppu:62.5f))
+            .WithConfigGroup(Particle)
+            .WithReceiverGroup(ReceiverGroup.Particles));
+
         Categories.Effects.Add(new PreloadObject("Fish Effect", "fish_effect",
                 ("Memory_Coral_Tower", "Fish/Pt Exit"),
                 preloadAction: MiscFixers.FixDecoration,
@@ -334,10 +355,16 @@ public static class ParticleObjects
                             main.startColor = value.GetValue();
                             
                             var cbs = ps.colorBySpeed;
-                            cbs.enabled = false;
+                            var cs = cbs.color;
+                            cs.colorMin = value.GetValue().Where(a: cs.colorMin.a);
+                            cs.colorMax = value.GetValue().Where(a: cs.colorMax.a);
+                            cbs.color = cs;
 
                             var col = ps.colorOverLifetime;
-                            col.enabled = false;
+                            var c = col.color;
+                            c.colorMin = value.GetValue().Where(a: c.colorMin.a);
+                            c.colorMax = value.GetValue().Where(a: c.colorMax.a);
+                            col.color = c;
                         });
                     }, true).WithPriority(-1)),
         ConfigGroup.PngUrl,

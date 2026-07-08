@@ -415,6 +415,54 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> ConfigOption = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomOption>("Name", "cfg_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            }).WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomOption>("Desc", "cfg_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            }).WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomOption>("Option Type", "cfg_type", (item, value) =>
+            {
+                item.OType = (CustomOption.OptionType)value.GetValue();
+            }).WithOptions("Text", "Int", "Float").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomOption>("Default Value", "cfg_default", (item, value) =>
+            {
+                item.Default = value.GetValue();
+            }).WithDefaultValue("None")
+        )
+    ];
+    
+    public static readonly List<ConfigType> Toggle = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomToggle>("Name", "toggle_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            }).WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomToggle>("Desc", "toggle_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            }).WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomToggle>("Default Value", "toggle_default", (item, value) =>
+            {
+                item.Default = value.GetValue();
+            }).WithDefaultValue(false)
+        )
+    ];
+    
     public static readonly List<ConfigType> Scene = [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomScene>("Group ID", "scene_group", (item, value) =>

@@ -79,7 +79,7 @@ public static class ScriptEditorUI
         }.transform;
 
         var scripts = CreateBlankParent("Scripts", scriptUI, 0);
-        
+
         GlobalParent = CreateBlankParent("Global Script", scripts, 0);
         LocalParent = CreateBlankParent("Local Script", scripts, 0);
 
@@ -92,9 +92,9 @@ public static class ScriptEditorUI
         _globalComments.transform.SetAsFirstSibling();
         _globalBlocks = CreateBlankParent("Global Blocks", GlobalParent, 20);
         _globalLines = CreateBlankParent("Global Lines", GlobalParent, 20);
-        
+
         Deletable.Init(scriptUI);
-        
+
         var addParent = new GameObject("Buttons Parent")
         {
             transform = { parent = scriptUI.transform }
@@ -124,7 +124,7 @@ public static class ScriptEditorUI
             size: new Vector2(50, 50));
 
         List<Text> labels = [];
-        
+
         var index = 0;
         for (var i = 0; i < 8; i++)
         {
@@ -162,7 +162,7 @@ public static class ScriptEditorUI
             index = 0;
             DoRefresh();
         });
-        
+
         left.onClick.AddListener(() =>
         {
             index -= 8;
@@ -209,7 +209,7 @@ public static class ScriptEditorUI
         _localBtnText = SetupSwitchButton(ToggleParent, true, "Local Script", new Vector3(-200, 20));
         _localBtnText.color = Color.yellow;
         _globalBtnText = SetupSwitchButton(ToggleParent, false, "Global Script", new Vector3(200, 20));
-        
+
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
             {
@@ -221,24 +221,21 @@ public static class ScriptEditorUI
         ScriptManager.IsLocal = true;
         DoRefresh();
 
-        if (Settings.PrideMode)
-        {
-            var img1 = UIUtils.MakeImage("Rainbow Flag", scripts, new Vector2(360, 0),
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
-            img1.sprite = ResourceUtils.LoadSpriteResource("rainbow", FilterMode.Point, ppu: 10);
-            img1.transform.SetAsFirstSibling();
-            img1.transform.SetRotation2D(90);
+        var img1 = UIUtils.MakeImage("Rainbow Flag", scripts, new Vector2(360, 0),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
+        img1.sprite = ResourceUtils.LoadSpriteResource("rainbow", FilterMode.Point, ppu: 10);
+        img1.transform.SetAsFirstSibling();
+        img1.transform.SetRotation2D(90);
 
-            Rainbow = img1.gameObject;
-            
-            var img2 = UIUtils.MakeImage("Trans Flag", scripts, new Vector2(360, 0),
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
-            img2.sprite = ResourceUtils.LoadSpriteResource("trans", FilterMode.Point, ppu: 10);
-            img2.transform.SetAsFirstSibling();
-            img2.transform.SetRotation2D(90);
+        Rainbow = img1.gameObject;
 
-            Trans = img2.gameObject;
-        }
+        var img2 = UIUtils.MakeImage("Trans Flag", scripts, new Vector2(360, 0),
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
+        img2.sprite = ResourceUtils.LoadSpriteResource("trans", FilterMode.Point, ppu: 10);
+        img2.transform.SetAsFirstSibling();
+        img2.transform.SetRotation2D(90);
+
+        Trans = img2.gameObject;
         return;
 
         void DoRefresh()
@@ -246,12 +243,11 @@ public static class ScriptEditorUI
             var blocks = ScriptManager.CurrentBlocks.ToArray();
             for (var i = 0; i < labels.Count; i++)
             {
-                labels[i].text = blocks.Length <= index + i ? "" :
-                    blocks[index + i].Item2;
+                labels[i].text = blocks.Length <= index + i ? "" : blocks[index + i].Item2;
             }
         }
     }
-    
+
     private static Text SetupSwitchButton(GameObject parent, bool local, string name, Vector3 pos)
     {
         var size = new Vector2(750, 40);

@@ -57,7 +57,7 @@ public class TileChangerObject() : ToolObject("tile_changer", Storage.Settings.T
 
     public override void Release()
     {
-        ActionManager.PerformAction(new ToggleTile(TileFlips.ToList(), !_lastEmpty));
+        ActionManager.SceneActionManager.PerformAction(new ToggleTile(TileFlips.ToList(), !_lastEmpty));
         TileFlips.Clear();
     }
 }

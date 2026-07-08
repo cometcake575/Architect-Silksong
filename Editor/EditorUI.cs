@@ -75,7 +75,7 @@ public static class EditorUI
     private static GameObject _shareScriptLabel;
     
     private static AttributeType _currentOption = AttributeType.Config;
-    private static EditorType _currentType = EditorType.Map;
+    public static EditorType CurrentType = EditorType.Map;
     
     public static void Setup()
     {
@@ -154,7 +154,7 @@ public static class EditorUI
         
         btn.onClick.AddListener(() =>
         {
-            _currentType = type;
+            CurrentType = type;
             UIManager.instance.uiState = type == EditorType.Map ? UIState.PAUSED : UIState.OPTIONS;
             Deletable.DeleteButton.SetActive(false);
         });
@@ -425,7 +425,7 @@ public static class EditorUI
                 _scriptUI.SetActive(false);
                 _workshopUI.SetActive(false);
                 Deletable.DeleteButton.SetActive(false);
-                _currentType = EditorType.Map;
+                CurrentType = EditorType.Map;
             }
 
             var share = paused && CoopManager.Instance.IsActive();
@@ -460,7 +460,7 @@ public static class EditorUI
         
         if (legacy)
         {
-            _currentType = EditorType.Map;
+            CurrentType = EditorType.Map;
             UIManager.instance.uiState = UIState.PAUSED;
             Deletable.DeleteButton.SetActive(false);
         }
@@ -475,9 +475,9 @@ public static class EditorUI
             }
         }
 
-        _mapUI.SetActive(_currentType == EditorType.Map);
-        _scriptUI.SetActive(_currentType == EditorType.Script);
-        _workshopUI.SetActive(_currentType == EditorType.Workshop);
+        _mapUI.SetActive(CurrentType == EditorType.Map);
+        _scriptUI.SetActive(CurrentType == EditorType.Script);
+        _workshopUI.SetActive(CurrentType == EditorType.Workshop);
     }
 
     public static void WipeTabs()
@@ -1249,7 +1249,7 @@ public static class EditorUI
         Listeners
     }
 
-    private enum EditorType
+    public enum EditorType
     {
         Map,
         Script,

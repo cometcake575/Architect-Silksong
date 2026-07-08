@@ -14,6 +14,8 @@ public abstract class WorkshopItem
 
     public string Type;
 
+    public string ExternalSource;
+
     public List<ConfigType>[] Config;
     
     public Dictionary<string, ConfigValue> CurrentConfig;

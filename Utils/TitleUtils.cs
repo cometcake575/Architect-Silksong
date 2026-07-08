@@ -41,13 +41,14 @@ public static class TitleUtils
                 
                 fsm.GetState("Init all").AddAction(() =>
                 {
+                    wait.value = 4.75f;
                     if (!_overrideAreaText) return;
 
                     header.value = _areaHeader;
                     footer.value = _areaFooter;
                     body.value = _areaBody;
                     npc.value = _waitForCancel;
-                    wait.value = _waitForCancel ? 9999999 : 4.75f;
+                    if (_waitForCancel) wait.value = 9999999;
                 });
                 
                 fsm.GetState("Visited Check").AddAction(() =>

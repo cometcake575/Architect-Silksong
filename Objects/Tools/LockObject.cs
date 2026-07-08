@@ -28,6 +28,6 @@ public class LockObject() : ToolObject("lock", Settings.Lock, -7)
 
         var incl = Input.GetKey(KeyCode.LeftAlt) ? 2 : Input.GetKey(KeyCode.LeftShift) ? 0 : 1;
         var obj = PlacementManager.FindObject(mousePosition, incl);
-        if (obj != null) ActionManager.PerformAction(new ToggleLock(obj));
+        if (obj != null) ActionManager.SceneActionManager.PerformAction(new ToggleLock(obj));
     }
 }

@@ -139,6 +139,7 @@ public static class PreviewUtils
             gameObject.RemoveComponentsInChildren<ParticleSystemRenderer>();
             gameObject.RemoveComponentsInChildren<Crawler>();
             gameObject.RemoveComponentsInChildren<Walker>();
+            gameObject.RemoveComponentsInChildren<TalkAnimNPC>();
             if (!Storage.Settings.HitboxesInEditor.Value && !type.HitboxPreview)
             {
                 gameObject.RemoveComponentsInChildren<Collider2D>();

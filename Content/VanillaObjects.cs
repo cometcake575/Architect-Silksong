@@ -875,6 +875,25 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Levers)
             .WithBroadcasterGroup(BroadcasterGroup.Levers);
 
+        Categories.Interactable.Add(new PreloadObject("Memory Enter Zone", "memory_zone",
+            ("Coral_Tower_01", "Memory Group/before/thread_memory"),
+            preloadAction: o =>
+        {
+            o.transform.GetChild(1).gameObject.SetActive(false);
+            o.transform.GetChild(2).gameObject.SetActive(false);
+            o.transform.GetChild(4).localPosition = Vector3.zero;
+            o.transform.GetChild(5).localPosition = Vector3.zero;
+            var bc1 = o.transform.GetChild(4).GetComponent<BoxCollider2D>();
+            var bc2 = o.transform.GetChild(5).GetComponent<BoxCollider2D>();
+            bc1.size = Vector2.one;
+            bc2.size = Vector2.one;
+            bc1.offset = Vector2.zero;
+            bc2.offset = Vector2.zero;
+            o.transform.SetScale2D(new Vector2(4, 4));
+            o.AddComponent<MiscFixers.MemoryZone>();
+        },
+            sprite: ResourceUtils.LoadSpriteResource("door_sleep")).WithConfigGroup(ConfigGroup.MemoryZone));
+
         var vt = Categories.Interactable.Add(new PreloadObject("Ventrica Tube", "ventrica_tube",
             ("Bellway_City", "City Travel Tube"), preloadAction: o =>
             {
@@ -1774,6 +1793,15 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.FlowingWater)
             .WithRotationGroup(RotationGroup.All));
 
+        Categories.Effects.Add(new PreloadObject("Lavafall", "lavafall_effect",
+            ("Abyss_09", "lava_waterfall_single (27)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("lava_fall"),
+            preloadAction: o =>
+            {
+                o.transform.SetScale2D(Vector2.one);
+            })
+            .WithConfigGroup(ConfigGroup.FlowingLava));
+
         Categories.Effects.Add(new PreloadObject("Waterfall A", "waterfall_effect",
             ("Hang_09", "coral_river_chunk/waterfall/Base"),
             uiSprite: ResourceUtils.LoadSpriteResource("water_fall", FilterMode.Point, ppu:215),
@@ -2015,7 +2043,7 @@ public static class VanillaObjects
 
         AddEnemy("Squirrm", "squirm", ("Coral_36", "Judge Child (1)"),
             postSpawnAction: EnemyFixers.FixSquirrm)
-            .WithConfigGroup(ConfigGroup.Squirrm);
+            .WithConfigGroup(ConfigGroup.Squirrm).SpritePreview = true;
 
         AddEnemy("Judge", "judge", ("Coral_32", "Black Thread States/Normal World/Coral Judge (3)"),
                 preloadAction: MiscFixers.AddComponent<EnemyFixers.Judge>,
@@ -2223,9 +2251,9 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Benches));*/
         
         Categories.Misc.AddStart(new PreloadObject("Bed", "bellhome_bed",
-                ("Belltown_Room_Spare", "furnishings/bed/RestBench"),
-                preloadAction: MiscFixers.FixBench,
-                postSpawnAction: MiscFixers.AddBenchEvent)
+                ("Belltown_Room_Spare", "furnishings/bed"),
+                preloadAction: MiscFixers.FixBed,
+                postSpawnAction: MiscFixers.FixBedSpawn)
             .WithConfigGroup(ConfigGroup.Benches)
             .WithBroadcasterGroup(BroadcasterGroup.Benches));
 
@@ -3433,7 +3461,7 @@ public static class VanillaObjects
 
         Categories.Effects.Add(new PreloadObject("Heat Effect", "heat_plane",
             ("Dock_02", "HeatPlane"), 
-            description: Settings.PrideMode ? "From Fire" : null,
+            description: "From Fire",
             sprite: ResourceUtils.LoadSpriteResource("heat", ppu:20),
             preloadAction: o => o.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f))
             .WithConfigGroup(ConfigGroup.HeatPlane));
@@ -3545,7 +3573,7 @@ public static class VanillaObjects
         
         AddEnemy("Hoker", "spine_floater", ("Bone_East_14", "Spine Floater (9)"),
                 postSpawnAction: MiscFixers.FixHoker)
-            .WithConfigGroup(ConfigGroup.Hoker);
+            .WithConfigGroup(ConfigGroup.Hoker).SpritePreview = true;
 
         Categories.Interactable.Add(new PreloadObject("Exploding Wall", "exploding_wall",
             ("Bone_East_14", "explode_wall (4)"),
@@ -3628,7 +3656,6 @@ public static class VanillaObjects
         
         AddEnemy("Plasmid", "plasmid",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueBlood (1)"),
-            description: Settings.PrideMode ? "Blåhaj" : null,
             postSpawnAction: EnemyFixers.FixPlasmified);
         AddEnemy("Plasmidas", "plasmidas",
             ("Crawl_03", "Area_States/Infected/Bone Worm BlueTurret"),
@@ -3962,7 +3989,6 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Egg Statue Front", "shard_statue_4", 
             ("Tut_01b", "Shell Shard Fossil Tiny Front"),
-            description: Settings.PrideMode ? "Still cis btw" : null,
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
@@ -3971,7 +3997,6 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Egg Statue Side", "shard_statue_2", 
             ("Coral_36", "Shell Shard Fossil Tiny Egg"),
-            description: Settings.PrideMode ? "Still cis btw" : null,
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)
