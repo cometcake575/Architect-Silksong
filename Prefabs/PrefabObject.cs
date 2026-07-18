@@ -174,7 +174,12 @@ public class Prefab : PreviewableBehaviour
 
     public void Destroy()
     {
-        foreach (var spawn in spawns) Destroy(spawn);
+        foreach (var spawn in spawns)
+        {
+            var prefab = spawn.GetComponent<Prefab>();
+            if (prefab) prefab.Destroy();
+            Destroy(spawn);
+        }
     }
 
     public void ApplyConfig(string block, string value)

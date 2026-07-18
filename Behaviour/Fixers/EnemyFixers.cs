@@ -77,6 +77,10 @@ public static class EnemyFixers
     
     // Sister Splinter
     private static GameObject _splinterSpikes;
+    
+    // Raging Conchfly
+    private static GameObject _roarDrillers;
+    private static GameObject _chargeDrillers;
 
     private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     
@@ -180,6 +184,13 @@ public static class EnemyFixers
         PreloadManager.RegisterPreload(new BasicPreload("Shellwood_18", 
             "Boss Scene Parent/Boss Scene/Spikes",
             o => _splinterSpikes = o));
+        
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_27", 
+            "Battle Scene/Roar Drillers",
+            o => _roarDrillers = o));
+        PreloadManager.RegisterPreload(new BasicPreload("Coral_27", 
+            "Battle Scene/Charge Drillers",
+            o => _chargeDrillers = o));
 
         foreach (var spear in Spears)
         {
@@ -759,13 +770,32 @@ public static class EnemyFixers
         }, 5);
     }
 
-    public static void FixMaestro(GameObject obj)
+    public class FlyIn : MonoBehaviour
+    {
+        public bool flyIn;
+    }
+
+    public class Maestro : FlyIn
+    {
+        private void Start()
+        {
+            FixMaestro(gameObject, flyIn);
+        }
+    }
+
+    private static void FixMaestro(GameObject obj, bool flyIn)
     {
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Init").AddAction(() =>
         {
-            fsm.SendEvent("FINISHED");
+            fsm.SendEvent(flyIn ? "FLY IN" : "FINISHED");
+            if (flyIn) obj.GetComponent<MeshRenderer>().enabled = false;
         }, 42);
+
+        if (flyIn)
+        {
+            fsm.GetState("Fly In Ready").AddAction(() => fsm.SendEvent("WAKE"));
+        }
         
         var started = false;
         fsm.GetState("Fly").AddAction(() =>
@@ -3900,5 +3930,51 @@ public static class EnemyFixers
         var corpseProjectiles = Object.Instantiate(_corpseProjectiles);
         corpseProjectiles.name = obj.name + " Corpse Projectiles";
         fsm.FsmVariables.FindFsmGameObject("Corpse Projectiles").Value = corpseProjectiles;
+    }
+
+    public static void FixRagingConchfly(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Control");
+        
+        fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("BATTLE START"));
+
+        var wallL = fsm.FsmVariables.FindFsmFloat("Drill Wall L");
+        var wallR = fsm.FsmVariables.FindFsmFloat("Drill Wall R");
+        var wallU = fsm.FsmVariables.FindFsmFloat("Drill Floor Y");
+        var wallD = fsm.FsmVariables.FindFsmFloat("Drill Roof Y");
+        var xPosMax = fsm.FsmVariables.FindFsmFloat("xPos Max");
+        var xPosMin = fsm.FsmVariables.FindFsmFloat("xPos Min");
+        
+        fsm.GetState("Away").AddAction(UpdateConstraints, 0);
+
+        return;
+
+        void UpdateConstraints()
+        {
+            var heroPos = HeroController.instance.transform.position;
+            
+            var right = Physics2D.Raycast(heroPos, Vector2.right, 20, TerrainMask);
+            var left = Physics2D.Raycast(heroPos, Vector2.left, 20, TerrainMask);
+            var up = Physics2D.Raycast(heroPos, Vector2.up, 20, TerrainMask);
+            var down = Physics2D.Raycast(heroPos, Vector2.down, 20, TerrainMask);
+
+            if (right) xPosMax.value = wallR.value = right.point.x;
+            if (left) xPosMin.value = wallL.value = left.point.x;
+            if (up) wallU.value = left.point.y;
+            if (down) wallD.value = left.point.y;
+        }
+    }
+
+    public static void FixCovetousPilgrim(GameObject obj)
+    {
+        var fsm = obj.LocateMyFSM("Drop Rosaries");
+        var init = fsm.GetState("Init");
+        init.DisableAction(0);
+        init.AddAction(() =>
+        {
+            var hm = obj.GetComponent<HealthManager>();
+            if (!hm) return;
+            fsm.FsmVariables.FindFsmInt("Value").Value = hm.smallGeoDrops;
+        });
     }
 }

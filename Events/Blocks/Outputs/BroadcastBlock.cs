@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Events.Blocks.Events;
+using Architect.Prefabs;
 using Architect.Utils;
 using UnityEngine;
 
@@ -21,7 +22,11 @@ public class BroadcastBlock : LocalBlock
     protected override void Trigger(string id)
     {
         DoBroadcast(EventName);
-        if (TargetPrefab) TargetPrefab.BroadcastEvent(ActualEventName);
+        if (TargetPrefab)
+        {
+            TargetPrefab.BroadcastEvent(ActualEventName);
+            if (ActualEventName == "Destroy") TargetPrefab.GetComponent<Prefab>().Destroy();
+        }
     }
 
     public static void DoBroadcast(string eventName)

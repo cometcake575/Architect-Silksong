@@ -333,6 +333,7 @@ public static class UtilityObjects
         Object.DontDestroyOnLoad(hook);
         hook.SetActive(false);
 
+        FsmHook.Init();
         hook.AddComponent<FsmHook>();
         
         return new CustomObject("FSM Hook", "fsm_hook", hook, 

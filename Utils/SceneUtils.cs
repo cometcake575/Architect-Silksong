@@ -18,6 +18,7 @@ using TeamCherry.Localization;
 using TeamCherry.SharedUtils;
 using tk2dRuntime.TileMap;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -500,6 +501,10 @@ public static class SceneUtils
     private static AtmosCue NoAtmosCue => field ??=
         Resources.FindObjectsOfTypeAll<AtmosCue>().FirstOrDefault(o => o.name == "None");
     
+    public static AudioMixerSnapshot AtmosSnapshot => field ??=
+        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+            .FirstOrDefault(o => o.name == "at All Layers");
+    
     public static GameObject CreateSceneManager()
     {
         var sm = Object.Instantiate(_sceneManager);
@@ -511,7 +516,7 @@ public static class SceneUtils
         csm.mapZone = MapZone.NONE;
         csm.environmentType = EnvironmentTypes.NoEffect;
         csm.actorSnapshot = GameManager.instance.actorSnapshotUnpaused;
-        csm.atmosSnapshot = AudioPlayer.AtmosSnapshot;
+        csm.atmosSnapshot = AtmosSnapshot;
         csm.atmosCue = NoAtmosCue;
         csm.musicCue = GameManager.instance.noMusicCue;
         csm.darknessLevel = 0;

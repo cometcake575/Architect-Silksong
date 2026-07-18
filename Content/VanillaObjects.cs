@@ -138,6 +138,10 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.ClearRotation,
             postSpawnAction: EnemyFixers.FixDriller);
 
+        /*AddEnemy("Raging Conchfly", "raging_conchfly",
+            ("Coral_27", "Battle Scene/Wave 1/Coral Conch Driller Giant Solo"),
+            postSpawnAction: EnemyFixers.FixRagingConchfly);*/
+
         AddEnemy("Crustcrawler A", "coral_goomba_m",
             ("Memory_Coral_Tower", "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba M (2)"),
             preloadAction: EnemyFixers.RemoveConstrainPosition);
@@ -620,7 +624,14 @@ public static class VanillaObjects
         var bombS = Categories.Attacks.Add(new CustomObject("Rune Bomb S", "choir_bomb_s", choirBombS,
                 description:"Appears when the 'Activate' trigger is run.",
             sprite: ResourceUtils.LoadSpriteResource("rune_bomb_small", ppu:64))
-            .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
+            .WithReceiverGroup(ReceiverGroup.RuneBomb)
+            .WithFlipAction((o, f) =>
+            {
+                if (!f) return;
+                if (o.GetComponent<MiscFixers.PreviewState>()) o.transform.SetScaleX(-o.transform.GetScaleX());
+                else o.transform.SetScaleY(-o.transform.GetScaleY());
+            })
+            .WithRotationGroup(RotationGroup.All));
 
         var choirBombL = new GameObject("[Architect] Choir Bomb L");
         choirBombL.SetActive(false);
@@ -628,7 +639,14 @@ public static class VanillaObjects
         var bombL = Categories.Attacks.Add(new CustomObject("Rune Bomb L", "choir_bomb_l", choirBombL,
                 description:"Appears when the 'Activate' trigger is run.",
             sprite: ResourceUtils.LoadSpriteResource("rune_slam_large", ppu:50))
-            .WithReceiverGroup(ReceiverGroup.RuneBomb).WithRotationGroup(RotationGroup.All));
+            .WithReceiverGroup(ReceiverGroup.RuneBomb)
+            .WithFlipAction((o, f) =>
+            {
+                if (!f) return;
+                if (o.GetComponent<MiscFixers.PreviewState>()) o.transform.SetScaleX(-o.transform.GetScaleX());
+                else o.transform.SetScaleY(-o.transform.GetScaleY());
+            })
+            .WithRotationGroup(RotationGroup.All));
         
         Categories.Attacks.Add(new PreloadObject("Trobbinado", "trobbio_tornado",
             ("localpoolprefabs_assets_trobbio", "Assets/Prefabs/Hornet Bosses/Trobbio Tornado.prefab"), 
@@ -723,7 +741,8 @@ public static class VanillaObjects
         
         AddEnemy("Maestro", "song_maestro", 
             ("Hang_04_boss", "Battle Scene/Wave 13 - Maestro/Song Pilgrim Maestro"),
-            postSpawnAction:EnemyFixers.FixMaestro);
+            postSpawnAction: MiscFixers.AddComponent<EnemyFixers.Maestro>)
+            .WithConfigGroup(ConfigGroup.FlyIn);
         
         AddEnemy("Choir Elder", "pilgrim_stomper_song", ("Song_11", "Pilgrim Stomper Song"));
 
@@ -1203,7 +1222,7 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Activatable)
             .WithRotationGroup(RotationGroup.Eight));
 
-        Categories.Effects.Add(new PreloadObject("Water Effect", "water_effect_anim",
+        Categories.Effects.Add(new PreloadObject("Water Movement Effect", "water_effect_anim",
                 ("Clover_02c", "water_components_moss_short 1/caustic_small_000 (13)"),
                 preloadAction: o =>
                 {
@@ -1477,6 +1496,9 @@ public static class VanillaObjects
             {
                 o.transform.GetChild(1).GetChild(8).gameObject.SetActive(false);
             }, uiSprite: ResourceUtils.LoadSpriteResource("grey_plat_2"));
+        
+        AddSolid("Greymoor Platform 3", "moor_plat_3",
+            ("Greymoor_08", "drop plat group/grey_wood_chain_plat_mid (1)"));
     }
 
     private static void AddWhitewardObjects()
@@ -1652,6 +1674,11 @@ public static class VanillaObjects
     {
         AddEnemy("Mnemonid", "crystal_drifter", ("Peak_06", "Crystal Drifter"));
         AddEnemy("Mnemonord", "crystal_drifter_giant", ("Peak_06", "Crystal Drifter Giant"));
+        
+        Categories.Attacks.Add(new PreloadObject("Mnemonord Spike", "mnemonord_spike",
+                ("localpoolprefabs_assets_areapeak", "Assets/Prefabs/Hornet Enemies/Crystal Drifter Giant Spike.prefab"),
+                notSceneBundle: true));
+        
         AddEnemy("Driftlin", "peaks_drifter", ("Peak_05", "Peaks Drifter"));
 
         Categories.Platforming.Add(new PreloadObject("Gold Ring", "harpoon_ring",
@@ -2781,8 +2808,11 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Mushroom Tablet", "mushroom_tablet",
             ("Aqueduct_05", "Mr_Mush_Tablet_St/Mr Mushroom Tablet"),
-            preloadAction: MiscFixers.AddComponent<MiscFixers.MushroomTablet>
-        ).WithConfigGroup(ConfigGroup.Dialogue)
+            preloadAction: o =>
+            {
+                o.transform.SetPositionZ(0);
+                o.AddComponent<MiscFixers.MushroomTablet>();
+            }).WithConfigGroup(ConfigGroup.Dialogue)
         .WithReceiverGroup(ReceiverGroup.MushTablet)
         .WithBroadcasterGroup(BroadcasterGroup.Finishable));
 
@@ -3098,12 +3128,6 @@ public static class VanillaObjects
         AddEnemy("Shellwood Gnat Core", "shellwood_gnat_core", 
             ("localpoolprefabs_assets_areashellwood.bundle", "Assets/Prefabs/Hornet Enemies/Shellwood Gnat.prefab"), 
             notSceneBundle: true);
-
-        Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
-                ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
-                preloadAction: MiscFixers.FixDecoration,
-                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 75.5f)))
-            .WithConfigGroup(ConfigGroup.Decorations);
 
         Categories.Misc.Add(new PreloadObject("Pond Skipper Body", "pond_skipper_body",
             ("Belltown_Room_shellwood", "shell_hang_rope"),
@@ -3466,6 +3490,12 @@ public static class VanillaObjects
             preloadAction: o => o.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f))
             .WithConfigGroup(ConfigGroup.HeatPlane));
         
+        Categories.Effects.Add(new PreloadObject("Water Effect", "water_distort_effect",
+            ("Aqueduct_05", "StillWater"), 
+            sprite: ResourceUtils.LoadSpriteResource("water_distortion", ppu:200),
+            preloadAction: o => o.transform.localScale = new Vector3(5, 5, 5))
+            .WithConfigGroup(ConfigGroup.Scroller));
+        
         Categories.Attacks.Add(new PreloadObject("Flintbomb", "flintflame_bomb",
                 ("localpoolprefabs_assets_areadocks", 
                     "Assets/Prefabs/Enemies/Projectiles/DF Bomb Rock.prefab"),
@@ -3741,7 +3771,12 @@ public static class VanillaObjects
             .WithReceiverGroup(ReceiverGroup.DodgeFlea)
             .WithInputGroup(InputGroup.DodgeFlea)
             .WithBroadcasterGroup(BroadcasterGroup.Hittable));
-        
+
+        Categories.Platforming.Add(new PreloadObject("Flea Boat", "flea_boat",
+            ("Aqueduct_05_festival",
+                "Caravan_States/Flea Festival/Flea Game - Bouncing/Inactive While Playing/pontoon_notplaying"),
+            preloadAction: o => o.LocateMyFSM("Reset Pos On Enable").enabled = false));
+
         /*Categories.Platforming.Add(new PreloadObject("Flea Dodge Platform", "dodge_plat",
             ("Aqueduct_05_festival",
                 "Caravan_States/Flea Festival/Flea Game - Dodging/Active While Playing/Dodge Plat L")));*/
@@ -3933,7 +3968,8 @@ public static class VanillaObjects
             postSpawnAction: EnemyFixers.FixBonegravePilgrim);
         
         AddEnemy("Covetous Pilgrim", "covetous_pilgrim",
-            ("Bonegrave", "Pilgrim Groups/Rosary Pilgrim Scene/Rosary Pilgrim"));
+            ("Bonegrave", "Pilgrim Groups/Rosary Pilgrim Scene/Rosary Pilgrim"),
+            postSpawnAction: EnemyFixers.FixCovetousPilgrim);
         
         Categories.Misc.Add(new PreloadObject("Rosary Bead", "rosary",
             ("Bonegrave", "Pilgrim Groups/Rosary Pilgrim Scene/Geo Small Persistent (4)"),

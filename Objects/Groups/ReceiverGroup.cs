@@ -233,15 +233,17 @@ public static class ReceiverGroup
     ]);
     
     public static readonly List<EventReceiverType> TriggerZone = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("set_tz_layer", "SetLayer", (o, b) =>
+        {
+            if (b == null) return;
+            var tz = o.GetComponent<TriggerZone>();
+            tz.usingLayer = true;
+            tz.layer = Mathf.RoundToInt(b.GetVariable<float>("Layer"));
+        })),
         EventManager.RegisterReceiverType(new EventReceiverType("disable_tz", "DisableImmediate", o =>
         {
             o.GetComponent<TriggerZone>().block = true;
             o.SetActive(false);
-        })),
-        EventManager.RegisterReceiverType(new EventReceiverType("set_tz_layer", "SetLayer", (o, b) =>
-        {
-            if (b == null) return;
-            o.GetComponent<TriggerZone>().layer = Mathf.RoundToInt(b.GetVariable<float>("New Layer"));
         }))
     ]);
     

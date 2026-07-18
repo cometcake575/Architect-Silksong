@@ -173,6 +173,21 @@ public static class ParticleObjects
             .WithInputGroup(InputGroup.Particles)
             .WithReceiverGroup(ReceiverGroup.Particles));
 
+        Categories.Effects.Add(new PreloadObject("Fog Effect", "fog_plane_effect",
+                ("Dust_Maze_01", "Fog Planes"), 
+                preloadAction: MiscFixers.FollowCam,
+                description: "Affects the whole room.",
+                sprite: ResourceUtils.LoadSpriteResource("fog_effect", ppu: 75.5f))).DoIgnoreScale();
+
+        Categories.Effects.Add(new PreloadObject("Pollen Effect", "pollen_effect",
+                ("Shellwood_10", "pollen_particles (1)"), description: "Affects the whole room.",
+                preloadAction: MiscFixers.FixDecoration,
+                sprite: ResourceUtils.LoadSpriteResource("pollen", ppu: 75.5f)))
+            .WithConfigGroup(Particle)
+            .WithInputGroup(InputGroup.Particles)
+            .WithReceiverGroup(ReceiverGroup.Particles)
+            .WithRotationGroup(RotationGroup.All);
+
         Categories.Effects.Add(new PreloadObject("Snow Effect", "snow_effect",
                 ("Peak_05", "peak_storm_set_mid_strength"),
                 description: "Affects the whole room.\n" +

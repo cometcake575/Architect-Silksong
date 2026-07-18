@@ -37,7 +37,10 @@ public class CollectionViewBlock : CollectionBlock<CollectionViewBlock.Collectio
         desk.name = "[Architect] Collection View";
 
         _cvd = desk.GetComponent<CollectionViewerDesk>();
-        _cbd = Object.Instantiate(_cvd.board.gameObject).GetComponent<CollectionViewBoard>();
+
+        var boardInstance = Object.Instantiate(_cvd.board.gameObject);
+        boardInstance.transform.Find("Container").Find("bottom_fader").gameObject.SetActive(false);
+        _cbd = boardInstance.GetComponent<CollectionViewBoard>();
         _cvd.board = _cbd;
 
         _cvd.sections = [];

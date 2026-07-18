@@ -182,7 +182,23 @@ public static class ConfigGroup
             new StringConfigType("Audio Cue", "audio_player_cue", (o, value) =>
             {
                 o.GetComponent<AudioPlayer>().cueId = value.GetValue();
-            }).WithDefaultValue("None"))
+            }).WithDefaultValue("None")),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Music Snapshot", "audio_player_music_snapshot", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().musicSnapshot = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Music Effects", "audio_player_music_effects", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().musicEffectSnapshot =
+                    value.GetValue() == 2 ? "Low Health" : value.GetStringValue();
+            }).WithDefaultValue(0).WithOptions("Normal", "Muffled", "Distorted")),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Atmos Snapshot", "audio_player_atmos_snapshot", (o, value) =>
+            {
+                o.GetComponent<AudioPlayer>().atmosSnapshot = value.GetValue();
+            }))
     ];
     
     public static readonly List<ConfigType> CollisionChanger = [
@@ -1569,7 +1585,7 @@ public static class ConfigGroup
     private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
     private static readonly int Default = LayerMask.NameToLayer("Default");
 
-    public static readonly List<ConfigType> Colliders = GroupUtils.Merge(Decorations, [
+    public static readonly List<ConfigType> Colliders = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Collision Type", "collider_type", (o, value) =>
                 {
@@ -1615,7 +1631,7 @@ public static class ConfigGroup
                         .AddComponent<Fallthrough>().fallthroughTime = value.GetValue();
                 }
             ))
-    ]);
+    ]));
 
     public static readonly List<ConfigType> BellPlat3 = GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(
@@ -1928,7 +1944,13 @@ public static class ConfigGroup
                 {
                     o.GetComponent<FsmHook>().inject = value.GetValue() == 1;
                 }
-            ).WithOptions("Observe", "Inject").WithDefaultValue(0))
+            ).WithOptions("Observe", "Inject").WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new StringConfigType("FsmMaster Edits", "fsm_hook_json_edits", 
+                (o, value) =>
+                {
+                    o.GetComponent<FsmHook>().fsmMasterData = value.GetValue();
+                }
+            ))
     ]);
 
     public static readonly List<ConfigType> EnemyManager = GroupUtils.Merge(Generic, [
@@ -2273,6 +2295,14 @@ public static class ConfigGroup
             {
                 o.GetComponent<EnemyFixers.Hornfly>().hopDistance = value.GetValue();
             }).WithDefaultValue(new Vector2(4, 4)))
+    ]);
+
+    public static readonly List<ConfigType> FlyIn = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Spawn Mode", "spawn_telegraph_flyin", (o, value) =>
+            {
+                if (value.GetValue() == 1) o.GetComponent<EnemyFixers.FlyIn>().flyIn = true;
+            }).WithOptions("None", "Fly In").WithDefaultValue(0))
     ]);
     
     public static readonly List<ConfigType> Aknids = GroupUtils.Merge(Enemies,
@@ -2706,7 +2736,7 @@ public static class ConfigGroup
             }).WithDefaultValue("door_slabCaged").WithPriority(-1))
     ]);
 
-    public static readonly List<ConfigType> MemoryZone = GroupUtils.Merge(Enemies, [
+    public static readonly List<ConfigType> MemoryZone = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Memory Scene", "memory_scene", (o, value) =>
             {
@@ -3376,9 +3406,9 @@ public static class ConfigGroup
                 var mr = o.GetComponent<MeshRenderer>();
                 var mat = mr.material;
                 var val = value.GetValue();
-                mat.SetFloat(SpeedX, mat.GetFloat(SpeedX) * val.x);
-                mat.SetFloat(SpeedY, mat.GetFloat(SpeedY) * val.y);
-            }).WithDefaultValue(Vector2.zero))
+                mat.SetFloat(SpeedX, val.x);
+                mat.SetFloat(SpeedY, val.y);
+            }).WithDefaultValue(new Vector2(-0.03f, 0)))
     ]));
 
     public static readonly List<ConfigType> PoleRing = GroupUtils.Merge(Visible, [

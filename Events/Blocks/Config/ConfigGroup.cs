@@ -290,6 +290,11 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<ItemBlock>("Item ID", "item_id", 
                 (b, f) => b.ItemName = f.GetValue())
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<ItemBlock>("Amount", "item_amount", 
+                (b, f) => b.Amount = f.GetValue())
+                .WithDefaultValue(1)
         )
     ];
     

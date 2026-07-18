@@ -71,6 +71,15 @@ public class AudioPlayer : MonoBehaviour
                 if (Players.Count > 0 && !_isUnlocked) return;
                 orig(self, snapshot, delayTime, transitionTime, blockMusicMarker);
             }, typeof(AudioMixerSnapshot), typeof(float), typeof(float), typeof(bool));
+        
+        typeof(AudioMixerSnapshot).Hook(nameof(AudioMixerSnapshot.TransitionTo),
+            (Action<AudioMixerSnapshot, float> orig, AudioMixerSnapshot self, float timeToReach) =>
+            {
+                Players.RemoveAll(i => !i);
+                if (Players.Count > 0 && !_isUnlocked && self.audioMixer.name is "Music" or "Atmos" or "Music Effects")
+                    return;
+                orig(self, timeToReach);
+            });
     }
 
     private void OnEnable()
@@ -98,10 +107,14 @@ public class AudioPlayer : MonoBehaviour
         Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
             .FirstOrDefault(o => o.name == "Normal" && o.audioMixer && o.audioMixer.name == "Music");
 
-    public static AudioMixerSnapshot AtmosSnapshot => field ??=
+    private static AudioMixerSnapshot AtmosSnapshot => field ??=
         Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
             .FirstOrDefault(o => o.name == "at All Layers");
 
+    public string musicSnapshot = "Normal";
+    public string musicEffectSnapshot = "Normal";
+    public string atmosSnapshot = "at All Layers";
+    
     private IEnumerator DoPlay()
     {
         if (isAtmos)
@@ -115,7 +128,7 @@ public class AudioPlayer : MonoBehaviour
 
             _isUnlocked = true;
             AudioManager.Instance.ApplyAtmosCue(cue, fadeTime);
-            AudioManager.TransitionToAtmosOverride(AtmosSnapshot, fadeTime);
+            if (atmosSnapshot.IsNullOrWhiteSpace()) AudioManager.TransitionToAtmosOverride(AtmosSnapshot, fadeTime);
             GameManager.instance.sm.atmosCue = cue;
             GameManager.instance.sm.atmosSnapshot = cue.snapshot;
         }
@@ -130,11 +143,47 @@ public class AudioPlayer : MonoBehaviour
             
             _isUnlocked = true;
             AudioManager.Instance.ApplyMusicCue(cue, 0, fadeTime, true);
-            AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, fadeTime);
+            if (musicSnapshot.IsNullOrWhiteSpace()) AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, fadeTime);
             GameManager.instance.sm.musicCue = cue;
             GameManager.instance.sm.musicSnapshot = cue.snapshot;
         }
 
+        if (!atmosSnapshot.IsNullOrWhiteSpace() && AtmosSnapshots.TryGetValue(atmosSnapshot, out var ats))
+        {
+            AudioManager.TransitionToAtmosOverride(ats, fadeTime);
+        }
+
+        if (!musicEffectSnapshot.IsNullOrWhiteSpace() && MusicEffectSnapshots.TryGetValue(musicEffectSnapshot, out var mes))
+        {
+            mes.TransitionTo(fadeTime);
+        }
+
+        if (!musicSnapshot.IsNullOrWhiteSpace() && MusicSnapshots.TryGetValue(musicSnapshot, out var ms))
+        {
+            AudioManager.Instance.ApplyMusicSnapshot(ms, 0, fadeTime);
+        }
+        
         _isUnlocked = false;
     }
+
+    private static Dictionary<string, AudioMixerSnapshot> MusicSnapshots => field ??=
+        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+            .Where(d => d.audioMixer.name == "Music")
+            .GroupBy(d => d.name)
+            .Select(grp => grp.First())
+            .ToDictionary(d => d.name, d => d);
+
+    private static Dictionary<string, AudioMixerSnapshot> MusicEffectSnapshots => field ??=
+        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+            .Where(d => d.audioMixer.name == "Music Effects")
+            .GroupBy(d => d.name)
+            .Select(grp => grp.First())
+            .ToDictionary(d => d.name, d => d);
+
+    private static Dictionary<string, AudioMixerSnapshot> AtmosSnapshots => field ??=
+        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+            .Where(d => d.audioMixer.name == "Atmos")
+            .GroupBy(d => d.name)
+            .Select(grp => grp.First())
+            .ToDictionary(d => d.name, d => d);
 }

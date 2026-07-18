@@ -20,10 +20,12 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>3.31.0</Version>
+    <Version>3.32.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" Publicize="true"/>
+    
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="Hamunii.BepInEx.AutoPlugin" Version="2.0.1" PrivateAssets="all" />
@@ -40,6 +42,9 @@
     </Reference>
     <Reference Include="QuickWarp">
       <HintPath>$(SilksongPluginsFolder)/QuickWarp/QuickWarp.dll</HintPath>
+    </Reference>
+    <Reference Include="FsmMaster" Publicize="true">
+      <HintPath>$(SilksongPluginsFolder)/FsmMaster/FsmMaster.dll</HintPath>
     </Reference>
   </ItemGroup>
 

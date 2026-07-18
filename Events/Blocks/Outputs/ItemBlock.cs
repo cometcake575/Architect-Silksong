@@ -15,9 +15,11 @@ public class ItemBlock : ScriptBlock
     public override void Reset()
     {
         ItemName = "";
+        Amount = 1;
     }
 
     public string ItemName;
+    public int Amount = 1;
 
     public override object GetValue(string id)
     {
@@ -38,10 +40,10 @@ public class ItemBlock : ScriptBlock
         switch (trigger)
         {
             case "Give":
-                item.Get();
+                item.Get(Amount);
                 break;
             case "GiveSilent":
-                item.Get(false);
+                item.Get(Amount, false);
                 break;
             case "Take":
             case "Clear":
@@ -53,7 +55,7 @@ public class ItemBlock : ScriptBlock
                         i.SavedData = data;
                         break;
                     case CollectableItem i:
-                        i.Take(trigger == "Take" ? 1 : 999);
+                        i.Take(trigger == "Take" ? Amount : 999);
                         break;
                     case ToolItem i:
                         var tdata = i.SavedData;
