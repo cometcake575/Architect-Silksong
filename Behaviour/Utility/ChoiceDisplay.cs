@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Architect.Behaviour.Fixers;
 using Architect.Events.Blocks;
 using Architect.Utils;
 using UnityEngine;
@@ -31,11 +32,13 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
         
         HeroController.instance.RelinquishControl();
 
+        var txt = MiscFixers.SubstituteVars(text);
+
         if (useItem)
         {
             if (!savedItems.IsNullOrEmpty())
             {
-                DialogueYesNoBox.Open(Yes, No, true, text, savedItems, costs, 
+                DialogueYesNoBox.Open(Yes, No, true, txt, savedItems, costs, 
                     true, takeItem, null); 
                 yield break;
             }
@@ -43,12 +46,12 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
             var i = MiscUtils.GetSavedItem(item);
             if (i)
             {
-                DialogueYesNoBox.Open(Yes, No, true, text, i, cost, 
+                DialogueYesNoBox.Open(Yes, No, true, txt, i, cost, 
                     true, takeItem); 
                 yield break;
             }
         }
-        DialogueYesNoBox.Open(Yes, No, true, text, currencyType, cost);
+        DialogueYesNoBox.Open(Yes, No, true, txt, currencyType, cost);
     }
 
     private void Yes()

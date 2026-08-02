@@ -36,6 +36,15 @@ public static class ConfigGroup
             }))
     ];
     
+    public static readonly List<ConfigType> BlurPlane =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Vibrance Offset", "blur_plane_vibrance_offset", (o, value) =>
+            {
+                global::BlurPlane.SetVibranceOffset(value.GetValue());
+            }))
+    ];
+    
     public static readonly List<ConfigType> Disabler = GroupUtils.Merge(Generic,
     [
         ConfigurationManager.RegisterConfigType(
@@ -1582,6 +1591,7 @@ public static class ConfigGroup
             }, true).WithDefaultValue(new Color(1, 1, 1, 0.1f)))
     ]));
 
+    private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
     private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
     private static readonly int Default = LayerMask.NameToLayer("Default");
 
@@ -1595,10 +1605,11 @@ public static class ConfigGroup
                             o.RemoveComponentsInChildren<Collider2D>();
                             break;
                         case 1:
-                            o.layer = Default;
+                            o.layer = EnemiesLayer;
                             var collider = o.GetComponentInChildren<Collider2D>();
-                            collider.isTrigger = true;
-                            collider.gameObject.AddComponent<CustomDamager>().damageAmount = 1;
+                            var dh = collider.gameObject.AddComponent<DamageHero>();
+                            dh.hazardType = HazardType.SPIKES;
+                            dh.gameObject.AddComponent<NonBouncer>();
                             break;
                         case 2:
                             o.GetComponentInChildren<Collider2D>().isTrigger = false;
@@ -1739,7 +1750,12 @@ public static class ConfigGroup
             new ChoiceConfigType("Tint Mode", "colourer_mode", (o, value) =>
             {
                 o.GetComponent<ObjectColourer>().mode = value.GetValue();
-            }).WithOptions("Multiply", "Set", "Brighten").WithDefaultValue(0))
+            }).WithOptions("Multiply", "Set", "Brighten").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Recursive", "colourer_recursive", (o, value) =>
+            {
+                o.GetComponent<ObjectColourer>().recursive = value.GetValue();
+            }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
@@ -3024,9 +3040,13 @@ public static class ConfigGroup
     public static readonly List<ConfigType> FullPng = GroupUtils.Merge(PhysicalPng, 
         [
             ConfigurationManager.RegisterConfigType(
-                new BoolConfigType("Light Reflection", "png_glow",
-                        (o, value) => { o.GetComponentInChildren<PngObject>().glow = value.GetValue(); })
-                    .WithDefaultValue(false)
+                new ChoiceConfigType("Shader Type", "png_glow",
+                        (o, value) =>
+                        {
+                            o.GetComponentInChildren<PngObject>().glow = value.GetValue();
+                        })
+                    .WithOptions("Reflective", "Normal", "Haze")
+                    .WithDefaultValue(1)
                     .WithPriority(-2))
         ]);
 
@@ -3117,9 +3137,13 @@ public static class ConfigGroup
                 (o, value) => { o.GetComponent<VideoPlayer>().playbackSpeed = value.GetValue(); })
                 .WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Light Reflection", "mp4_glow",
-                    (o, value) => { o.GetComponentInChildren<Mp4Object>().glow = value.GetValue(); })
-                .WithDefaultValue(false)
+            new ChoiceConfigType("Shader Type", "mp4_glow",
+                    (o, value) =>
+                    {
+                        o.GetComponentInChildren<PngObject>().glow = value.GetValue();
+                    })
+                .WithOptions("Reflective", "Normal", "Haze")
+                .WithDefaultValue(1)
                 .WithPriority(-2)),
         AlphaColour
     ]);
@@ -3164,6 +3188,22 @@ public static class ConfigGroup
                     zone.layer = value.GetValue();
                     zone.usingLayer = true;
                 }).WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> HitResponder = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Shape", "hit_responder_shape",
+                    (o, value) =>
+                    {
+                        if (value.GetValue() == 0) return;
+                        o.GetComponent<PolygonCollider2D>().enabled = true;
+                        o.GetComponent<BoxCollider2D>().enabled = false;
+                    }, (o, value, _) =>
+                    {
+                        o.GetComponent<SpriteRenderer>().sprite =
+                            value.GetValue() == 0 ? Behaviour.Utility.HitResponder.SquareZone : Behaviour.Utility.HitResponder.CircleZone;
+                    })
+                .WithOptions("Square", "Circle").WithDefaultValue(0).WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [
@@ -3744,6 +3784,17 @@ public static class ConfigGroup
                     {
                         o.GetComponent<ActivatingBase>().startActive = value.GetValue();
                     }).WithDefaultValue(false))
+    ]);
+    
+    public static readonly List<ConfigType> CoralBranch = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Grown", "coral_branch_start_grown",
+                    (o, value) =>
+                    {
+                        if (!value.GetValue()) return;
+                        o.GetComponent<ActivatingBase>().startActive = true;
+                        o.GetComponent<JitterSelfForTime>().startInactive = true;
+                    }).WithDefaultValue(true))
     ]);
 
     public static readonly List<ConfigType> BellPod = GroupUtils.Merge(CloverPod, [

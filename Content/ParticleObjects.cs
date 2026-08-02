@@ -47,6 +47,31 @@ public static class ParticleObjects
             .WithConfigGroup(Particle)
             .WithReceiverGroup(ReceiverGroup.Particles));
 
+        Categories.Effects.Add(new PreloadObject("Coral Willow Effect", "coral_willow_effect",
+            ("Coral_40", "Coral_willow_particle"), preloadAction: o =>
+            {
+                o.AddComponent<ParticleObject>();
+                o.transform.SetScale2D(Vector2.one);
+            }, sprite: ResourceUtils.LoadSpriteResource("willow_effect", ppu:62.5f))
+            .WithConfigGroup(Particle)
+            .WithReceiverGroup(ReceiverGroup.Particles));
+
+        Categories.Effects.Add(new PreloadObject("Dragonfly Effect", "dragonfly_effect",
+            ("Clover_04b", "Clover tiny bugs"), 
+            preloadAction: o => o.transform.GetChild(0).gameObject.SetActive(true),
+            description: "Affects the whole room.",
+            sprite: ResourceUtils.LoadSpriteResource("dragonfly_effect", ppu:62.5f)));
+
+        Categories.Effects.Add(new PreloadObject("Fireflies Effect", "fireflies_effect/immediate_BG",
+            ("Clover_04b", "aspid_fireflies"), preloadAction: o =>
+            {
+                o.AddComponent<ParticleObject>();
+                o.transform.SetScale2D(Vector2.one);
+            }, 
+            sprite: ResourceUtils.LoadSpriteResource("firefly_effect", ppu:62.5f))
+            .WithConfigGroup(Particle)
+            .WithReceiverGroup(ReceiverGroup.Particles));
+        
         Categories.Effects.Add(new PreloadObject("Coral Shatter Effect", "coral_shatter_effect",
             ("Coral_24", "coral_crust_tree (5)/Coral Crust Tree Activator/Break Particle Pool/Pt Break Antic"), 
             preloadAction: o =>

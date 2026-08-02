@@ -1,7 +1,7 @@
-using System;
 using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Utils;
+using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -419,5 +419,33 @@ public static class HazardFixers
             obj.BroadcastEvent("OnBreak");
             obj.BroadcastEvent("FirstBreak");
         });
+    }
+
+    public static void FixSpikes(GameObject obj, params Vector2[] points)
+    {
+        obj.transform.localScale = Vector3.one;
+        obj.transform.SetRotation2D(0);
+        
+        obj.transform.SetPositionZ(0.01f);
+
+        var dmg = new GameObject("Damager")
+        {
+            transform =
+            {
+                parent = obj.transform,
+                localPosition = Vector3.zero
+            },
+            layer = (int)PhysLayers.ENEMY_ATTACK
+        };
+
+        var col = dmg.AddComponent<EdgeCollider2D>();
+        col.isTrigger = true;
+
+        col.points = points;
+
+        var dh = dmg.AddComponent<DamageHero>();
+        dmg.AddComponent<NonBouncer>();
+        dh.damageDealt = 1;
+        dh.hazardType = HazardType.SPIKES;
     }
 }

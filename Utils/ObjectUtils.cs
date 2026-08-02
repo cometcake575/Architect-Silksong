@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Architect.Events;
+using TeamCherry.NestedFadeGroup;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -19,6 +20,23 @@ public static class ObjectUtils
     {
         var comp = obj.GetComponent<T>();
         if (comp) Object.Destroy(comp);
+    }
+    
+    public static void WipeBehaviour(this GameObject obj)
+    {
+        foreach (var fsm in obj.GetComponentsInChildren<PlayMakerFSM>(true)) 
+            fsm.enabled = false;
+        
+        obj.RemoveComponentsInChildren<FSMActivator>();
+        obj.RemoveComponentsInChildren<IPersistentItem>();
+        obj.RemoveComponentsInChildren<InteractableBase>();
+        obj.RemoveComponentsInChildren<IHitResponder>();
+        obj.RemoveComponentsInChildren<NestedFadeGroupBase>();
+        obj.RemoveComponentsInChildren<BlackThreadState>();
+        obj.RemoveComponentsInChildren<EnemyBullet>();
+        obj.RemoveComponentsInChildren<TalkAnimNPC>();
+        obj.RemoveComponentsInChildren<tk2dLookAnimNPC>();
+        obj.RemoveComponentsInChildren<Walker>();
     }
     
     public static T ReplaceComponent<T>(this GameObject obj) where T : Component

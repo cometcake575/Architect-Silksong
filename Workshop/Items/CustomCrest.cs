@@ -124,10 +124,10 @@ public class CustomCrest : SpriteItem
         
         _crest.slots = _slots.Select(c =>
         {
-            var up = _slots.FirstPosMin(s => s.Pos.y - c.Pos.y, Dist);
-            var down = _slots.FirstPosMin(s => c.Pos.y - s.Pos.y, Dist);
-            var left = _slots.FirstPosMin(s => c.Pos.x - s.Pos.x, Dist);
-            var right = _slots.FirstPosMin(s => s.Pos.x - c.Pos.x, Dist);
+            var up = FirstPosMin(_slots, s => s.Pos.y - c.Pos.y, Dist);
+            var down = FirstPosMin(_slots, s => c.Pos.y - s.Pos.y, Dist);
+            var left = FirstPosMin(_slots, s => c.Pos.x - s.Pos.x, Dist);
+            var right = FirstPosMin(_slots, s => s.Pos.x - c.Pos.x, Dist);
             
             return new ToolCrest.SlotInfo
             {
@@ -274,5 +274,30 @@ public class CustomCrest : SpriteItem
     public class CustomConfigGroup : HeroController.ConfigGroup
     {
         public ToolCrest InheritsDashFrom;
+    }
+
+    public static int FirstPosMin<T>(IEnumerable<T> enumerable, Func<T, float> rule, Func<T, float> backupRule)
+    {
+        var minV1 = float.MaxValue;
+        var minV2 = float.MaxValue;
+        var minI1 = -1;
+        var i = -1;
+        
+        foreach (var n in enumerable)
+        {
+            i++;
+            
+            var v = rule(n);
+            var v2 = backupRule(n);
+            if (v <= 0) continue;
+            if (v < minV1 || (Mathf.Approximately(v, minV1) && v2 < minV2))
+            {
+                minV1 = v;
+                minV2 = v2;
+                minI1 = i;
+            }
+        }
+        
+        return minI1;
     }
 }

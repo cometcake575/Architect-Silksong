@@ -970,6 +970,17 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Crawfather = GroupUtils.Merge(Wakeable, [
+        EventManager.RegisterReceiverType(new EventReceiverType("crawfather_crowd_roar", "CrowdRoar", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("CROWD ROAR");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("crawfather_crowd_idle", "CrowdIdle", o =>
+        {
+            o.LocateMyFSM("Control").SendEvent("CROWD IDLE");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Binoculars = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("start_using", "StartUsing", o =>
         {

@@ -28,6 +28,7 @@ public static class SceneUtils
 {
     private static GameObject _manager;
     private static GameObject _sceneManager;
+    private static GameObject _gradeMarker;
     private static GameObject _tilemap;
     private static GameObject _borderPrefab;
 
@@ -82,6 +83,7 @@ public static class SceneUtils
                     tm.ClearTile(x, y, 0);
                 }
             }
+            
 
             Object.DontDestroyOnLoad(o);
             o.name = "[Architect] Tilemap Preload";
@@ -89,6 +91,14 @@ public static class SceneUtils
             
             var map = _tilemap.GetComponent<tk2dTileMap>();
             Object.Destroy(map.renderData);
+        }));
+        PreloadManager.RegisterPreload(new BasicPreload("Bonetown", "GradeMarker (1)", o =>
+        {
+            o = Object.Instantiate(o);
+            o.SetActive(false);
+            Object.DontDestroyOnLoad(o);
+            o.name = "[Architect] Grade Marker Preload";
+            _gradeMarker = o;
         }));
         
         typeof(SceneLoad).Hook(nameof(SceneLoad.BeginRoutine), RedirectLoad);
@@ -482,6 +492,10 @@ public static class SceneUtils
         SceneManager.MoveGameObjectToScene(CreateManager(), scene);
         
         SceneManager.SetActiveScene(scene);
+        
+        CreateGradeMarker(info.HeroLight, info.AmbientLight, info.Saturation);
+        
+        FsmHook.FsmMaster.OnSceneLoaded(scene, LoadSceneMode.Single);
         CreateTileMap(info);
         
         sm.AddComponent<CustomTransitionPoint>();
@@ -533,6 +547,22 @@ public static class SceneUtils
         m.name = "_Managers";
         m.SetActive(true);
         return m;
+    }
+    
+    public static void CreateGradeMarker(Color heroLight, Color ambient, float saturation)
+    {
+        var m = Object.Instantiate(_gradeMarker);
+        var gm = m.GetComponent<GradeMarker>();
+
+        gm.heroLightColor = heroLight;
+        gm.ambientColor = ambient;
+        gm.saturation = saturation;
+
+        gm.maxIntensityRadius = 0;
+        gm.cutoffRadius = float.PositiveInfinity;
+        
+        m.name = "GradeMarker";
+        m.SetActive(true);
     }
     
     public static void CreateTileMap(CustomScene scene)

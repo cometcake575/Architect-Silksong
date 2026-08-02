@@ -254,7 +254,7 @@ public static class Settings
             "Options",
             "TestMode",
             false,
-            "Stops the game from storing persistent data in such as enemies being killed"
+            "Stops the game from storing persistent data such as enemies being killed"
         );
         
         HitboxesInEditor = config.Bind(

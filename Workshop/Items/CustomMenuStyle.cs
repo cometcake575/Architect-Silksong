@@ -27,50 +27,12 @@ public class CustomMenuStyle : WorkshopItem
 
                 _ms = self.gameObject;
         
-                ArchitectPlugin.Instance.StartCoroutine(LoadHero(self.gameObject));
-                
                 foreach (var style in Styles.ToArray())
                 {
                     style.Unregister();
                     style.Register();
                 }
             });
-        
-        typeof(GameManager).Hook(nameof(GameManager.LoadHeroPrefab),
-            (Func<GameManager, AsyncOperationHandle<GameObject>> orig, GameManager self) =>
-            {
-                if (HeroController._instance)
-                {
-                    HeroController._instance.gameObject.RemoveComponent<FakePlayer>();
-                }
-                return orig(self);
-            });
-    }
-
-    private static IEnumerator LoadHero(GameObject obj)
-    {
-        var hero = GameManager.instance.LoadHeroPrefab();
-        yield return hero;
-        
-        var player = Object.Instantiate(hero.Result, obj.transform);
-        player.AddComponent<FakePlayer>();
-    }
-    
-    public class FakePlayer : MonoBehaviour
-    {
-        private HeroController _hc;
-        
-        private void Start()
-        {
-            _hc = GetComponent<HeroController>();
-        }
-
-        private void Update()
-        {
-            _hc.ResetHardLandingTimer();
-            _hc.RelinquishControl();
-            transform.SetPosition2D(9999999, 9999999);
-        }
     }
     
     public override void Register()
@@ -100,12 +62,13 @@ public class CustomMenuStyle : WorkshopItem
         
         public void OnEnable()
         {
-            _scene = SceneManager.CreateScene($"{id}_Title");
+            _scene = SceneManager.CreateScene($"{id}_title");
 
-            var ld = StorageManager.LoadScene($"{id}_Title");
+            var ld = StorageManager.LoadScene($"{id}_title");
             foreach (var placement in ld.Placements)
             {
                 var obj = placement.SpawnObject();
+                obj.WipeBehaviour();
                 
                 if (obj)
                 {

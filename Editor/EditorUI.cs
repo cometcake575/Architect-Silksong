@@ -151,6 +151,7 @@ public static class EditorUI
         var size = new Vector2(765, 50);
         var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _canvasObj, pos, 
             new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
+        label.textComponent.raycastTarget = false;
         
         btn.onClick.AddListener(() =>
         {
@@ -527,26 +528,34 @@ public static class EditorUI
             {
                 case PreloadObject { Loaded: false }:
                     return;
-                case SavedObject prefab:
+                case SavedObject saved:
                 {
-                    obj = prefab.PlaceableObject;
+                    obj = saved.PlaceableObject;
 
-                    EditManager.Broadcasters.AddRange(prefab.Placement.Broadcasters);
-                    EditManager.Receivers.AddRange(prefab.Placement.Receivers);
-                    foreach (var conf in prefab.Placement.Config)
+                    EditManager.Broadcasters.AddRange(saved.Placement.Broadcasters);
+                    EditManager.Receivers.AddRange(saved.Placement.Receivers);
+                    foreach (var conf in saved.Placement.Config)
                     {
                         EditManager.Config[conf.GetTypeId()] = conf;
                     }
 
-                    EditManager.SetScale(prefab.Placement.GetScale());
-                    EditManager.SetRotation(prefab.Placement.GetRotation());
-                    EditManager.SetZ(prefab.Placement.GetPos().z);
-                    EditManager.CurrentlyFlipped = prefab.Placement.IsFlipped();
+                    EditManager.SetScale(saved.Placement.GetScale());
+                    EditManager.SetRotation(saved.Placement.GetRotation());
+                    EditManager.SetZ(saved.Placement.GetPos().z);
+                    EditManager.CurrentlyFlipped = saved.Placement.IsFlipped();
 
                     isPrefab = true;
                     break;
                 }
                 case PlaceableObject placeable:
+                    if (placeable is PrefabObject prefab)
+                    {
+                        if (Input.GetKey(KeyCode.LeftAlt) && !PrefabManager.InPrefabScene)
+                        {
+                            PrefabManager.Toggle(prefab.Name);
+                            return;
+                        }
+                    }
                     EditManager.SetZ(placeable.ZPosition);
                     break;
             }

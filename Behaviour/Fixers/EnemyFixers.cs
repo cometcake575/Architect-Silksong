@@ -2974,15 +2974,45 @@ public static class EnemyFixers
         return (float)(-(double)end / 2.0 * (Mathf.Cos((float)(3.1415927410125732 * value / 1.0)) - 1.0)) + start;
     }
 
+    public class Crawfather : Wakeable
+    {
+        public bool wake = true;
+        public PlayMakerFSM fsm;
+
+        public override void DoUnwake()
+        {
+            wake = false;
+            if (fsm) fsm.SendEvent("BATTLE START");
+        }
+    }
+
     public static void FixCrawfather(GameObject obj)
     {
+        var cf = obj.AddComponent<Crawfather>();
+        
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("BG Idle").AddAction(() => fsm.SendEvent("BATTLE START"));
-        fsm.GetState("Emerge Announce").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-        fsm.GetState("Emerge Antic").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-        fsm.GetState("Emerge").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        cf.fsm = fsm;
+        fsm.GetState("BG Idle").AddAction(() =>
+        {
+            if (cf.wake) fsm.SendEvent("BATTLE START");
+        });
+        fsm.GetState("Emerge Announce").AddAction(() =>
+        {
+            if (cf.wake) fsm.SendEvent("FINISHED");
+        }, 0);
+        fsm.GetState("Emerge Antic").AddAction(() =>
+        {
+            if (cf.wake) fsm.SendEvent("FINISHED");
+        }, 0);
+        fsm.GetState("Emerge").AddAction(() =>
+        {
+            if (cf.wake) fsm.SendEvent("FINISHED");
+        }, 0);
 
-        ((StartRoarEmitter)fsm.GetState("Roar").actions[1]).stunHero = false;
+        var roar = fsm.GetState("Roar");
+        ((StartRoarEmitter)roar.actions[1]).stunHero = false;
+        roar.DisableAction(4);
+        fsm.GetState("Roar End").DisableAction(1);
         
         var flapY = fsm.FsmVariables.FindFsmFloat("Flap Y");
         fsm.GetState("Idle").AddAction(AdjustFlapY, 0);

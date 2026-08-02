@@ -266,7 +266,7 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Coral Branch", "coral_crust_tree_branch",
                 ("Coral_24", "coral_crust_tree (9)/BG Activate Parent/Branch 1/Coral Crust Tree Branch"))
             .WithReceiverGroup(ReceiverGroup.Activatable)
-            .WithConfigGroup(ConfigGroup.CloverPod)
+            .WithConfigGroup(ConfigGroup.CoralBranch)
             .WithRotationGroup(RotationGroup.All)).SpritePreview = true;
 
         Categories.Hazards.Add(new PreloadObject("Coral Spike S", "stomp_spire",
@@ -1371,6 +1371,18 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Background Pendra", "pendra_bg",
             ("Tut_02", "Tiny Dragonfly (3)"))
             .WithConfigGroup(ConfigGroup.Decorations));
+        
+        Categories.Hazards.Add(new PreloadObject("Clover Spikes", "clover_spikes",
+            ("Clover_18", "Group/Grove_Spike (44)"),
+            preloadAction: o =>
+            {
+                HazardFixers.FixSpikes(o, 
+                    new Vector2(0, 2), 
+                    new Vector2(0.75f, 2.75f), 
+                    new Vector2(2.75f, 1.25f), 
+                    new Vector2(2, 0.75f));
+                o.transform.SetPositionZ(0.6f);
+            })); 
 
         AddEnemy("Pendra", "pendra", ("Clover_05c", "Hornet Dragonfly"),
             postSpawnAction: EnemyFixers.FixPendra);
@@ -1432,7 +1444,8 @@ public static class VanillaObjects
         AddEnemy("Crawfather", "crawfather", ("Room_CrowCourt_02", "Battle Scene/Wave 6/Crawfather"),
                 preloadAction: o => o.transform.SetPositionZ(0.006f),
                 postSpawnAction: EnemyFixers.FixCrawfather)
-            .WithConfigGroup(ConfigGroup.Bosses)
+            .WithConfigGroup(ConfigGroup.WakeableBosses)
+            .WithReceiverGroup(ReceiverGroup.Crawfather)
             .WithBroadcasterGroup(BroadcasterGroup.SummonerBosses)
             .SpritePreview = true;
 
@@ -1441,6 +1454,7 @@ public static class VanillaObjects
                 description: "Starts hidden, the 'Activate' trigger will activate the chain.",
                 preloadAction: o =>
                 {
+                    o.transform.SetPositionZ(0.006f);
                     var anim = o.GetComponent<tk2dSpriteAnimator>();
                     anim.defaultClipId = anim.GetClipIdByName("Chain Spike");
                 }, postSpawnAction: o => o.LocateMyFSM("Control").GetState("Emerge Pause").DisableAction(2))
@@ -2127,7 +2141,7 @@ public static class VanillaObjects
                          "if this happens try adjusting the Blur Plane's scale.",
             preloadAction: MiscFixers.FollowCam)
             .WithScaleAction((_, _) => {})
-            .WithConfigGroup(ConfigGroup.Generic))
+            .WithConfigGroup(ConfigGroup.BlurPlane))
             .DoIgnoreScale();
         
         var threadEffect = new GameObject("[Architect] Thread Effect");
@@ -2323,7 +2337,7 @@ public static class VanillaObjects
                 sprite: ResourceUtils.LoadSpriteResource("memory", ppu: 155))
             .WithConfigGroup(ConfigGroup.PhysicalPng)
             .WithRotationGroup(RotationGroup.All));
-
+        
         Categories.Effects.Add(new PreloadObject("Sway Effect", "sway_effect",
                 ("Tut_02", "green_grass_tri (6)"),
                 preloadAction: o =>
@@ -2487,6 +2501,10 @@ public static class VanillaObjects
 
         Categories.Misc.Add(new PreloadObject("Silkcatcher", "silkcatcher_plant",
             ("Ant_04", "Silkcatcher Plant")));
+
+        /*
+        Categories.Misc.Add(new PreloadObject("Ant Region", "ant_region",
+            ("Ant_04", "Ant Region (10)")));*/
         
         Categories.Misc.Add(new PreloadObject("Silkdew", "silkcatcher_dew",
             ("Clover_06", "Group/Clover_Silk_Pod")));
@@ -3726,6 +3744,8 @@ public static class VanillaObjects
             preloadAction: o => o.transform.SetPositionZ(0.006f));
         AddSolid("Weavenest Platform 2", "weave_plat_2", ("Crawl_05", "Crest_shrine_corner_plat (2)"),
             preloadAction: o => o.transform.SetPositionZ(0));
+        AddSolid("Weavenest Platform 3", "weave_plat_3", ("Weave_02", "Group/Crest_Shrine_thin_plat_spiked (1)"),
+            preloadAction: o => o.transform.SetPositionZ(-0.04f));
     }
 
     private static void AddFleaObjects()
@@ -4023,7 +4043,7 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Npcs)
             .WithBroadcasterGroup(BroadcasterGroup.Npcs);
 
-        Categories.Misc.Add(new PreloadObject("Egg Statue Front", "shard_statue_4", 
+        Categories.Misc.Add(new PreloadObject("Front Egg Statue", "shard_statue_4", 
             ("Tut_01b", "Shell Shard Fossil Tiny Front"),
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
@@ -4031,8 +4051,16 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Statue)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
-        Categories.Misc.Add(new PreloadObject("Egg Statue Side", "shard_statue_2", 
+        Categories.Misc.Add(new PreloadObject("Side Egg Statue", "shard_statue_2", 
             ("Coral_36", "Shell Shard Fossil Tiny Egg"),
+            preloadAction: MiscFixers.FixRotation,
+            postSpawnAction: MiscFixers.FixStatue)
+            .WithRotationGroup(RotationGroup.Eight)
+            .WithConfigGroup(ConfigGroup.Statue)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+
+        Categories.Misc.Add(new PreloadObject("Conch Statue", "shard_statue_6", 
+            ("Coral_40", "Shell Shard Fossil Coral Conch"),
             preloadAction: MiscFixers.FixRotation,
             postSpawnAction: MiscFixers.FixStatue)
             .WithRotationGroup(RotationGroup.Eight)

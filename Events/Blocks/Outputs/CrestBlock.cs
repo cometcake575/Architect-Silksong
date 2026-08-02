@@ -63,6 +63,11 @@ public class CrestBlock : ScriptBlock
 
     public override object GetValue(string id)
     {
+        if (id == "Unlocked")
+        {
+            var crest = ToolItemManager.GetCrestByName(CrestName);
+            return crest && crest.IsUnlocked;
+        }
         return PlayerData.instance.CurrentCrestID == CrestName;
     }
 

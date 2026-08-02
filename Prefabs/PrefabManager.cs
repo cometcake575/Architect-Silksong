@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Behaviour.Utility;
 using Architect.Editor;
 using Architect.Events.Blocks;
+using Architect.Objects.Categories;
 using Architect.Placements;
 using Architect.Utils;
 using UnityEngine;
@@ -39,9 +41,10 @@ public static class PrefabManager
     
     public static void Toggle(string prefabName)
     {
-        if (Prefabs.Keys.Contains(prefabName, StringComparer.InvariantCultureIgnoreCase))
+        var pNames = PrefabsCategory.Prefabs.Select(p => p.Name).ToArray();
+        if (pNames.Contains(prefabName, StringComparer.InvariantCultureIgnoreCase))
         {
-            prefabName = Prefabs.Keys.First(k => k.Equals(prefabName, StringComparison.InvariantCultureIgnoreCase));
+            prefabName = pNames.First(k => k.Equals(prefabName, StringComparison.InvariantCultureIgnoreCase));
         }
         Last = prefabName;
         if (GameManager.instance.isPaused)
@@ -81,11 +84,13 @@ public static class PrefabManager
         
         var scene = SceneManager.CreateScene(sceneName);
         SceneManager.SetActiveScene(scene);
+        FsmHook.FsmMaster.OnSceneLoaded(scene, LoadSceneMode.Single);
 
         var unload2 = SceneManager.UnloadSceneAsync(current);
         if (unload2 != null) while (!unload2.isDone) yield return null;
 
         var sm = SceneUtils.CreateSceneManager();
+        SceneUtils.CreateGradeMarker(Color.white, Color.white, 1);
         
         sm.transform.position = new Vector3(100, 100, 1);
         sm.transform.localScale = Vector3.one;

@@ -515,6 +515,24 @@ public static class ConfigGroup
                 "WaterRun",
                 "PeakPuff",
                 "FlowerField").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType<CustomScene>("Hero Light", "scene_hero_light", (item, value) =>
+            {
+                item.HeroLight = value.GetValue();
+            }, false).WithDefaultValue(Color.white)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType<CustomScene>("Ambient Light", "scene_ambient_light", (item, value) =>
+            {
+                item.AmbientLight = value.GetValue();
+            }, false).WithDefaultValue(Color.white)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Saturation", "scene_saturation", (item, value) =>
+            {
+                item.Saturation = value.GetValue();
+            }).WithDefaultValue(1)
         )
     ];
     

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Utility;
 using Architect.Objects.Placeable;
-using TeamCherry.NestedFadeGroup;
 using TeamCherry.SharedUtils;
 using UnityEngine;
 
@@ -98,11 +97,11 @@ public static class PreviewUtils
 
                 foreach (var sr in GetComponentsInChildren<SpriteRenderer>())
                 {
-                    if (sr.name.Contains("haze", StringComparison.InvariantCultureIgnoreCase) 
+                    if (!sr.name.Contains("Architect") && (sr.name.Contains("haze", StringComparison.InvariantCultureIgnoreCase) 
                         || sr.name.Contains("glow", StringComparison.InvariantCultureIgnoreCase)
                         || sr.name.Contains("fader", StringComparison.InvariantCultureIgnoreCase)
                         || sr.name.Contains("light", StringComparison.InvariantCultureIgnoreCase)
-                        || sr.name.Contains("cutout", StringComparison.InvariantCultureIgnoreCase)) continue;
+                        || sr.name.Contains("cutout", StringComparison.InvariantCultureIgnoreCase))) continue;
                     Renderers.Add(new PreviewSpriteRenderer(sr));
                 }
 
@@ -112,8 +111,6 @@ public static class PreviewUtils
                 }
             }
 
-            foreach (var fsm in gameObject.GetComponentsInChildren<PlayMakerFSM>(true)) 
-                fsm.enabled = false;
             foreach (var aso in gameObject.GetComponentsInChildren<AudioSource>(true)) 
                 aso.enabled = false;
             foreach (var pb in GetComponentsInChildren<PreviewableBehaviour>(true)) 
@@ -124,22 +121,15 @@ public static class PreviewUtils
                 Destroy(tsa);
             }
             
-            gameObject.RemoveComponentsInChildren<FSMActivator>();
-            gameObject.RemoveComponentsInChildren<IPersistentItem>();
-            gameObject.RemoveComponentsInChildren<InteractableBase>();
-            gameObject.RemoveComponentsInChildren<IHitResponder>();
-            gameObject.RemoveComponentsInChildren<NestedFadeGroupBase>();
+            gameObject.WipeBehaviour();
+            
             gameObject.RemoveComponentsInChildren<tk2dSpriteAnimator>();
-            gameObject.RemoveComponentsInChildren<PlayFromRandomFrameMecanim>();
-            gameObject.RemoveComponentsInChildren<BlackThreadState>();
+            gameObject.RemoveComponentsInChildren<ParticleSystemRenderer>();
             gameObject.RemoveComponentsInChildren<Animator>();
             gameObject.RemoveComponentsInChildren<CurveRotationAnimation>();
             gameObject.RemoveComponentsInChildren<AmbientSway>();
-            gameObject.RemoveComponentsInChildren<EnemyBullet>();
-            gameObject.RemoveComponentsInChildren<ParticleSystemRenderer>();
+            gameObject.RemoveComponentsInChildren<PlayFromRandomFrameMecanim>();
             gameObject.RemoveComponentsInChildren<Crawler>();
-            gameObject.RemoveComponentsInChildren<Walker>();
-            gameObject.RemoveComponentsInChildren<TalkAnimNPC>();
             if (!Storage.Settings.HitboxesInEditor.Value && !type.HitboxPreview)
             {
                 gameObject.RemoveComponentsInChildren<Collider2D>();
@@ -262,7 +252,7 @@ public static class PreviewUtils
             transform =
             {
                 localPosition = preview.transform.position,
-                rotation = Quaternion.Euler(0, 0, preview.transform.eulerAngles.z),
+                rotation = Quaternion.Euler(0, 0, preview.transform.eulerAngles.z + type.Tk2dRotation + type.ChildRotation),
                 localScale = type.IgnoreScale ? Vector3.one : preview.transform.localScale
             }
         };

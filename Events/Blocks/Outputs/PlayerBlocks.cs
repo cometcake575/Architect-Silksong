@@ -46,6 +46,7 @@ public class HpBlock : PlayerBlock
     }
 
     public int Amount;
+    public CollisionSide CollisionSide = CollisionSide.other;
 
     protected override void Trigger(string trigger)
     {
@@ -61,7 +62,7 @@ public class HpBlock : PlayerBlock
                 for (var i = 0; i < Amount; i++) GameManager.instance.AddBlueHealthQueued();
                 break;
             case "Take":
-                HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide.other, Amount,
+                HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide, Amount,
                     HazardType.ENEMY);
                 break;
             case "TakeInstant":
@@ -69,7 +70,7 @@ public class HpBlock : PlayerBlock
                 break;
             case "TakeHazard":
                 HeroController.instance.TakeHealth(Amount - 1);
-                HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide.other, 1,
+                HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide, 1,
                     HazardType.SPIKES);
                 break;
         }

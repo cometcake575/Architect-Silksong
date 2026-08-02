@@ -8,6 +8,7 @@ using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Groups;
 using Architect.Workshop.Items;
+using GlobalEnums;
 using UnityEngine;
 
 namespace Architect.Events.Blocks.Config;
@@ -648,6 +649,13 @@ public static class ConfigGroup
                 {
                     b.Amount = f.GetValue();
                 }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<HpBlock>("Damage Side", "health_control_damage_side", 
+                (b, f) =>
+                {
+                    b.CollisionSide = (CollisionSide)f.GetValue();
+                }).WithOptions("Top", "Left", "Right", "Bottom", "None").WithDefaultValue(4)
         )
     ];
     

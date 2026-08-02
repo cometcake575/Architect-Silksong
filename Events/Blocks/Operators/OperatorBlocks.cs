@@ -45,6 +45,8 @@ public static class OperatorBlocks
         Category.Data.RegisterBlock<RandomTextBlock>("Random Text", ConfigGroup.RandomText);
         
         Category.Data.RegisterBlock<MathsBlock>("Operation", ConfigGroup.Maths);
+        Category.Data.RegisterBlock<JoinBlock>("Join Text");
+        Category.Data.RegisterBlock<LengthBlock>("Text Length");
         Category.Data.RegisterBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);
         Category.Data.RegisterBlock<NormaliseBlock>("Normalise", ConfigGroup.Normalise);
         Category.World.RegisterBlock<RaycastBlock>("Raycast", ConfigGroup.Raycast);

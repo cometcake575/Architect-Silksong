@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Utils;
 using TeamCherry.Localization;
@@ -21,7 +22,10 @@ public class TitleBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
-        if (trigger == "Display") TitleUtils.DisplayTitle(Header, Body, Footer, TitleType, WaitForCancel);
+        if (trigger == "Display") TitleUtils.DisplayTitle(
+            MiscFixers.SubstituteVars(Header), 
+            MiscFixers.SubstituteVars(Body), 
+            MiscFixers.SubstituteVars(Footer), TitleType, WaitForCancel);
         else TitleUtils.CancelTitle();
     }
 }

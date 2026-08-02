@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Architect.Behaviour.Fixers;
 using Architect.Events.Blocks;
 using Architect.Utils;
 using TMProOld;
@@ -65,8 +66,8 @@ public class TextDisplay : NPCControlBase, IDisplayable
         yield return HeroController.instance.FreeControl(_ => InteractManager.CanInteract);
         
         HeroController.instance.RelinquishControl();
-
-        DialogueBox.StartConversation(text, this, false, _displayOptions, () =>
+        
+        DialogueBox.StartConversation(MiscFixers.SubstituteVars(text), this, false, _displayOptions, () =>
         {
             if (Block != null) Block.Event("OnClose");
             else gameObject.BroadcastEvent("OnClose");

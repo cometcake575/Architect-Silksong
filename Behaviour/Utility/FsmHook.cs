@@ -147,6 +147,7 @@ public class FsmHook : PreviewableBehaviour
         }
     }
 
+    public static FsmMasterPlugin FsmMaster;
     private static FsmEditManager _editManager;
     
     public static void Init()
@@ -155,8 +156,10 @@ public class FsmHook : PreviewableBehaviour
             (Action<FsmMasterPlugin> orig, FsmMasterPlugin self) =>
             {
                 orig(self);
+                FsmMaster = self;
                 _editManager = self._editManager;
             });
+        FsmGraphOverlay.ShowEditIndicator = false;
     }
 
     public void SetupFsmChanges()

@@ -31,7 +31,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
     public string url;
     public bool point;
     public bool ignoreGlow;
-    public bool glow = true;
+    public int glow = 1;
     public float ppu = 100;
     private int _count = 1;
     public int vcount = 1;
@@ -46,8 +46,11 @@ public class PngObject : PreviewableBehaviour, IPlayable
         if (string.IsNullOrEmpty(url)) return;
         
         _renderer = GetComponent<SpriteRenderer>();
-        if (ignoreGlow) glow = true;
-        if (!glow && _renderer) _renderer.material = MiscFixers.SpriteMaterial;
+        if (ignoreGlow) glow = 1;
+        if (glow != 1 && _renderer)
+        {
+            _renderer.material = glow == 0 ? MiscFixers.SpriteMaterial : MiscFixers.ScreenHazeMaterial;
+        }
         CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
         _count = Mathf.Max(1, hcount * vcount - dummy);
 
@@ -263,7 +266,7 @@ public class Mp4Object : MonoBehaviour, IPlayable
 {
     public string url;
     public bool playOnStart = true;
-    public bool glow;
+    public int glow = 1;
     private VideoPlayer _player;
 
     private bool _shouldPlay = true;
@@ -274,7 +277,10 @@ public class Mp4Object : MonoBehaviour, IPlayable
     private void Awake()
     {
         if (string.IsNullOrEmpty(url)) return;
-        if (!glow) GetComponent<SpriteRenderer>().material = MiscFixers.SpriteMaterial;
+        if (glow != 1)
+        {
+            GetComponent<SpriteRenderer>().material = glow == 0 ? MiscFixers.SpriteMaterial : MiscFixers.ScreenHazeMaterial;
+        }
         _player = gameObject.GetComponent<VideoPlayer>();
         _player.loopPointReached += _ => gameObject.BroadcastEvent("OnFinish"); 
         CustomAssetManager.DoLoadVideo(_player, transform.GetScaleX(), url);

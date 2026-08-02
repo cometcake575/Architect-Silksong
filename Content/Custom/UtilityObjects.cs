@@ -35,6 +35,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateObjectColourer());
         Categories.Utility.Add(CreateTriggerZone());
+        Categories.Utility.Add(CreateHitResponder());
         Categories.Utility.Add(CreateEnemyDamager());
         Categories.Utility.Add(CreateInteraction());
         Categories.Utility.Add(CreateFakePerformance());
@@ -835,6 +836,48 @@ public static class UtilityObjects
             .WithOutputGroup(OutputGroup.TriggerZone)
             .WithInputGroup(InputGroup.TriggerZone)
             .WithConfigGroup(ConfigGroup.TriggerZones);
+    }
+
+    private static PlaceableObject CreateHitResponder()
+    {
+        var point = new GameObject("Hit Responder")
+        {
+            layer = LayerMask.NameToLayer("Attack")
+        };
+
+        point.AddComponent<NonBouncer>().active = true;
+
+        var bc = point.AddComponent<BoxCollider2D>();
+        bc.isTrigger = false;
+        bc.size = new Vector2(3.2f, 3.2f);
+
+        var cc = point.AddComponent<PolygonCollider2D>();
+        cc.isTrigger = false;
+
+        var points = new Vector2[24];
+        for (var i = 0; i < 24; i++)
+        {
+            var angle = 2 * Mathf.PI * i / 24;
+            var x = Mathf.Cos(angle) * 1.6f;
+            var y = Mathf.Sin(angle) * 1.6f;
+            points[i] = new Vector2(x, y);
+        }
+
+        cc.pathCount = 1;
+        cc.SetPath(0, points);
+        cc.enabled = false;
+
+        point.AddComponent<HitResponder>();
+
+        point.SetActive(false);
+        Object.DontDestroyOnLoad(point);
+
+        return new CustomObject("Hit Detector", "hit_detector",
+                point,
+                sprite: HitResponder.SquareZone,
+                description: "Broadcasts an event upon detecting an attack.")
+            .WithBroadcasterGroup(BroadcasterGroup.Hittable)
+            .WithConfigGroup(ConfigGroup.HitResponder);
     }
 
     public static readonly Sprite SquareDamager = ResourceUtils.LoadSpriteResource("enemy_damager", FilterMode.Point, ppu:64);

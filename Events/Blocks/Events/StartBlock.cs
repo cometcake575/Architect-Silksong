@@ -5,7 +5,7 @@ namespace Architect.Events.Blocks.Events;
 
 public class StartBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Outputs => ["OnStart"];
+    protected override IEnumerable<string> Outputs => ["PreStart", "OnStart"];
     protected override string Name => "On Room Load";
 
     public override void SetupReference()
@@ -17,6 +17,8 @@ public class StartBlock : ScriptBlock
     {
         public StartBlock Block;
         private bool _done;
+
+        private void Start() => Block.Event("PreStart");
         
         private void Update()
         {

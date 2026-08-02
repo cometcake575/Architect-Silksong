@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Architect.Behaviour.Custom;
+using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Editor;
 using Architect.Events.Blocks;
@@ -26,6 +27,7 @@ namespace Architect.Behaviour.Fixers;
 public static class MiscFixers
 {
     public static Material SpriteMaterial;
+    public static Material ScreenHazeMaterial;
 
     public static void Init()
     {
@@ -33,6 +35,11 @@ public static class MiscFixers
             "Tut_02", "bone_plat_01", o =>
             {
                 SpriteMaterial = o.GetComponent<SpriteRenderer>().material;
+            }));
+        PreloadManager.RegisterPreload(new BasicPreload(
+            "Belltown", "Mapper Control/Mapper Scenery/Mapper_lamp/lamp/lamp/grey_halfway_lamp_single_breakable_bell (1)/lamp/Active/haze2 (1)", o =>
+            {
+                ScreenHazeMaterial = o.GetComponent<SpriteRenderer>().material;
             }));
 
         // Custom bench fix - if the bench was determined to be invalid, override it and use the saved data anyway
@@ -832,8 +839,10 @@ public static class MiscFixers
             var dialogue = (RunDialogue)ta1.actions[1];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
-            
-            fsm.GetState("Convo End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+
+            var ce = fsm.GetState("Convo End");
+            if (ce == null) return;
+            ce.AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -1626,7 +1635,7 @@ public static class MiscFixers
         obj.transform.GetChild(5).gameObject.SetActive(false);
     }
 
-    public class Water : MonoBehaviour
+    public class Water : PreviewableBehaviour
     {
         private SurfaceWaterRegion _swr;
         private MaggotRegion _mr;
@@ -1648,6 +1657,8 @@ public static class MiscFixers
 
         private void Update()
         {
+            if (isAPreview) return;
+            if (!_col) return;
             var sizeY = transform.GetScaleY() * _col.size.y;
             var offset = sizeY / 2 + 0.6f * Mathf.Min(transform.GetScaleY() * _col.size.y, 1);
             _swr.heroSurfaceY = transform.GetPositionY() + offset;

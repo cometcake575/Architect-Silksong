@@ -131,6 +131,11 @@ public class AudioPlayer : MonoBehaviour
             if (atmosSnapshot.IsNullOrWhiteSpace()) AudioManager.TransitionToAtmosOverride(AtmosSnapshot, fadeTime);
             GameManager.instance.sm.atmosCue = cue;
             GameManager.instance.sm.atmosSnapshot = cue.snapshot;
+
+            if (!atmosSnapshot.IsNullOrWhiteSpace() && AtmosSnapshots.TryGetValue(atmosSnapshot, out var ats))
+            {
+                AudioManager.TransitionToAtmosOverride(ats, fadeTime);
+            }
         }
         else
         {
@@ -146,21 +151,16 @@ public class AudioPlayer : MonoBehaviour
             if (musicSnapshot.IsNullOrWhiteSpace()) AudioManager.Instance.ApplyMusicSnapshot(NormalSnapshot, 0, fadeTime);
             GameManager.instance.sm.musicCue = cue;
             GameManager.instance.sm.musicSnapshot = cue.snapshot;
-        }
 
-        if (!atmosSnapshot.IsNullOrWhiteSpace() && AtmosSnapshots.TryGetValue(atmosSnapshot, out var ats))
-        {
-            AudioManager.TransitionToAtmosOverride(ats, fadeTime);
-        }
+            if (!musicEffectSnapshot.IsNullOrWhiteSpace() && MusicEffectSnapshots.TryGetValue(musicEffectSnapshot, out var mes))
+            {
+                mes.TransitionTo(fadeTime);
+            }
 
-        if (!musicEffectSnapshot.IsNullOrWhiteSpace() && MusicEffectSnapshots.TryGetValue(musicEffectSnapshot, out var mes))
-        {
-            mes.TransitionTo(fadeTime);
-        }
-
-        if (!musicSnapshot.IsNullOrWhiteSpace() && MusicSnapshots.TryGetValue(musicSnapshot, out var ms))
-        {
-            AudioManager.Instance.ApplyMusicSnapshot(ms, 0, fadeTime);
+            if (!musicSnapshot.IsNullOrWhiteSpace() && MusicSnapshots.TryGetValue(musicSnapshot, out var ms))
+            {
+                AudioManager.Instance.ApplyMusicSnapshot(ms, 0, fadeTime);
+            }
         }
         
         _isUnlocked = false;
