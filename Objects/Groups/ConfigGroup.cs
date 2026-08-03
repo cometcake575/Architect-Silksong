@@ -107,10 +107,10 @@ public static class ConfigGroup
                 o.GetComponent<ObjectHook>().childPath = value.GetValue();
             })),
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType("Start Mode", "object_hook_start", (o, value) =>
+            new ChoiceConfigType("Hook Mode", "object_hook_start", (o, value) =>
             {
                 o.GetComponent<ObjectHook>().start = value.GetValue();
-            }).WithOptions("Normal", "Inactive", "Active").WithDefaultValue(0)),
+            }).WithOptions("Normal", "Deactivate", "Activate", "Duplicate").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Index", "object_hook_index", (o, value) =>
             {

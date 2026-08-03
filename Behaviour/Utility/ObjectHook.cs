@@ -48,6 +48,11 @@ public class ObjectHook : PreviewableBehaviour
             case 2:
                 o.SetActive(true);
                 break;
+            case 3:
+                if (isAPreview) return;
+                o = Instantiate(o);
+                o.transform.position = transform.position;
+                break;
         }
     }
 }
