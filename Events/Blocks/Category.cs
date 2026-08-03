@@ -50,8 +50,9 @@ public class Category
         ScriptManager.BlockTypes[id] = func;
     }
 
-    public void RegisterHiddenBlock<T>(string name, List<ConfigType> configGroup = null) where T : ScriptBlock, new()
+    public void RegisterHiddenBlock<T>(string name, List<ConfigType> configGroup = null, Action init = null) where T : ScriptBlock, new()
     {
+        init?.Invoke();
         ScriptManager.BlockTypes[name] = () => new T
         {
             Type = name, 

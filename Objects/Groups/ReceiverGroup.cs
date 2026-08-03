@@ -25,6 +25,25 @@ public static class ReceiverGroup
         }, true))
     ];
     
+    public static readonly List<EventReceiverType> GradeMarker = [
+        EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_off", "Deactivate", o =>
+        {
+            o.GetComponent<GradeMarker>().Deactivate();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_off", "Activate", o =>
+        {
+            o.GetComponent<GradeMarker>().Activate();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_off_gradual", "DeactivateGradual", o =>
+        {
+            o.GetComponent<GradeMarker>().DeactivateGradual();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_on_gradual", "ActivateGradual", o =>
+        {
+            o.GetComponent<GradeMarker>().ActivateGradual();
+        }))
+    ];
+    
     public static readonly List<EventReceiverType> ObjectHook = [
         EventManager.RegisterReceiverType(new EventReceiverType("hook_disable_target", "Disable", o =>
         {

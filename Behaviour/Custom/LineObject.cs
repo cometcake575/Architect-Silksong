@@ -65,7 +65,7 @@ public class LineObject : MonoBehaviour
         lr.positionCount = points.Length;
         lr.SetPositions(points);
 
-        ec.points = o.Select(obj =>
+        ec.points = o.Where(obj => obj).Select(obj =>
         {
             obj._setup = true;
             if (obj.gameObject != gameObject) obj.gameObject.RemoveComponent<EdgeCollider2D>();

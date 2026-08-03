@@ -19,6 +19,7 @@ using HutongGames.PlayMaker.Actions;
 using MonoMod.RuntimeDetour;
 using TeamCherry.Localization;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -39,7 +40,7 @@ public static class ConfigGroup
     public static readonly List<ConfigType> BlurPlane =
     [
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Vibrance Offset", "blur_plane_vibrance_offset", (o, value) =>
+            new FloatConfigType("Vibrance Offset", "blur_plane_vibrance_offset", (_, value) =>
             {
                 global::BlurPlane.SetVibranceOffset(value.GetValue());
             }))
@@ -53,6 +54,41 @@ public static class ConfigGroup
                 if (value.GetValue()) o.GetComponent<ObjectRemover>().all = true;
             }).WithDefaultValue(false))
     ]);
+    
+    public static readonly List<ConfigType> GradeMarker = 
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType("Ambient Light", "grade_marker_ambient", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().ambientColor = value.GetValue();
+            }, false).WithDefaultValue(Color.white)),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType("Hero Light", "grade_marker_hero", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().heroLightColor = value.GetValue();
+            }, false).WithDefaultValue(Color.white)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Saturation", "grade_marker_saturation", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().saturation = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Cutoff Radius", "grade_marker_cutoff", (o, value) =>
+            {
+                var gm = o.GetComponent<GradeMarker>();
+                gm.cutoffRadius = value.GetValue();
+            }).WithDefaultValue(1000)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Max Intensity Radius", "grade_marker_max_intensity", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().maxIntensityRadius = value.GetValue();
+            }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Active", "grade_marker_start", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().enableGrade = value.GetValue();
+            }).WithDefaultValue(true))
+    ];
     
     public static readonly List<ConfigType> Prefab = GroupUtils.Merge(Generic,
     [
@@ -1591,8 +1627,6 @@ public static class ConfigGroup
             }, true).WithDefaultValue(new Color(1, 1, 1, 0.1f)))
     ]));
 
-    private static readonly int EnemiesLayer = LayerMask.NameToLayer("Enemies");
-    private static readonly int Terrain = LayerMask.NameToLayer("Terrain");
     private static readonly int Default = LayerMask.NameToLayer("Default");
 
     public static readonly List<ConfigType> Colliders = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Decorations, [
@@ -1605,18 +1639,19 @@ public static class ConfigGroup
                             o.RemoveComponentsInChildren<Collider2D>();
                             break;
                         case 1:
-                            o.layer = EnemiesLayer;
+                            o.layer = (int)PhysLayers.ENEMY_ATTACK;
                             var collider = o.GetComponentInChildren<Collider2D>();
                             var dh = collider.gameObject.AddComponent<DamageHero>();
+                            dh.OnDamagedHero = new UnityEvent();
                             dh.hazardType = HazardType.SPIKES;
                             dh.gameObject.AddComponent<NonBouncer>();
                             break;
                         case 2:
                             o.GetComponentInChildren<Collider2D>().isTrigger = false;
-                            o.layer = Terrain;
+                            o.layer = (int)PhysLayers.TERRAIN;
                             break;
                         case 3:
-                            o.layer = Terrain;
+                            o.layer = (int)PhysLayers.TERRAIN;
                             var col = o.GetComponentInChildren<Collider2D>();
                             col.gameObject.AddComponent<PlatformEffector2D>().surfaceArc = 120;
                             col.isTrigger = false;
@@ -3140,7 +3175,7 @@ public static class ConfigGroup
             new ChoiceConfigType("Shader Type", "mp4_glow",
                     (o, value) =>
                     {
-                        o.GetComponentInChildren<PngObject>().glow = value.GetValue();
+                        o.GetComponentInChildren<Mp4Object>().glow = value.GetValue();
                     })
                 .WithOptions("Reflective", "Normal", "Haze")
                 .WithDefaultValue(1)

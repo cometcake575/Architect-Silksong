@@ -14,9 +14,9 @@ public class CustomScene : SpriteItem
     public int TilemapWidth = 500;
     public int TilemapHeight = 500;
 
-    public Color HeroLight = Color.white;
-    public Color AmbientLight = Color.white;
-    public float Saturation = 1;
+    public Color HeroLight = new(0.8676f, 0.846f, 0.8294f, 0.597f);
+    public Color AmbientLight = new(0.7279f, 0.7151f, 0.6958f, 1f);
+    public float Saturation = 0.86f;
 
     public Vector2 MapPos;
     public string EIconUrl = string.Empty;

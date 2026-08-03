@@ -36,7 +36,7 @@ public static class ActionBlocks
         Category.Visual.RegisterBlock<TimeSlowerBlock>("Time Slowdown", ConfigGroup.TimeSlower, TimeSlowerBlock.Init);
         Category.Visual.RegisterBlock<AnimatorBlock>("Animator Controller", ConfigGroup.AnimPlayer);
         Category.World.RegisterBlock<TransitionBlock>("Transition", ConfigGroup.Transition);
-        Category.Visual.RegisterBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting, SetLightingBlock.Init);
+        Category.Visual.RegisterHiddenBlock<SetLightingBlock>("Set Lighting", ConfigGroup.Lighting, SetLightingBlock.Init);
         Category.World.RegisterBlock<SpawnObjectBlock>("Spawn Object", ConfigGroup.SpawnObject);
         Category.World.RegisterBlock<SpawnPrefabBlock>("Spawn Prefab", ConfigGroup.Prefab);
         Category.World.RegisterBlock<ObjectMoverBlock>("Move Object");

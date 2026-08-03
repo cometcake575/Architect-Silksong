@@ -45,6 +45,12 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateFsmHook());
         Categories.Utility.Add(CreateComponentToggler());
         Categories.Utility.Add(CreateEnemyConfigurer());
+
+        Categories.Utility.Add(new PreloadObject("Grade Marker", "grade_marker",
+            ("Bonetown", "GradeMarker (1)"),
+            sprite: ResourceUtils.LoadSpriteResource("grade_marker"))
+            .WithConfigGroup(ConfigGroup.GradeMarker)
+            .WithReceiverGroup(ReceiverGroup.GradeMarker));
         
         Categories.Utility.Add(CreateCocoonSpawn());
         
