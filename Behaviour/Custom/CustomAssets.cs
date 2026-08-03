@@ -31,7 +31,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
     public string url;
     public bool point;
     public bool ignoreGlow;
-    public int glow = 1;
+    public int glow;
     public float ppu = 100;
     private int _count = 1;
     public int vcount = 1;
