@@ -520,13 +520,19 @@ public static class ConfigGroup
             new ColourConfigType<CustomScene>("Hero Light", "scene_hero_light", (item, value) =>
             {
                 item.HeroLight = value.GetValue();
-            }, false).WithDefaultValue(Color.white)
+            }, true).WithDefaultValue(Color.white)
         ),
         ConfigurationManager.RegisterConfigType(
             new ColourConfigType<CustomScene>("Ambient Light", "scene_ambient_light", (item, value) =>
             {
                 item.AmbientLight = value.GetValue();
             }, false).WithDefaultValue(Color.white)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Ambient Intensity", "scene_ambient_intensity", (item, value) =>
+            {
+                item.AmbientIntensity = value.GetValue();
+            }).WithDefaultValue(0.72f)
         ),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomScene>("Saturation", "scene_saturation", (item, value) =>
@@ -1260,6 +1266,13 @@ public static class ConfigGroup
             {
                 item.InsertBefore = value.GetValue();
             })
+        ),
+        (NoteConfigType) "Achievements with higher priorities are loaded earlier",
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType<CustomAchievement>("Load Priority", "achievement_priority", (item, value) =>
+            {
+                item.Priority = -value.GetValue();
+            }).WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<SpriteItem>("Icon URL", "achievement_url", (item, value) =>

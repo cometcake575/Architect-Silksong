@@ -19,6 +19,7 @@ public class HpBlock : PlayerBlock
         "GiveBlue",
         "Take",
         "TakeInstant",
+        "TakeBlue",
         "TakeHazard"];
     
     protected override IEnumerable<string> Outputs => [
@@ -60,6 +61,9 @@ public class HpBlock : PlayerBlock
                 break;
             case "GiveBlue":
                 for (var i = 0; i < Amount; i++) GameManager.instance.AddBlueHealthQueued();
+                break;
+            case "TakeBlue":
+                HeroController.instance.DoSpecialDamage(Math.Min(PlayerData.instance.healthBlue, Amount), false, "Instant", true, true, true, false);
                 break;
             case "Take":
                 HeroController.instance.TakeDamage(HeroController.instance.gameObject, CollisionSide, Amount,

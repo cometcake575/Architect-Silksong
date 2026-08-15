@@ -1477,6 +1477,7 @@ public static class EnemyFixers
         ede.PreInstantiate();
         var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
         RemoveConstrainPosition(corpse);
+        corpse.RemoveComponent<HeroInvincibilitySource>();
         
         var deathFsm = corpse.LocateMyFSM("Death");
         var stagger = deathFsm.GetState("Stagger");
@@ -2982,6 +2983,10 @@ public static class EnemyFixers
         public override void DoUnwake()
         {
             wake = false;
+        }
+
+        public override void DoWake()
+        {
             if (fsm) fsm.SendEvent("BATTLE START");
         }
     }

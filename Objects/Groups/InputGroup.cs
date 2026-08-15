@@ -7,7 +7,7 @@ public static class InputGroup
 {
     public static readonly List<(string, string)> Generic = [];
     
-    public static readonly List<(string, string)> Wav = [("New Volume", "Number")];
+    public static readonly List<(string, string)> Wav = [("New Volume", "Number"), ScriptBlock.Space, ("New Pitch", "Number")];
     
     public static readonly List<(string, string)> ObjectMover = [("Extra X", "Number"), ("Extra Y", "Number"), ("Extra Rot", "Number")];
     

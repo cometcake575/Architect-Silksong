@@ -9,6 +9,7 @@ using Architect.Objects.Placeable;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
+using GlobalEnums;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -32,6 +33,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectCollisionChanger());
         Categories.Utility.Add(CreateObjectSpinner());
         Categories.Utility.Add(CreateObjectMover());
+        Categories.Utility.Add(CreateObjectShaker());
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateObjectColourer());
         Categories.Utility.Add(CreateTriggerZone());
@@ -782,6 +784,23 @@ public static class UtilityObjects
             .WithInputGroup(InputGroup.ObjectMover);
     }
 
+    private static PlaceableObject CreateObjectShaker()
+    {
+        var shaker = new GameObject("Object Shaker");
+        shaker.SetActive(false);
+        Object.DontDestroyOnLoad(shaker);
+        
+        shaker.AddComponent<ObjectShaker>();
+
+        return new CustomObject("Object Shaker", "object_shaker",
+                shaker,
+                sprite: ResourceUtils.LoadSpriteResource("object_shaker", FilterMode.Point),
+                description: "Causes the targeted object to shake.\n" +
+                             "Frequency of 0 means the object will move every frame.")
+            .WithConfigGroup(ConfigGroup.ObjectShaker)
+            .WithReceiverGroup(ReceiverGroup.ObjectShaker);
+    }
+
     private static PlaceableObject CreateObjectSpinner()
     {
         var spinner = new GameObject("Object Spinner");
@@ -804,7 +823,10 @@ public static class UtilityObjects
 
     private static PlaceableObject CreateTriggerZone()
     {
-        var point = new GameObject("Trigger Zone");
+        var point = new GameObject("Trigger Zone")
+        {
+            layer = (int)PhysLayers.GRASS
+        };
 
         var bc = point.AddComponent<BoxCollider2D>();
         bc.isTrigger = true;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Abilities;
@@ -40,9 +41,18 @@ public static class ConfigGroup
     public static readonly List<ConfigType> BlurPlane =
     [
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType("Vibrance Offset", "blur_plane_vibrance_offset", (_, value) =>
+            new FloatConfigType("Vibrance Offset", "blur_plane_vibrance_offset", (o, value) =>
             {
                 global::BlurPlane.SetVibranceOffset(value.GetValue());
+                o.GetComponent<BlurPlane>().StartCoroutine(SetVibrance());
+
+                return;
+
+                IEnumerator SetVibrance()
+                {
+                    yield return null;
+                    global::BlurPlane.SetVibranceOffset(value.GetValue());
+                }
             }))
     ];
     
@@ -63,10 +73,15 @@ public static class ConfigGroup
                 o.GetComponent<GradeMarker>().ambientColor = value.GetValue();
             }, false).WithDefaultValue(Color.white)),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Ambient Intensity", "grade_marker_ambient_intensity", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().ambientIntensity = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Hero Light", "grade_marker_hero", (o, value) =>
             {
                 o.GetComponent<GradeMarker>().heroLightColor = value.GetValue();
-            }, false).WithDefaultValue(Color.white)),
+            }, true).WithDefaultValue(Color.white)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Saturation", "grade_marker_saturation", (o, value) =>
             {
@@ -83,6 +98,11 @@ public static class ConfigGroup
             {
                 o.GetComponent<GradeMarker>().maxIntensityRadius = value.GetValue();
             }).WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Priority", "grade_marker_priority", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().priority = value.GetValue();
+            }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Start Active", "grade_marker_start", (o, value) =>
             {
@@ -1402,7 +1422,7 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]));
 
-    public static readonly List<ConfigType> Pavo = GroupUtils.Merge(Visible, GroupUtils.Merge(Npcs, [
+    public static readonly List<ConfigType> Pavo = GroupUtils.Merge(Npcs, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Distance L", "pavo_dist_l", (o, value) =>
             {
@@ -1413,6 +1433,19 @@ public static class ConfigGroup
             {
                 o.GetComponent<MiscFixers.Pavo>().walkR = value.GetValue();
             }).WithDefaultValue(2))
+    ]);
+
+    public static readonly List<ConfigType> MrMushroom = GroupUtils.Merge(Visible, GroupUtils.Merge(Dialogue, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Notice Dialogue", "mr_mushroom_notice_dlg", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.MrMushroom>().noticeText = value.GetValue();
+            }).WithDefaultValue("Sample Text")),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "mr_mushroom_mode", (o, value) =>
+            {
+                o.GetComponent<MiscFixers.MrMushroom>().mode = value.GetValue();
+            }).WithOptions("Normal", "Final").WithDefaultValue(0))
     ]));
 
     public static readonly List<ConfigType> SeerZi = GroupUtils.Merge(Npcs, [
@@ -1834,7 +1867,7 @@ public static class ConfigGroup
             (o, value) =>
             {
                 if (value.GetValue()) return;
-                o.GetComponent<PlayMakerNPC>().enabled = false;
+                o.transform.Find("Hero Detector").gameObject.SetActive(false);
             }
         ).WithDefaultValue(false))
     ]);
@@ -2210,6 +2243,39 @@ public static class ConfigGroup
                 }
             ).WithPriority(1))
     ]);
+
+    public static readonly List<ConfigType> ObjectShaker = [
+            ConfigurationManager.RegisterConfigType(new IdConfigType("Object ID", "shaker_target", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectShaker>().path = value.GetValue();
+                }
+            )),
+            ConfigurationManager.RegisterConfigType(new Vector3ConfigType("Jitter Min", "jitter_min", 
+                (o, value) =>
+                {
+                    o.GetComponent<ObjectShaker>().amountMin = value.GetValue();
+                }
+            ).WithDefaultValue(Vector3.zero)),
+            ConfigurationManager.RegisterConfigType(new Vector3ConfigType("Jitter Max", "jitter_max", 
+                (o, value) =>
+                {
+                    o.GetComponent<ObjectShaker>().amountMax = value.GetValue();
+                }
+            ).WithDefaultValue(new Vector2(0.1f, 0.1f))),
+            ConfigurationManager.RegisterConfigType(new FloatConfigType("Frequency", "jitter_frequency", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectShaker>().frequency = value.GetValue();
+                }
+            ).WithDefaultValue(0)),
+            ConfigurationManager.RegisterConfigType(new BoolConfigType("Start Active", "jitter_active", 
+                (o, value) => 
+                {
+                    o.GetComponent<ObjectShaker>().startActive = value.GetValue();
+                }
+            ).WithDefaultValue(true))
+    ];
 
     private static readonly ConfigType Invincible =
         ConfigurationManager.RegisterConfigType(
@@ -2708,6 +2774,27 @@ public static class ConfigGroup
             }).WithDefaultValue(0))
     ]);
 
+    public static readonly List<ConfigType> ShakraRing = GroupUtils.Merge(Velocity, [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Hit Player", "shakra_ring_hit_player", (o, value) =>
+            {
+                if (!value.GetValue()) return;
+                var done = false;
+                var fsm = o.LocateMyFSM("Control");
+                fsm.GetState("Fly").AddAction(() =>
+                {
+                    if (done) return;
+                    done = true;
+                    fsm.SendEvent("TARGET HERO");
+                });
+            }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Terrain Bounces", "shakra_ring_terrain_bounces", (o, value) =>
+            {
+                ((SetIntValue)o.LocateMyFSM("Control").GetState("Init").Actions[2]).intValue = value.GetValue();
+            }).WithDefaultValue(1))
+    ]);
+
     public static readonly List<ConfigType> VelocityDamager = GroupUtils.Merge(Velocity, [DamagesEnemies]);
     
     public static readonly List<ConfigType> Bubble = GroupUtils.Merge(Gravity, [
@@ -2988,6 +3075,12 @@ public static class ConfigGroup
                 .WithDefaultValue(10)
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Reversed", "png_reversed",
+                (o, value) =>
+                {
+                    o.GetComponentInChildren<PngObject>().reversed = value.GetValue();
+                }).WithDefaultValue(false).WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Loop", "png_loop",
                 (o, value) =>
                 {
@@ -3183,9 +3276,6 @@ public static class ConfigGroup
         AlphaColour
     ]);
 
-    private static readonly int ActiveRegion = LayerMask.NameToLayer("ActiveRegion");
-    private static readonly int SoftTerrain = LayerMask.NameToLayer("Soft Terrain");
-
     public static readonly List<ConfigType> TriggerZones = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Trigger Type", "trigger_type",
@@ -3194,12 +3284,16 @@ public static class ConfigGroup
                         var val = value.GetValue();
                         o.GetComponent<TriggerZone>().mode = val;
 
-                        if (val == 3)
+                        switch (val)
                         {
-                            o.layer = ActiveRegion;
-                            o.AddComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                            case 3:
+                                o.AddComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                                o.layer = 7;
+                                break;
+                            case 4:
+                                o.layer = (int)PhysLayers.HERO_ONLY;
+                                break;
                         }
-                        else o.layer = SoftTerrain;
                     })
                 .WithOptions("Player", "Nail Swing", "Enemy", "Other Zone", "Activator").WithDefaultValue(0).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(

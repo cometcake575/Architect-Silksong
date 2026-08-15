@@ -260,7 +260,7 @@ public static class Settings
         HitboxesInEditor = config.Bind(
             "Options",
             "HitboxesInEditor",
-            false,
+            true,
             "Determines whether objects in edit mode should have hitboxes"
         );
         

@@ -25,12 +25,23 @@ public static class ReceiverGroup
         }, true))
     ];
     
+    public static readonly List<EventReceiverType> ObjectShaker = [
+        EventManager.RegisterReceiverType(new EventReceiverType("jitter_off", "Disable", o =>
+        {
+            o.GetComponent<ObjectShaker>().StopJitter();
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("jitter_on", "Enable", o =>
+        {
+            o.GetComponent<ObjectShaker>().StartJitter();
+        }))
+    ];
+    
     public static readonly List<EventReceiverType> GradeMarker = [
         EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_off", "Deactivate", o =>
         {
             o.GetComponent<GradeMarker>().Deactivate();
         })),
-        EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_off", "Activate", o =>
+        EventManager.RegisterReceiverType(new EventReceiverType("grade_marker_on", "Activate", o =>
         {
             o.GetComponent<GradeMarker>().Activate();
         })),
@@ -779,6 +790,10 @@ public static class ReceiverGroup
             if (b == null) return;
             o.GetComponent<PngObject>().SetFrame(Mathf.RoundToInt(b.GetVariable<float>("New Frame", 1)));
         })),
+        EventManager.RegisterReceiverType(new EventReceiverType("png_reverse", "Reverse", o =>
+        {
+            o.GetComponent<PngObject>().Reverse();
+        })),
         EventManager.RegisterReceiverType(new EventReceiverType("png_set_fps", "SetFPS", (o, b) =>
         {
             if (b == null) return;
@@ -794,6 +809,11 @@ public static class ReceiverGroup
         {
             if (b == null) return;
             o.GetComponent<WavObject>().Volume = b.GetVariable<float>("New Volume");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("set_pitch", "SetPitch", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<WavObject>().Volume = b.GetVariable<float>("New Pitch");
         }))
     ]);
     

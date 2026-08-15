@@ -799,6 +799,8 @@ public static class MiscFixers
     public static void FixArchitect(GameObject obj)
     {
         obj.transform.SetPositionZ(0.006f);
+
+        obj.RemoveComponentsInChildren<CameraLockArea>();
         
         obj.GetComponentInChildren<BoxCollider2D>().size = new Vector2(7, 2);
         obj.GetComponent<InteractableBase>().interactLabel = InteractableBase.PromptLabels.Speak;
@@ -848,16 +850,45 @@ public static class MiscFixers
     
     public class MrMushroom : Npc
     {
+        public int mode;
+
+        public string noticeText = "SampleText";
+        
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Control");
             
             fsm.GetState("Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-            fsm.GetState("Talk Type").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-            var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[1];
+            fsm.GetState("Talk Type").AddAction(() => fsm.SendEvent(mode == 0 ? "TYPE B" : "TYPE FINAL"), 0);
+
+            var tb = fsm.GetState("Talk B");
+            tb.DisableAction(0);
+            
+            var dialogue = (RunDialogue)tb.actions[1];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
-            fsm.GetState("Dialogue End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+
+            var tf = fsm.GetState("Talk Final 1");
+            tf.DisableAction(0);
+            
+            var dialogueF = (RunDialogue)tf.actions[1];
+            dialogueF.Sheet = "ArchitectMod";
+            dialogueF.Key = text;
+
+            var dialogueF2 = (RunDialogueV4)fsm.GetState("Talk Final 2").actions[1];
+            dialogueF2.Sheet = "ArchitectMod";
+            dialogueF2.Key = noticeText;
+
+            var ce = fsm.GetState("Convo End");
+            var dialogueE = (RunDialogue)ce.actions[2];
+            dialogueE.Sheet = "ArchitectMod";
+            dialogueE.Key = noticeText;
+
+            var eq = fsm.GetState("End Quest");
+            eq.DisableAction(2);
+            
+            ce.AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+            eq.AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     

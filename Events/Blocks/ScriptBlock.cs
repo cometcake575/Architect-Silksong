@@ -172,6 +172,11 @@ public abstract class ScriptBlock
         }
     }
 
+    public bool HasVariable(string id)
+    {
+        return VarMap.ContainsKey(id);
+    }
+
     public T GetVariable<T>(string id, object def = null)
     {
         object val;

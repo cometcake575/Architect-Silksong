@@ -64,14 +64,24 @@ public class ObjectMoverBlock : ScriptBlock
 
                 var pos = new Vector3(tx, ty, tz);
                 if (prefab) prefab.Move(pos);
-                else obj.transform.position = pos;
+                else
+                {
+                    if (HasVariable("X")) obj.transform.SetPositionX(tx);
+                    if (HasVariable("Y")) obj.transform.SetPositionY(ty);
+                    if (HasVariable("Z")) obj.transform.SetPositionZ(tz);
+                }
                 
                 break;
             case "MoveBy":
                 var target = obj.transform.position + new Vector3(x, y, z);
 
                 if (prefab) prefab.Move(target);
-                else obj.transform.position = target;
+                else
+                {
+                    if (HasVariable("X")) obj.transform.SetPositionX(target.x);
+                    if (HasVariable("Y")) obj.transform.SetPositionY(target.y);
+                    if (HasVariable("Z")) obj.transform.SetPositionZ(target.z);
+                }
 
                 break;
             case "AddForce":
@@ -87,10 +97,8 @@ public class ObjectMoverBlock : ScriptBlock
                 if (prefab) rb2ds = prefab.spawns.SelectMany(o => o.GetComponentsInChildren<Rigidbody2D>());
                 foreach (var rb2d in rb2ds)
                 {
-                    var vx = GetVariable<float>("X", rb2d.linearVelocityX);
-                    var vy = GetVariable<float>("Y", rb2d.linearVelocityY);
-                    rb2d.linearVelocityX = vx;
-                    rb2d.linearVelocityY = vy;
+                    if (HasVariable("X")) rb2d.linearVelocityX = GetVariable<float>("X", rb2d.linearVelocityX);
+                    if (HasVariable("Y")) rb2d.linearVelocityY = GetVariable<float>("Y", rb2d.linearVelocityY);
                 }
 
                 break;

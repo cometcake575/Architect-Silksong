@@ -38,6 +38,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
     public int hcount = 1;
     public int dummy;
     public float frameTime = 1;
+    public bool reversed;
     public bool playing;
     public bool loop = true;
 
@@ -46,10 +47,10 @@ public class PngObject : PreviewableBehaviour, IPlayable
         if (string.IsNullOrEmpty(url)) return;
         
         _renderer = GetComponent<SpriteRenderer>();
-        if (ignoreGlow) glow = 1;
-        if (glow != 1 && _renderer)
+        if (ignoreGlow) glow = 0;
+        if (glow != 0 && _renderer)
         {
-            _renderer.material = glow == 0 ? MiscFixers.SpriteMaterial : MiscFixers.ScreenHazeMaterial;
+            _renderer.material = glow == 1 ? MiscFixers.SpriteMaterial : MiscFixers.ScreenHazeMaterial;
         }
         CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
         _count = Mathf.Max(1, hcount * vcount - dummy);
@@ -66,6 +67,11 @@ public class PngObject : PreviewableBehaviour, IPlayable
         _remainingFrameTime = frameTime;
     }
 
+    public void Reverse()
+    {
+        reversed = !reversed;
+    }
+
     private void Update()
     {
         if (frameTime <= 0 || _count <= 1 || !playing || !_renderer || Sprites == null) return;
@@ -73,12 +79,24 @@ public class PngObject : PreviewableBehaviour, IPlayable
         while (_remainingFrameTime < 0 && frameTime > 0)
         {
             _remainingFrameTime += frameTime;
-            frame++;
+            if (reversed) frame--;
+            else frame++;
             gameObject.BroadcastEvent("OnFrameChange");
-            if (frame >= _count)
+            if (frame >= _count && !reversed)
             {
                 gameObject.BroadcastEvent("OnFinish");
                 frame %= _count;
+                if (!loop)
+                {
+                    playing = false;
+                    return;
+                }
+            }
+
+            if (frame < 0 && reversed)
+            {
+                gameObject.BroadcastEvent("OnFinish");
+                frame += _count;
                 if (!loop)
                 {
                     playing = false;
@@ -359,6 +377,11 @@ public class WavObject : SoundMaker, IPlayable
             field = value;
         }
     } = 1;
+
+    public void SetPitch(float newPitch)
+    {
+        pitch = newPitch;
+    }
 
     public float pitch = 1;
     public bool globalSound = true;

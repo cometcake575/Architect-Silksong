@@ -16,6 +16,9 @@ public class CustomAchievement : SpriteItem
     public string Desc = string.Empty;
     public AchievementType AchievementType = AchievementType.Normal;
     public string InsertBefore = string.Empty;
+    public int Priority;
+
+    public override int GetPriority() => Priority;
     
     private Achievement _achievement;
     

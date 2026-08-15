@@ -493,7 +493,7 @@ public static class SceneUtils
         
         SceneManager.SetActiveScene(scene);
         
-        CreateGradeMarker(info.HeroLight, info.AmbientLight, info.Saturation);
+        CreateGradeMarker(info.HeroLight, info.AmbientLight, info.Saturation, info.AmbientIntensity);
         
         FsmHook.FsmMaster.OnSceneLoaded(scene, LoadSceneMode.Single);
         CreateTileMap(info);
@@ -549,13 +549,14 @@ public static class SceneUtils
         return m;
     }
     
-    public static void CreateGradeMarker(Color heroLight, Color ambient, float saturation)
+    public static void CreateGradeMarker(Color heroLight, Color ambient, float saturation, float intensity)
     {
         var m = Object.Instantiate(_gradeMarker);
         var gm = m.GetComponent<GradeMarker>();
 
         gm.heroLightColor = heroLight;
         gm.ambientColor = ambient;
+        gm.ambientIntensity = intensity;
         gm.saturation = saturation;
 
         gm.maxIntensityRadius = 0;

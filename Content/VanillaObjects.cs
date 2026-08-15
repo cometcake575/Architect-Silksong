@@ -843,6 +843,8 @@ public static class VanillaObjects
         AddSolid("High Halls Platform 1", "halls_plat_1", ("Hang_08", "hanging_gardens_plat_float_filled_small"));
         AddSolid("High Halls Platform 2", "halls_plat_2", ("Hang_08", "hanging_garden_big_plat (4)"),
             uiSprite: ResourceUtils.LoadSpriteResource("halls_plat_2"));
+        AddSolid("High Halls Platform 3", "halls_plat_3", ("Hang_03", "hanging_garden_big_plat (2)"),
+            uiSprite: ResourceUtils.LoadSpriteResource("halls_plat_3"));
         
         Categories.Interactable.Add(new PreloadObject("Ring Switch A", "harpoon_gate", 
             ("Cog_Dancers", "Black Thread States/Normal World/harpoon_ring_gate"), 
@@ -1035,11 +1037,11 @@ public static class VanillaObjects
             new Vector2(3.454f, -1.574f)
         ]));
 
-        /*Categories.Npcs.Add(new PreloadObject("Mr Mushroom NPC", "mr_mushroom_npc",
-            ("Cradle_Destroyed_Challenge_01", "Mr Mushroom NPC"),
+        Categories.Npcs.Add(new PreloadObject("Mr Mushroom NPC", "mr_mushroom_npc",
+            ("Tut_03", "Mr Mushroom NPC"),
             preloadAction: MiscFixers.AddComponent<MiscFixers.MrMushroom>)
-            .WithConfigGroup(ConfigGroup.Npcs)
-            .WithBroadcasterGroup(BroadcasterGroup.Npcs));*/
+            .WithConfigGroup(ConfigGroup.MrMushroom)
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
         
         AddSolid("Surface Platform", "plat_float_06", ("Abandoned_town", "plat_float_06"));
         
@@ -2395,6 +2397,14 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.MapperRing)
             .WithReceiverGroup(ReceiverGroup.MapperRing)
             .WithInputGroup(InputGroup.Velocity));
+
+        Categories.Attacks.Add(new PreloadObject("Shakra Ring Projectile", "shakra_ring_projectile",
+            ("localpoolprefabs_assets_mapper", "Assets/Prefabs/Hornet Bosses/Shakra Ring Friendly.prefab"), 
+            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Fly").DisableAction(3),
+            notSceneBundle: true)
+            .WithConfigGroup(ConfigGroup.ShakraRing)
+            .WithInputGroup(InputGroup.Velocity)
+            .WithReceiverGroup(ReceiverGroup.Velocity));
         
         Categories.Misc.Add(new PreloadObject("Partial Silk Spool", "silk_spool_take_partial",
             ("Dust_Maze_01", "break_spool_upright (2)")).WithConfigGroup(ConfigGroup.PersistentUsable));

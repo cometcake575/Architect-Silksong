@@ -24,8 +24,12 @@ public class AnimatorBlock : ScriptBlock
 
     private IAnimPlayer _player;
 
-    public override void SetupReference()
+    private bool _setup;
+
+    private void DoSetup()
     {
+        if (_setup) return;
+        _setup = true;
         var target = GetVariable<GameObject>("Target");
         if (target && target != HeroController.instance.gameObject)
         {
@@ -63,11 +67,13 @@ public class AnimatorBlock : ScriptBlock
 
     public override object GetValue(string id)
     {
+        DoSetup();
         return _player.GetClip();
     }
 
     protected override void Trigger(string id)
     {
+        DoSetup();
         if (id == "Start") _player.Play();
         else _player.Stop();
     }

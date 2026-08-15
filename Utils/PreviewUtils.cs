@@ -126,6 +126,7 @@ public static class PreviewUtils
             gameObject.RemoveComponentsInChildren<tk2dSpriteAnimator>();
             gameObject.RemoveComponentsInChildren<ParticleSystemRenderer>();
             gameObject.RemoveComponentsInChildren<Animator>();
+            gameObject.RemoveComponentsInChildren<TriggerEvent>();
             gameObject.RemoveComponentsInChildren<CurveRotationAnimation>();
             gameObject.RemoveComponentsInChildren<AmbientSway>();
             gameObject.RemoveComponentsInChildren<PlayFromRandomFrameMecanim>();
