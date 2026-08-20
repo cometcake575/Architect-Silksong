@@ -81,7 +81,7 @@ public class LoopBlock : ScriptBlock
     protected override IEnumerable<(string, string)> OutputVars => [("Loop Value", "Number")];
 
     protected override IEnumerable<string> Inputs => ["In", "Cancel"];
-    protected override IEnumerable<string> Outputs => ["Out"];
+    protected override IEnumerable<string> Outputs => ["Out", "Finished"];
 
     protected override string Name => "Loop";
 
@@ -121,6 +121,7 @@ public class LoopBlock : ScriptBlock
             if (!d) yield break;
             Event("Out");
         }
+        Event("Finished");
     }
 }
 

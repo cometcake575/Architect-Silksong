@@ -419,7 +419,7 @@ public static class MiscObjects
     {
         var triangle = CreateShape("triangle");
 
-        var collider = triangle.AddComponent<EdgeCollider2D>();
+        var collider = triangle.AddComponent<PolygonCollider2D>();
         collider.isTrigger = true;
         collider.points =
         [

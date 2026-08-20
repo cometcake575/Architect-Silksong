@@ -34,8 +34,13 @@ public class AnimatorBlock : ScriptBlock
         if (target && target != HeroController.instance.gameObject)
         {
             var player = target.AddComponent<AnimPlayer>();
-            player.animator = target.GetComponent<tk2dSpriteAnimator>();
-            if (!player.animator) return;
+            _player = player;
+            player.animator = target.GetComponentInChildren<tk2dSpriteAnimator>(true);
+            if (!player.animator)
+            {
+                _setup = false;
+                return;
+            }
             try
             {
                 player.clip = player.animator.GetClipByName(ClipName);
@@ -47,7 +52,6 @@ public class AnimatorBlock : ScriptBlock
 
             player.overrideAnimTime = OverrideAnimTime;
             player.animTime = AnimTime;
-            _player = player;
         }
         else
         {
@@ -68,12 +72,13 @@ public class AnimatorBlock : ScriptBlock
     public override object GetValue(string id)
     {
         DoSetup();
-        return _player.GetClip();
+        return _setup ? _player.GetClip() : null;
     }
 
     protected override void Trigger(string id)
     {
         DoSetup();
+        if (!_setup) return;
         if (id == "Start") _player.Play();
         else _player.Stop();
     }

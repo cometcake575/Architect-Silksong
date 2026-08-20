@@ -65,6 +65,55 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
     
+    public static readonly List<ConfigType> CameraLock = GroupUtils.Merge(Generic,
+    [
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Collider Size", "camera_lock_box_size", (o, value) =>
+            {
+                o.GetComponent<CustomCameraLock>().boxZone = value.GetValue();
+            }, (o, value, _) =>
+            {
+                var ccl = o.GetComponentInChildren<CustomCameraLock>(true);
+                ccl.boxZone = value.GetValue();
+                ccl.Setup();
+            }).WithDefaultValue(new Vector2(12, 12))),
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Collider Offset", "camera_lock_box_offset", (o, value) =>
+            {
+                o.GetComponent<CustomCameraLock>().boxOffset = value.GetValue();
+            }, (o, value, _) =>
+            {
+                var ccl = o.GetComponentInChildren<CustomCameraLock>(true);
+                ccl.boxOffset = value.GetValue();
+                ccl.Setup();
+            }).WithDefaultValue(Vector2.zero)),
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Lock Size", "camera_lock_lock_size", (o, value) =>
+            {
+                o.GetComponent<CustomCameraLock>().lockZone = value.GetValue();
+            }, (o, value, _) =>
+            {
+                var ccl = o.GetComponentInChildren<CustomCameraLock>(true);
+                ccl.lockZone = value.GetValue();
+                ccl.Setup();
+            }).WithDefaultValue(new Vector2(10, 10))),
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Lock Offset", "camera_lock_lock_offset", (o, value) =>
+            {
+                o.GetComponent<CustomCameraLock>().lockOffset = value.GetValue();
+            }, (o, value, _) =>
+            {
+                var ccl = o.GetComponentInChildren<CustomCameraLock>(true);
+                ccl.lockOffset = value.GetValue();
+                ccl.Setup();
+            }).WithDefaultValue(Vector2.zero)),
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Priority", "camera_lock_priority", (o, value) =>
+            {
+                o.GetComponent<CameraLockArea>().priority = value.GetValue();
+            }).WithDefaultValue(1))
+    ]);
+    
     public static readonly List<ConfigType> GradeMarker = 
     [
         ConfigurationManager.RegisterConfigType(

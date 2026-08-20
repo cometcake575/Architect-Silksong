@@ -88,6 +88,7 @@ public static class UtilityObjects
         
         Categories.Utility.Add(CreateBinoculars());
         Categories.Utility.Add(CreateCameraBorder());
+        Categories.Utility.Add(CreateCameraLock());
         Categories.Utility.Add(CreateCameraRotator());
         Categories.Utility.Add(CreateSceneBorderRemover());
         Categories.Utility.Add(CreateSceneParticleManager());
@@ -543,6 +544,61 @@ public static class UtilityObjects
                             "only when not using Binoculars, or only when using Binoculars.",
                 sprite:ResourceUtils.LoadSpriteResource("camera_border"))
             .WithConfigGroup(ConfigGroup.CameraBorder);
+    }
+
+    private static PlaceableObject CreateCameraLock()
+    {
+        CameraBorder.Init();
+
+        var cameraLock = new GameObject("Camera Lock")
+        {
+            layer = (int)PhysLayers.HERO_DETECTOR
+        };
+
+        var box = ResourceUtils.LoadSpriteResource("box", FilterMode.Point, ppu:32);
+        
+        var ccl = cameraLock.AddComponent<CustomCameraLock>();
+        var lp = ccl.lockPreview = new GameObject("Lock Preview")
+        {
+            transform =
+            {
+                parent = ccl.transform,
+                localPosition = new Vector3(0, 0, 0.03f)
+            }
+        };
+        var lpsr = ccl.lockPreviewRenderer = lp.AddComponent<SpriteRenderer>();
+        lpsr.sprite = box;
+        lpsr.color = Color.cyan;
+        var bp = ccl.boxPreview = new GameObject("Box Preview")
+        {
+            transform = { 
+                parent = ccl.transform,
+                localPosition = new Vector3(0, 0, 0.04f)
+            }
+        };
+        var bpsr = ccl.boxPreviewRenderer = bp.AddComponent<SpriteRenderer>();
+        bpsr.sprite = box;
+        bpsr.color = Color.green;
+
+        ccl.renderer = cameraLock.AddComponent<SpriteRenderer>();
+        ccl.renderer.sprite = ResourceUtils.LoadSpriteResource("camera");
+        ccl.renderer.enabled = false;
+
+        ccl.collider = cameraLock.AddComponent<BoxCollider2D>();
+        ccl.collider.isTrigger = true;
+        
+        cameraLock.transform.position = new Vector3(0, 0, 0.1f);
+
+        Object.DontDestroyOnLoad(cameraLock);
+        cameraLock.SetActive(false);
+        
+        ccl.cameraLockArea = cameraLock.AddComponent<CameraLockArea>();
+        ccl.cameraLockArea.enabled = false;
+        
+        return new CustomObject("Camera Lock Area", "camera_lock_area", cameraLock,
+                description: "Locks the camera",
+                uiSprite: ResourceUtils.LoadSpriteResource("camera_lock_area_preview"))
+            .WithConfigGroup(ConfigGroup.CameraLock);
     }
 
     private static PlaceableObject CreateCameraRotator()

@@ -44,6 +44,7 @@ public class AnimPlayer : MonoBehaviour, IAnimPlayer
     
     public void Play()
     {
+        if (!animator) return;
         if (clip == null) return;
         _animTimeRemaining = overrideAnimTime ? animTime : clip.Duration;
         animator.Play(clip);
@@ -102,6 +103,7 @@ public class PlayerAnimPlayer : MonoBehaviour, IAnimPlayer
     public void Play()
     {
         if (_active) return;
+        if (!this) return;
         StartCoroutine(DoPlay());
     }
 
