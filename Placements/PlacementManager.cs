@@ -225,7 +225,7 @@ public static class PlacementManager
 
     public static bool TryGetValue(string path, out GameObject obj)
     {
-        if (path == "Hero_Hornet")
+        if (path.StartsWith("Hero_Hornet"))
         {
             obj = HeroController.instance.gameObject;
             return true;

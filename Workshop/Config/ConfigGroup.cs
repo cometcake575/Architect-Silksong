@@ -105,17 +105,96 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Cue =
     [
+        (NoteConfigType) "Sync Mode is only used for Music Cues",
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCue>("WAV URL", "music_cue_wav_url", (item, value) =>
+                new ChoiceConfigType<CustomCue>("Cue Type", "music_cue_mode", (item, value) =>
+                {
+                    item.IsAtmos = value.GetValue() == 1;
+                }).WithOptions("Music", "Atmos").WithDefaultValue(0)
+            ),
+        (NoteConfigType) "",
+        (NoteConfigType) "'Main' for Music Cues",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("Layer 1 URL", "music_cue_wav_url", (item, value) =>
             {
-                item.WavUrl = value.GetValue();
+                item.WavUrls[0] = value.GetValue();
             })
         ),
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType<CustomCue>("Mode", "music_cue_mode", (item, value) =>
+            new ChoiceConfigType<CustomCue>("Sync Mode", "music_cue_sync_mode", (item, value) =>
             {
-                item.IsAtmos = value.GetValue() == 1;
-            }).WithOptions("Music", "Atmos").WithDefaultValue(0)
+                item.SyncModes[0] = (MusicChannelSync)value.GetValue();
+            }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
+        ),
+        (NoteConfigType) "",
+        (NoteConfigType) "'Main Alt' for Music Cues",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("Layer 2 URL", "music_cue_wav_url_2", (item, value) =>
+            {
+                item.WavUrls[1] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCue>("Sync Mode", "music_cue_sync_mode_2", (item, value) =>
+            {
+                item.SyncModes[1] = (MusicChannelSync)value.GetValue();
+            }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
+        ),
+        (NoteConfigType) "",
+        (NoteConfigType) "'Sub' for Music Cues",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("Layer 3 URL", "music_cue_wav_url_3", (item, value) =>
+            {
+                item.WavUrls[2] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCue>("Sync Mode", "music_cue_sync_mode_3", (item, value) =>
+            {
+                item.SyncModes[2] = (MusicChannelSync)value.GetValue();
+            }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
+        ),
+        (NoteConfigType) "",
+        (NoteConfigType) "'Action' for Music Cues",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("Layer 4 URL", "music_cue_wav_url_4", (item, value) =>
+            {
+                item.WavUrls[3] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCue>("Sync Mode", "music_cue_sync_mode_4", (item, value) =>
+            {
+                item.SyncModes[3] = (MusicChannelSync)value.GetValue();
+            }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
+        ),
+        (NoteConfigType) "",
+        (NoteConfigType) "'Tension' for Music Cues",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("Layer 5 URL", "music_cue_wav_url_5", (item, value) =>
+            {
+                item.WavUrls[4] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCue>("Sync Mode", "music_cue_sync_mode_5", (item, value) =>
+            {
+                item.SyncModes[4] = (MusicChannelSync)value.GetValue();
+            }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
+        ),
+        (NoteConfigType) "",
+        (NoteConfigType) "'Extra' for Music Cues, unused for Atmos Cues",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomCue>("Layer 6 URL", "music_cue_wav_url_6", (item, value) =>
+            {
+                item.WavUrls[5] = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomCue>("Sync Mode", "music_cue_sync_mode_6", (item, value) =>
+            {
+                item.SyncModes[5] = (MusicChannelSync)value.GetValue();
+            }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
         )
     ];
     

@@ -38,12 +38,12 @@ public static class StorageManager
     
     public static void Init()
     {
-        DataPath = Path.GetFullPath(Application.persistentDataPath + "/Architect/");
-        Directory.CreateDirectory(DataPath + "Scenes/");
-        Directory.CreateDirectory(DataPath + "Prefabs/");
-        Directory.CreateDirectory(DataPath + "Assets/");
-        Directory.CreateDirectory(DataPath + "Backups/");
-        Directory.CreateDirectory(DataPath + "ModAssets/");
+        DataPath = Path.GetFullPath(Path.Combine(Application.persistentDataPath, "Architect"));
+        Directory.CreateDirectory(Path.Combine(DataPath, "Scenes"));
+        Directory.CreateDirectory(Path.Combine(DataPath, "Prefabs"));
+        Directory.CreateDirectory(Path.Combine(DataPath, "Assets"));
+        Directory.CreateDirectory(Path.Combine(DataPath, "Backups"));
+        Directory.CreateDirectory(Path.Combine(DataPath, "ModAssets"));
         
         typeof(GameManager).Hook(nameof(GameManager.SaveGame), 
             (Action<GameManager, Action<bool>> orig, GameManager self, Action<bool> callback) => 
@@ -72,9 +72,9 @@ public static class StorageManager
     {
         if (scene.StartsWith("Prefab_"))
         {
-            return MapLoader.GetPrefab(scene) ?? $"{DataPath}Prefabs/{scene}.architect.json";
+            return MapLoader.GetPrefab(scene) ?? Path.Combine(DataPath, "Prefabs", $"{scene}.architect.json");
         }
-        return $"{DataPath}Scenes/{scene}.architect.json";
+        return Path.Combine(DataPath, "Scenes", $"{scene}.architect.json");
     }
     
     public static void SaveScene(string scene, LevelData level)

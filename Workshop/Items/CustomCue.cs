@@ -1,5 +1,5 @@
+using System.Linq;
 using Architect.Behaviour.Utility;
-using Architect.Editor;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
@@ -13,13 +13,21 @@ public class CustomCue : WorkshopItem
     
     private MusicCue _mcue;
     private AtmosCue _acue;
-    private MusicCue.MusicChannelInfo _mci;
-    private AtmosCue.AtmosChannelInfo _aci;
+    private readonly MusicCue.MusicChannelInfo[] _musicChannelInfos = [new(), new(), new(), new(), new(), new()];
+    private readonly AtmosCue.AtmosChannelInfo[] _atmosChannelInfos = [new(), new(), new(), new(), new()];
     
-    public string WavUrl = string.Empty;
+    public readonly string[] WavUrls = ["", "", "", "", "", ""]; 
+    public readonly MusicChannelSync[] SyncModes = [
+        MusicChannelSync.Implicit,
+        MusicChannelSync.Implicit,
+        MusicChannelSync.Implicit,
+        MusicChannelSync.Implicit,
+        MusicChannelSync.Implicit,
+        MusicChannelSync.Implicit];
     public bool IsAtmos;
-    
-    public override (string, string)[] FilesToDownload => [(WavUrl, "wav")];
+
+    public override (string, string)[] FilesToDownload => 
+        WavUrls.Where(w => !w.IsNullOrWhiteSpace()).Select(w => (w, "wav")).ToArray();
     
     public override void Register()
     {
@@ -27,37 +35,20 @@ public class CustomCue : WorkshopItem
         {
             _acue = ScriptableObject.CreateInstance<AtmosCue>();
 
-            _aci = new AtmosCue.AtmosChannelInfo();
-
             _acue.alternatives = [];
-            _acue.channelInfos =
-            [
-                _aci,
-                new AtmosCue.AtmosChannelInfo(),
-                new AtmosCue.AtmosChannelInfo(),
-                new AtmosCue.AtmosChannelInfo(),
-                new AtmosCue.AtmosChannelInfo()
-            ];
+            _acue.channelInfos = _atmosChannelInfos;
             _acue.name = Id;
         
             AudioPlayer.CustomAtmosCues.Add(Id, _acue);
         } else {
             _mcue = ScriptableObject.CreateInstance<MusicCue>();
 
-            _mci = new MusicCue.MusicChannelInfo();
-
             _mcue.alternatives = [];
-            _mcue.channelInfos =
-            [
-                _mci,
-                new MusicCue.MusicChannelInfo(),
-                new MusicCue.MusicChannelInfo(),
-                new MusicCue.MusicChannelInfo(),
-                new MusicCue.MusicChannelInfo(),
-                new MusicCue.MusicChannelInfo()
-            ];
+            _mcue.channelInfos = _musicChannelInfos;
             _mcue.name = Id;
             _mcue.originalMusicEventName = string.Empty;
+
+            for (var i = 0; i < 6; i++) _musicChannelInfos[i].sync = SyncModes[i];
         
             AudioPlayer.CustomMusicCues.Add(Id, _mcue);
         }
@@ -67,13 +58,17 @@ public class CustomCue : WorkshopItem
 
     private void RefreshSound()
     {
-        if (WavUrl.IsNullOrWhiteSpace()) return;
-        CustomAssetManager.DoLoadSound(WavUrl, wav =>
+        for (var i = 0; i < (IsAtmos ? 5 : 6); i++)
         {
-            wav.LoadAudioData();
-            if (IsAtmos) _aci.clip = wav;
-            else _mci.clip = wav;
-        });
+            if (WavUrls[i].IsNullOrWhiteSpace()) return;
+            var i1 = i;
+            CustomAssetManager.DoLoadSound(WavUrls[i], wav =>
+            {
+                wav.LoadAudioData();
+                if (IsAtmos) _atmosChannelInfos[i1].clip = wav;
+                else _musicChannelInfos[i1].clip = wav;
+            });
+        }
     }
     
     public override void Unregister()

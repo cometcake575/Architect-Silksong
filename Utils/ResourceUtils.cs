@@ -102,7 +102,7 @@ public static class ResourceUtils
 
     internal static void LoadClipResource(string clipPath, Action<AudioClip> callback)
     {
-        var path = StorageManager.DataPath + $"ModAssets/{clipPath}.wav";
+        var path = Path.Combine(StorageManager.DataPath, "ModAssets", $"{clipPath}.wav");
         
         if (!File.Exists(path))
         {

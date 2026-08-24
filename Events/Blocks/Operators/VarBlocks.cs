@@ -14,7 +14,7 @@ public abstract class VarBlock : LocalBlock
 
 public class BoolVarBlock : VarBlock
 {
-    protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<string> Inputs => ["Set", "WipeAll"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Boolean")];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
 
@@ -44,6 +44,14 @@ public class BoolVarBlock : VarBlock
 
     protected override void Trigger(string trigger)
     {
+        if (trigger == "Set")
+        {
+            TempVars.Clear();
+            SemiVars.Clear();
+            ArchitectData.Instance.BoolVariables.Clear();
+            GlobalArchitectData.Instance.BoolVariables.Clear();
+            return;
+        }
         var val = GetVariable<bool>("New Value");
         switch (PType)
         {
@@ -79,7 +87,7 @@ public class BoolVarBlock : VarBlock
 
 public class NumVarBlock : VarBlock
 {
-    protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<string> Inputs => ["Set", "WipeAll"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Number")];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Number")];
 
@@ -109,6 +117,14 @@ public class NumVarBlock : VarBlock
 
     protected override void Trigger(string trigger)
     {
+        if (trigger == "Set")
+        {
+            TempVars.Clear();
+            SemiVars.Clear();
+            ArchitectData.Instance.FloatVariables.Clear();
+            GlobalArchitectData.Instance.FloatVariables.Clear();
+            return;
+        }
         var val = GetVariable<float>("New Value");
         switch (PType)
         {
@@ -144,7 +160,7 @@ public class NumVarBlock : VarBlock
 
 public class StringVarBlock : VarBlock
 {
-    protected override IEnumerable<string> Inputs => ["Set"];
+    protected override IEnumerable<string> Inputs => ["Set", "WipeAll"];
     protected override IEnumerable<(string, string)> InputVars => [("New Value", "Text")];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Text")];
 
@@ -174,6 +190,14 @@ public class StringVarBlock : VarBlock
 
     protected override void Trigger(string trigger)
     {
+        if (trigger == "Set")
+        {
+            TempVars.Clear();
+            SemiVars.Clear();
+            ArchitectData.Instance.StringVariables.Clear();
+            GlobalArchitectData.Instance.StringVariables.Clear();
+            return;
+        }
         var val = GetVariable<string>("New Value");
         switch (PType)
         {
