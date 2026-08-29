@@ -46,6 +46,12 @@ public static class EditorUI
     private static GameObject _scriptUI;
     private static GameObject _workshopUI;
     
+    private static GameObject _editorTypeButtons;
+    private static GameObject _configTypeButtons;
+    private static GameObject _modern;
+    private static GameObject _categories;
+    private static GameObject _universalOptions;
+    
     public static AbstractCategory CurrentCategory = Categories.All;
     public static int PageIndex;
     private static List<SelectableObject> _categoryContents;
@@ -65,10 +71,6 @@ public static class EditorUI
     private static (Button, UIUtils.Label) _broadcastersButton;
     private static (Button, UIUtils.Label) _receiversButton;
     
-    private static (Button, UIUtils.Label) _mapButton;
-    private static (Button, UIUtils.Label) _scriptButton;
-    private static (Button, UIUtils.Label) _workshopButton;
-    
     private static GameObject _shareLevelButton;
     private static GameObject _shareLevelLabel;
     private static GameObject _shareScriptButton;
@@ -84,13 +86,16 @@ public static class EditorUI
         SetupObjects();
         SetupSearchBox();
         SetupPreciseSettings();
+        SetupEditorSettings();
         SetupAttributeSettings();
         SetupHotbar();
         SetupLayers();
 
+        SetupEditBlockers();
+
         RefreshItem();
     }
-    
+
     public static void DisplayHotbarText(string text)
     {
         ObjectIdLabel.textComponent.text = text;
@@ -119,6 +124,22 @@ public static class EditorUI
         _mapTransform.offsetMin = Vector2.zero;
         if (!Settings.LegacyEventSystem.Value) _mapTransform.anchoredPosition = new Vector2(0, 20);
         
+        _modern = new GameObject("Modern Elements")
+        {
+            transform = { parent = _mapTransform }
+        };
+        _modern.RemoveOffset();
+        _categories = new GameObject("Categories")
+        {
+            transform = { parent = _mapTransform }
+        };
+        _categories.RemoveOffset();
+        _universalOptions = new GameObject("Universal Options")
+        {
+            transform = { parent = _canvasObj.transform }
+        };
+        _universalOptions.RemoveOffset();
+        
         _scriptUI = new GameObject("Script Editor UI")
         {
             transform = { parent = _canvasObj.transform }
@@ -146,32 +167,9 @@ public static class EditorUI
         wt.anchoredPosition = new Vector2(0, 60);
         
         WorkshopUI.Init(_workshopUI);
-        
-        _mapButton = SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-263.5f, 15));
-        _scriptButton = SetupModeButton(EditorType.Script, "Script Editor", new Vector3(0, 15));
-        _workshopButton = SetupModeButton(EditorType.Workshop, "Workshop", new Vector3(263.5f, 15));
     }
-    
-    private static (Button, UIUtils.Label) SetupModeButton(EditorType type, string name, Vector3 pos)
-    {
-        var size = new Vector2(765, 50);
-        var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _canvasObj, pos, 
-            new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
-        label.textComponent.raycastTarget = false;
-        
-        btn.onClick.AddListener(() =>
-        {
-            CurrentType = type;
-            UIManager.instance.uiState = type == EditorType.Map ? UIState.PAUSED : UIState.OPTIONS;
-            Deletable.DeleteButton.SetActive(false);
-        });
-        label.textComponent.fontSize = 10;
-        
-        DisableWhenPlaying.Add(btn.gameObject);
-        DisableWhenPlaying.Add(label.gameObject);
-        
-        return (btn, label);
-    }
+
+    private static UIUtils.Label _inTestMode;
 
     private static void SetupLabels()
     {
@@ -189,11 +187,10 @@ public static class EditorUI
 
         var currentScene = UIUtils.MakeLabel("Current Scene", _canvasObj,
             new Vector3(50, 45, 0), Vector2.zero, Vector2.zero);
-        var inTestMode = UIUtils.MakeLabel("Test Mode", _canvasObj,
+        _inTestMode = UIUtils.MakeLabel("Test Mode", _canvasObj,
             new Vector3(-50, 45, 0), new Vector2(1, 0), new Vector2(1, 0));
         currentScene.textComponent.alignment = TextAnchor.LowerLeft;
-        inTestMode.textComponent.alignment = TextAnchor.LowerRight;
-        inTestMode.textComponent.text = "Test Mode";
+        _inTestMode.textComponent.alignment = TextAnchor.LowerRight;
 
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
@@ -201,13 +198,8 @@ public static class EditorUI
                 orig(self);
                 currentScene.textComponent.text = "Scene: " + GameManager.instance.sceneName;
             });
-        inTestMode.textComponent.text = Settings.TestMode.Value ? "Test Mode" : "";
-        Settings.TestMode.SettingChanged += (_, _) =>
-        {
-            inTestMode.textComponent.text = Settings.TestMode.Value ? "Test Mode" : "";
-        };
         EnableWhenPlaying.Add(currentScene.gameObject);
-        EnableWhenPlaying.Add(inTestMode.gameObject);
+        EnableWhenPlaying.Add(_inTestMode.gameObject);
 
         var bottomAnchor = new Vector2(0.5f, 0);
         ObjectIdLabel = UIUtils.MakeLabel("Object ID Description", _canvasObj,
@@ -229,12 +221,12 @@ public static class EditorUI
             var (btn, label) = UIUtils.MakeTextButton(
                 category.GetName(),
                 category.GetName(),
-                _mapUI,
+                _categories,
                 position,
                 anchor,
                 anchor
             );
-            if (category.GetName() == "Legacy") _legacyCategory = (btn, label); 
+            if (category.GetName() == "Legacy") _legacyCategory = (btn, label);
             btn.onClick.AddListener(() =>
             {
                 PageIndex = 0;
@@ -329,13 +321,12 @@ public static class EditorUI
 
     private static void SetupPrefabButton()
     {
-        var (prefabBtn, prefabImg, _) = UIUtils.MakeButtonWithImage("Prefab Editor", _mapUI,
+        var (prefabBtn, prefabImg, _) = UIUtils.MakeButtonWithImage("Prefab Editor", _modern,
             new Vector3(-25, -45), new Vector2(1, 1), new Vector2(1, 1), 96, 48);
-
         
         var openPrefab = new GameObject("Open Prefab")
         {
-            transform = { parent = _mapUI.transform }
+            transform = { parent = _modern.transform }
         };
         var rt = openPrefab.AddComponent<RectTransform>();
         rt.anchorMax = Vector2.one;
@@ -416,15 +407,23 @@ public static class EditorUI
         _canvasObj.SetActive(editing);
         if (editing)
         {
-            RefreshCurrentTab(paused);
+            _inTestMode.textComponent.text = Settings.TestMode.Value ? "Test Mode" : "";
+            
+            RefreshConfigTabs(paused);
             
             foreach (var obj in DisableWhenPlaying) obj.SetActive(paused);
             foreach (var obj in EnableWhenPlaying) obj.SetActive(!paused);
+            
+            if (paused && UIManager.instance.uiState == UIState.PAUSED) UIManager.instance.uiState = UIState.OPTIONS;
 
             if (paused)
             {
                 SetupLegacy(Settings.LegacyEventSystem.Value);
                 ScriptEditorUI.UpdateColour();
+
+                _mapUI.SetActive(CurrentType == EditorType.Map);
+                _scriptUI.SetActive(CurrentType == EditorType.Script);
+                _workshopUI.SetActive(CurrentType == EditorType.Workshop);
             }
             else
             {
@@ -448,21 +447,9 @@ public static class EditorUI
         _legacyCategory.Item2.gameObject.SetActive(legacy);
         _legacyCategory.Item1.gameObject.SetActive(legacy);
 
-        _configButton.Item1.gameObject.SetActive(legacy);
-        _configButton.Item2.gameObject.SetActive(legacy);
-        _broadcastersButton.Item1.gameObject.SetActive(legacy);
-        _broadcastersButton.Item2.gameObject.SetActive(legacy);
-        _receiversButton.Item1.gameObject.SetActive(legacy);
-        _receiversButton.Item2.gameObject.SetActive(legacy);
+        _configTypeButtons.SetActive(legacy);
+        _editorTypeButtons.SetActive(!legacy);
 
-        _mapButton.Item1.gameObject.SetActive(!legacy);
-        _mapButton.Item2.gameObject.SetActive(!legacy);
-        _scriptButton.Item1.gameObject.SetActive(!legacy);
-        _scriptButton.Item2.gameObject.SetActive(!legacy);
-        _workshopButton.Item1.gameObject.SetActive(!legacy);
-        _workshopButton.Item2.gameObject.SetActive(!legacy);
-
-        if (_configTransform) _configTransform.anchoredPosition = new Vector2(0, legacy ? 0 : -20);
         _mapTransform.anchoredPosition = new Vector2(0, legacy ? 0 : 20);
         
         if (legacy)
@@ -481,10 +468,6 @@ public static class EditorUI
                 DoRefreshCurrentPage();
             }
         }
-
-        _mapUI.SetActive(CurrentType == EditorType.Map);
-        _scriptUI.SetActive(CurrentType == EditorType.Script);
-        _workshopUI.SetActive(CurrentType == EditorType.Workshop);
     }
 
     public static void WipeTabs()
@@ -595,6 +578,8 @@ public static class EditorUI
             if (receiverBtn) SetupReceiverTab(placeable.ReceiverGroup);
             broadcasterBtn = placeable.BroadcasterGroup.Count > 0;
             if (broadcasterBtn) SetupBroadcasterTab(placeable.BroadcasterGroup);
+            
+            _editBlockers.transform.SetAsFirstSibling();
         }
 
         _configButton.Item1.interactable = configBtn;
@@ -602,7 +587,6 @@ public static class EditorUI
         _broadcastersButton.Item1.interactable = broadcasterBtn;
     }
 
-    private static RectTransform _configTransform; 
     private static GameObject _configTab; 
     public static readonly List<(InputField, Action)> ConfigIds = []; 
     private static GameObject _broadcasterTab;
@@ -613,7 +597,7 @@ public static class EditorUI
 
     private static void SetupConfigTab(List<ConfigType> group)
     {
-        (_configTab, _configTransform) = PrepareTab("Config Tab");
+        (_configTab, _) = PrepareTab("Config Tab");
         ConfigIds.Clear();
         _configButton.Item1.transform.SetAsLastSibling();
 
@@ -653,6 +637,7 @@ public static class EditorUI
                     EditManager.Config[type.Id] = type.Deserialize(inp.GetValue());
 
                 CursorManager.ObjectChanged = true;
+                if (!GameManager.instance.isPaused) CursorManager.NeedsRefresh = true;
             }
         }
     }
@@ -856,17 +841,47 @@ public static class EditorUI
         trans.anchorMax = Vector2.zero;
         trans.offsetMin = Vector2.zero;
         trans.offsetMax = Vector2.zero;
-        trans.SetParent(_mapUI.transform, false);
-        trans.SetAsLastSibling();
+        trans.SetParent(_canvasObj.transform, false);
+        trans.SetAsFirstSibling();
 
         return (tab, trans);
     }
 
-    private static void RefreshCurrentTab(bool paused)
+    private static GameObject _editBlockers;
+
+    private static void SetupEditBlockers()
     {
-        if (_configTab) _configTab.SetActive(paused && _currentOption == AttributeType.Config);
-        if (_broadcasterTab) _broadcasterTab.SetActive(paused && _currentOption == AttributeType.Events);
-        if (_receiverTab) _receiverTab.SetActive(paused && _currentOption == AttributeType.Listeners);
+        _editBlockers = new GameObject("Edit Blockers")
+        {
+            transform = { parent = _canvasObj.transform }
+        };
+        _editBlockers.RemoveOffset();
+        
+        SetupEditBlocker(new Vector2(0, 0.5f), 1150);
+        SetupEditBlocker(new Vector2(1, 0.5f), 500);
+    }
+
+    private static void SetupEditBlocker(Vector2 anchors, float width)
+    {
+        var img = UIUtils.MakeImage("Edit Blocker", _editBlockers, Vector2.zero, 
+            anchors, anchors, new Vector2(width, 10000));
+        img.raycastTarget = false;
+        img.sprite = UIUtils.Square;
+        img.color = new Color(0.1f, 0.1f, 0.1f, 0.6f);
+    }
+    
+    private static void RefreshConfigTabs(bool paused)
+    {
+        var show = paused || EditManager.ConfigOpen;
+        
+        _hotbar.SetActive(!show);
+        
+        _editBlockers.SetActive(EditManager.ConfigOpen && !paused);
+
+        _universalOptions.SetActive(show);
+        if (_configTab) _configTab.SetActive(show && _currentOption == AttributeType.Config);
+        if (_broadcasterTab) _broadcasterTab.SetActive(show && _currentOption == AttributeType.Events);
+        if (_receiverTab) _receiverTab.SetActive(show && _currentOption == AttributeType.Listeners);
     }
 
     private static void ToggleFavourite(int i, UIUtils.Label label)
@@ -938,16 +953,9 @@ public static class EditorUI
 
             rot += placeable.Rotation + placeable.ChildRotation + placeable.Tk2dRotation;
         }
-        else icon.transform.SetScale2D(new Vector2(1, 1));
+        else icon.transform.localScale = new Vector3(1, 1, 1);
 
         icon.transform.SetRotationZ(rot);
-        
-        _currentlySelected.textComponent.text = EditManager.CurrentObject.GetName();
-        _currentlySelectedDesc.textComponent.text = EditManager.CurrentObject.GetDescription();
-
-        ScaleText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
-        ZText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
-        RotationText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
     }
 
     private static int _refreshRoutineId;
@@ -1090,8 +1098,9 @@ public static class EditorUI
     private static void SetupPreciseSettings()
     {
         var anchor = new Vector2(1, 0);
-        RotationText = UIUtils.MakeTextbox("Rotation Box", _mapUI, new Vector3(-65, 190)
-            , anchor, anchor, 70, 32).Item1;
+        (RotationText, var rl) = UIUtils.MakeTextbox("Rotation Box", _universalOptions, new Vector3(-65, 190)
+            , anchor, anchor, 70, 32);
+        rl.textComponent.raycastTarget = false;
 
         RotationText.characterValidation = InputField.CharacterValidation.Decimal;
         RotationText.onValueChanged.AddListener(s =>
@@ -1105,8 +1114,9 @@ public static class EditorUI
             CursorManager.NeedsRefresh = true;
         });
 
-        ScaleText = UIUtils.MakeTextbox("Scale Box", _mapUI, new Vector3(-65, 210)
-            , anchor, anchor, 70, 32).Item1;
+        (ScaleText, var sl) = UIUtils.MakeTextbox("Scale Box", _universalOptions, new Vector3(-65, 210)
+            , anchor, anchor, 70, 32);
+        sl.textComponent.raycastTarget = false;
 
         ScaleText.characterValidation = InputField.CharacterValidation.Decimal;
         ScaleText.onValueChanged.AddListener(s =>
@@ -1120,8 +1130,9 @@ public static class EditorUI
             CursorManager.NeedsRefresh = true;
         });
 
-        ZText = UIUtils.MakeTextbox("Offset Box", _mapUI, new Vector3(-65, 170)
-            , anchor, anchor, 70, 32).Item1;
+        (ZText, var zl) = UIUtils.MakeTextbox("Offset Box", _universalOptions, new Vector3(-65, 170)
+            , anchor, anchor, 70, 32);
+        zl.textComponent.raycastTarget = false;
 
         ZText.characterValidation = InputField.CharacterValidation.Decimal;
         ZText.onValueChanged.AddListener(s =>
@@ -1135,28 +1146,68 @@ public static class EditorUI
             CursorManager.NeedsRefresh = true;
         });
 
-        var zLabel = UIUtils.MakeLabel("Z Label", _mapUI, new Vector3(-75, 170), anchor, anchor);
+        var zLabel = UIUtils.MakeLabel("Z Label", _universalOptions, new Vector3(-75, 170), anchor, anchor);
         zLabel.textComponent.text = "Z Position: ";
         zLabel.textComponent.fontSize = 8;
         zLabel.textComponent.alignment = TextAnchor.MiddleLeft;
+        zLabel.textComponent.raycastTarget = false;
 
-        var rotLabel = UIUtils.MakeLabel("Rotation Label", _mapUI, new Vector3(-75, 190), anchor, anchor);
+        var rotLabel = UIUtils.MakeLabel("Rotation Label", _universalOptions, new Vector3(-75, 190), anchor, anchor);
         rotLabel.textComponent.text = "Rotation: ";
         rotLabel.textComponent.fontSize = 8;
         rotLabel.textComponent.alignment = TextAnchor.MiddleLeft;
+        rotLabel.textComponent.raycastTarget = false;
 
-        var scaleLabel = UIUtils.MakeLabel("Scale Label", _mapUI, new Vector3(-75, 210), anchor, anchor);
+        var scaleLabel = UIUtils.MakeLabel("Scale Label", _universalOptions, new Vector3(-75, 210), anchor, anchor);
         scaleLabel.textComponent.text = "Scale: ";
         scaleLabel.textComponent.fontSize = 8;
         scaleLabel.textComponent.alignment = TextAnchor.MiddleLeft;
+        scaleLabel.textComponent.raycastTarget = false;
 
         EditManager.SetRotation(0);
         EditManager.SetScale(1);
         EditManager.SetZ(0);
     }
 
+    private static void SetupEditorSettings()
+    {
+        _editorTypeButtons = new GameObject("Editor Type Buttons")
+        {
+            transform = { parent = _canvasObj.transform }
+        };
+        _editorTypeButtons.RemoveOffset();
+        
+        SetupModeButton(EditorType.Map, "Map Editor", new Vector3(-263.5f, 15));
+        SetupModeButton(EditorType.Script, "Script Editor", new Vector3(0, 15));
+        SetupModeButton(EditorType.Workshop, "Workshop", new Vector3(263.5f, 15));
+    }
+    
+    private static void SetupModeButton(EditorType type, string name, Vector3 pos)
+    {
+        var size = new Vector2(765, 50);
+        var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _editorTypeButtons, pos, 
+            new Vector2(0.5f, 0), new Vector2(0.5f, 0), size:size);
+        label.textComponent.raycastTarget = false;
+        
+        btn.onClick.AddListener(() =>
+        {
+            CurrentType = type;
+            Deletable.DeleteButton.SetActive(false);
+        });
+        label.textComponent.fontSize = 10;
+        
+        DisableWhenPlaying.Add(btn.gameObject);
+        DisableWhenPlaying.Add(label.gameObject);
+    }
+
     private static void SetupAttributeSettings()
     {
+        _configTypeButtons = new GameObject("Config Type Buttons")
+        {
+            transform = { parent = _canvasObj.transform }
+        };
+        _configTypeButtons.RemoveOffset();
+        
         var pos = new Vector3(50, 13.25f);
         _configButton = SetupAttributeButton(AttributeType.Config, "Config", pos);
         pos.x += 92;
@@ -1168,30 +1219,39 @@ public static class EditorUI
     private static (Button, UIUtils.Label) SetupAttributeButton(AttributeType type, string name, Vector3 pos)
     {
         var size = new Vector2(260, 30);
-        var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _mapUI, pos, 
+        var (btn, label) = UIUtils.MakeTextButton(name + " Button", name, _configTypeButtons, pos, 
             Vector2.zero, Vector2.zero, size:size);
+        label.textComponent.raycastTarget = false;
 
         btn.onClick.AddListener(() => _currentOption = type);
         btn.interactable = false;
+        
+        DisableWhenPlaying.Add(btn.gameObject);
+        DisableWhenPlaying.Add(label.gameObject);
 
         return (btn, label);
     }
 
+    private static GameObject _hotbar;
+
     private static void SetupHotbar()
     {
+        _hotbar = new GameObject("Hotbar")
+        {
+            transform = { parent = _canvasObj.transform }
+        };
+        _hotbar.SetActive(false);
+        _hotbar.RemoveOffset();
+        
         for (var i = -4; i < 5; i++)
         {
-            var (btn, img, lbl) = UIUtils.MakeButtonWithImage("Hotbar Part", _canvasObj,
+            var (btn, img, _) = UIUtils.MakeButtonWithImage("Hotbar Part", _hotbar,
                 new Vector3(i * 45, 35), new Vector2(0.5f, 0), new Vector2(0.5f, 0), 
                 96, 48);
             btn.enabled = false;
 
             img.sprite = ArchitectPlugin.BlankSprite;
             HotbarIcons.Add(img);
-
-            EnableWhenPlaying.Add(btn.gameObject);
-            EnableWhenPlaying.Add(img.gameObject);
-            EnableWhenPlaying.Add(lbl.gameObject);
         }
     }
 
@@ -1202,7 +1262,7 @@ public static class EditorUI
     {
         var layerParent = new GameObject("Layers")
         {
-            transform = { parent = _mapUI.transform }
+            transform = { parent = _modern.transform }
         };
         layerParent.RemoveOffset().anchoredPosition = new Vector2(0, -20);
         

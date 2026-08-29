@@ -43,6 +43,13 @@ public static class EditManager
         }
     }
     
+    // Config open when not paused
+    public static bool ConfigOpen;
+    // Mouse is in config editing zone
+    private static bool EditingConfig =>
+        ConfigOpen &&
+        (Input.mousePosition.x < Screen.width * 0.35f || Input.mousePosition.x > Screen.width * 0.85f);
+    
     public static bool ShowLayersByDefault = true;
     public static readonly List<int> FlippedLayers = [];
 
@@ -51,6 +58,7 @@ public static class EditManager
     private static float _lastEditToggle;
 
     private static int _hotbarIndex;
+    private static int _loadedHotbar = -1; 
 
     public static int HotbarIndex
     {
@@ -147,6 +155,7 @@ public static class EditManager
         typeof(QuitToMenu).Hook("Start", (Func<QuitToMenu, IEnumerator> orig, QuitToMenu self) =>
             {
                 IsEditing = false;
+                ConfigOpen = false;
                 return orig(self); 
             });
         
@@ -238,7 +247,7 @@ public static class EditManager
         var paused = GameManager.instance.isPaused;
         var actions = InputHandler.Instance.inputActions;
 
-        if (!paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
+        if (!EditingConfig && !paused && (!HeroController.instance.controlReqlinquished || IgnoreControlRelinquished) &&
             !LoadPos && !HeroController.instance.cState.dead &&
             HeroController.instance.transitionState == HeroTransitionState.WAITING_TO_TRANSITION
             && !HeroController.instance.transform.parent)
@@ -254,6 +263,11 @@ public static class EditManager
         
         if (!IsEditing) return;
 
+        if (Input.GetKeyDown(KeyCode.K) && !EditingConfig)
+        {
+            ConfigOpen = !ConfigOpen;
+        }
+        
         if (paused)
         {
             var left = actions.Left.WasPressed;
@@ -265,7 +279,9 @@ public static class EditManager
         
         HeroController.instance.ResetHardLandingTimer();
 
-        if (!paused)
+        if (EditingConfig) return;
+
+        if (!paused && !ConfigOpen)
         {
             var hotbarIndex = -1;
             if (Input.GetKeyDown(KeyCode.Alpha1)) hotbarIndex = 0;
@@ -296,6 +312,15 @@ public static class EditManager
                 {
                     if (keybind.WasPressed) EditorUI.SetItem(index);
                 }
+            }
+            else if (Settings.NextHotbar.WasPressed)
+            {
+                if (Input.GetKey(KeyCode.LeftShift)) _loadedHotbar--;
+                else _loadedHotbar++;
+                if (_loadedHotbar >= 9) _loadedHotbar = 0;
+                if (_loadedHotbar < 0) _loadedHotbar = 8;
+                ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadHotbar(_loadedHotbar));
+                EditorUI.DisplayHotbarText($"Loaded hotbar {_loadedHotbar+1}");
             }
         }
 
@@ -465,7 +490,7 @@ public static class EditManager
     {
         if (IsEditing)
         {
-            if (!GameManager.instance.isPaused && CurrentObject is PlaceableObject)
+            if (!GameManager.instance.isPaused && CurrentObject is PlaceableObject && !ConfigOpen)
             {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.None;
@@ -530,6 +555,7 @@ public static class EditManager
                      .SelectMany(o => o.GetComponentsInChildren<TransitionPoint>())) 
             o.gameObject.SetActive(false);
         IsEditing = !IsEditing;
+        ConfigOpen = false;
 
         InvulBlock.Invulnerable = false;
 

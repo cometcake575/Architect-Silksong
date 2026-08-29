@@ -12,6 +12,8 @@ public static class Settings
     public static Keybind Flip;
     public static Keybind ScaleUp;
     public static Keybind ScaleDown;
+    public static Keybind NextHotbar;
+    public static Keybind OpenConfig;
     public static Keybind SaveObject;
     public static Keybind LockAxis;
     public static Keybind Undo;
@@ -101,6 +103,20 @@ public static class Settings
             "ScaleDown",
             KeyCode.Minus,
             "Decreases the scale of the object on the cursor"
+        ));
+        
+        NextHotbar = new Keybind(config.Bind(
+            "Keybinds",
+            "NextHotbar",
+            KeyCode.Tab,
+            "Moves to the next saved hotbar"
+        ));
+        
+        OpenConfig = new Keybind(config.Bind(
+            "Keybinds",
+            "OpenConfig",
+            KeyCode.K,
+            "Opens the config when the game is not paused"
         ));
         
         SaveObject = new Keybind(config.Bind(
