@@ -20,13 +20,14 @@ using Architect.Utils;
 using Architect.Workshop;
 using BepInEx;
 using BepInEx.Logging;
+using MonoMod.RuntimeDetour;
 using Newtonsoft.Json;
 using Silksong.DataManager;
 using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.34.0")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.35.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]

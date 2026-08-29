@@ -33,7 +33,8 @@ public class GameplayBlock : ScriptBlock
     
     protected override string Name => "Gameplay Control";
 
-    protected override IEnumerable<string> Inputs => ["SetGravity", "HideVanillaMaps", "ShowVanillaMaps"];
+    protected override IEnumerable<string> Inputs => ["SetGravity", "HideVanillaMaps", "ShowVanillaMaps", "Save", "SaveQuit", "CloseGame"];
+    protected override IEnumerable<string> Outputs => ["OnSave"];
 
     protected override IEnumerable<(string, string)> InputVars =>
     [
@@ -49,11 +50,24 @@ public class GameplayBlock : ScriptBlock
 
     protected override void Trigger(string trigger)
     {
-        if (trigger == "SetGravity")
+        switch (trigger)
         {
-            Physics2D.gravity = new Vector2(GetVariable<float>("GravX"), GetVariable<float>("GravY", -60));
+            case "SetGravity":
+                Physics2D.gravity = new Vector2(GetVariable<float>("GravX"), GetVariable<float>("GravY", -60));
+                break;
+            case "Save":
+                GameManager.instance.SaveGame(_ => Event("OnSave"));
+                break;
+            case "SaveQuit":
+                GameManager.instance.StartCoroutine(GameManager.instance.ReturnToMainMenu(true));
+                break;
+            case "CloseGame":
+                Application.Quit();
+                break;
+            default:
+                ArchitectData.Instance.HideVanillaMaps = trigger == "HideVanillaMaps";
+                break;
         }
-        else ArchitectData.Instance.HideVanillaMaps = trigger == "HideVanillaMaps";
     }
 
     public override object GetValue(string id)

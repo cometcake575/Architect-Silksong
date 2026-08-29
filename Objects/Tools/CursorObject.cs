@@ -37,8 +37,8 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
             info = $"X: {pos.x}, Y: {pos.y}";
         }
         else info = $"{obj.GetPlacementType().GetName()} ID: {obj.GetId()}";
-        EditorUI.ObjectIdLabel.textComponent.text = info;
-        ArchitectPlugin.Instance.StartCoroutine(ClearCursorInfoLabel());
+        
+        EditorUI.DisplayHotbarText(info);
     }
 
     public override void RightClick(Vector3 mousePosition)

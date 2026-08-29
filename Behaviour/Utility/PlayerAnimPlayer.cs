@@ -36,8 +36,12 @@ public class AnimPlayer : MonoBehaviour, IAnimPlayer
             (Action<tk2dSpriteAnimator, tk2dSpriteAnimationClip, float, float> orig, 
                 tk2dSpriteAnimator self, tk2dSpriteAnimationClip clip, float clipStartTime, float overrideFps) =>
             {
-                var player = self.GetComponent<AnimPlayer>();
-                if (player && player.isLocked) return;
+                if (self)
+                {
+                    var player = self.GetComponent<AnimPlayer>();
+                    if (player && player.isLocked) return;
+                }
+
                 orig(self, clip, clipStartTime, overrideFps);
             }, typeof(tk2dSpriteAnimationClip), typeof(float), typeof(float));
     }

@@ -322,8 +322,7 @@ public static class ScriptManager
         var wasLocal = IsLocal;
         if (!wasLocal) IsLocal = true;
 
-        EditorUI.ObjectIdLabel.textComponent.text = $"{obj.GetPlacementType().GetName()} added";
-        ArchitectPlugin.Instance.StartCoroutine(CursorObject.ClearCursorInfoLabel());
+        EditorUI.DisplayHotbarText($"{obj.GetPlacementType().GetName()} added");
 
         var block = new ObjectBlock
         {

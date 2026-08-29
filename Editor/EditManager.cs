@@ -72,19 +72,19 @@ public static class EditManager
         }
     }
 
-    private static readonly SelectableObject[] HotbarCurrentObject =
+    public static readonly SelectableObject[] HotbarCurrentObject =
         [CursorObject.Instance, BlankObject.Instance, BlankObject.Instance,
         BlankObject.Instance, BlankObject.Instance, BlankObject.Instance,
         BlankObject.Instance, BlankObject.Instance, BlankObject.Instance];
     
-    private static readonly bool[] HotbarCurrentlyFlipped = [false, false, false, false, false, false, false, false, false];
-    private static readonly float[] HotbarCurrentRotation = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static readonly float[] HotbarCurrentScale = [1, 1, 1, 1, 1, 1, 1, 1, 1];
-    private static readonly float[] HotbarCurrentZ = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    public static readonly bool[] HotbarCurrentlyFlipped = [false, false, false, false, false, false, false, false, false];
+    public static readonly float[] HotbarCurrentRotation = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    public static readonly float[] HotbarCurrentScale = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+    public static readonly float[] HotbarCurrentZ = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    private static readonly List<(string, string, int)>[] HotbarReceivers = [[], [], [], [], [], [], [], [], []];
-    private static readonly List<(string, string)>[] HotbarBroadcasters = [[], [], [], [], [], [], [], [], []];
-    private static readonly Dictionary<string, ConfigValue>[] HotbarConfig = [[], [], [], [], [], [], [], [], []];
+    public static readonly List<(string, string, int)>[] HotbarReceivers = [[], [], [], [], [], [], [], [], []];
+    public static readonly List<(string, string)>[] HotbarBroadcasters = [[], [], [], [], [], [], [], [], []];
+    public static readonly Dictionary<string, ConfigValue>[] HotbarConfig = [[], [], [], [], [], [], [], [], []];
     
     public static SelectableObject CurrentObject
     {
@@ -267,19 +267,35 @@ public static class EditManager
 
         if (!paused)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) HotbarIndex = 0;
-            else if (Input.GetKeyDown(KeyCode.Alpha2)) HotbarIndex = 1;
-            else if (Input.GetKeyDown(KeyCode.Alpha3)) HotbarIndex = 2;
-            else if (Input.GetKeyDown(KeyCode.Alpha4)) HotbarIndex = 3;
-            else if (Input.GetKeyDown(KeyCode.Alpha5)) HotbarIndex = 4;
-            else if (Input.GetKeyDown(KeyCode.Alpha6)) HotbarIndex = 5;
-            else if (Input.GetKeyDown(KeyCode.Alpha7)) HotbarIndex = 6;
-            else if (Input.GetKeyDown(KeyCode.Alpha8)) HotbarIndex = 7;
-            else if (Input.GetKeyDown(KeyCode.Alpha9)) HotbarIndex = 8;
+            var hotbarIndex = -1;
+            if (Input.GetKeyDown(KeyCode.Alpha1)) hotbarIndex = 0;
+            else if (Input.GetKeyDown(KeyCode.Alpha2)) hotbarIndex = 1;
+            else if (Input.GetKeyDown(KeyCode.Alpha3)) hotbarIndex = 2;
+            else if (Input.GetKeyDown(KeyCode.Alpha4)) hotbarIndex = 3;
+            else if (Input.GetKeyDown(KeyCode.Alpha5)) hotbarIndex = 4;
+            else if (Input.GetKeyDown(KeyCode.Alpha6)) hotbarIndex = 5;
+            else if (Input.GetKeyDown(KeyCode.Alpha7)) hotbarIndex = 6;
+            else if (Input.GetKeyDown(KeyCode.Alpha8)) hotbarIndex = 7;
+            else if (Input.GetKeyDown(KeyCode.Alpha9)) hotbarIndex = 8;
 
-            foreach (var (keybind, index) in ToolObject.Keybinds)
+            if (hotbarIndex != -1)
             {
-                if (keybind.WasPressed) EditorUI.SetItem(index);
+                if (Input.GetKey(KeyCode.LeftAlt))
+                {
+                    ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadHotbar(hotbarIndex));
+                    EditorUI.DisplayHotbarText($"Loaded hotbar {hotbarIndex+1}");
+                }
+                else if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    StorageManager.SaveHotbar(hotbarIndex);
+                    EditorUI.DisplayHotbarText($"Saved hotbar {hotbarIndex+1}");
+                }
+                else HotbarIndex = hotbarIndex;
+
+                foreach (var (keybind, index) in ToolObject.Keybinds)
+                {
+                    if (keybind.WasPressed) EditorUI.SetItem(index);
+                }
             }
         }
 

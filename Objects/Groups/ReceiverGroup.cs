@@ -813,7 +813,7 @@ public static class ReceiverGroup
         EventManager.RegisterReceiverType(new EventReceiverType("set_pitch", "SetPitch", (o, b) =>
         {
             if (b == null) return;
-            o.GetComponent<WavObject>().Volume = b.GetVariable<float>("New Pitch");
+            o.GetComponent<WavObject>().pitch = b.GetVariable<float>("New Pitch");
         }))
     ]);
     

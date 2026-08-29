@@ -1779,7 +1779,7 @@ public static class ConfigGroup
             color.a = value.GetValue();
             sr.color = color;
         }).WithDefaultValue(1));
-    public static readonly List<ConfigType> ColouredShapes = GroupUtils.Merge(Stretchable, GroupUtils.Merge(Colliders, [
+    public static readonly List<ConfigType> ColouredShapes = GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Colour", "sprite_colour", (o, value) =>
             {
@@ -1815,7 +1815,10 @@ public static class ConfigGroup
                 if (!rb2d.sharedMaterial) rb2d.sharedMaterial = new PhysicsMaterial2D();
                 rb2d.sharedMaterial.friction = value.GetValue();
             }).WithPriority(2))
-    ]));
+    ]);
+    
+    public static readonly List<ConfigType> StretchableColouredShapes = 
+        GroupUtils.Merge(Stretchable, GroupUtils.Merge(ColouredShapes, []));
     
     public static readonly List<ConfigType> Line = GroupUtils.Merge(Colliders, [
         ConfigurationManager.RegisterConfigType(

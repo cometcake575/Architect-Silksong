@@ -44,7 +44,7 @@ public class BoolVarBlock : VarBlock
 
     protected override void Trigger(string trigger)
     {
-        if (trigger == "Set")
+        if (trigger == "WipeAll")
         {
             TempVars.Clear();
             SemiVars.Clear();
@@ -117,7 +117,7 @@ public class NumVarBlock : VarBlock
 
     protected override void Trigger(string trigger)
     {
-        if (trigger == "Set")
+        if (trigger == "WipeAll")
         {
             TempVars.Clear();
             SemiVars.Clear();
@@ -190,7 +190,7 @@ public class StringVarBlock : VarBlock
 
     protected override void Trigger(string trigger)
     {
-        if (trigger == "Set")
+        if (trigger == "WipeAll")
         {
             TempVars.Clear();
             SemiVars.Clear();

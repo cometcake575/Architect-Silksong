@@ -1,10 +1,11 @@
 using System.Collections;
 using Architect.Behaviour.Fixers;
+using Architect.Behaviour.Utility;
 using UnityEngine;
 
 namespace Architect.Behaviour.Custom;
 
-public class JellyEgg : MonoBehaviour
+public class JellyEgg : PreviewableBehaviour
 {
     public GameObject explosion;
     public float regenTime = -1;
@@ -21,6 +22,7 @@ public class JellyEgg : MonoBehaviour
 
     private IEnumerator OnTriggerStay2D(Collider2D other)
     {
+        if (isAPreview) yield break;
         if (!_col || !_renderer) yield break;
         if (!other.GetComponentInParent<HeroController>()) yield break;
         

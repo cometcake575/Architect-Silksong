@@ -90,6 +90,12 @@ public static class EditorUI
 
         RefreshItem();
     }
+    
+    public static void DisplayHotbarText(string text)
+    {
+        ObjectIdLabel.textComponent.text = text;
+        ArchitectPlugin.Instance.StartCoroutine(CursorObject.ClearCursorInfoLabel());
+    }
 
     private static void SetupCanvas()
     {
@@ -888,9 +894,21 @@ public static class EditorUI
 
     public static void RefreshItem()
     {
-        var icon = HotbarIcons[EditManager.HotbarIndex];
-        icon.sprite = EditManager.CurrentObject.GetUISprite();
-        var cfg = EditManager.Config.Values.FirstOrDefault(c => c.GetTypeId() == "png_url");
+        RefreshItem(EditManager.HotbarIndex);
+        
+        _currentlySelected.textComponent.text = EditManager.CurrentObject.GetName();
+        _currentlySelectedDesc.textComponent.text = EditManager.CurrentObject.GetDescription();
+
+        ScaleText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
+        ZText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
+        RotationText.enabled = !(EditManager.CurrentObject?.DisableTransformations ?? true);
+    }
+
+    public static void RefreshItem(int index)
+    {
+        var icon = HotbarIcons[index];
+        icon.sprite = EditManager.HotbarCurrentObject[index].GetUISprite();
+        var cfg = EditManager.HotbarConfig[index].Values.FirstOrDefault(c => c.GetTypeId() == "png_url");
         if (cfg != null)
         {
             CustomAssetManager.DoLoadSprite(cfg.SerializeValue(), true, 100, 1, 1, sprites =>
@@ -903,7 +921,7 @@ public static class EditorUI
         icon.transform.SetScaleX(1.25f);
         icon.transform.SetScaleY(1.25f);
 
-        if (EditManager.CurrentObject is PlaceableObject placeable)
+        if (EditManager.HotbarCurrentObject[index] is PlaceableObject placeable)
         {
             switch (placeable.GetUISprite().packingRotation)
             {

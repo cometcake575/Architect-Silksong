@@ -12,6 +12,7 @@ using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Outputs;
 using Architect.Objects.Categories;
 using Architect.Objects.Placeable;
+using Architect.Objects.Tools;
 using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Utils;
@@ -44,6 +45,7 @@ public static class StorageManager
         Directory.CreateDirectory(Path.Combine(DataPath, "Assets"));
         Directory.CreateDirectory(Path.Combine(DataPath, "Backups"));
         Directory.CreateDirectory(Path.Combine(DataPath, "ModAssets"));
+        Directory.CreateDirectory(Path.Combine(DataPath, "Hotbars"));
         
         typeof(GameManager).Hook(nameof(GameManager.SaveGame), 
             (Action<GameManager, Action<bool>> orig, GameManager self, Action<bool> callback) => 
@@ -66,6 +68,91 @@ public static class StorageManager
 
                 orig(self, callback);
             }, typeof(Action<bool>));
+    }
+
+    public static void SaveHotbar(int slot)
+    {
+        for (var i = 0; i < 9; i++)
+        {
+            var path = Path.Combine(DataPath, "Hotbars", $"{slot}_{i}.json");
+            var obj = EditManager.HotbarCurrentObject[i];
+            switch (obj)
+            {
+                case PlaceableObject p:
+                {
+                    var placement = new ObjectPlacement(
+                        p,
+                        new Vector3(0, 0, EditManager.HotbarCurrentZ[i]),
+                        string.Empty,
+                        EditManager.HotbarCurrentlyFlipped[i],
+                        EditManager.HotbarCurrentRotation[i],
+                        EditManager.HotbarCurrentScale[i],
+                        false,
+                        0,
+                        EditManager.HotbarBroadcasters[i].ToArray(),
+                        EditManager.HotbarReceivers[i].ToArray(),
+                        EditManager.HotbarConfig[i].Values.ToArray()
+                    );
+                    File.WriteAllText(path, JsonConvert.SerializeObject(placement, Opc));
+                    break;
+                }
+                case ToolObject t:
+                    File.WriteAllText(path, t.Id);
+                    break;
+            }
+        }
+    }
+
+    public static IEnumerator LoadHotbar(int slot)
+    {
+        for (var i = 0; i < 9; i++)
+        {
+            var path = Path.Combine(DataPath, "Hotbars", $"{slot}_{i}.json");
+            if (!File.Exists(path))
+            {
+                EditManager.HotbarCurrentObject[i] = BlankObject.Instance;
+            }
+            else
+            {
+                var data = File.ReadAllText(path);
+
+                if (ToolObject.Tools.TryGetValue(data, out var tool))
+                {
+                    EditManager.HotbarCurrentObject[i] = tool;
+                }
+                else
+                {
+                    ObjectPlacement placement = null;
+                    try
+                    {
+                        placement = JsonConvert.DeserializeObject<ObjectPlacement>(data, Opc);
+                    }
+                    catch
+                    {
+                        EditManager.HotbarCurrentObject[i] = BlankObject.Instance;
+                    }
+
+                    if (placement != null)
+                    {
+                        yield return placement.GetPlacementType().EnsureLoaded();
+
+                        EditManager.HotbarCurrentObject[i] = placement.GetPlacementType();
+                        EditManager.HotbarCurrentlyFlipped[i] = placement.IsFlipped();
+                        EditManager.HotbarCurrentRotation[i] = placement.GetRotation();
+                        EditManager.HotbarCurrentScale[i] = placement.GetScale();
+                        EditManager.HotbarCurrentZ[i] = placement.GetPos().z;
+                        EditManager.HotbarBroadcasters[i] = placement.Broadcasters.ToList();
+                        EditManager.HotbarReceivers[i] = placement.Receivers.ToList();
+                        EditManager.HotbarConfig[i] = placement.Config.ToDictionary(k => k.GetTypeId(), k => k);
+                    }
+                }
+            }
+
+            EditorUI.RefreshItem(i);
+        }
+        
+        EditorUI.RefreshItem();
+        EditManager.HotbarIndex = EditManager.HotbarIndex;
     }
 
     private static string GetScenePath(string scene)
@@ -112,7 +199,7 @@ public static class StorageManager
 
     public static void LoadWorkshopData()
     {
-        var path = DataPath + "workshop.json";
+        var path = Path.Join(DataPath, "workshop.json");
         if (!File.Exists(path))
         {
             WorkshopManager.LoadWorkshop(new WorkshopData());
@@ -126,7 +213,7 @@ public static class StorageManager
 
     public static void SaveWorkshopData()
     {
-        var path = DataPath + "workshop.json";
+        var path = Path.Join(DataPath, "workshop.json");
         if (File.Exists(path)) File.Delete(path);
         
         File.WriteAllText(path, JsonConvert.SerializeObject(WorkshopManager.WorkshopData, Formatting.Indented));
@@ -169,7 +256,7 @@ public static class StorageManager
 
     public static void SaveFavourites(List<string> favourites)
     {
-        var path = DataPath + "favourites.json";
+        var path = Path.Join(DataPath, "favourites.json");
         if (File.Exists(path)) File.Delete(path);
 
         var data = JsonConvert.SerializeObject(favourites);
@@ -182,7 +269,7 @@ public static class StorageManager
 
     public static List<string> LoadFavourites()
     {
-        var path = DataPath + "favourites.json";
+        var path = Path.Join(DataPath, "favourites.json");
         if (File.Exists(path))
         {
             var deserialized = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(path));
@@ -194,7 +281,7 @@ public static class StorageManager
 
     public static void SavePrefabs(List<SavedObject> prefabs)
     {
-        var path = DataPath + "prefabs.json";
+        var path = Path.Join(DataPath, "prefabs.json");
         if (File.Exists(path)) File.Delete(path);
 
         var data = SerializePlacements(prefabs.Select(obj => obj.Placement).ToList());
@@ -207,7 +294,7 @@ public static class StorageManager
 
     public static List<SavedObject> LoadSavedObjects()
     {
-        var path = DataPath + "prefabs.json";
+        var path = Path.Join(DataPath, "prefabs.json");
         if (File.Exists(path))
         {
             var deserialized = DeserializePlacements(File.ReadAllText(path));
@@ -268,7 +355,7 @@ public static class StorageManager
         Dictionary<string, LevelData> data = [];
         foreach (var s in new[] { "Scenes/", "Prefabs/" })
         {
-            foreach (var file in Directory.GetFiles(DataPath + s))
+            foreach (var file in Directory.GetFiles(Path.Join(DataPath, s)))
             {
                 var name = Path.GetFileName(file);
                 if (!name.EndsWith(".architect.json")) continue;
@@ -283,9 +370,9 @@ public static class StorageManager
 
     public static void WipeLevelData()
     {
-        foreach (var file in Directory.GetFiles(DataPath + "Scenes/")) File.Delete(file);
-        foreach (var file in Directory.GetFiles(DataPath + "Prefabs/")) File.Delete(file);
-        foreach (var file in Directory.GetFiles(DataPath + "Assets/")) File.Delete(file);
+        foreach (var file in Directory.GetFiles(Path.Join(DataPath, "Scenes"))) File.Delete(file);
+        foreach (var file in Directory.GetFiles(Path.Join(DataPath, "Prefabs"))) File.Delete(file);
+        foreach (var file in Directory.GetFiles(Path.Join(DataPath, "Assets"))) File.Delete(file);
 
         GlobalArchitectData.Instance.CurrentMap = "";
         GlobalArchitectData.Instance.CurrentMapId = "";
@@ -425,28 +512,28 @@ public static class StorageManager
     {
         try
         {
-            var path = DataPath + $"Backups/{backupId}";
+            var path = Path.Join(DataPath, "Backups", backupId);
             
             if (Directory.Exists(path)) Directory.Delete(path, true);
             
-            Directory.CreateDirectory($"{path}/Scenes");
-            Directory.CreateDirectory($"{path}/Prefabs");
+            Directory.CreateDirectory(Path.Join(path, "Scenes"));
+            Directory.CreateDirectory(Path.Join(path, "Prefabs"));
 
-            foreach (var file in Directory.GetFiles(DataPath + "Scenes/"))
+            foreach (var file in Directory.GetFiles(Path.Join(DataPath, "Scenes")))
             {
                 if (!file.EndsWith(".architect.json")) continue;
-                File.Copy(file, path + "/Scenes/" + Path.GetFileName(file));
+                File.Copy(file, Path.Join(path, "Scenes", Path.GetFileName(file)));
             }
 
-            foreach (var file in Directory.GetFiles(DataPath + "Prefabs/"))
+            foreach (var file in Directory.GetFiles(Path.Join(DataPath, "Prefabs")))
             {
                 if (!file.EndsWith(".architect.json")) continue;
-                File.Copy(file, path + "/Prefabs/" + Path.GetFileName(file));
+                File.Copy(file, Path.Join(path, "Prefabs", Path.GetFileName(file)));
             }
 
-            if (File.Exists(DataPath + "workshop.json"))
+            if (File.Exists(Path.Join(DataPath, "workshop.json")))
             {
-                File.Copy(DataPath + "workshop.json", path + "/workshop.json");
+                File.Copy(Path.Join(DataPath, "workshop.json"), Path.Join(path, "workshop.json"));
             }
         }
         catch
@@ -459,7 +546,8 @@ public static class StorageManager
     {
         try
         {
-            var path = DataPath + $"Backups/{backupId}";
+            
+            var path = Path.Join(DataPath, "Backups", backupId);
             Directory.Delete(path, true);
         }
         catch
@@ -472,25 +560,25 @@ public static class StorageManager
     {
         try
         {
-            var path = DataPath + $"Backups/{backupId}/";
+            var path = Path.Join(DataPath, "Backups", backupId);
             
             WipeLevelData();
 
-            foreach (var file in Directory.GetFiles(path + "Scenes/"))
+            foreach (var file in Directory.GetFiles(Path.Join(path, "Scenes")))
             {
                 if (!file.EndsWith(".architect.json")) continue;
-                File.Copy(file, DataPath + "Scenes/" + Path.GetFileName(file));
+                File.Copy(file, Path.Join(DataPath, "Scenes", Path.GetFileName(file)));
             }
 
-            foreach (var file in Directory.GetFiles(path + "Prefabs/"))
+            foreach (var file in Directory.GetFiles(Path.Join(path, "Prefabs")))
             {
                 if (!file.EndsWith(".architect.json")) continue;
-                File.Copy(file, DataPath + "Prefabs/" + Path.GetFileName(file));
+                File.Copy(file, Path.Join(DataPath, "Prefabs", Path.GetFileName(file)));
             }
 
-            if (File.Exists(path + "workshop.json"))
+            if (File.Exists(Path.Join(path, "workshop.json")))
             {
-                File.Copy(path + "workshop.json", DataPath + "workshop.json", true);
+                File.Copy(Path.Join(path, "workshop.json"), Path.Join(DataPath, "workshop.json"), true);
             }
 
             PrefabsCategory.Prefabs = LoadPrefabs(DataPath);
@@ -511,7 +599,7 @@ public static class StorageManager
 
     public static void SaveApiKey([CanBeNull] string key)
     {
-        var path = DataPath + "key.txt";
+        var path = Path.Join(DataPath, "key.txt");
         if (File.Exists(path)) File.Delete(path);
         
         if (key == null) return;
@@ -525,7 +613,7 @@ public static class StorageManager
     [CanBeNull]
     public static string LoadSharerKey()
     {
-        var path = DataPath + "key.txt";
+        var path = Path.Combine(DataPath, "key.txt");
         return File.Exists(path) ? File.ReadAllText(path) : null;
     }
     
