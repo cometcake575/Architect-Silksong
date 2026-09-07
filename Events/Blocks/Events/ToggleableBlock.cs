@@ -6,7 +6,7 @@ public abstract class ToggleableBlock : ScriptBlock
 {
     protected override IEnumerable<string> Inputs => ["Disable", "Enable"];
 
-    protected bool Enabled = true;
+    public bool Enabled = true;
 
     public override void Reset()
     {

@@ -319,6 +319,8 @@ public static class InteractableFixers
         fsm.GetState("Msg Type?").AddAction(() => fsm.SendEvent("ITEM"), 1);
         fsm.GetState("Item Msg").AddAction(() => fsm.SendEvent("GET ITEM MSG END"), 0);
         
+        fsm.GetState("End").DisableAction(4);
+        
         fsm.GetState("Bind Burst").AddAction(() => obj.BroadcastEvent("OnFinalBind"), 0);
         
         obj.AddComponent<BindSourceStand>().fsm = fsm;

@@ -190,6 +190,14 @@ public static class ConfigGroup
                 o.GetComponent<Layerer>().recursive = value.GetValue();
             }).WithDefaultValue(true))
     ];
+    
+    public static readonly List<ConfigType> ForegroundMarker = [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Target ID", "foreground_marker_target", (o, value) =>
+            {
+                o.GetComponent<MenuForegroundMarker>().id = value.GetValue();
+            }))
+    ];
 
     private static readonly ConfigType Hook = ConfigurationManager.RegisterConfigType(
         new IdConfigType("Path", "enemy_path", (o, value) =>

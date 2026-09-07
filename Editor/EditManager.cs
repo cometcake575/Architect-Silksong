@@ -263,7 +263,7 @@ public static class EditManager
         
         if (!IsEditing) return;
 
-        if (Input.GetKeyDown(KeyCode.K) && !EditingConfig)
+        if (Settings.OpenConfig.WasPressed && !EditingConfig && !paused)
         {
             ConfigOpen = !ConfigOpen;
         }
@@ -307,11 +307,6 @@ public static class EditManager
                     EditorUI.DisplayHotbarText($"Saved hotbar {hotbarIndex+1}");
                 }
                 else HotbarIndex = hotbarIndex;
-
-                foreach (var (keybind, index) in ToolObject.Keybinds)
-                {
-                    if (keybind.WasPressed) EditorUI.SetItem(index);
-                }
             }
             else if (Settings.NextHotbar.WasPressed)
             {
@@ -321,6 +316,11 @@ public static class EditManager
                 if (_loadedHotbar < 0) _loadedHotbar = 8;
                 ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadHotbar(_loadedHotbar));
                 EditorUI.DisplayHotbarText($"Loaded hotbar {_loadedHotbar+1}");
+            }
+
+            foreach (var (keybind, index) in ToolObject.Keybinds)
+            {
+                if (keybind.WasPressed) EditorUI.SetItem(index);
             }
         }
 
@@ -541,6 +541,7 @@ public static class EditManager
         if (IsEditing == target) return;
         if (!PreloadManager.HasPreloaded) return;
         if (PrefabManager.InPrefabScene) return;
+        if (GameManager.instance.sceneName.EndsWith("_Title")) return;
         if (Time.time - _lastEditToggle < 1) return;
 
         IgnoreControlRelinquished = false;

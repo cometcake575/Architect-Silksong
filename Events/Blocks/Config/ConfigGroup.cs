@@ -1052,6 +1052,11 @@ public static class ConfigGroup
     
     public static readonly List<ConfigType> Timer =  [
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<TimerBlock>("Start Enabled", "timer_start_enabled", (o, value) =>
+            {
+                o.Enabled = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType<TimerBlock>("Start Delay", "timer_start_delay", (o, value) =>
             {
                 o.StartDelay = value.GetValue();
@@ -1079,6 +1084,11 @@ public static class ConfigGroup
     ];
     
     public static readonly List<ConfigType> EveryFrame =  [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<EveryFrameBlock>("Start Enabled", "ef_start_enabled", (o, value) =>
+            {
+                o.Enabled = value.GetValue();
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType<EveryFrameBlock>("Run If Paused", "ef_run_when_paused", (o, value) =>
             {

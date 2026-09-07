@@ -40,6 +40,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateHitResponder());
         Categories.Utility.Add(CreateEnemyDamager());
         Categories.Utility.Add(CreateInteraction());
+        Categories.Utility.Add(CreateForegroundMarker());
         Categories.Utility.Add(CreateFakePerformance());
         
         Categories.Utility.Add(CreateEnemyHook());
@@ -800,6 +801,22 @@ public static class UtilityObjects
                 description: "Changes the layer of the target object, affecting things like collision.")
             .WithConfigGroup(ConfigGroup.ObjectLayerer)
             .WithReceiverGroup(ReceiverGroup.ObjectLayerer);
+    }
+
+    private static PlaceableObject CreateForegroundMarker()
+    {
+        var layerer = new GameObject("Menu Foreground Marker");
+        layerer.SetActive(false);
+        Object.DontDestroyOnLoad(layerer);
+        
+        layerer.AddComponent<MenuForegroundMarker>();
+
+        return new CustomObject("Menu Foreground Marker", "foreground_marker",
+                layerer,
+                sprite: ResourceUtils.LoadSpriteResource("foreground_marker", FilterMode.Point),
+                description: "Used for custom menu styles.\n" +
+                             "Objects marked as foreground fade in submenus.")
+            .WithConfigGroup(ConfigGroup.ForegroundMarker);
     }
 
     private static PlaceableObject CreateObjectCollisionChanger()

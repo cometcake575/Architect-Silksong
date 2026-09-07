@@ -6,6 +6,7 @@ using Architect.Objects.Categories;
 using Architect.Storage;
 using Architect.Utils;
 using Architect.Workshop;
+using Architect.Workshop.Items;
 using Silksong.AssetHelper.ManagedAssets;
 using Silksong.AssetHelper.Plugin;
 using UnityEngine;
@@ -106,9 +107,11 @@ public static class PreloadManager
         while (_count < _totalCount) yield return null;
         
         HasPreloaded = true;
-        Object.Destroy(_canvasObj);
         WorkshopManager.Setup();
         CrestBinding.InitItcHook();
+        CustomMenuStyle.SetStyle();
+        
+        Object.Destroy(_canvasObj);
         
         FavouritesCategory.Favourites = StorageManager.LoadFavourites();
         SavedCategory.Objects = StorageManager.LoadSavedObjects();

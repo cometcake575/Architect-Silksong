@@ -6,8 +6,6 @@ namespace Architect.Events.Blocks.Operators;
 
 public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
 {
-    
-    
     protected override string Name => "Step Counter";
     
     protected override IEnumerable<string> Inputs => ["Trigger", "DisableAll", "EnableAll"];
@@ -24,17 +22,31 @@ public class OneByOneBlock : CollectionBlock<OneByOneBlock.TriggerBlock>
 
     protected override void Trigger(string trigger)
     {
-        if (Children.Children.Count(c => c.Enabled) == 0) return;
-        
-        var count = Children.Blocks.Count;
-        
-        _index %= count;
-        Children.Blocks[_index].Event("OnTrigger");
-        do
+        switch (trigger)
         {
-            _index += 1;
-            _index %= count;
-        } while (!(Children.Blocks[_index] as TriggerBlock)!.Enabled);
+            case "DisableAll":
+                foreach (var child in Children.Children) child.Enabled = false;
+                break;
+            case "EnableAll":
+                foreach (var child in Children.Children) child.Enabled = true;
+                break;
+            default:
+            {
+                if (Children.Children.Count(c => c.Enabled) == 0) return;
+
+                var count = Children.Blocks.Count;
+
+                _index %= count;
+                Children.Blocks[_index].Event("OnTrigger");
+                do
+                {
+                    _index += 1;
+                    _index %= count;
+                } while (!(Children.Blocks[_index] as TriggerBlock)!.Enabled);
+
+                break;
+            }
+        }
     }
 
     public class TriggerBlock : ChildBlock

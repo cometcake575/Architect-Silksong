@@ -73,6 +73,8 @@ public class ObjectPlacement(
         return Locked || !IsCurrentLayer();
     }
 
+    public int GetLayer() => _layer;
+
     public bool IsCurrentLayer() => _layer == EditManager.Layer;
     
     private bool ShowCurrentLayer() => IsCurrentLayer() || 

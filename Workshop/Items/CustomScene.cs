@@ -14,6 +14,8 @@ public class CustomScene : SpriteItem
     public int TilemapWidth = 500;
     public int TilemapHeight = 500;
 
+    public override string LoadScene => Id;
+
     public Color HeroLight = new(0.9412f, 0.9412f, 0.9412f, 0.485f);
     public Color AmbientLight = new(0.6824f, 0.6824f, 0.6824f, 1);
     public float AmbientIntensity = 0.72f;

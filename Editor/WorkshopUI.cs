@@ -247,20 +247,41 @@ public static class WorkshopUI
 
             var (btn, lbl) = UIUtils.MakeTextButton("Edit", "Edit", listing,
                 new Vector2(152.5f, -95),
-                Vector2.zero, Vector2.zero);
+                Vector2.zero, Vector2.zero, size: new Vector2(110, 55));
             lbl.textComponent.fontSize = 16;
+
+            var (enterBtn, enterLbl) = UIUtils.MakeTextButton("Open", "Open", listing,
+                new Vector2(195, -95),
+                Vector2.zero, Vector2.zero, size: new Vector2(110, 55));
+            enterLbl.textComponent.fontSize = 16;
             
             var listingComponent = listing.AddComponent<Listing>();
             listingComponent.obj = listing;
             listingComponent.icon = icon;
             listingComponent.type = type;
             listingComponent.id = id;
+            listingComponent.enterBtn = enterBtn.gameObject;
+            listingComponent.enterLbl = enterLbl.gameObject;
             Listings.Add(listingComponent);
             
             btn.onClick.AddListener(() =>
             {
                 if (listingComponent.CurrentItem == null) return;
                 Open(listingComponent.CurrentItem, false);
+            });
+            
+            enterBtn.onClick.AddListener(() =>
+            {
+                if (listingComponent.CurrentItem.LoadScene.IsNullOrWhiteSpace()) return;
+                if (GameManager.instance.isPaused)
+                {
+                    GameManager.instance.StartCoroutine(GameManager.instance.PauseGameToggle(false));
+                    GameManager.instance.SetPausedState(false);
+                }
+                EditManager.NoclipPos.x = 0;
+                EditManager.NoclipPos.y = 0;
+                GameManager.instance.ChangeToScene(listingComponent.CurrentItem.LoadScene, "", 0);
+                GameCameras.instance.cameraController.SetMode(CameraController.CameraMode.FOLLOWING);
             });
         }
 
@@ -347,6 +368,8 @@ public static class WorkshopUI
     private class Listing : MonoBehaviour
     {
         public GameObject obj;
+        public GameObject enterBtn;
+        public GameObject enterLbl;
         public Image icon;
         public Text type;
         public Text id;
@@ -355,6 +378,8 @@ public static class WorkshopUI
         public void Clear()
         {
             obj.SetActive(false);
+            enterBtn.SetActive(false);
+            enterLbl.SetActive(false);
         }
 
         public void Setup(WorkshopItem item)
@@ -364,6 +389,8 @@ public static class WorkshopUI
             type.text = item.Type;
             id.text = item.Id;
             obj.SetActive(true);
+            enterBtn.SetActive(!item.LoadScene.IsNullOrWhiteSpace());
+            enterLbl.SetActive(!item.LoadScene.IsNullOrWhiteSpace());
         }
     }
 

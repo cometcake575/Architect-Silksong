@@ -1366,4 +1366,33 @@ public static class ConfigGroup
             }).WithDefaultValue(true)
         )
     ];
+    
+    public static readonly List<ConfigType> MenuStyle =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMenuStyle>("Name", "menu_style_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType<CustomMenuStyle>("Light Colour", "menu_style_colour", (item, value) =>
+            {
+                item.AmbientColor = value.GetValue();
+            }, false).WithDefaultValue(new Color(0.6824f, 0.6824f, 0.6824f))
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMenuStyle>("Ambient Intensity", "menu_style_intensity", (item, value) =>
+            {
+                item.AmbientIntensity = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        (NoteConfigType) "The style is unlocked when this universal variable is true (if set)",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomMenuStyle>("Required Variable", "menu_style_var", (item, value) =>
+            {
+                item.RequiredBool = value.GetValue();
+            })
+        )
+    ];
 }

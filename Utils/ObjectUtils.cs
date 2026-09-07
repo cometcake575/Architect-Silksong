@@ -29,7 +29,8 @@ public static class ObjectUtils
         
         obj.RemoveComponentsInChildren<FSMActivator>();
         obj.RemoveComponentsInChildren<IPersistentItem>();
-        obj.RemoveComponentsInChildren<InteractableBase>();
+        foreach (var ib in obj.GetComponentsInChildren<InteractableBase>()) 
+            if (ib is not TransitionPoint) Object.Destroy(ib);
         obj.RemoveComponentsInChildren<IHitResponder>();
         obj.RemoveComponentsInChildren<NestedFadeGroupBase>();
         obj.RemoveComponentsInChildren<BlackThreadState>();

@@ -497,6 +497,12 @@ public static class SceneUtils
         
         FsmHook.FsmMaster.OnSceneLoaded(scene, LoadSceneMode.Single);
         CreateTileMap(info);
+
+        // Title reference for custom title screen editing
+        if (sceneName.EndsWith("_Title")) Object.Instantiate(
+            CustomMenuStyle.Title, 
+            new Vector3(14.6f, 14.22f, 25.5f), 
+            Quaternion.Euler(0, 0, 0)).SetActive(true);
         
         sm.AddComponent<CustomTransitionPoint>();
         var point = sm.AddComponent<TransitionPoint>();

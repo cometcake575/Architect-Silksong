@@ -1705,7 +1705,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Vertical Moving Ring", "harpoon_ring_v",
                 ("Hang_08", "Harpoon Ring VerticalRide"),
-                uiSprite: ResourceUtils.LoadSpriteResource("ring_up"),
+                uiSprite: ResourceUtils.LoadSpriteResource("ring_side"),
                 preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: MiscFixers.FixRing)
             .WithConfigGroup(ConfigGroup.VerticalRing)
@@ -1713,7 +1713,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Horizontal Moving Ring", "harpoon_ring_h",
                 ("Cog_08", "Harpoon Ring Rail Slider"),
-                uiSprite: ResourceUtils.LoadSpriteResource("ring_side"),
+                uiSprite: ResourceUtils.LoadSpriteResource("ring_up"),
                 preloadAction: MiscFixers.FixRotation,
                 postSpawnAction: MiscFixers.FixRing))
             .WithBroadcasterGroup(BroadcasterGroup.HarpoonRings);

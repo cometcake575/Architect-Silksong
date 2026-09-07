@@ -165,6 +165,11 @@ public static class MiscFixers
                     _ => orig(ref self, allowBlankText)
                 };
             }, typeof(bool));
+        
+        typeof(Language).Hook(nameof(Language.Get),
+            (Func<string, string, string> orig, string key, string sheetTitle) =>
+                key.StartsWith("ArchitectMod_") ? SubstituteVars(key[13..]) : orig(key, sheetTitle),
+            typeof(string), typeof(string));
 
         typeof(DialogueBox).Hook(nameof(DialogueBox.ParseTextForDialogueLines),
             (Func<string, List<DialogueBox.DialogueLine>> orig, string text) =>

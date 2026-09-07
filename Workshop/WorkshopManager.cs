@@ -123,9 +123,10 @@ public static class WorkshopManager
         
         SceneGroup.Init();
         
-        /*CustomMenuStyle.Init();
+        CustomMenuStyle.Init();
         Register<CustomMenuStyle>("Menu Style",
-            new Vector2(-300, -412.5f));*/
+            new Vector2(-300, -450),
+            ConfigGroup.MenuStyle);
         
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,

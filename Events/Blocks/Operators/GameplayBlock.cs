@@ -30,10 +30,12 @@ public class GameplayBlock : ScriptBlock
             return current;
         };
     }
+
+    public string MenuStyle = string.Empty;
     
     protected override string Name => "Gameplay Control";
 
-    protected override IEnumerable<string> Inputs => ["SetGravity", "HideVanillaMaps", "ShowVanillaMaps", "Save", "SaveQuit", "CloseGame"];
+    protected override IEnumerable<string> Inputs => ["SetGravity", "HideVanillaMaps", "ShowVanillaMaps", "Save", "SaveQuit", "CloseGame", "SetMenuStyle"];
     protected override IEnumerable<string> Outputs => ["OnSave"];
 
     protected override IEnumerable<(string, string)> InputVars =>
@@ -63,6 +65,9 @@ public class GameplayBlock : ScriptBlock
                 break;
             case "CloseGame":
                 Application.Quit();
+                break;
+            case "SetMenuStyle":
+                GlobalArchitectData.Instance.MenuStyle = MenuStyle;
                 break;
             default:
                 ArchitectData.Instance.HideVanillaMaps = trigger == "HideVanillaMaps";
