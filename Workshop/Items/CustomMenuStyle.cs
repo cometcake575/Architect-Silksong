@@ -111,34 +111,37 @@ public class CustomMenuStyle : WorkshopItem
     {
         Styles.Add(this);
 
-        if (!_ms) return;
-
-        _parent = new GameObject(Id)
+        if (_ms)
         {
-            transform =
+
+            _parent = new GameObject(Id)
             {
-                parent = _ms.transform,
-                localPosition = new Vector3(-5f, -7.8454f, 3.5469f)
-            }
-        };
-        _parent.SetActive(false);
-        
-        _lsc = _parent.AddComponent<LoadSceneContents>();
-        _lsc.id = Id;
+                transform =
+                {
+                    parent = _ms.transform,
+                    localPosition = new Vector3(-5f, -7.8454f, 3.5469f)
+                }
+            };
+            _parent.SetActive(false);
 
-        _style = new MenuStyles.MenuStyle
-        {
-            DisplayName = $"ArchitectMod_{Name}",
-            StyleObject = _parent,
-            CameraColorCorrection = new MenuStyles.MenuStyle.CameraCurves(),
-            AmbientColor = AmbientColor,
-            BlurPlaneVibranceOffset = 1,
-            AmbientIntensity = AmbientIntensity
-        };
+            _lsc = _parent.AddComponent<LoadSceneContents>();
+            _lsc.id = Id;
 
-        var styles = _ms.Styles.ToList();
-        styles.Add(_style);
-        _ms.Styles = styles.ToArray();
+            _style = new MenuStyles.MenuStyle
+            {
+                DisplayName = $"ArchitectMod_{Name}",
+                StyleObject = _parent,
+                CameraColorCorrection = new MenuStyles.MenuStyle.CameraCurves(),
+                AmbientColor = AmbientColor,
+                BlurPlaneVibranceOffset = 1,
+                AmbientIntensity = AmbientIntensity
+            };
+
+
+            var styles = _ms.Styles.ToList();
+            styles.Add(_style);
+            _ms.Styles = styles.ToArray();
+        }
 
         _customScene = new CustomScene
         {
@@ -163,10 +166,10 @@ public class CustomMenuStyle : WorkshopItem
         styles.Remove(_style);
         _ms.Styles = styles.ToArray();
         
-        StyleLookup.Remove(_style);
+        if (_style != null) StyleLookup.Remove(_style);
         IdLookup.Remove(Id);
-        
-        _customScene.Unregister();
+
+        _customScene?.Unregister();
     }
 
     public override Sprite GetIcon()
