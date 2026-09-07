@@ -72,7 +72,11 @@ public class CustomMenuStyle : WorkshopItem
         typeof(MenuStyles).Hook(nameof(MenuStyles.LoadRecentMenuStyle),
             (Action<MenuStyles, bool> orig, MenuStyles self, bool fade) =>
             {
-                if (!GlobalArchitectData.Instance.MenuStyle.IsNullOrWhiteSpace()) return;
+                if (!GlobalArchitectData.Instance.MenuStyle.IsNullOrWhiteSpace())
+                {
+                    if (PreloadManager.HasPreloaded) SetStyle();
+                    return;
+                }
                 orig(self, fade);
             });
         
