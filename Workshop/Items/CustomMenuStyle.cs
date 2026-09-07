@@ -145,6 +145,7 @@ public class CustomMenuStyle : WorkshopItem
             var styles = _ms.Styles.ToList();
             styles.Add(_style);
             _ms.Styles = styles.ToArray();
+            StyleLookup[_style] = this;
         }
 
         _customScene = new CustomScene
@@ -156,7 +157,6 @@ public class CustomMenuStyle : WorkshopItem
         };
         _customScene.Register();
 
-        StyleLookup[_style] = this;
         IdLookup[Id] = this;
     }
 
