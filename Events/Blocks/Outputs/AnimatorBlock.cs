@@ -26,6 +26,11 @@ public class AnimatorBlock : ScriptBlock
 
     private bool _setup;
 
+    public override void Reset()
+    {
+        _setup = false;
+    }
+
     private void DoSetup()
     {
         if (_setup) return;

@@ -5,7 +5,7 @@ namespace Architect.Events.Blocks.Outputs;
 
 public class ItemBlock : ScriptBlock
 {
-    protected override IEnumerable<string> Inputs => ["Give", "GiveSilent", "Take", "Clear"];
+    protected override IEnumerable<string> Inputs => ["Give", "GiveSilent", "Take", "Clear", "ShowCounter", "HideCounter"];
     protected override IEnumerable<(string, string)> OutputVars => [
         ("Obtained", "Boolean")
     ];
@@ -44,6 +44,14 @@ public class ItemBlock : ScriptBlock
                 break;
             case "GiveSilent":
                 item.Get(Amount, false);
+                break;
+            case "ShowCounter":
+                if (item is not CollectableItem cis) return;
+                ItemCurrencyCounter.Show(cis);
+                break;
+            case "HideCounter":
+                if (item is not CollectableItem cih) return;
+                ItemCurrencyCounter.Hide(cih);
                 break;
             case "Take":
             case "Clear":

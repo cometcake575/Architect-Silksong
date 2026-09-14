@@ -943,7 +943,7 @@ public static class UtilityObjects
     {
         var point = new GameObject("Hit Responder")
         {
-            layer = LayerMask.NameToLayer("Attack")
+            layer = (int)PhysLayers.ENEMIES
         };
 
         point.AddComponent<NonBouncer>().active = true;

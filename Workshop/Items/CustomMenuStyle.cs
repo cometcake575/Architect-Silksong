@@ -28,6 +28,7 @@ public class CustomMenuStyle : WorkshopItem
     public string Name = string.Empty;
     public Color AmbientColor = Color.white;
     public float AmbientIntensity = 1;
+    public float BluePlaneVibrancy = 1;
 
     public string RequiredBool = string.Empty;
 
@@ -137,7 +138,7 @@ public class CustomMenuStyle : WorkshopItem
                 StyleObject = _parent,
                 CameraColorCorrection = new MenuStyles.MenuStyle.CameraCurves(),
                 AmbientColor = AmbientColor,
-                BlurPlaneVibranceOffset = 1,
+                BlurPlaneVibranceOffset = BluePlaneVibrancy,
                 AmbientIntensity = AmbientIntensity
             };
 

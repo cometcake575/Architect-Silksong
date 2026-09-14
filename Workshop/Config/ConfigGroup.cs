@@ -1387,6 +1387,12 @@ public static class ConfigGroup
                 item.AmbientIntensity = value.GetValue();
             }).WithDefaultValue(1)
         ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomMenuStyle>("Blur Vibrancy", "menu_style_vibrancy", (item, value) =>
+            {
+                item.BluePlaneVibrancy = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
         (NoteConfigType) "The style is unlocked when this universal variable is true (if set)",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomMenuStyle>("Required Variable", "menu_style_var", (item, value) =>

@@ -78,7 +78,6 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         MiscObjects.Init();
         CameraObjects.Init();
         ParticleObjects.Init();
-        // CollectableObjects.Init();
         
         RespawnMarkerManager.Init();
         
