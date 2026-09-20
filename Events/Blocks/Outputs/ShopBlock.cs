@@ -31,6 +31,8 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 
     private ShopOwner _shopOwner;
 
+    public bool TakeControl = true;
+
     public override void SetupReference()
     {
         var obj = new GameObject("[Architect] Shop Object");
@@ -57,15 +59,22 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 
     private IEnumerator Coroutine()
     {
-        yield return HeroController.instance.FreeControl(_ => !GameManager.instance.isPaused);
-        HeroController.instance.RelinquishControl();
-        
+        if (TakeControl)
+        {
+            yield return HeroController.instance.FreeControl(_ => !GameManager.instance.isPaused);
+            HeroController.instance.RelinquishControl();
+        }
+
         Refresh();
         _shopOwner.gameObject.SetActive(true);
         var sc = _shopOwner.ShopObject.LocateMyFSM("shop_control");
         sc.SendEvent("SHOP UP");
-        yield return new WaitUntil(() => sc.ActiveStateName == "Idle");
-        HeroController.instance.RegainControl();
+
+        if (TakeControl)
+        {
+            yield return new WaitUntil(() => sc.ActiveStateName == "Idle");
+            HeroController.instance.RegainControl();
+        }
     }
     
     public class ShopItemBlock : ChildBlock

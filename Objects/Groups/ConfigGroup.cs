@@ -2865,14 +2865,24 @@ public static class ConfigGroup
             }).WithDefaultValue(true))
     ]);
     
-    public static readonly List<ConfigType> Watcher = GroupUtils.Merge(Wakeable, GroupUtils.Merge(Bosses, [
+    public static readonly List<ConfigType> Watcher = GroupUtils.Merge(WakeableBosses, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Nook Y Offset", "watcher_nook_y", (o, value) =>
             {
                 o.LocateMyFSM("Control").FsmVariables.FindFsmFloat("Cliff Y")
                     .value = o.transform.GetPositionY() + value.GetValue();
             }).WithDefaultValue(1000))
-    ]));
+    ]);
+    
+    public static readonly List<ConfigType> Flintbeetle = GroupUtils.Merge(Wakeable, [
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Patrol Min/Max Offset", "flintbeetle_patrol_offset", (o, value) =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                fsm.FsmVariables.FindFsmFloat("Range Min").Value = o.transform.GetPositionX() + value.GetValue().x;
+                fsm.FsmVariables.FindFsmFloat("Range Max").Value = o.transform.GetPositionX() + value.GetValue().y;
+            }).WithDefaultValue(new Vector2(-10, 10)))
+    ]);
 
     public static readonly List<ConfigType> BurningBug = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(

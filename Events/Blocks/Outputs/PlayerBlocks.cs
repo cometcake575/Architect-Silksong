@@ -187,6 +187,7 @@ public class SilkBlock : ScriptBlock
     }
 
     public int Amount;
+    public bool AddEffect = true;
     public SilkSpool.SilkTakeSource TakeSource = SilkSpool.SilkTakeSource.Normal;
 
     protected override void Trigger(string trigger)
@@ -194,13 +195,13 @@ public class SilkBlock : ScriptBlock
         switch (trigger)
         {
             case "Max":
-                HeroController.instance.AddSilk(9999, true);
+                HeroController.instance.AddSilk(9999, AddEffect);
                 break;
             case "Give":
-                HeroController.instance.AddSilk(Amount, true);
+                HeroController.instance.AddSilk(Amount, AddEffect);
                 break;
             case "GiveParts":
-                HeroController.instance.AddSilkParts(Amount, true);
+                HeroController.instance.AddSilkParts(Amount, AddEffect);
                 break;
             case "Take":
                 HeroController.instance.TakeSilk(Amount, TakeSource);

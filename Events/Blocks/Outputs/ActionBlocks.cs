@@ -47,7 +47,7 @@ public static class ActionBlocks
         Category.Visual.RegisterBlock<TravelBlock>("Travel UI", ConfigGroup.TravelUI, TravelBlock.Init);
         Category.Visual.RegisterHiddenBlock<TravelBlock.TravelLoc>("Travel Target", ConfigGroup.TravelUITarget);
         
-        Category.Visual.RegisterBlock<ShopBlock>("Shop", init: ShopBlock.Init);
+        Category.Visual.RegisterBlock<ShopBlock>("Shop", ConfigGroup.Shop, ShopBlock.Init);
         Category.Visual.RegisterHiddenBlock<ShopBlock.ShopItemBlock>("Shop Item", ConfigGroup.ShopItem);
         
         /*

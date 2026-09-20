@@ -129,16 +129,16 @@ public static class BroadcasterHooks
         
         typeof(EnemyBullet).Hook(nameof(EnemyBullet.Collision), BreakEvent);
         
-        typeof(HealthFlyer).Hook(nameof(HealthFlyer.Heal), DeathEvent);
+        typeof(HealthFlyer).Hook(nameof(HealthFlyer.Hit), DeathEvent);
     }
 
-    private static IEnumerator DeathEvent(
-        Func<HealthFlyer, IEnumerator> orig,
-        HealthFlyer self)
+    private static IHitResponder.HitResponse DeathEvent(
+        Func<HealthFlyer, HitInstance, IHitResponder.HitResponse> orig,
+        HealthFlyer self,
+        HitInstance damageInstance)
     {
         self.gameObject.BroadcastEvent("OnDeath");
-        var o = orig(self);
-        while (o.MoveNext()) yield return o.Current;
+        return orig(self, damageInstance);
     }
 
     private static IEnumerator BreakEvent(

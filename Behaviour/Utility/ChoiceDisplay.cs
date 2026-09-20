@@ -20,6 +20,7 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     public List<int> costs = [];
 
     public ScriptBlock Block;
+    public bool takeControl = true;
 
     public void Display()
     {
@@ -30,7 +31,7 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     {
         yield return HeroController.instance.FreeControl(_ => InteractManager.CanInteract);
         
-        HeroController.instance.RelinquishControl();
+        if (takeControl) HeroController.instance.RelinquishControl();
 
         var txt = MiscFixers.SubstituteVars(text);
 
@@ -57,7 +58,7 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     private void Yes()
     {
         if (!this) return;
-        StartCoroutine(RegainControlDelayed());
+        if (takeControl) StartCoroutine(RegainControlDelayed());
         if (Block != null) Block.Event("Yes");
         else gameObject.BroadcastEvent("Yes");
     }
@@ -65,7 +66,7 @@ public class ChoiceDisplay : MonoBehaviour, IDisplayable
     private void No()
     {
         if (!this) return;
-        StartCoroutine(RegainControlDelayed());
+        if (takeControl) StartCoroutine(RegainControlDelayed());
         if (Block != null) Block.Event("No");
         else gameObject.BroadcastEvent("No");
     }

@@ -1393,6 +1393,20 @@ public static class ConfigGroup
                 item.BluePlaneVibrancy = value.GetValue();
             }).WithDefaultValue(1)
         ),
+        (NoteConfigType)"Hide the vanilla Silksong title",
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomMenuStyle>("Hide Title", "menu_style_hide_title", (item, value) =>
+            {
+                item.HideTitle = value.GetValue();
+            }).WithDefaultValue(false)
+        ),
+        (NoteConfigType)"Automatically activate when the level is installed for the first time",
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomMenuStyle>("Auto Activate", "menu_style_auto_activate", (item, value) =>
+            {
+                item.AutoActivate = value.GetValue();
+            }).WithDefaultValue(false)
+        ),
         (NoteConfigType) "The style is unlocked when this universal variable is true (if set)",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomMenuStyle>("Required Variable", "menu_style_var", (item, value) =>

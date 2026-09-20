@@ -3405,7 +3405,7 @@ public static class VanillaObjects
             preloadAction: EnemyFixers.FixFlintbeetlePreload,
             postSpawnAction: EnemyFixers.FixFlintbeetle)
             .WithRotationGroup(RotationGroup.Four)
-            .WithConfigGroup(ConfigGroup.Wakeable)
+            .WithConfigGroup(ConfigGroup.Flintbeetle)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
 
         Categories.Attacks.Add(new PreloadObject("Flintrock", "flint_bomb",

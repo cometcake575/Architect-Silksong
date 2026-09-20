@@ -9,7 +9,8 @@ public class ToolBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["ActReset", "AddUses", "TakeUses", "AddLiquid", "TakeLiquid", "AutoEquip", "Unequip"];
     protected override IEnumerable<string> Outputs => ["OnUse"];
     protected override IEnumerable<(string, string)> OutputVars => [
-        ("Equipped", "Boolean")
+        ("Equipped", "Boolean"),
+        ("Amount", "Number")
     ];
     
     protected override string Name => "Tool Control";
@@ -25,7 +26,8 @@ public class ToolBlock : ScriptBlock
     public override object GetValue(string id)
     {
         var tool = ToolItemManager.Instance.toolItems.GetByName(ToolName);
-        return tool && tool.IsEquipped;
+        if (id == "Equipped") return tool && tool.IsEquipped;
+        return tool ? tool.SavedData.AmountLeft : 0;
     }
 
     public override void SetupReference()

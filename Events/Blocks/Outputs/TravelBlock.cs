@@ -110,7 +110,8 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
     protected override int MaxChildren => 12;
     protected override bool NeedsGap => true;
 
-    public string Title;
+    public string Title = string.Empty;
+    public bool TakeControl = true;
 
     protected override void Trigger(string trigger)
     {
@@ -172,8 +173,12 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
 
         if (!hasSet) yield break;
 
-        yield return HeroController.instance.FreeControl(_ => !GameManager.instance.isPaused);
-        HeroController.instance.RelinquishControl();
+        if (TakeControl)
+        {
+            yield return HeroController.instance.FreeControl(_ => !GameManager.instance.isPaused);
+            HeroController.instance.RelinquishControl();
+        }
+
         PlayerData.instance.disablePause = true;
         _ftm.Open();
         _ftm.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
@@ -187,7 +192,7 @@ public class TravelBlock : CollectionBlock<TravelBlock.TravelLoc>
             _ftm.LocationConfirmed -= Dismiss;
             if (fastTravelLocations == default) Event("OnDismiss");
             GameCameras.instance.HUDIn();
-            ArchitectPlugin.Instance.StartCoroutine(RegainControlDelayed());
+            if (TakeControl) ArchitectPlugin.Instance.StartCoroutine(RegainControlDelayed());
         }
     }
 

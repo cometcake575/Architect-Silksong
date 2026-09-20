@@ -902,7 +902,7 @@ public static class MiscFixers
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Behaviour");
-            fsm.GetState("State?").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+            fsm.GetState("State?").AddAction(() => fsm.SendEvent("FINISHED"), 3);
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
@@ -1718,6 +1718,7 @@ public static class MiscFixers
     {
         foreach (var fsm in obj.GetComponents<PlayMakerFSM>())
         {
+            if (fsm.FsmName == "Rest Animation") continue;
             fsm.enabled = false;
         }
         EnemyFixers.KeepActive(obj);

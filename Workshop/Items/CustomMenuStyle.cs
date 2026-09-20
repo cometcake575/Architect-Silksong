@@ -7,6 +7,7 @@ using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
+using JetBrains.Annotations;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -29,6 +30,8 @@ public class CustomMenuStyle : WorkshopItem
     public Color AmbientColor = Color.white;
     public float AmbientIntensity = 1;
     public float BluePlaneVibrancy = 1;
+    public bool HideTitle;
+    public bool AutoActivate;
 
     public string RequiredBool = string.Empty;
 
@@ -94,9 +97,13 @@ public class CustomMenuStyle : WorkshopItem
             {
                 orig(self, index, fade, save);
                 
-                if (!PreloadManager.HasPreloaded) return;
-                GlobalArchitectData.Instance.MenuStyle =
-                    StyleLookup.TryGetValue(self.Styles[index], out var custom) ? custom.Id : string.Empty;
+                var isCustom = StyleLookup.TryGetValue(self.Styles[index], out var custom);
+                
+                if (PreloadManager.HasPreloaded) GlobalArchitectData.Instance.MenuStyle = isCustom ? custom.Id : string.Empty;
+                
+                var title = UIManager.instance.gameTitle.gameObject;
+                title.GetOrAddComponent<LogoTitleBlocker>().Style = custom;
+                title.SetActive(!isCustom || !custom.HideTitle);
             });
 
         _ = new Hook(typeof(MenuStyles.MenuStyle).GetProperty(nameof(MenuStyles.MenuStyle.IsAvailable))!.GetGetMethod(),
@@ -106,6 +113,16 @@ public class CustomMenuStyle : WorkshopItem
                 return custom.RequiredBool.IsNullOrWhiteSpace() || 
                        GlobalArchitectData.Instance.BoolVariables.GetValueOrDefault(custom.RequiredBool);
             });
+    }
+
+    public class LogoTitleBlocker : MonoBehaviour
+    {
+        [CanBeNull] public CustomMenuStyle Style;
+
+        private void Update()
+        {
+            if (Style is { HideTitle: true }) gameObject.SetActive(false);
+        }
     }
 
     private MenuStyles.MenuStyle _style;
@@ -159,6 +176,12 @@ public class CustomMenuStyle : WorkshopItem
         _customScene.Register();
 
         IdLookup[Id] = this;
+        
+        if (AutoActivate && GlobalArchitectData.Instance.AutoActivatedTitleScreens.Add(Id + (ExternalSource ?? "")))
+        {
+            GlobalArchitectData.Instance.MenuStyle = Id;
+            if (_ms) SetStyle();
+        }
     }
 
     public override void Unregister()

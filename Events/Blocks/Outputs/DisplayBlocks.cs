@@ -51,6 +51,7 @@ public class TextBlock : ScriptBlock
 
     public int VerticalAlignment;
     public int HorizontalAlignment;
+    public bool TakeControl = true;
 
     public Color TextColour = Color.white;
     
@@ -60,6 +61,7 @@ public class TextBlock : ScriptBlock
     {
         _display = new GameObject("[Architect] Text Display").AddComponent<TextDisplay>();
         _display.Block = this;
+        _display.takeControl = TakeControl;
 
         _display.color = TextColour;
         _display.text = Text;
@@ -89,6 +91,7 @@ public class ChoiceBlock : ScriptBlock
     public string Item;
     public bool TakeItem;
     public bool UseItem;
+    public bool TakeControl = true;
     public CurrencyType CurrencyType = CurrencyType.Money;
     public int Cost;
 
@@ -98,6 +101,7 @@ public class ChoiceBlock : ScriptBlock
     {
         _display = new GameObject("[Architect] Text Display").AddComponent<ChoiceDisplay>();
         _display.Block = this;
+        _display.takeControl = TakeControl;
 
         _display.text = Text;
         _display.item = Item;
@@ -127,6 +131,7 @@ public class HandInBlock : CollectionBlock<HandInBlock.HandInItemBlock>
 
     public string Text = string.Empty;
     public bool TakeItems;
+    public bool TakeControl = true;
 
     private ChoiceDisplay _display;
 
@@ -134,6 +139,7 @@ public class HandInBlock : CollectionBlock<HandInBlock.HandInItemBlock>
     {
         _display = new GameObject("[Architect] Text Display").AddComponent<ChoiceDisplay>();
         _display.Block = this;
+        _display.takeControl = TakeControl;
 
         _display.text = Text;
         _display.takeItem = TakeItems;

@@ -34,6 +34,8 @@ public class GlobalArchitectData
     public Dictionary<int, (string, bool)> CustomSaveArt = [];
 
     public List<string> SavedMapNames = [];
+    
+    public HashSet<string> AutoActivatedTitleScreens = [];
 
     public string MenuStyle = string.Empty;
     

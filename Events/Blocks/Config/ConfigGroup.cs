@@ -320,6 +320,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Shop =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<ShopBlock>("Take Control", "shop_take_control", 
+                (b, f) => b.TakeControl = f.GetValue())
+                .WithDefaultValue(true)
+        )
+    ];
+    
     public static readonly List<ConfigType> ShopItem =
     [
         ConfigurationManager.RegisterConfigType(
@@ -373,6 +382,11 @@ public static class ConfigGroup
             new StringConfigType<TravelBlock>("Title", "travel_ui_list_name", 
                 (b, f) => b.Title = f.GetValue())
                 .WithDefaultValue("Sample Text")
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<TravelBlock>("Take Control", "travel_ui_list_take_control", 
+                (b, f) => b.TakeControl = f.GetValue())
+                .WithDefaultValue(true)
         )
     ];
     
@@ -685,6 +699,13 @@ public static class ConfigGroup
                 {
                     b.TakeSource = (SilkSpool.SilkTakeSource)f.GetValue();
                 }).WithOptions("Normal", "Burn", "Curse").WithDefaultValue(0)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<SilkBlock>("Add Flash", "silk_add_effect", 
+                (b, f) =>
+                {
+                    b.AddEffect = f.GetValue();
+                }).WithDefaultValue(false)
         )
     ];
     
@@ -772,7 +793,12 @@ public static class ConfigGroup
             new FloatConfigType<TextBlock>("Text B", "display_text_b", (o, value) =>
             {
                 o.TextColour.b = value.GetValue();
-            }).WithDefaultValue(1))
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<TextBlock>("Take Control", "display_take_control", (o, value) =>
+            {
+                o.TakeControl = value.GetValue();
+            }).WithDefaultValue(true))
     ];
 
     public static readonly List<ConfigType> TitleDisplay =
@@ -873,6 +899,11 @@ public static class ConfigGroup
             new BoolConfigType<ChoiceBlock>("Consume Item", "choice_take_item", (o, value) =>
             {
                 o.TakeItem = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<ChoiceBlock>("Take Control", "choice_take_control", (o, value) =>
+            {
+                o.TakeControl = value.GetValue();
             }).WithDefaultValue(true))
     ];
 
@@ -886,6 +917,11 @@ public static class ConfigGroup
             new BoolConfigType<HandInBlock>("Take Items", "handin_take_item", (o, value) =>
             {
                 o.TakeItems = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<HandInBlock>("Take Control", "handin_take_control", (o, value) =>
+            {
+                o.TakeControl = value.GetValue();
             }).WithDefaultValue(true))
     ];
 

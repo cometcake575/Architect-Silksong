@@ -11,6 +11,7 @@ namespace Architect.Behaviour.Utility;
 public class TextDisplay : NPCControlBase, IDisplayable
 {
     public ScriptBlock Block;
+    public bool takeControl = true;
     
     public string text = "";
     
@@ -63,15 +64,17 @@ public class TextDisplay : NPCControlBase, IDisplayable
 
     private IEnumerator DoDisplay()
     {
-        yield return HeroController.instance.FreeControl(_ => InteractManager.CanInteract);
-        
-        HeroController.instance.RelinquishControl();
-        
+        if (takeControl)
+        {
+            yield return HeroController.instance.FreeControl(_ => InteractManager.CanInteract);
+            HeroController.instance.RelinquishControl();
+        }
+
         DialogueBox.StartConversation(MiscFixers.SubstituteVars(text), this, false, _displayOptions, () =>
         {
             if (Block != null) Block.Event("OnClose");
             else gameObject.BroadcastEvent("OnClose");
-            StartCoroutine(RegainControlDelayed());
+            if (takeControl) StartCoroutine(RegainControlDelayed());
         });
     }
 

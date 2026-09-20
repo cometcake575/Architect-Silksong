@@ -36,7 +36,7 @@ public class AnimatorBlock : ScriptBlock
         if (_setup) return;
         _setup = true;
         var target = GetVariable<GameObject>("Target");
-        if (target && target != HeroController.instance.gameObject)
+        if (target && (!HeroController.instance || target != HeroController.instance.gameObject))
         {
             var player = target.AddComponent<AnimPlayer>();
             _player = player;

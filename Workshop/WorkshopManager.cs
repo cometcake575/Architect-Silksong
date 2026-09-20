@@ -162,10 +162,7 @@ public static class WorkshopManager
                                 break;
                             case ToolItemType.Red:
                             {
-                                var sd = self.willThrowTool.SavedData;
-                                sd.AmountLeft--;
-                                self.willThrowTool.SavedData = sd;
-                                ToolItemManager.ReportAllBoundAttackToolsUpdated();
+                                self.DidUseAttackTool(self.willThrowTool.SavedData);
                                 break;
                             }
                             case ToolItemType.Blue:
