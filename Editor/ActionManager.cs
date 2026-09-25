@@ -151,6 +151,8 @@ public class PlaceObjects(List<ObjectPlacement> placements) : IEdit, IScheduledE
     {
         foreach (var obj in placements)
         {
+            obj.ClearDraggedColour();
+            obj.ClearHoverColour();
             PlacementManager.GetLevelData().Placements.Add(obj);
             if (EditManager.IsEditing) obj.PlaceGhost();
         }

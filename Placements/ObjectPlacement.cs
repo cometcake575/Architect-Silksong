@@ -168,6 +168,14 @@ public class ObjectPlacement(
             .Where(z: _previewObject.transform.position.z);
     }
 
+    // Sets position directly
+    public void SetPosition(Vector3 newWorldPos)
+    {
+        _position = newWorldPos;
+        if (_previewObject) _previewObject.transform.position = (_position + _offset)
+            .Where(z: _previewObject.transform.position.z);
+    }
+
     private bool _spawningPreview;
 
     public GameObject PlaceGhost(Vector3 pos = default, bool store = true, string extraId = null)
@@ -208,6 +216,25 @@ public class ObjectPlacement(
             configVal.SetupPreview(_previewObject, ConfigurationManager.PreviewContext.Placement);
         
         return _previewObject;
+    }
+
+    public void LoadToSlot()
+    {
+        EditManager.ClearAttributes();
+        
+        EditManager.Broadcasters.AddRange(Broadcasters);
+        EditManager.Receivers.AddRange(Receivers);
+        foreach (var conf in Config) EditManager.Config[conf.GetTypeId()] = conf;
+
+        EditManager.SetRotation(_rotation);
+        EditManager.SetScale(_scale);
+        EditManager.SetZ(_position.z);
+        EditManager.CurrentlyFlipped = _flipped;
+
+        EditManager.CurrentObject = type;
+        
+        EditorUI.RefreshAttributeControls(false);
+        EditorUI.RefreshItem();
     }
 
     public class PreviewObject : MonoBehaviour

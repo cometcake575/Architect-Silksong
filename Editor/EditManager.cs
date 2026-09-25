@@ -26,6 +26,8 @@ namespace Architect.Editor;
 
 public static class EditManager
 {
+    public const int ACTIVE_OBJECT_INDEX = 9; 
+    
     public static bool IsEditing;
     public static bool ReloadRequired;
     public static bool IgnoreControlRelinquished;
@@ -44,7 +46,8 @@ public static class EditManager
     }
     
     // Config open when not paused
-    public static bool ConfigOpen;
+    private static bool _configOpen;
+    public static bool ConfigOpen => _configOpen || EditingObject != null;
     // Mouse is in config editing zone
     private static bool EditingConfig =>
         ConfigOpen &&
@@ -62,71 +65,87 @@ public static class EditManager
 
     public static int HotbarIndex
     {
-        get => _hotbarIndex;
-        set
+        get => EditingObject != null ? ACTIVE_OBJECT_INDEX : _hotbarIndex;
+        private set
         {
             _hotbarIndex = value;
-
-            EditorUI.WipeTabs();
-            EditorUI.RefreshAttributeControls(false);
-            EditorUI.RefreshItem();
-
-            EditorUI.RotationText.text = CurrentRotation.ToString(CultureInfo.InvariantCulture);
-            EditorUI.ZText.text = CurrentZ.ToString(CultureInfo.InvariantCulture);
-            EditorUI.ScaleText.text = CurrentScale.ToString(CultureInfo.InvariantCulture);
-            
-            CursorManager.NeedsRefresh = true;
-            CursorManager.ObjectChanged = true;
+            UpdateUIWithHotbar();
         }
+    }
+
+    public static void UpdateUIWithHotbar()
+    {
+        EditorUI.RefreshAttributeControls(false);
+        EditorUI.RefreshItem();
+
+        EditorUI.RotationText.text = CurrentRotation.ToString(CultureInfo.InvariantCulture);
+        EditorUI.ZText.text = CurrentZ.ToString(CultureInfo.InvariantCulture);
+        EditorUI.ScaleText.text = CurrentScale.ToString(CultureInfo.InvariantCulture);
+        
+        CursorManager.NeedsRefresh = true;
+        CursorManager.ObjectChanged = true;
+    }
+
+    private static void ClearEditingObject()
+    {
+        if (EditingObject == null) return;
+        EditingObject.ClearHoverColour();
+        
+        EditingObject = null;
+        EditorUI.PositionOptions.SetActive(false);
+        EditorUI.ObjectIdLabel.textComponent.text = string.Empty;
+        
+        UpdateUIWithHotbar();
     }
 
     public static readonly SelectableObject[] HotbarCurrentObject =
         [CursorObject.Instance, BlankObject.Instance, BlankObject.Instance,
         BlankObject.Instance, BlankObject.Instance, BlankObject.Instance,
-        BlankObject.Instance, BlankObject.Instance, BlankObject.Instance];
+        BlankObject.Instance, BlankObject.Instance, BlankObject.Instance,
+        BlankObject.Instance];
     
-    public static readonly bool[] HotbarCurrentlyFlipped = [false, false, false, false, false, false, false, false, false];
-    public static readonly float[] HotbarCurrentRotation = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    public static readonly float[] HotbarCurrentScale = [1, 1, 1, 1, 1, 1, 1, 1, 1];
-    public static readonly float[] HotbarCurrentZ = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    public static readonly bool[] HotbarCurrentlyFlipped = [false, false, false, false, false, false, false, false, false, false];
+    public static readonly float[] HotbarCurrentRotation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    public static readonly float[] HotbarCurrentScale = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    public static readonly float[] HotbarCurrentZ = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    public static readonly List<(string, string, int)>[] HotbarReceivers = [[], [], [], [], [], [], [], [], []];
-    public static readonly List<(string, string)>[] HotbarBroadcasters = [[], [], [], [], [], [], [], [], []];
-    public static readonly Dictionary<string, ConfigValue>[] HotbarConfig = [[], [], [], [], [], [], [], [], []];
+    public static readonly List<(string, string, int)>[] HotbarReceivers = [[], [], [], [], [], [], [], [], [], []];
+    public static readonly List<(string, string)>[] HotbarBroadcasters = [[], [], [], [], [], [], [], [], [], []];
+    public static readonly Dictionary<string, ConfigValue>[] HotbarConfig = [[], [], [], [], [], [], [], [], [], []];
     
     public static SelectableObject CurrentObject
     {
-        get => HotbarCurrentObject[_hotbarIndex];
-        set => HotbarCurrentObject[_hotbarIndex] = value;
+        get => HotbarCurrentObject[HotbarIndex];
+        set => HotbarCurrentObject[HotbarIndex] = value;
     }
 
     public static bool CurrentlyFlipped
     {
-        get => HotbarCurrentlyFlipped[_hotbarIndex];
-        set => HotbarCurrentlyFlipped[_hotbarIndex] = value;
+        get => HotbarCurrentlyFlipped[HotbarIndex];
+        set => HotbarCurrentlyFlipped[HotbarIndex] = value;
     }
 
     public static float CurrentRotation
     {
-        get => HotbarCurrentRotation[_hotbarIndex];
-        set => HotbarCurrentRotation[_hotbarIndex] = value;
+        get => HotbarCurrentRotation[HotbarIndex];
+        set => HotbarCurrentRotation[HotbarIndex] = value;
     }
     
     public static float CurrentScale
     {
-        get => HotbarCurrentScale[_hotbarIndex];
-        set => HotbarCurrentScale[_hotbarIndex] = value;
+        get => HotbarCurrentScale[HotbarIndex];
+        set => HotbarCurrentScale[HotbarIndex] = value;
     }
     
     public static float CurrentZ
     {
-        get => HotbarCurrentZ[_hotbarIndex];
-        set => HotbarCurrentZ[_hotbarIndex] = value;
+        get => HotbarCurrentZ[HotbarIndex];
+        set => HotbarCurrentZ[HotbarIndex] = value;
     }
 
-    public static List<(string, string, int)> Receivers => HotbarReceivers[_hotbarIndex];
-    public static List<(string, string)> Broadcasters => HotbarBroadcasters[_hotbarIndex];
-    public static Dictionary<string, ConfigValue> Config => HotbarConfig[_hotbarIndex]; 
+    public static List<(string, string, int)> Receivers => HotbarReceivers[HotbarIndex];
+    public static List<(string, string)> Broadcasters => HotbarBroadcasters[HotbarIndex];
+    public static Dictionary<string, ConfigValue> Config => HotbarConfig[HotbarIndex]; 
     
     public static bool LoadPos;
     private static Vector3 _posToLoad;
@@ -145,6 +164,7 @@ public static class EditManager
     }
 
     public static ObjectPlacement HoveredObject;
+    public static ObjectPlacement EditingObject;
 
     public static void Init()
     {
@@ -155,7 +175,8 @@ public static class EditManager
         typeof(QuitToMenu).Hook("Start", (Func<QuitToMenu, IEnumerator> orig, QuitToMenu self) =>
             {
                 IsEditing = false;
-                ConfigOpen = false;
+                _configOpen = false;
+                ClearEditingObject();
                 return orig(self); 
             });
         
@@ -225,18 +246,21 @@ public static class EditManager
 
     public static void SetRotation(float rotation)
     {
+        CurrentRotation = rotation;
         EditorUI.RotationText.text = (rotation % 360).ToString(CultureInfo.InvariantCulture);
         CursorManager.NeedsRefresh = true;
     }
 
     public static void SetScale(float scale)
     {
+        CurrentScale = scale;
         EditorUI.ScaleText.text = Mathf.Max(scale, 0.1f).ToString(CultureInfo.InvariantCulture);
         CursorManager.NeedsRefresh = true;
     }
 
     public static void SetZ(float offset)
     {
+        CurrentZ = offset;
         EditorUI.ZText.text = offset.ToString(CultureInfo.InvariantCulture);
         CursorManager.NeedsRefresh = true;
     }
@@ -265,7 +289,7 @@ public static class EditManager
 
         if (Settings.OpenConfig.WasPressed && !EditingConfig && !paused)
         {
-            ConfigOpen = !ConfigOpen;
+            _configOpen = !_configOpen;
         }
         
         if (paused)
@@ -331,7 +355,7 @@ public static class EditManager
             
             if (Settings.SaveObject.WasPressed && placeable is not PrefabObject)
             {
-                SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(new Vector3(0, 0, CurrentZ))));
+                SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(new Vector3(0, 0, CurrentZ), null, out _)));
                 if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.DoRefreshCurrentPage();
             }
 
@@ -396,17 +420,21 @@ public static class EditManager
         // Reset room code
         if (!b2 || paused) ResetObject.RestartDelay();
 
-        if (!paused)
+        if (paused) ClearEditingObject();
+        else if (EditingObject == null)
         {
             // Click/release code based on input
             if (b1 || b2) CurrentObject.Click(Input.mousePosition, b1);
             else if (Input.GetMouseButtonUp(0)) CurrentObject.Release();
             if (c1) CurrentObject.RightClick(Input.mousePosition);
-        }
+        } else if (b1) ClearEditingObject();
 
-        // Undo/Redo code
-        if (Settings.Undo.WasPressed) ActionManager.UndoLast();
-        if (Settings.Redo.WasPressed) ActionManager.RedoLast();
+        if (EditingObject == null)
+        {
+            // Undo/Redo code
+            if (Settings.Undo.WasPressed) ActionManager.UndoLast();
+            if (Settings.Redo.WasPressed) ActionManager.RedoLast();
+        }
     }
 
     // Placement is copied object, Vector3 is offset from cursor when copied
@@ -556,7 +584,8 @@ public static class EditManager
                      .SelectMany(o => o.GetComponentsInChildren<TransitionPoint>())) 
             o.gameObject.SetActive(false);
         IsEditing = !IsEditing;
-        ConfigOpen = false;
+        _configOpen = false;
+        ClearEditingObject();
 
         InvulBlock.Invulnerable = false;
 
@@ -640,14 +669,15 @@ public static class EditManager
     
     private static void DoNoclip(HeroActions actions, bool paused)
     {
-        var up = actions.Up.IsPressed;
-        var down = actions.Down.IsPressed;
-        var left = actions.Left.IsPressed;
-        var right = actions.Right.IsPressed;
-
-        var speed = actions.Dash.IsPressed ? 35 : 20;
-        if (!LoadPos)
+        if (!LoadPos && !EditingConfig)
         {
+            var up = actions.Up.IsPressed;
+            var down = actions.Down.IsPressed;
+            var left = actions.Left.IsPressed;
+            var right = actions.Right.IsPressed;
+
+            var speed = actions.Dash.IsPressed ? 35 : 20;
+            
             if (!paused && up != down) NoclipPos += (up ? Vector3.up : Vector3.down) * (Time.deltaTime * speed);
             if (!paused && left != right) NoclipPos += (left ? Vector3.left : Vector3.right) * (Time.deltaTime * speed);
         }

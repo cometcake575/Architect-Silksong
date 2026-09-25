@@ -29,21 +29,6 @@ public class PickObject() : ToolObject("pick", Storage.Settings.Pick, -3)
         if (obj == null) return;
         
         EditManager.TryFindEmptySlot();
-
-        EditManager.ClearAttributes();
-        
-        EditManager.Broadcasters.AddRange(obj.Broadcasters);
-        EditManager.Receivers.AddRange(obj.Receivers);
-        foreach (var conf in obj.Config) EditManager.Config[conf.GetTypeId()] = conf;
-
-        EditManager.SetRotation(obj.GetRotation());
-        EditManager.SetScale(obj.GetScale());
-        EditManager.SetZ(obj.GetPos().z);
-        EditManager.CurrentlyFlipped = obj.IsFlipped();
-
-        EditManager.CurrentObject = obj.GetPlacementType();
-        
-        EditorUI.RefreshAttributeControls(false);
-        EditorUI.RefreshItem();
+        obj.LoadToSlot();
     }
 }

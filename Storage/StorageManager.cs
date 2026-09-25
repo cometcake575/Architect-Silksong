@@ -151,8 +151,7 @@ public static class StorageManager
             EditorUI.RefreshItem(i);
         }
         
-        EditorUI.RefreshItem();
-        EditManager.HotbarIndex = EditManager.HotbarIndex;
+        EditManager.UpdateUIWithHotbar();
     }
 
     private static string GetScenePath(string scene)

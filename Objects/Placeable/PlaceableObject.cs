@@ -13,7 +13,6 @@ using Architect.Utils;
 using BepInEx;
 using JetBrains.Annotations;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Architect.Objects.Placeable;
 
@@ -197,27 +196,27 @@ public abstract class PlaceableObject : SelectableObject
 
         var pos = EditManager.GetWorldPos(mousePosition, true);
         pos.z = EditManager.CurrentZ;
-        var obj = PreparePlacement(pos);
+        var obj = PreparePlacement(pos, EditManager.HoveredObject, out var erase);
         if (Settings.StartLocked.IsPressed) obj.ToggleLocked();
         
         EditManager.RegisterLastPos(pos);
 
-        var place = new PlaceObjects([obj]);
-        if (Settings.StartScripted.IsPressed)
-        {
-            ActionManager.SceneActionManager.PerformAction(new MultiEdit([place, ScriptManager.AddToScript(obj)]));
-        } else ActionManager.SceneActionManager.PerformAction(place);
+        List<IEdit> edits = [new PlaceObjects([obj])];
+        if (erase != null) edits.Add(erase);
+        
+        if (Settings.StartScripted.IsPressed) edits.Add(ScriptManager.AddToScript(obj));
+        ActionManager.SceneActionManager.PerformAction(new MultiEdit(edits));
     }
 
-    public ObjectPlacement PreparePlacement(Vector3 pos)
+    public ObjectPlacement PreparePlacement(Vector3 pos, ObjectPlacement overwrite, [CanBeNull] out EraseObject erase)
     {
-        var hover = EditManager.HoveredObject;
         string id;
-        if (hover != null)
+        erase = null;
+        if (overwrite != null)
         {
-            pos = hover.GetPos().Where(z: pos.z);
-            id = hover.GetId();
-            ActionManager.SceneActionManager.PerformAction(new EraseObject([hover]));
+            pos = overwrite.GetPos().Where(z: pos.z);
+            id = overwrite.GetId();
+            erase = new EraseObject([overwrite]);
             EditManager.HoveredObject = null;
         }
         else id = Guid.NewGuid().ToString()[..8];
