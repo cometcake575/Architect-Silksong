@@ -19,6 +19,7 @@ using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -264,7 +265,7 @@ public static class EditManager
         EditorUI.ZText.text = offset.ToString(CultureInfo.InvariantCulture);
         CursorManager.NeedsRefresh = true;
     }
-    
+
     public static void Update()
     {
         // Update UI
@@ -281,26 +282,26 @@ public static class EditManager
         }
 
         EditorUI.RefreshVisibility(IsEditing, paused);
-        
+
         // Noclip
         if (IsEditing || LoadPos) DoNoclip(actions, paused);
-        
+
         if (!IsEditing) return;
 
         if (Settings.OpenConfig.WasPressed && !EditingConfig && !paused)
         {
             _configOpen = !_configOpen;
         }
-        
+
         if (paused)
         {
             var left = actions.Left.WasPressed;
             var right = actions.Right.WasPressed;
             if (left != right) EditorUI.Shift(right ? 1 : -1);
         }
-        
+
         PlayerData.instance.isInvincible = true;
-        
+
         HeroController.instance.ResetHardLandingTimer();
 
         if (EditingConfig) return;
@@ -323,12 +324,12 @@ public static class EditManager
                 if (Input.GetKey(KeyCode.LeftAlt))
                 {
                     ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadHotbar(hotbarIndex));
-                    EditorUI.DisplayHotbarText($"Loaded hotbar {hotbarIndex+1}");
+                    EditorUI.DisplayHotbarText($"Loaded hotbar {hotbarIndex + 1}");
                 }
                 else if (Input.GetKey(KeyCode.LeftControl))
                 {
                     StorageManager.SaveHotbar(hotbarIndex);
-                    EditorUI.DisplayHotbarText($"Saved hotbar {hotbarIndex+1}");
+                    EditorUI.DisplayHotbarText($"Saved hotbar {hotbarIndex + 1}");
                 }
                 else HotbarIndex = hotbarIndex;
             }
@@ -339,7 +340,7 @@ public static class EditManager
                 if (_loadedHotbar >= 9) _loadedHotbar = 0;
                 if (_loadedHotbar < 0) _loadedHotbar = 8;
                 ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadHotbar(_loadedHotbar));
-                EditorUI.DisplayHotbarText($"Loaded hotbar {_loadedHotbar+1}");
+                EditorUI.DisplayHotbarText($"Loaded hotbar {_loadedHotbar + 1}");
             }
 
             foreach (var (keybind, index) in ToolObject.Keybinds)
@@ -352,10 +353,11 @@ public static class EditManager
         if (CurrentObject is PlaceableObject placeable)
         {
             if (!paused) ApplyEditChanges(placeable);
-            
+
             if (Settings.SaveObject.WasPressed && placeable is not PrefabObject)
             {
-                SavedCategory.AddPrefab(new SavedObject(placeable.PreparePlacement(new Vector3(0, 0, CurrentZ), null, out _)));
+                SavedCategory.AddPrefab(
+                    new SavedObject(placeable.PreparePlacement(new Vector3(0, 0, CurrentZ), null, out _)));
                 if (EditorUI.CurrentCategory == SavedCategory.Instance) EditorUI.DoRefreshCurrentPage();
             }
 
@@ -393,9 +395,9 @@ public static class EditManager
         if (SelectedObjects.Count > 0)
         {
             // If the selection should not persist, release it
-            if (Settings.Preview.IsPressed || (CurrentObject is not EraserObject && !dragObj)) 
+            if (Settings.Preview.IsPressed || (CurrentObject is not EraserObject && !dragObj))
                 StopIfDragging(true);
-            
+
             // Only runs if actively dragging objects
             else if (_dragging)
             {
@@ -416,7 +418,7 @@ public static class EditManager
             // Paste
             if (Settings.Paste.WasPressed) PasteToSelection();
         }
-        
+
         // Reset room code
         if (!b2 || paused) ResetObject.RestartDelay();
 
@@ -427,14 +429,21 @@ public static class EditManager
             if (b1 || b2) CurrentObject.Click(Input.mousePosition, b1);
             else if (Input.GetMouseButtonUp(0)) CurrentObject.Release();
             if (c1) CurrentObject.RightClick(Input.mousePosition);
-        } else if (b1) ClearEditingObject();
-
-        if (EditingObject == null)
-        {
-            // Undo/Redo code
-            if (Settings.Undo.WasPressed) ActionManager.UndoLast();
-            if (Settings.Redo.WasPressed) ActionManager.RedoLast();
         }
+        else if (b1) ClearEditingObject();
+
+        if (EditingObject != null) return;
+
+        // Undo/Redo code
+        var undo = Settings.Undo.WasPressed;
+        var redo = Settings.Redo.WasPressed;
+        if (!undo && !redo) return;
+
+        var selectedObj = EventSystem.current.currentSelectedGameObject;
+        if (selectedObj && selectedObj.GetComponent<UIUtils.UndoBlocker>()) return;
+     
+        if (undo) ActionManager.UndoLast();
+        if (redo) ActionManager.RedoLast();
     }
 
     // Placement is copied object, Vector3 is offset from cursor when copied

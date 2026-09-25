@@ -2,6 +2,7 @@ using System;
 using Architect.Utils;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Architect.Events.Blocks.Config.Types;

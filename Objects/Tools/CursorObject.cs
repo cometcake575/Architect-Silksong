@@ -30,7 +30,7 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     
     public override void Click(Vector3 mousePosition, bool first)
     {
-        if (!first || EditManager.HoveredObject == null)
+        if (EditManager.HoveredObject == null)
         {
             var pos = EditManager.GetWorldPos(mousePosition);
             if (first) _startPos = pos;
@@ -43,7 +43,7 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
             var obj = EditManager.HoveredObject;
             
             var info = $"{obj.GetPlacementType().GetName()} ID: {obj.GetId()}";
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) && first)
             {
                 EditManager.HoveredObject = null;
                 EditManager.EditingObject = obj;

@@ -125,11 +125,14 @@ public static class UIUtils
 
         return (btn, label);
     }
+    
+    public class UndoBlocker : MonoBehaviour;
 
     public static (InputField, Label) MakeTextbox(string name, GameObject parent, Vector2 pos,
         Vector2 anchorMin, Vector2 anchorMax, float width, float height, int fontSize = 20)
     {
         var gameObject = new GameObject(name);
+        gameObject.AddComponent<UndoBlocker>();
 
         var trans = gameObject.AddComponent<RectTransform>();
         var field = gameObject.AddComponent<InputField>();
