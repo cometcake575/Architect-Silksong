@@ -439,9 +439,8 @@ public static class EditManager
         var redo = Settings.Redo.WasPressed;
         if (!undo && !redo) return;
 
-        var selectedObj = EventSystem.current.currentSelectedGameObject;
-        if (selectedObj && selectedObj.GetComponent<UIUtils.UndoBlocker>()) return;
-     
+        if (UIUtils.BlockActions) return;
+        
         if (undo) ActionManager.UndoLast();
         if (redo) ActionManager.RedoLast();
     }

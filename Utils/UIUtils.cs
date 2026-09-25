@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
@@ -126,13 +127,22 @@ public static class UIUtils
         return (btn, label);
     }
     
-    public class UndoBlocker : MonoBehaviour;
+    public static bool BlockActions
+    {
+        get
+        {
+            var selectedObj = EventSystem.current.currentSelectedGameObject;
+            return selectedObj && selectedObj.GetComponent<ActionBlocker>();
+        }
+    }
+    
+    private class ActionBlocker : MonoBehaviour;
 
     public static (InputField, Label) MakeTextbox(string name, GameObject parent, Vector2 pos,
         Vector2 anchorMin, Vector2 anchorMax, float width, float height, int fontSize = 20)
     {
         var gameObject = new GameObject(name);
-        gameObject.AddComponent<UndoBlocker>();
+        gameObject.AddComponent<ActionBlocker>();
 
         var trans = gameObject.AddComponent<RectTransform>();
         var field = gameObject.AddComponent<InputField>();

@@ -463,41 +463,45 @@ public static class ScriptEditorUI
             ScriptManager.SetSelection(selectedIds);
         }
 
-        private void Update() {
-            if (Settings.Copy.WasPressed)
+        private void Update()
+        {
+            if (!UIUtils.BlockActions)
             {
-                CopiedBlocks.Clear();
-                CopiedBlocks.AddRange(ScriptManager.SelectedBlockIds
-                    .Select(id => ScriptManager.Blocks.GetValueOrDefault(id))
-                    .Where(block => block is { CanCloneDirectly: true })
-                    .Select(block => block.Clone("")));
-                _copyPos = Blocks.transform.InverseTransformPoint(Input.mousePosition);
-            }
-
-            if (Settings.Paste.WasPressed)
-            {
-                List<ScriptBlock> copied = [];
-                var add = Guid.NewGuid().ToString()[..4];
-
-                List<IEdit> edits = [];
-                foreach (var block in CopiedBlocks)
+                if (Settings.Copy.WasPressed)
                 {
-                    if (block is ObjectBlock && !ScriptManager.IsLocal) continue;
-
-                    var newBlock = block.Clone(add, true);
-
-                    edits.Add(new PlaceScriptBlock(newBlock, ScriptManager.IsLocal));
-
-                    newBlock.Position += (Vector2)Blocks.transform.InverseTransformPoint(Input.mousePosition) -
-                                         _copyPos;
-                    copied.Add(newBlock);
+                    CopiedBlocks.Clear();
+                    CopiedBlocks.AddRange(ScriptManager.SelectedBlockIds
+                        .Select(id => ScriptManager.Blocks.GetValueOrDefault(id))
+                        .Where(block => block is { CanCloneDirectly: true })
+                        .Select(block => block.Clone("")));
+                    _copyPos = Blocks.transform.InverseTransformPoint(Input.mousePosition);
                 }
-                
-                ActionManager.ScriptActionManager.PerformAction(new MultiEdit(edits));
 
-                foreach (var block in copied) block.Setup(true);
-                foreach (var block in copied) block.LateSetup();
-                ScriptManager.SetSelection(copied.Select(c => c.BlockId));
+                if (Settings.Paste.WasPressed)
+                {
+                    List<ScriptBlock> copied = [];
+                    var add = Guid.NewGuid().ToString()[..4];
+
+                    List<IEdit> edits = [];
+                    foreach (var block in CopiedBlocks)
+                    {
+                        if (block is ObjectBlock && !ScriptManager.IsLocal) continue;
+
+                        var newBlock = block.Clone(add, true);
+
+                        edits.Add(new PlaceScriptBlock(newBlock, ScriptManager.IsLocal));
+
+                        newBlock.Position += (Vector2)Blocks.transform.InverseTransformPoint(Input.mousePosition) -
+                                             _copyPos;
+                        copied.Add(newBlock);
+                    }
+
+                    ActionManager.ScriptActionManager.PerformAction(new MultiEdit(edits));
+
+                    foreach (var block in copied) block.Setup(true);
+                    foreach (var block in copied) block.LateSetup();
+                    ScriptManager.SetSelection(copied.Select(c => c.BlockId));
+                }
             }
 
             if (_isSelecting && _selectionImage && _selectionImage.gameObject.activeSelf) {
