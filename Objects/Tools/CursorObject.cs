@@ -1,7 +1,6 @@
 using System.Collections;
 using Architect.Editor;
 using Architect.Events.Blocks;
-using Architect.Events.Blocks.Objects;
 using Architect.Placements;
 using UnityEngine;
 
@@ -26,15 +25,21 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     }
 
     private static int _lastNum;
+    private Vector3 _startPos;
 
     public override void Click(Vector3 mousePosition, bool first)
     {
-        var obj = PlacementManager.FindObject(mousePosition);
+        ObjectPlacement obj = null;
+        if (first) obj = PlacementManager.FindObject(mousePosition);
+        
         string info;
         if (obj == null)
         {
             var pos = EditManager.GetWorldPos(mousePosition);
-            info = $"X: {pos.x}, Y: {pos.y}";
+            if (first) _startPos = pos;
+            
+            info = $"X: {pos.x}, Y: {pos.y}\n" +
+                   $"Distance: {(pos - _startPos).magnitude}";
         }
         else info = $"{obj.GetPlacementType().GetName()} ID: {obj.GetId()}";
         
@@ -45,7 +50,7 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
     {
         var obj = PlacementManager.FindObject(mousePosition);
         if (obj == null) return;
-        ScriptManager.AddToScript(obj);
+        ActionManager.ScriptActionManager.PerformAction(ScriptManager.AddToScript(obj));
     }
 
     public static IEnumerator ClearCursorInfoLabel()

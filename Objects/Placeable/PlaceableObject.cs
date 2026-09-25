@@ -201,9 +201,12 @@ public abstract class PlaceableObject : SelectableObject
         if (Settings.StartLocked.IsPressed) obj.ToggleLocked();
         
         EditManager.RegisterLastPos(pos);
-        ActionManager.SceneActionManager.PerformAction(new PlaceObjects([obj]));
-        
-        if (Settings.StartScripted.IsPressed) ScriptManager.AddToScript(obj);
+
+        var place = new PlaceObjects([obj]);
+        if (Settings.StartScripted.IsPressed)
+        {
+            ActionManager.SceneActionManager.PerformAction(new MultiEdit([place, ScriptManager.AddToScript(obj)]));
+        } else ActionManager.SceneActionManager.PerformAction(place);
     }
 
     public ObjectPlacement PreparePlacement(Vector3 pos)

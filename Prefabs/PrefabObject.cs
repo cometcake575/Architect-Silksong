@@ -120,19 +120,18 @@ public class PrefabObject : PlaceableObject
             ActionManager.SceneActionManager.PerformAction(new PlaceObjects(placements));
 
             List<ScriptBlock> clones = [];
+
+            List<IEdit> edits = [];
             foreach (var block in o.ScriptBlocks)
             {
                 var clone = block.Clone(id);
-                var wasLocal = ScriptManager.IsLocal;
+                ScriptManager.IsLocal = true;
                 
-                if (!wasLocal) ScriptManager.IsLocal = true;
-                
-                PlacementManager.GetLevelData().ScriptBlocks.Add(clone);
+                edits.Add(new PlaceScriptBlock(clone, true));
                 clone.Setup(true);
                 clones.Add(clone);
-                
-                if (!wasLocal) ScriptManager.IsLocal = false;
             } 
+            ActionManager.ScriptActionManager.PerformAction(new MultiEdit(edits));
             foreach (var clone in clones) clone.LateSetup();
         } else base.Click(mousePosition, first);
     }

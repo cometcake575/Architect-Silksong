@@ -5,7 +5,6 @@ using Architect.Editor;
 using Architect.Events.Blocks.Config;
 using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Objects;
-using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
@@ -565,15 +564,17 @@ public abstract class ScriptBlock
         {
             if (!ScriptManager.SelectedBlockIds.IsNullOrEmpty())
             {
+                List<IEdit> edits = [];
                 foreach (var id in ScriptManager.SelectedBlockIds.ToArray())
                 {
                     if (!ScriptManager.Blocks.TryGetValue(id, out var block)) continue;
-                    block.Delete();
+                    edits.Add(block.Delete());
                 }
+                ActionManager.ScriptActionManager.PerformAction(new MultiEdit(edits));
                 ScriptManager.SelectedBlockIds.Clear();
                 return;
             }
-            Block.Delete();
+            ActionManager.ScriptActionManager.PerformAction(Block.Delete());
         }
     }
 
@@ -603,22 +604,25 @@ public abstract class ScriptBlock
         if (BlockObject) Object.Destroy(BlockObject);
     }
 
-    public virtual void Delete()
+    public virtual MultiEdit Delete()
     {
-        if (!BlockObject) return;
-        
+        if (!BlockObject) return null;
+
+        List<IEdit> edits = [];
+
         foreach (var (sourceEvent, target) in EventMap)
         {
             foreach (var (targetBlock, targetEvent) in target.ToArray())
             {
-                ScriptManager.DestroyLink(BlockId, sourceEvent, targetBlock, targetEvent, ScriptManager.Connection.LinkType.Event);
+                edits.Add(new DisconnectScriptBlock(this, sourceEvent, ScriptManager.Blocks[targetBlock], targetEvent,
+                    ScriptManager.Connection.LinkType.Event, ScriptManager.IsLocal));
             }
         }
 
         foreach (var (sourceEvent, (targetBlock, targetEvent)) in VarMap.ToArray())
         {
-            ScriptManager.DestroyLink(BlockId, sourceEvent, targetBlock, targetEvent,
-                ScriptManager.Connection.LinkType.Var);
+            edits.Add(new DisconnectScriptBlock(this, sourceEvent, ScriptManager.Blocks[targetBlock], targetEvent,
+                ScriptManager.Connection.LinkType.Var, ScriptManager.IsLocal));
         }
 
         foreach (var block in ScriptManager.Blocks.Values)
@@ -628,23 +632,25 @@ public abstract class ScriptBlock
                 foreach (var (_, targetEvent) in target
                              .Where(o => o.Item1 == BlockId).ToArray())
                 {
-                    ScriptManager.DestroyLink(block.BlockId, sourceEvent, BlockId, targetEvent, ScriptManager.Connection.LinkType.Event);
+                    edits.Add(new DisconnectScriptBlock(block, sourceEvent, this, targetEvent,
+                        ScriptManager.Connection.LinkType.Event, ScriptManager.IsLocal));
                 }
             }
 
             foreach (var (sourceEvent, (id, targetEvent)) in block.VarMap.ToArray())
             {
                 if (id != BlockId) continue;
-                ScriptManager.DestroyLink(block.BlockId, sourceEvent, BlockId, targetEvent,
-                    ScriptManager.Connection.LinkType.Var);
+                
+                edits.Add(new DisconnectScriptBlock(block, sourceEvent, this, targetEvent,
+                    ScriptManager.Connection.LinkType.Var, ScriptManager.IsLocal));
             }
         }
-        ScriptManager.Blocks.Remove(BlockId);
-        PlacementManager.GetLevelData().ScriptBlocks.Remove(this);
-        PlacementManager.GetGlobalData().ScriptBlocks.Remove(this);
-        Object.Destroy(BlockObject);
+        
+        edits.Add(new RemoveScriptBlock(this, ScriptManager.IsLocal));
+
+        return new MultiEdit(edits);
     }
-    
+
     public class ScriptBlockConverter : JsonConverter<ScriptBlock>
     {
         public override void WriteJson(JsonWriter writer, ScriptBlock value, JsonSerializer serializer)

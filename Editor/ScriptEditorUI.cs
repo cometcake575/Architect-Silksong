@@ -43,8 +43,8 @@ public static class ScriptEditorUI
     private static Image _bgImg;
     private static Text _bgTxt;
 
-    private static Text _localBtnText;
-    private static Text _globalBtnText;
+    public static Text LocalBtnText;
+    public static Text GlobalBtnText;
 
     public static void Init(GameObject scriptUI)
     {
@@ -142,9 +142,8 @@ public static class ScriptEditorUI
                 if (index + i1 >= ScriptManager.CurrentBlocks.Count()) return;
                 var block = ScriptManager.CurrentBlocks.ElementAt(index + i1).Item1();
                 block.Setup(true, true);
-
-                (ScriptManager.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData())
-                    .ScriptBlocks.Add(block);
+                
+                ActionManager.ScriptActionManager.PerformAction(new PlaceScriptBlock(block, ScriptManager.IsLocal));
             });
             labels.Add(txt.textComponent);
         }
@@ -206,9 +205,9 @@ public static class ScriptEditorUI
         }
 
         ToggleParent = CreateBlankParent("Mode Toggles", scriptUI, 0);
-        _localBtnText = SetupSwitchButton(ToggleParent, true, "Local Script", new Vector3(-200, 20));
-        _localBtnText.color = Color.yellow;
-        _globalBtnText = SetupSwitchButton(ToggleParent, false, "Global Script", new Vector3(200, 20));
+        LocalBtnText = SetupSwitchButton(ToggleParent, true, "Local Script", new Vector3(-200, 20));
+        LocalBtnText.color = Color.yellow;
+        GlobalBtnText = SetupSwitchButton(ToggleParent, false, "Global Script", new Vector3(200, 20));
 
         typeof(HeroController).Hook(nameof(HeroController.SceneInit),
             (Action<HeroController> orig, HeroController self) =>
@@ -256,8 +255,6 @@ public static class ScriptEditorUI
         
         btn.onClick.AddListener(() =>
         {
-            _localBtnText.color = local ? Color.yellow : Color.white;
-            _globalBtnText.color = local ? Color.white : Color.yellow;
             ScriptManager.IsLocal = local;
             Deletable.DeleteButton.SetActive(false);
         });
@@ -476,29 +473,33 @@ public static class ScriptEditorUI
                     .Select(block => block.Clone("")));
                 _copyPos = Blocks.transform.InverseTransformPoint(Input.mousePosition);
             }
-            
+
             if (Settings.Paste.WasPressed)
             {
                 List<ScriptBlock> copied = [];
                 var add = Guid.NewGuid().ToString()[..4];
+
+                List<IEdit> edits = [];
                 foreach (var block in CopiedBlocks)
                 {
                     if (block is ObjectBlock && !ScriptManager.IsLocal) continue;
-                    
+
                     var newBlock = block.Clone(add, true);
-                    
-                    (ScriptManager.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData())
-                        .ScriptBlocks.Add(newBlock);
-                    
-                    newBlock.Position += (Vector2)Blocks.transform.InverseTransformPoint(Input.mousePosition) - 
+
+                    edits.Add(new PlaceScriptBlock(newBlock, ScriptManager.IsLocal));
+
+                    newBlock.Position += (Vector2)Blocks.transform.InverseTransformPoint(Input.mousePosition) -
                                          _copyPos;
                     copied.Add(newBlock);
                 }
+                
+                ActionManager.ScriptActionManager.PerformAction(new MultiEdit(edits));
+
                 foreach (var block in copied) block.Setup(true);
                 foreach (var block in copied) block.LateSetup();
                 ScriptManager.SetSelection(copied.Select(c => c.BlockId));
             }
-            
+
             if (_isSelecting && _selectionImage && _selectionImage.gameObject.activeSelf) {
                 if (Settings.CreateNewComment.WasPressed) {
                     CreateCommentFromSelection();

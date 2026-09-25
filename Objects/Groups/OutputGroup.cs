@@ -34,7 +34,7 @@ public static class OutputGroup
             new OutputType("enemy_self", "Self", "Enemy", o =>
             {
                 var hm = o.GetComponentInChildren<HealthManager>();
-                return hm;
+                return hm ? hm : o;
             })
         )
     ];

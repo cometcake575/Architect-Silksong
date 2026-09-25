@@ -7,6 +7,7 @@ using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Architect.Editor;
 
@@ -108,6 +109,7 @@ public class ActionManager
 
     public void PerformAction(IEdit edit)
     {
+        if (edit == null) return;
         _lastScene = GameManager.instance.sceneName;
         
         edit.Execute();
@@ -365,76 +367,87 @@ public class MultiEdit(IEnumerable<IEdit> edits) : IEdit
 {
     public void Execute()
     {
-        foreach (var edit in edits) edit.Execute();
+        foreach (var edit in edits) edit?.Execute();
     }
 
     public IEdit Undo()
     {
         return new MultiEdit(edits.Select(e => e.Undo()).Reverse());
     }
+
+    public void MultiplayerShare()
+    {
+        foreach (var edit in edits) edit.MultiplayerShare();
+    }
 }
 
-public class PlaceScriptBlock(ScriptBlock block) : IEdit
+public class PlaceScriptBlock(ScriptBlock block, bool local, bool needsSetup = false) : IEdit
 {
     public void Execute()
     {
-        
+        ScriptManager.IsLocal = local;
+        (local ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData()).ScriptBlocks.Add(block);
+        if (needsSetup) block.Setup(true);
     }
 
     public IEdit Undo()
     {
-        return new RemoveScriptBlock(block);
+        return new RemoveScriptBlock(block, local);
     }
 }
 
-public class RemoveScriptBlock(ScriptBlock block) : IEdit
+public class RemoveScriptBlock(ScriptBlock block, bool local) : IEdit
 {
     public void Execute()
     {
-        
+        ScriptManager.IsLocal = local;
+        ScriptManager.Blocks.Remove(block.BlockId);
+        (local ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData()).ScriptBlocks.Remove(block);
+        if (block.BlockObject) Object.Destroy(block.BlockObject);
     }
 
     public IEdit Undo()
     {
-        return new PlaceScriptBlock(block);
+        return new PlaceScriptBlock(block, local, true);
     }
 }
 
-public class ConnectScriptBlock(ScriptBlock from, ScriptBlock to, string fromPoint, string toPoint) : IEdit
+public class ConnectScriptBlock(ScriptBlock from, string fromPoint, ScriptBlock to, string toPoint, ScriptManager.Connection.LinkType linkType, bool local) : IEdit
 {
     public void Execute()
     {
+        ScriptManager.IsLocal = local;
+        if (linkType == ScriptManager.Connection.LinkType.Var)
+        {
+            var vMap = from.VarMap;
+            if (!vMap.ContainsKey(fromPoint)) vMap[fromPoint] = (to.BlockId, toPoint);
+        }
+        else
+        {
+            var eMap = from.EventMap;
+            if (!eMap.ContainsKey(fromPoint)) eMap[fromPoint] = [];
+            eMap[fromPoint].AddIfNotPresent((to.BlockId, toPoint));
+        }
         
+        ScriptManager.MakeLink(from, fromPoint, to, toPoint, linkType);
+    }
+    
+    public IEdit Undo()
+    {
+        return new DisconnectScriptBlock(from, fromPoint, to, toPoint, linkType, local);
+    }
+}
+
+public class DisconnectScriptBlock(ScriptBlock from, string fromPoint, ScriptBlock to, string toPoint, ScriptManager.Connection.LinkType linkType, bool local) : IEdit
+{
+    public void Execute()
+    {
+        ScriptManager.IsLocal = local;
+        ScriptManager.DestroyLink(from.BlockId, fromPoint, to.BlockId, toPoint, linkType);
     }
 
     public IEdit Undo()
     {
-        return new DisconnectScriptBlock(from, to, fromPoint, toPoint);
-    }
-}
-
-public class DisconnectScriptBlock(ScriptBlock from, ScriptBlock to, string fromPoint, string toPoint) : IEdit
-{
-    public void Execute()
-    {
-        
-    }
-
-    public IEdit Undo()
-    {
-        return new ConnectScriptBlock(from, to, fromPoint, toPoint);
-    }
-}
-
-public class MoveScriptBlocks(IEnumerable<(ScriptBlock, Vector3, Vector3)> data) : IEdit
-{
-    public void Execute()
-    {
-        
-    }
-
-    public IEdit Undo()
-    {
-        return new MoveScriptBlocks(data.Select(d => (d.Item1, d.Item3, d.Item2)));
+        return new ConnectScriptBlock(from, fromPoint, to, toPoint, linkType, local);
     }
 }

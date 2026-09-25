@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Editor;
-using Architect.Events.Blocks.Config.Types;
 using Architect.Events.Blocks.Events;
 using Architect.Events.Blocks.Functions;
 using Architect.Events.Blocks.Objects;
 using Architect.Events.Blocks.Operators;
 using Architect.Events.Blocks.Outputs;
-using Architect.Objects.Tools;
 using Architect.Placements;
 using Architect.Utils;
 using UnityEngine;
@@ -28,6 +26,9 @@ public static class ScriptManager
             field = value;
             ScriptEditorUI.LocalParent.SetActive(value);
             ScriptEditorUI.GlobalParent.SetActive(!value);
+            
+            ScriptEditorUI.LocalBtnText.color = value ? Color.yellow : Color.white;
+            ScriptEditorUI.GlobalBtnText.color = value ? Color.white : Color.yellow;
 
             if (ScriptEditorUI.Rainbow && ScriptEditorUI.Trans)
             {
@@ -119,17 +120,18 @@ public static class ScriptManager
                 {
                     foreach (var connection in CurrentStart.Block.EventMap[CurrentStart.id].ToArray())
                     {
+                        List<IEdit> edits = [];
+                        
                         if (!Input.GetKey(KeyCode.LeftAlt))
                         {
-                            DestroyLink(CurrentStart.Block.BlockId, CurrentStart.id, connection.Item1, connection.Item2,
-                                Connection.LinkType.Event);
+                            edits.Add(new DisconnectScriptBlock(CurrentStart.Block, CurrentStart.id, Blocks[connection.Item1], connection.Item2,
+                                Connection.LinkType.Event, IsLocal));
                         }
 
-                        var eMap = Block.EventMap;
-                        if (!eMap.ContainsKey(id)) eMap[id] = [];
-                        if (eMap[id].Contains((connection.Item1, connection.Item2))) continue;
-                        eMap[id].Add((connection.Item1, connection.Item2));
-                        MakeLink(Block, id, Blocks[connection.Item1], connection.Item2, Connection.LinkType.Event);
+                        edits.Add(new ConnectScriptBlock(Block, id, Blocks[connection.Item1], connection.Item2,
+                            Connection.LinkType.Event, IsLocal));
+                        
+                        ActionManager.ScriptActionManager.PerformAction(new MultiEdit(edits));
                     }
 
                     CurrentStart = null;
@@ -149,21 +151,17 @@ public static class ScriptManager
     {
         public ScriptBlock Block;
         public string id;
-        
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (CurrentStart is not EventStart || InSwapMode) return;
             CurrentStart.img.color = CurrentStart.color;
-            
+
             if (!Block.IsValid || !CurrentStart.Block.IsValid) return;
 
-            var eMap = CurrentStart.Block.EventMap;
-            if (!eMap.ContainsKey(CurrentStart.id)) eMap[CurrentStart.id] = [];
-            if (eMap[CurrentStart.id].Contains((Block.BlockId, id))) return;
-            eMap[CurrentStart.id].Add((Block.BlockId, id));
-            
-            MakeLink(CurrentStart.Block, CurrentStart.id, Block, id, Connection.LinkType.Event);
-            
+            ActionManager.ScriptActionManager.PerformAction(new ConnectScriptBlock(CurrentStart.Block, CurrentStart.id,
+                Block, id, Connection.LinkType.Event, IsLocal));
+
             CurrentStart = null;
         }
     }
@@ -200,24 +198,24 @@ public static class ScriptManager
         public string id;
 
         public string type;
-        
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (CurrentStart is not VarStart start) return;
-            if (start.type != type && type != "Any" && 
-                !(start.type == "Enemy" && type == "Object") && 
+            if (start.type != type && type != "Any" &&
+                !(start.type == "Enemy" && type == "Object") &&
                 !(start.type == "Object" && type == "Enemy")) return;
-            
+
             if (!Block.IsValid || !CurrentStart.Block.IsValid) return;
 
             var vMap = Block.VarMap;
             if (vMap.ContainsKey(id)) return;
-            
+
             CurrentStart.img.color = CurrentStart.color;
-            vMap[id] = (CurrentStart.Block.BlockId, CurrentStart.id);
-            
-            MakeLink(Block, id, CurrentStart.Block, CurrentStart.id, Connection.LinkType.Var);
-            
+
+            ActionManager.ScriptActionManager.PerformAction(new ConnectScriptBlock(Block, id, CurrentStart.Block,
+                CurrentStart.id, Connection.LinkType.Var, IsLocal));
+
             CurrentStart = null;
         }
     }
@@ -294,7 +292,8 @@ public static class ScriptManager
 
         public override void Delete()
         {
-            DestroyLink(sourceBlock, sourceEvent, targetBlock, trigger, linkType);
+            ActionManager.ScriptActionManager.PerformAction(new DisconnectScriptBlock(Blocks[sourceBlock], sourceEvent,
+                Blocks[targetBlock], trigger, linkType, IsLocal));
         }
 
         public enum LinkType
@@ -317,11 +316,10 @@ public static class ScriptManager
     public static Vector3 BlockSpawnPos =>
         ScriptEditorUI.Blocks.transform.InverseTransformPoint(Screen.width / 2f, Screen.height / 2f, 0);
 
-    public static void AddToScript(ObjectPlacement obj)
+    public static PlaceScriptBlock AddToScript(ObjectPlacement obj)
     {
-        var wasLocal = IsLocal;
-        if (!wasLocal) IsLocal = true;
-
+        IsLocal = true;
+        
         EditorUI.DisplayHotbarText($"{obj.GetPlacementType().GetName()} added");
 
         var block = new ObjectBlock
@@ -332,8 +330,7 @@ public static class ScriptManager
             Position = BlockSpawnPos
         };
         block.Setup(true);
-        PlacementManager.GetLevelData().ScriptBlocks.Add(block);
 
-        if (!wasLocal) IsLocal = false;
+        return new PlaceScriptBlock(block, true);
     }
 }

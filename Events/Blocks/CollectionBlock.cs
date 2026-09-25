@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Editor;
 using Architect.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -99,10 +100,10 @@ public abstract class CollectionBlock<T> : LinkedBlock
         else foreach (var child in Children.Blocks) child.SetupReference();
     }
 
-    public override void Delete()
+    public override MultiEdit Delete()
     {
-        foreach (var child in Children.Blocks.ToArray()) child.Delete();
-        base.Delete();
+        foreach (var child in Children.Blocks.ToArray()) child.DeleteKeepGroup();
+        return base.Delete();
     }
 
     public override void LateSetup()
@@ -149,10 +150,16 @@ public abstract class CollectionBlock<T> : LinkedBlock
             }
         }
 
-        public override void Delete()
+        public void DeleteKeepGroup()
+        {
+            base.Delete()?.Execute();
+        }
+
+        public override MultiEdit Delete()
         {
             Group.Remove(this);
-            base.Delete();
+            base.Delete()?.Execute();
+            return null;
         }
 
         public override void AddExtraIds(List<string> ids)
