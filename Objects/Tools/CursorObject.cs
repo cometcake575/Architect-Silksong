@@ -20,7 +20,7 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
 
     public override string GetDescription()
     {
-        return "Click a placed object edit it and see its ID.\n\n" +
+        return "Click a placed object to see its ID, shift + click to edit it.\n\n" +
                "Right click a placed object to add its block to the Script Editor.\n\n" +
                "Click a spot to see its position.";
     }
@@ -41,18 +41,23 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
         else
         {
             var obj = EditManager.HoveredObject;
-            EditManager.HoveredObject = null;
-            EditManager.EditingObject = obj;
             
-            EditorUI.PosXText.text = obj.GetPos().x.ToString(CultureInfo.InvariantCulture);
-            EditorUI.PosYText.text = obj.GetPos().y.ToString(CultureInfo.InvariantCulture);
-            EditorUI.PositionOptions.SetActive(true);
-            
-            obj.LoadToSlot();
-            
-            EditorUI.ObjectIdLabel.textComponent.text = $"{obj.GetPlacementType().GetName()} ID: {obj.GetId()}";
+            var info = $"{obj.GetPlacementType().GetName()} ID: {obj.GetId()}";
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                EditManager.HoveredObject = null;
+                EditManager.EditingObject = obj;
 
-            CursorManager.NeedsRefresh = false;
+                EditorUI.PosXText.text = obj.GetPos().x.ToString(CultureInfo.InvariantCulture);
+                EditorUI.PosYText.text = obj.GetPos().y.ToString(CultureInfo.InvariantCulture);
+                EditorUI.PositionOptions.SetActive(true);
+
+                obj.LoadToSlot();
+
+                EditorUI.ObjectIdLabel.textComponent.text = info;
+
+                CursorManager.NeedsRefresh = false;
+            } else EditorUI.DisplayHotbarText(info);
         }
     }
 
