@@ -292,8 +292,13 @@ public static class ScriptManager
 
         public override void Delete()
         {
-            ActionManager.ScriptActionManager.PerformAction(new DisconnectScriptBlock(Blocks[sourceBlock], sourceEvent,
-                Blocks[targetBlock], trigger, linkType, IsLocal));
+            if (!Blocks.TryGetValue(sourceBlock, out var sb) || !Blocks.TryGetValue(targetBlock, out var tb))
+            {
+                DestroyLink(sourceBlock, sourceEvent, targetBlock, trigger, linkType);
+                return;
+            } 
+            ActionManager.ScriptActionManager.PerformAction(new DisconnectScriptBlock(sb, sourceEvent,
+                tb, trigger, linkType, IsLocal));
         }
 
         public enum LinkType

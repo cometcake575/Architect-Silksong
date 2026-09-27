@@ -614,14 +614,24 @@ public abstract class ScriptBlock
         {
             foreach (var (targetBlock, targetEvent) in target.ToArray())
             {
-                edits.Add(new DisconnectScriptBlock(this, sourceEvent, ScriptManager.Blocks[targetBlock], targetEvent,
+                if (!ScriptManager.Blocks.TryGetValue(targetBlock, out var tb))
+                {
+                    ScriptManager.DestroyLink(BlockId, sourceEvent, targetBlock, targetEvent, ScriptManager.Connection.LinkType.Event);
+                    continue;
+                }
+                edits.Add(new DisconnectScriptBlock(this, sourceEvent, tb, targetEvent,
                     ScriptManager.Connection.LinkType.Event, ScriptManager.IsLocal));
             }
         }
 
         foreach (var (sourceEvent, (targetBlock, targetEvent)) in VarMap.ToArray())
         {
-            edits.Add(new DisconnectScriptBlock(this, sourceEvent, ScriptManager.Blocks[targetBlock], targetEvent,
+            if (!ScriptManager.Blocks.TryGetValue(targetBlock, out var tb))
+            {
+                ScriptManager.DestroyLink(BlockId, sourceEvent, targetBlock, targetEvent, ScriptManager.Connection.LinkType.Var);
+                continue;
+            }
+            edits.Add(new DisconnectScriptBlock(this, sourceEvent, tb, targetEvent,
                 ScriptManager.Connection.LinkType.Var, ScriptManager.IsLocal));
         }
 

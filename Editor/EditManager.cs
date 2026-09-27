@@ -255,7 +255,7 @@ public static class EditManager
     public static void SetScale(float scale)
     {
         CurrentScale = scale;
-        EditorUI.ScaleText.text = Mathf.Max(scale, 0.1f).ToString(CultureInfo.InvariantCulture);
+        EditorUI.ScaleText.text = scale.ToString(CultureInfo.InvariantCulture);
         CursorManager.NeedsRefresh = true;
     }
 

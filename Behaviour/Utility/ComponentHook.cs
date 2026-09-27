@@ -31,11 +31,7 @@ public class ComponentHook : PreviewableBehaviour
         
         _components = (recursive ?
             target.GetComponentsInChildren<Component>() : 
-            target.GetComponents<Component>()).Where(c =>
-            {
-                ArchitectPlugin.Logger.LogInfo(c.GetType().Name);
-                return c.GetType().Name == componentName;
-            })
+            target.GetComponents<Component>()).Where(c => c.GetType().Name == componentName)
             .ToArray();
         
         foreach (var c in _components)

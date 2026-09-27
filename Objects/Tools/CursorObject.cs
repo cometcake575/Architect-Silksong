@@ -55,6 +55,7 @@ public class CursorObject() : ToolObject("cursor", Storage.Settings.Cursor, -1)
                 obj.LoadToSlot();
 
                 EditorUI.ObjectIdLabel.textComponent.text = info;
+                _lastNum++;
 
                 CursorManager.NeedsRefresh = false;
             } else EditorUI.DisplayHotbarText(info);
