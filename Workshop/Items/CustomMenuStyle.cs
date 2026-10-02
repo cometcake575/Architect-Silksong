@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Architect.Api;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Placements;
@@ -219,9 +220,12 @@ public class CustomMenuStyle : WorkshopItem
         public void OnEnable()
         {
             if (!_ms.started) return;
-            _scene = SceneManager.CreateScene($"{id}_title");
+            var sceneName = $"{id}_Title";
+            _scene = SceneManager.CreateScene(sceneName);
 
-            var ld = StorageManager.LoadScene($"{id}_title");
+            var ld = MapLoader.GetModData(sceneName);
+            ld.Merge(StorageManager.LoadScene(sceneName));
+            
             foreach (var placement in ld.Placements)
             {
                 var obj = placement.SpawnObject();

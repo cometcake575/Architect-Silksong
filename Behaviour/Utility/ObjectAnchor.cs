@@ -114,7 +114,8 @@ public class ObjectAnchor : PreviewableBehaviour
                 gameObject.SetActive(true);
             }
             
-            if (PlacementManager.TryGetValue(parentId, out var parent))
+            if (!PlacementManager.TryGetValue(parentId, out var parent)) parent = ObjectUtils.FindGameObject(targetId);
+            if (parent)
             {
                 var sp = parent.GetComponent<SplineObjects.SplinePoint>();
                 if (sp && sp.spline) SetupSpline(sp);

@@ -29,7 +29,7 @@ public class SpawnObjectBlock : ScriptBlock
     protected override string Name => "Spawn Object";
 
     public override void Reset()
-    {
+    { 
         OffsetX = 0;
         OffsetY = 0;
     }

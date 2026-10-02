@@ -60,19 +60,6 @@ public static class MapLoader
     {
         LevelData levelData = new([], [], [], []);
 
-        void TryLoadMap(Func<LevelData> loader)
-        {
-            try
-            {
-                var level = loader();
-                if (level != null) levelData.Merge(level);
-            }
-            catch (Exception ex)
-            {
-                ArchitectPlugin.Logger.LogError($"External map loader failed on '{scene}': {ex}");
-            }
-        }
-
         foreach (var mapLoader in ExtMapLoaders)
         {
             TryLoadMap(() => mapLoader(scene));
@@ -112,5 +99,18 @@ public static class MapLoader
         }
 
         return levelData;
+
+        void TryLoadMap(Func<LevelData> loader)
+        {
+            try
+            {
+                var level = loader();
+                if (level != null) levelData.Merge(level);
+            }
+            catch (Exception ex)
+            {
+                ArchitectPlugin.Logger.LogError($"External map loader failed on '{scene}': {ex}");
+            }
+        }
     }
 }

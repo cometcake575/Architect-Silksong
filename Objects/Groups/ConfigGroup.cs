@@ -298,7 +298,7 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new BoolConfigType("Lock", "audio_player_lock", (o, value) =>
             {
-                o.GetComponent<AudioPlayer>().lockMusic = value.GetValue();
+                o.GetComponent<AudioPlayer>().LockMusic = value.GetValue();
             }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Audio Cue", "audio_player_cue", (o, value) =>

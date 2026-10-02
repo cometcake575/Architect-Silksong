@@ -15,7 +15,16 @@ public class AudioPlayer : MonoBehaviour
 {
     public bool isAtmos;
     public bool playOnStart;
-    public bool lockMusic = true;
+    public bool LockMusic
+    {
+        get;
+        set
+        {
+            field = value;
+            if (!value) Players.Remove(this);
+            else if (gameObject.activeSelf && !Players.Contains(this)) Players.Add(this);
+        }
+    }
     public string cueId;
 
     public float fadeTime;
@@ -84,12 +93,12 @@ public class AudioPlayer : MonoBehaviour
 
     private void OnEnable()
     {
-        if (lockMusic) Players.Add(this);
+        if (!Players.Contains(this) && LockMusic) Players.Add(this);
     }
 
     private void OnDisable()
     {
-        if (lockMusic) Players.Remove(this);
+        if (LockMusic) Players.Remove(this);
     }
 
     private void Start()

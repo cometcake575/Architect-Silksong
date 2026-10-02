@@ -38,6 +38,8 @@ public static class ObjectUtils
         obj.RemoveComponentsInChildren<TalkAnimNPC>();
         obj.RemoveComponentsInChildren<tk2dLookAnimNPC>();
         obj.RemoveComponentsInChildren<Walker>();
+        obj.RemoveComponentsInChildren<CaptureAnimationEvent>();
+        obj.RemoveComponentsInChildren<TriggerEnterEvent>();
     }
     
     public static T ReplaceComponent<T>(this GameObject obj) where T : Component
