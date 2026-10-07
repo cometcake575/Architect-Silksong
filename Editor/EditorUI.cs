@@ -183,9 +183,11 @@ public static class EditorUI
             new Vector3(0, -70, 0), anchor, anchor);
 
         _currentlySelected.textComponent.alignment = TextAnchor.UpperCenter;
+        _currentlySelected.textComponent.raycastTarget = false;
+        
         _currentlySelectedDesc.textComponent.alignment = TextAnchor.UpperCenter;
+        _currentlySelectedDesc.textComponent.raycastTarget = false;
         _currentlySelectedDesc.textComponent.verticalOverflow = VerticalWrapMode.Overflow;
-
         _currentlySelectedDesc.textComponent.fontSize = 10;
 
         var currentScene = UIUtils.MakeLabel("Current Scene", _canvasObj,

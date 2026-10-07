@@ -27,6 +27,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateVoider());
         Categories.Utility.Add(CreatePlasmifier());
         Categories.Utility.Add(CreateShielder());
+        Categories.Utility.Add(CreateCustomHazard());
         
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectLayerer());
@@ -979,6 +980,49 @@ public static class UtilityObjects
                 description: "Broadcasts an event upon detecting an attack.")
             .WithBroadcasterGroup(BroadcasterGroup.Hittable)
             .WithConfigGroup(ConfigGroup.HitResponder);
+    }
+
+    private static PlaceableObject CreateCustomHazard()
+    {
+        var point = new GameObject("Hazard")
+        {
+            layer = (int)PhysLayers.ENEMIES
+        };
+
+        point.AddComponent<NonBouncer>().active = true;
+
+        var bc = point.AddComponent<BoxCollider2D>();
+        bc.isTrigger = false;
+        bc.size = new Vector2(3.2f, 3.2f);
+
+        var cc = point.AddComponent<PolygonCollider2D>();
+        cc.isTrigger = false;
+
+        var points = new Vector2[24];
+        for (var i = 0; i < 24; i++)
+        {
+            var angle = 2 * Mathf.PI * i / 24;
+            var x = Mathf.Cos(angle) * 1.6f;
+            var y = Mathf.Sin(angle) * 1.6f;
+            points[i] = new Vector2(x, y);
+        }
+
+        cc.pathCount = 1;
+        cc.SetPath(0, points);
+        cc.enabled = false;
+
+        point.AddComponent<DamageHero>();
+        CustomHazard.Init();
+        point.AddComponent<CustomHazard>();
+
+        point.SetActive(false);
+        Object.DontDestroyOnLoad(point);
+
+        return new CustomObject("Custom Hazard", "custom_hazard",
+                point,
+                sprite: CustomHazard.SquareZone,
+                description: "Deals damage on contact.")
+            .WithConfigGroup(ConfigGroup.CustomHazard);
     }
 
     public static readonly Sprite SquareDamager = ResourceUtils.LoadSpriteResource("enemy_damager", FilterMode.Point, ppu:64);

@@ -2366,7 +2366,7 @@ public static class ConfigGroup
             new BoolConfigType("Give Silk", "give_silk",
                 (o, value) => { o.GetComponentInChildren<HealthManager>(true).doNotGiveSilk = !value.GetValue(); })),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Can Pogo On", "enemy_can_pogo",
+            new BoolConfigType("Pogoable", "enemy_can_pogo",
                 (o, value) => {
                     if (!value.GetValue())
                     {
@@ -3403,6 +3403,89 @@ public static class ConfigGroup
                             value.GetValue() == 0 ? Behaviour.Utility.HitResponder.SquareZone : Behaviour.Utility.HitResponder.CircleZone;
                     })
                 .WithOptions("Square", "Circle").WithDefaultValue(0).WithPriority(-1))
+    ]);
+
+    public static readonly List<ConfigType> CustomHazard = GroupUtils.Merge(Stretchable, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Damage Type", "custom_hazard_damage_type",
+                    (o, value) =>
+                    {
+                        var val = value.GetStringValue();
+
+                        if (!Enum.TryParse<HazardType>(val.Replace(" ", "_").ToUpper(), out var ht))
+                        {
+                            switch (val)
+                            {
+                                case "Coal 1":
+                                    ht = HazardType.COAL;
+                                    break;
+                                case "Coal 2":
+                                    ht = HazardType.COAL_SPIKES;
+                                    break;
+                                case "Zap Vines":
+                                    ht = HazardType.ZAP;
+                                    break;
+                                default:
+                                {
+                                    ht = HazardType.STEAM;
+                                    var ch = o.GetComponent<CustomHazard>();
+                                    ch.overrideMultiHit = true;
+                                    ch.multihitType = val switch
+                                    {
+                                        "Double Slash" => MultihitTypes.Regular,
+                                        "Lag Hit" => MultihitTypes.LagHit,
+                                        "Weak" => MultihitTypes.Weak,
+                                        "Double N/E" => MultihitTypes.NoEffect,
+                                        "Zap Hit" => MultihitTypes.Zap,
+                                        "Double Hit" => MultihitTypes.DoubleStrike,
+                                        _ => MultihitTypes.Pollen
+                                    };
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        o.GetComponent<DamageHero>().hazardType = ht;
+                    })
+                .WithOptions(
+                    "Enemy",
+                    "Spikes",
+                    "Acid",
+                    "Coal 1",
+                    "Coal 2",
+                    "Lava",
+                    "Zap Vines",
+                    "Zap Hit",
+                    "Double Slash",
+                    "Double Hit",
+                    "Double N/E",
+                    "Lag Hit",
+                    "Weak",
+                    "Steam",
+                    "Pollen",
+                    "Pit",
+                    "Respawn Pit").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Shape", "custom_hazard_shape",
+                    (o, value) =>
+                    {
+                        if (value.GetValue() == 0) return;
+                        o.GetComponent<PolygonCollider2D>().enabled = true;
+                        o.GetComponent<BoxCollider2D>().enabled = false;
+                    }, (o, value, _) =>
+                    {
+                        o.GetComponent<SpriteRenderer>().sprite =
+                            value.GetValue() == 0 ? Behaviour.Utility.CustomHazard.SquareZone : Behaviour.Utility.CustomHazard.CircleZone;
+                    })
+                .WithOptions("Square", "Circle").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Pogoable", "custom_hazard_pogoble",
+                    (o, value) =>
+                    {
+                        if (!value.GetValue()) return;
+                        o.GetComponent<NonBouncer>().active = false;
+                    })
+                .WithDefaultValue(false))
     ]);
 
     public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [

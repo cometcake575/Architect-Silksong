@@ -321,12 +321,12 @@ public static class EditManager
 
             if (hotbarIndex != -1)
             {
-                if (Input.GetKey(KeyCode.LeftAlt))
+                if (Settings.LoadHotbar.IsPressed)
                 {
                     ArchitectPlugin.Instance.StartCoroutine(StorageManager.LoadHotbar(hotbarIndex));
                     EditorUI.DisplayHotbarText($"Loaded hotbar {hotbarIndex + 1}");
                 }
-                else if (Input.GetKey(KeyCode.LeftControl))
+                else if (Settings.SaveHotbar.IsPressed)
                 {
                     StorageManager.SaveHotbar(hotbarIndex);
                     EditorUI.DisplayHotbarText($"Saved hotbar {hotbarIndex + 1}");
