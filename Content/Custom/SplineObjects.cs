@@ -142,6 +142,7 @@ public static class SplineObjects
         }
 
         public float speed;
+        public float width = 0.2f;
         
         public SplineBase actualSpline;
         
@@ -177,6 +178,7 @@ public static class SplineObjects
             var hs = gameObject.AddComponent<HermiteSpline>();
             hs.controlPoints = points;
             hs.subdivisions = 25;
+            hs.width = width;
             actualSpline = hs;
 
             actualSpline.preventCulling = true;

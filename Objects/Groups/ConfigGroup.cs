@@ -1711,6 +1711,11 @@ public static class ConfigGroup
                 o.GetComponent<SplineObjects.Spline>().speed = value.GetValue();
             }).WithDefaultValue(10)),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Width", "track_width", (o, value) =>
+            {
+                o.GetComponent<SplineObjects.Spline>().width = value.GetValue();
+            }).WithDefaultValue(0.3f)),
+        ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Colour", "track_colour", (o, value) =>
             {
                 o.GetComponent<SplineObjects.Spline>().LineColour = value.GetValue();
@@ -3526,7 +3531,8 @@ public static class ConfigGroup
                     "Coal",
                     "Fire",
                     "Zap",
-                    "Trap")
+                    "Trap",
+                    "Heavy")
         ),
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Amount", "enemy_damager_hp_amount", 

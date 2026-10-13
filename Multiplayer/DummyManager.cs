@@ -13,6 +13,8 @@ public class DummyManager : CoopManager
     public override void ResetRoom(string room) { }
 
     public override void RefreshRoom() {}
+    
+    public override void ShowMessage(string message) { }
 
     public override void ShareEvent(string room, string name) { }
 

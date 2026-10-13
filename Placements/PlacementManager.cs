@@ -99,15 +99,13 @@ public static class PlacementManager
         Objects.Clear();
         Layers.Clear();
 
-        foreach (var block in ScriptManager.Blocks.Values)
-        {
-            block.DestroyObject();
-        }
-        foreach (var link in ScriptManager.Links.Values)
-        {
-            Object.Destroy(link);
-        }
+        foreach (var block in ScriptManager.Blocks.Values) block.DestroyObject();
+        foreach (var link in ScriptManager.Links.Values) Object.Destroy(link);
+        foreach (var comment in ScriptManager.Comments) Object.Destroy(comment.gameObject);
+        
         ScriptManager.Blocks.Clear();
+        ScriptManager.Links.Clear();
+        ScriptManager.Comments.Clear();
 
         if (ext != null)
         {
@@ -194,12 +192,14 @@ public static class PlacementManager
         
         foreach (var block in _globalData.ScriptBlocks) block.Setup(EditManager.IsEditing);
         foreach (var block in _globalData.ScriptBlocks) block.LateSetup();
-
-        ScriptManager.IsLocal = wasLocal;
         
         if (EditManager.IsEditing) {
-            ScriptEditorUI.LoadComments();
+            foreach (var comment in _levelData.Comments) ScriptEditorUI.LoadComment(comment, true);
+            foreach (var comment in _globalData.Comments) ScriptEditorUI.LoadComment(comment, false);
         }
+
+        ScriptManager.IsLocal = wasLocal;
+        ScriptManager.Layer = 0;
     }
 
     public static void Init()

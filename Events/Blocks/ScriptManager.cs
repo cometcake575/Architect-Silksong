@@ -72,8 +72,34 @@ public static class ScriptManager
             c.Item2.Contains(Filter, StringComparison.InvariantCultureIgnoreCase));
 
     public static readonly Dictionary<string, ScriptBlock> Blocks = [];
-    
     public static readonly Dictionary<(string, string, string, string), GameObject> Links = [];
+    public static readonly List<CommentData> Comments = [];
+
+    public static int Layer
+    {
+        get;
+        set
+        {
+            if (value < 0) value = 0;
+            if (value == field) return;
+            
+            ClearSelection();
+            
+            if (CurrentStart)
+            {
+                CurrentStart.img.color = CurrentStart.color;
+                CurrentStart = null;
+            }
+            
+            foreach (var block in Blocks.Values.Where(b => b.BlockInstance)) 
+                block.BlockInstance.LayerChanged(value);
+            foreach (var comment in Comments) comment.LayerChanged(value);
+
+            ScriptEditorUI.LayerName.text = $"Layer\n{value}";
+            
+            field = value;
+        }
+    }
 
     public static readonly HashSet<string> SelectedBlockIds = [];
 
@@ -332,7 +358,8 @@ public static class ScriptManager
             TypeId = obj.GetPlacementType().GetId(),
             TargetId = obj.GetId(),
             Type = "object",
-            Position = BlockSpawnPos
+            Position = BlockSpawnPos,
+            Layer = Layer
         };
         block.Setup(true);
 

@@ -44,7 +44,8 @@ public class Category
             Type = id, 
             Config = configGroup,
             Position = ScriptManager.BlockSpawnPos,
-            Color = Colour
+            Color = Colour,
+            Layer = ScriptManager.Layer
         };
         Blocks.Add((func, name));
         ScriptManager.BlockTypes[id] = func;
@@ -58,7 +59,8 @@ public class Category
             Type = name, 
             Config = configGroup,
             Position = ScriptManager.BlockSpawnPos,
-            Color = Colour
+            Color = Colour,
+            Layer = ScriptManager.Layer
         };
     }
 }

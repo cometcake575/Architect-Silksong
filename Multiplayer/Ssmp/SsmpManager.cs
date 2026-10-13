@@ -134,6 +134,11 @@ public class SsmpManager : CoopManager
         _clientAddon.RefreshRoom();
     }
 
+    public override void ShowMessage(string message)
+    {
+        _clientAddon.API.UiManager.ChatBox.AddMessage(message);
+    }
+
     public static byte[][] Split(byte[] array, int size)
     {
         var count = Mathf.CeilToInt((float)array.Length / size);

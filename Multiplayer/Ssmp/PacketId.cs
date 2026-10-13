@@ -11,7 +11,8 @@ public enum PacketId
     Tiles,
     Lock,
     Place,
-    Event
+    Event,
+    LockEditor
 }
 
 public static class PacketIdExtension
@@ -27,6 +28,7 @@ public static class PacketIdExtension
             PacketId.Lock => new LockPacketData(),
             PacketId.Place => new PlacePacketData(),
             PacketId.Event => new EventPacketData(),
+            PacketId.LockEditor => new LockEditorPacketData(),
             _ => null
         };
     }

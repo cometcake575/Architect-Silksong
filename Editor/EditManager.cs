@@ -19,7 +19,6 @@ using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Storage;
 using Architect.Utils;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 

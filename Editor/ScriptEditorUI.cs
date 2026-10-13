@@ -18,7 +18,8 @@ public static class ScriptEditorUI
 {
     public static GameObject Blocks => ScriptManager.IsLocal ? _localBlocks : _globalBlocks;
     public static GameObject Lines => ScriptManager.IsLocal ? _localLines : _globalLines;
-    public static GameObject ScriptParent => ScriptManager.IsLocal ? LocalParent : GlobalParent;
+    
+    private static GameObject ScriptParent => ScriptManager.IsLocal ? LocalParent : GlobalParent;
     
     public static GameObject ToggleParent;
     
@@ -216,23 +217,25 @@ public static class ScriptEditorUI
                 GlobalParent.transform.localPosition = Vector3.zero;
                 LocalParent.transform.localPosition = Vector3.zero;
             });
+        
+        SetupLayers(scriptUI);
 
         ScriptManager.IsLocal = true;
         DoRefresh();
 
-        var img1 = UIUtils.MakeImage("Rainbow Flag", scripts, new Vector2(360, 0),
-            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
+        var img1 = UIUtils.MakeImage("Rainbow Flag", scripts, new Vector2(-40, -40),
+            new Vector2(1, 1), new Vector2(1, 1), new Vector2(2000, 100));
         img1.sprite = ResourceUtils.LoadSpriteResource("rainbow", FilterMode.Point, ppu: 10);
         img1.transform.SetAsFirstSibling();
-        img1.transform.SetRotation2D(90);
+        img1.transform.SetRotation2D(315);
 
         Rainbow = img1.gameObject;
 
-        var img2 = UIUtils.MakeImage("Trans Flag", scripts, new Vector2(360, 0),
-            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(2000, 100));
+        var img2 = UIUtils.MakeImage("Trans Flag", scripts, new Vector2(-40, -40),
+            new Vector2(1, 1), new Vector2(1, 1), new Vector2(2000, 100));
         img2.sprite = ResourceUtils.LoadSpriteResource("trans", FilterMode.Point, ppu: 10);
         img2.transform.SetAsFirstSibling();
-        img2.transform.SetRotation2D(90);
+        img2.transform.SetRotation2D(315);
 
         Trans = img2.gameObject;
         return;
@@ -245,6 +248,31 @@ public static class ScriptEditorUI
                 labels[i].text = blocks.Length <= index + i ? "" : blocks[index + i].Item2;
             }
         }
+    }
+
+    public static Text LayerName;
+
+    private static void SetupLayers(GameObject scriptUI)
+    {
+        var layerParent = CreateBlankParent("Layers", scriptUI, -20);
+        
+        LayerName = UIUtils.MakeLabel("Layer Name", layerParent,
+            new Vector2(0, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0)).textComponent;
+        LayerName.fontSize = 14;
+        LayerName.text = $"Layer\n{ScriptManager.Layer}";
+        LayerName.alignment = TextAnchor.MiddleCenter;
+        
+        var (lBtn, lt) = UIUtils.MakeTextButton("Left", "<", layerParent,
+            new Vector2(-35, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(35, 35));
+        lt.textComponent.fontSize = 10;
+        lBtn.onClick.AddListener(() => ScriptManager.Layer = Math.Max(0, ScriptManager.Layer - 1));
+        
+        var (rBtn, rt) = UIUtils.MakeTextButton("Right", ">", layerParent,
+            new Vector2(35, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+            size: new Vector2(35, 35));
+        rt.textComponent.fontSize = 10;
+        rBtn.onClick.AddListener(() => ScriptManager.Layer++);
     }
 
     private static Text SetupSwitchButton(GameObject parent, bool local, string name, Vector3 pos)
@@ -529,20 +557,12 @@ public static class ScriptEditorUI
             ScriptParent.transform.SetParent(par, true);
         }
 
-        private void CreateCommentFromSelection() {
+        private void CreateCommentFromSelection()
+        {
             if (!_selectionRect) return;
 
-            var scriptParentObj = ScriptParent;
-            if (!scriptParentObj) return;
-
-            var scriptRt = scriptParentObj.GetComponent<RectTransform>();
-            if (!scriptRt) return;
-
             var commentsParentObj = ScriptManager.IsLocal ? _localComments : _globalComments;
-            if (!commentsParentObj) commentsParentObj = scriptParentObj;
-
-            var commentsRt = commentsParentObj.GetComponent<RectTransform>();
-            if (!commentsRt) commentsRt = scriptRt;
+            var commentsRt = (RectTransform)commentsParentObj.transform;
 
             var corners = new Vector3[4];
             _selectionRect.GetWorldCorners(corners);
@@ -551,24 +571,12 @@ public static class ScriptEditorUI
             var worldTR = corners[2];
             var worldCenter = (worldBL + worldTR) * 0.5f;
 
-            var commentObj = new GameObject("Comment");
-            var rt = commentObj.AddComponent<RectTransform>();
-
-            commentObj.transform.SetParent(commentsParentObj.transform, false);
-
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.localRotation = Quaternion.identity;
-            rt.localScale = Vector3.one;
-
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 commentsRt,
                 RectTransformUtility.WorldToScreenPoint(null, worldCenter),
                 null,
                 out var localCenter
             );
-
-            rt.anchoredPosition = localCenter;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 commentsRt,
@@ -584,149 +592,16 @@ public static class ScriptEditorUI
                 out var localTR
             );
 
-            rt.sizeDelta = new Vector2(
-                Mathf.Abs(localTR.x - localBL.x),
-                Mathf.Abs(localTR.y - localBL.y)
-            );
-
-            commentObj.transform.SetAsFirstSibling();
-
             var isLocal = ScriptManager.IsLocal;
-            var commentData = new Comment("Comment", new Color(0f, 0f, 0f, 0.25f), localCenter, rt.sizeDelta, isLocal);
+            var commentData = new Comment("Comment", new Color(0f, 0f, 0f, 0.25f), localCenter,
+                new Vector2(
+                    Mathf.Abs(localTR.x - localBL.x),
+                    Mathf.Abs(localTR.y - localBL.y)
+                ), isLocal, ScriptManager.Layer);
             var levelData = isLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
             levelData.Comments.Add(commentData);
 
-            var data = commentObj.AddComponent<CommentData>();
-            data.Comment = commentData;
-
-            //Background Image (basically comment background)
-
-            var img = commentObj.AddComponent<Image>();
-            img.sprite = UIUtils.Square;
-            img.color = commentData.Color;
-            
-            var outline = commentObj.AddComponent<Outline>();
-            outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
-            outline.effectDistance = new Vector2(2f, 2f);
-
-            //Comment Title
-
-            var titleLabel = UIUtils.MakeLabel(
-                "Comment Title",
-                commentObj,
-                Vector2.zero,
-                Vector2.zero,
-                Vector2.zero
-            );
-
-            titleLabel.textComponent.text = "Comment";
-            titleLabel.textComponent.alignment = TextAnchor.MiddleCenter;
-            titleLabel.textComponent.color = Color.white;
-
-            var labelRt = titleLabel.GetComponent<RectTransform>();
-
-            labelRt.anchorMin = new Vector2(0.5f, 1f);
-            labelRt.anchorMax = new Vector2(0.5f, 1f);
-
-            labelRt.pivot = new Vector2(0.5f, 0f);
-
-            const float headerRatio = 0.25f;
-            var headerHeight = rt.rect.height * headerRatio;
-
-            labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
-
-            var titleYOffset = Mathf.Min(headerHeight * 0.05f, 6f);
-            labelRt.anchoredPosition = new Vector2(0f, titleYOffset);
-            titleLabel.textComponent.fontSize =
-                Mathf.Clamp(Mathf.RoundToInt(headerHeight * 0.6f), 12, 144);
-
-            titleLabel.textComponent.raycastTarget = true;
-            titleLabel.transform.SetAsLastSibling();
-
-            var titleBtn = titleLabel.gameObject.AddComponent<Button>();
-            titleBtn.onClick.AddListener(() => StartEditingCommentTitleStatic(titleLabel, commentObj));
-
-            //close button
-
-            var closeBtnObj = new GameObject("CloseButton");
-            closeBtnObj.transform.SetParent(commentObj.transform, false);
-
-            var closeRt = closeBtnObj.AddComponent<RectTransform>();
-
-            var btnSize = Mathf.Clamp(rt.rect.height * 0.15f, 16f, 192f);
-
-            closeRt.sizeDelta = new Vector2(btnSize, btnSize);
-            closeRt.anchorMin = new Vector2(1f, 1f);
-            closeRt.anchorMax = new Vector2(1f, 1f);
-            closeRt.pivot = new Vector2(1f, 1f);
-            closeRt.anchoredPosition = new Vector2(-btnSize * 0.2f, -btnSize * 0.2f);
-
-            var closeBtnImage = closeBtnObj.AddComponent<Image>();
-            closeBtnImage.sprite = UIUtils.Square;
-            closeBtnImage.color = new Color(0.8f, 0.2f, 0.2f);
-
-            var closeBtn = closeBtnObj.AddComponent<Button>();
-            closeBtn.onClick.AddListener(() => {
-                var comment = commentObj.GetComponent<CommentData>()?.Comment;
-                if (comment != null) {
-                    var level = comment.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
-                    level.Comments.Remove(comment);
-                }
-                Destroy(commentObj);
-            });
-
-            var xLabel = UIUtils.MakeLabel("X Label", closeBtnObj, Vector2.zero, Vector2.zero, Vector2.zero);
-            xLabel.textComponent.text = "X";
-            xLabel.textComponent.fontSize = Mathf.RoundToInt(btnSize * 0.6f);
-            xLabel.textComponent.color = Color.white;
-
-            var xLabelRt = xLabel.GetComponent<RectTransform>();
-            xLabelRt.anchorMin = Vector2.zero;
-            xLabelRt.anchorMax = Vector2.one;
-            xLabelRt.offsetMin = Vector2.zero;
-            xLabelRt.offsetMax = Vector2.zero;
-            xLabelRt.pivot = new Vector2(0.5f, 0.5f);
-
-            xLabel.textComponent.alignment = TextAnchor.MiddleCenter;
-            xLabel.textComponent.raycastTarget = false;
-
-            //Color button
-
-            var colorBtnObj = new GameObject("ColorButton");
-            colorBtnObj.transform.SetParent(commentObj.transform, false);
-
-            var colorRt = colorBtnObj.AddComponent<RectTransform>();
-            var cBtnSize = Mathf.Clamp(rt.rect.height * 0.1f, 12f, 144f);
-            colorRt.anchorMin = new Vector2(0f, 1f);
-            colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
-            colorRt.anchorMax = new Vector2(0f, 1f);
-            colorRt.pivot = new Vector2(0f, 1f);
-            colorRt.anchoredPosition = new Vector2(cBtnSize * 0.1f, -cBtnSize * 0.1f);
-
-            var colorImg = colorBtnObj.AddComponent<Image>();
-            colorImg.sprite = UIUtils.Square;
-            colorImg.color = img.color;
-
-            var colorBtn = colorBtnObj.AddComponent<Button>();
-            colorBtn.onClick.AddListener(() => {
-                var colors = new Color[] {
-                    new(0f,0f,0f,0.25f),
-                    new(0.1f,0.1f,0.3f,0.25f),
-                    new(0.3f,0.1f,0.1f,0.25f),
-                    new(0.1f,0.3f,0.1f,0.25f)
-                };
-                var current = Array.IndexOf(colors, img.color);
-                var next = (current + 1) % colors.Length;
-                img.color = colors[next];
-                colorImg.color = colors[(next + 1) % colors.Length];
-
-                var cd = commentObj.GetComponent<CommentData>();
-                if (!cd) return;
-                var comment = cd.Comment;
-                if (comment != null) {
-                    comment.Color = img.color;
-                }
-            });
+            LoadComment(commentData, isLocal);
         }
     }
 
@@ -803,165 +678,162 @@ public static class ScriptEditorUI
             Object.Destroy(inputObj);
         });
     }
+    
+    private static readonly Color[] CommentColours =
+    [
+        new(0f, 0f, 0f, 0.25f),
+        new(0.1f, 0.1f, 0.6f, 0.25f),
+        new(0.6f, 0.1f, 0.1f, 0.25f),
+        new(0.1f, 0.6f, 0.1f, 0.25f),
+        new(0.6f, 0.1f, 0.6f, 0.25f),
+        new(0.6f, 0.6f, 0.1f, 0.25f),
+        new(0.1f, 0.6f, 0.6f, 0.25f)
+    ];
 
-    public static void LoadComments() {
-        foreach (Transform child in _localComments.transform) {
-            if (child.name == "Comment") Object.Destroy(child.gameObject);
-        }
-        foreach (Transform child in _globalComments.transform) {
-            if (child.name == "Comment") Object.Destroy(child.gameObject);
-        }
+    public static void LoadComment(Comment commentData, bool local)
+    {
+        var commentObj = new GameObject("Comment");
+        
+        var rt = commentObj.AddComponent<RectTransform>();
 
-        foreach (var comment in PlacementManager.GetLevelData().Comments) {
-            if (comment.IsLocal) {
-                CreateCommentFromData(comment, _localComments);
+        commentObj.transform.SetParent((local ? _localComments : _globalComments).transform, false);
+
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.localRotation = Quaternion.identity;
+        rt.localScale = Vector3.one;
+        rt.anchoredPosition = commentData.Position;
+        rt.sizeDelta = commentData.Size;
+
+        commentObj.transform.SetAsFirstSibling();
+
+        var data = commentObj.AddComponent<CommentData>();
+        data.Comment = commentData;
+        
+        ScriptManager.Comments.Add(data);
+
+        // Background Image
+        var img = commentObj.AddComponent<Image>();
+        img.sprite = UIUtils.Square;
+        img.color = commentData.Color;
+
+        var outline = commentObj.AddComponent<Outline>();
+        outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
+        outline.effectDistance = new Vector2(2f, 2f);
+
+        // Comment Title
+        var titleLabel = UIUtils.MakeLabel(
+            "Comment Title",
+            commentObj,
+            Vector2.zero,
+            Vector2.zero,
+            Vector2.zero
+        );
+
+        titleLabel.textComponent.text = commentData.Title;
+        titleLabel.textComponent.alignment = TextAnchor.MiddleCenter;
+        titleLabel.textComponent.color = Color.white;
+
+        var labelRt = titleLabel.GetComponent<RectTransform>();
+
+        labelRt.anchorMin = new Vector2(0.5f, 1f);
+        labelRt.anchorMax = new Vector2(0.5f, 1f);
+        labelRt.pivot = new Vector2(0.5f, 0f);
+
+        const float headerRatio = 0.25f;
+        var headerHeight = rt.rect.height * headerRatio;
+
+        labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
+        var titleYOffset = Mathf.Min(headerHeight * 0.05f, 6f);
+        labelRt.anchoredPosition = new Vector2(0f, titleYOffset);
+        titleLabel.textComponent.fontSize =
+            Mathf.Clamp(Mathf.RoundToInt(headerHeight * 0.6f), 12, 144);
+
+        titleLabel.textComponent.raycastTarget = true;
+        titleLabel.transform.SetAsLastSibling();
+
+        var titleBtn = titleLabel.gameObject.AddComponent<Button>();
+        titleBtn.onClick.AddListener(() => StartEditingCommentTitleStatic(titleLabel, commentObj));
+
+        // Delete button
+        var closeBtnObj = new GameObject("DeleteButton");
+        closeBtnObj.transform.SetParent(commentObj.transform, false);
+
+        var closeRt = closeBtnObj.AddComponent<RectTransform>();
+
+        var btnSize = Mathf.Clamp(rt.rect.height * 0.15f, 16f, 192f);
+
+        closeRt.sizeDelta = new Vector2(btnSize, btnSize);
+        closeRt.anchorMin = new Vector2(1f, 1f);
+        closeRt.anchorMax = new Vector2(1f, 1f);
+        closeRt.pivot = new Vector2(1f, 1f);
+        closeRt.anchoredPosition = new Vector2(-btnSize * 0.2f, -btnSize * 0.2f);
+
+        var closeBtnImage = closeBtnObj.AddComponent<Image>();
+        closeBtnImage.sprite = UIUtils.Square;
+        closeBtnImage.color = new Color(0.8f, 0.2f, 0.2f);
+
+        var closeBtn = closeBtnObj.AddComponent<Button>();
+        closeBtn.onClick.AddListener(() =>
+        {
+            var comment = data.Comment;
+            if (comment != null)
+            {
+                var levelData = comment.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
+                levelData.Comments.Remove(comment);
             }
-        }
 
-        foreach (var comment in PlacementManager.GetGlobalData().Comments) {
-            if (!comment.IsLocal) {
-                CreateCommentFromData(comment, _globalComments);
-            }
+            ScriptManager.Comments.Remove(data);
+            Object.Destroy(commentObj);
+        });
+
+        var xLabel = UIUtils.MakeLabel("X Label", closeBtnObj, Vector2.zero, Vector2.zero, Vector2.zero);
+        xLabel.textComponent.text = "X";
+        xLabel.textComponent.fontSize = Mathf.RoundToInt(btnSize * 0.6f);
+        xLabel.textComponent.color = Color.white;
+
+        var xLabelRt = xLabel.GetComponent<RectTransform>();
+        xLabelRt.anchorMin = Vector2.zero;
+        xLabelRt.anchorMax = Vector2.one;
+        xLabelRt.offsetMin = Vector2.zero;
+        xLabelRt.offsetMax = Vector2.zero;
+        xLabelRt.pivot = new Vector2(0.5f, 0.5f);
+
+        xLabel.textComponent.alignment = TextAnchor.MiddleCenter;
+        xLabel.textComponent.raycastTarget = false;
+
+        // Color button
+        var colorBtnObj = new GameObject("ColorButton");
+        colorBtnObj.transform.SetParent(commentObj.transform, false);
+
+        var colorRt = colorBtnObj.AddComponent<RectTransform>();
+        var cBtnSize = Mathf.Clamp(rt.rect.height * 0.1f, 12f, 144f);
+        colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
+        colorRt.anchorMin = new Vector2(0f, 1f);
+        colorRt.anchorMax = new Vector2(0f, 1f);
+        colorRt.pivot = new Vector2(0f, 1f);
+        colorRt.anchoredPosition = new Vector2(cBtnSize * 0.1f, -cBtnSize * 0.1f);
+
+        var colorImg = colorBtnObj.AddComponent<Image>();
+        colorImg.sprite = UIUtils.Square;
+        colorImg.color = img.color;
+
+        var colorBtn = colorBtnObj.AddComponent<Button>();
+        
+        colorBtn.onClick.AddListener(() => UpdateColours(true));
+        UpdateColours(false);
+
+        return;
+
+        void UpdateColours(bool shift)
+        {
+            var colour = Array.IndexOf(CommentColours, img.color);
+            if (shift) colour = (colour + 1) % CommentColours.Length;
+            
+            img.color = CommentColours[colour];
+            colorImg.color = CommentColours[(colour + 1) % CommentColours.Length];
+
+            data.Comment.Color = img.color;
         }
     }
-
-    private static void CreateCommentFromData(Comment commentData, GameObject commentsParentObj) {
-            var commentObj = new GameObject("Comment");
-            var rt = commentObj.AddComponent<RectTransform>();
-
-            commentObj.transform.SetParent(commentsParentObj.transform, false);
-
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.localRotation = Quaternion.identity;
-            rt.localScale = Vector3.one;
-            rt.anchoredPosition = commentData.Position;
-            rt.sizeDelta = commentData.Size;
-
-            commentObj.transform.SetAsFirstSibling();
-
-            var data = commentObj.AddComponent<CommentData>();
-            data.Comment = commentData;
-
-            //Background Image
-            var img = commentObj.AddComponent<Image>();
-            img.sprite = UIUtils.Square;
-            img.color = commentData.Color;
-            
-            var outline = commentObj.AddComponent<Outline>();
-            outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
-            outline.effectDistance = new Vector2(2f, 2f);
-
-            //Comment Title
-            var titleLabel = UIUtils.MakeLabel(
-                "Comment Title",
-                commentObj,
-                Vector2.zero,
-                Vector2.zero,
-                Vector2.zero
-            );
-
-            titleLabel.textComponent.text = commentData.Title;
-            titleLabel.textComponent.alignment = TextAnchor.MiddleCenter;
-            titleLabel.textComponent.color = Color.white;
-
-            var labelRt = titleLabel.GetComponent<RectTransform>();
-
-            labelRt.anchorMin = new Vector2(0.5f, 1f);
-            labelRt.anchorMax = new Vector2(0.5f, 1f);
-            labelRt.pivot = new Vector2(0.5f, 0f);
-
-            const float headerRatio = 0.25f;
-            var headerHeight = rt.rect.height * headerRatio;
-
-            labelRt.sizeDelta = new Vector2(rt.rect.width, headerHeight);
-            var titleYOffset = Mathf.Min(headerHeight * 0.05f, 6f);
-            labelRt.anchoredPosition = new Vector2(0f, titleYOffset);
-            titleLabel.textComponent.fontSize =
-                Mathf.Clamp(Mathf.RoundToInt(headerHeight * 0.6f), 12, 144);
-
-            titleLabel.textComponent.raycastTarget = true;
-            titleLabel.transform.SetAsLastSibling();
-
-            var titleBtn = titleLabel.gameObject.AddComponent<Button>();
-            titleBtn.onClick.AddListener(() => StartEditingCommentTitleStatic(titleLabel, commentObj));
-
-            //close button
-            var closeBtnObj = new GameObject("CloseButton");
-            closeBtnObj.transform.SetParent(commentObj.transform, false);
-
-            var closeRt = closeBtnObj.AddComponent<RectTransform>();
-
-            var btnSize = Mathf.Clamp(rt.rect.height * 0.15f, 16f, 192f);
-
-            closeRt.sizeDelta = new Vector2(btnSize, btnSize);
-            closeRt.anchorMin = new Vector2(1f, 1f);
-            closeRt.anchorMax = new Vector2(1f, 1f);
-            closeRt.pivot = new Vector2(1f, 1f);
-            closeRt.anchoredPosition = new Vector2(-btnSize * 0.2f, -btnSize * 0.2f);
-
-            var closeBtnImage = closeBtnObj.AddComponent<Image>();
-            closeBtnImage.sprite = UIUtils.Square;
-            closeBtnImage.color = new Color(0.8f, 0.2f, 0.2f);
-
-            var closeBtn = closeBtnObj.AddComponent<Button>();
-            closeBtn.onClick.AddListener(() => {
-                var comment = commentObj.GetComponent<CommentData>()?.Comment;
-                if (comment != null) {
-                    var levelData = comment.IsLocal ? PlacementManager.GetLevelData() : PlacementManager.GetGlobalData();
-                    levelData.Comments.Remove(comment);
-                }
-                Object.Destroy(commentObj);
-            });
-
-            var xLabel = UIUtils.MakeLabel("X Label", closeBtnObj, Vector2.zero, Vector2.zero, Vector2.zero);
-            xLabel.textComponent.text = "X";
-            xLabel.textComponent.fontSize = Mathf.RoundToInt(btnSize * 0.6f);
-            xLabel.textComponent.color = Color.white;
-
-            var xLabelRt = xLabel.GetComponent<RectTransform>();
-            xLabelRt.anchorMin = Vector2.zero;
-            xLabelRt.anchorMax = Vector2.one;
-            xLabelRt.offsetMin = Vector2.zero;
-            xLabelRt.offsetMax = Vector2.zero;
-            xLabelRt.pivot = new Vector2(0.5f, 0.5f);
-
-            xLabel.textComponent.alignment = TextAnchor.MiddleCenter;
-            xLabel.textComponent.raycastTarget = false;
-
-            //Color button
-            var colorBtnObj = new GameObject("ColorButton");
-            colorBtnObj.transform.SetParent(commentObj.transform, false);
-
-            var colorRt = colorBtnObj.AddComponent<RectTransform>();
-            float cBtnSize = Mathf.Clamp(rt.rect.height * 0.1f, 12f, 144f);
-            colorRt.sizeDelta = new Vector2(cBtnSize, cBtnSize);
-            colorRt.anchorMin = new Vector2(0f, 1f);
-            colorRt.anchorMax = new Vector2(0f, 1f);
-            colorRt.pivot = new Vector2(0f, 1f);
-            colorRt.anchoredPosition = new Vector2(cBtnSize * 0.1f, -cBtnSize * 0.1f);
-
-            var colorImg = colorBtnObj.AddComponent<Image>();
-            colorImg.sprite = UIUtils.Square;
-            colorImg.color = img.color;
-
-            var colorBtn = colorBtnObj.AddComponent<Button>();
-            colorBtn.onClick.AddListener(() => {
-                var colors = new Color[] {
-                    new(0f,0f,0f,0.25f),
-                    new(0.1f,0.1f,0.3f,0.25f),
-                    new(0.3f,0.1f,0.1f,0.25f),
-                    new(0.1f,0.3f,0.1f,0.25f)
-                };
-                var current = Array.IndexOf(colors, img.color);
-                var next = (current + 1) % colors.Length;
-                img.color = colors[next];
-                colorImg.color = colors[(next + 1) % colors.Length];
-                
-                var comment = commentObj.GetComponent<CommentData>()?.Comment;
-                if (comment != null) {
-                    comment.Color = img.color;
-                }
-            });
-        }
 }
