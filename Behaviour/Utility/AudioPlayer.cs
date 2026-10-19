@@ -112,13 +112,27 @@ public class AudioPlayer : MonoBehaviour
         StartCoroutine(DoPlay());
     }
     
-    private static AudioMixerSnapshot NormalSnapshot => field ??=
-        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
-            .FirstOrDefault(o => o.name == "Normal" && o.audioMixer && o.audioMixer.name == "Music");
+    private static AudioMixerSnapshot NormalSnapshot
+    {
+        get
+        {
+            if (!field)
+                field = Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+                    .FirstOrDefault(o => o.name == "Normal" && o.audioMixer && o.audioMixer.name == "Music");
+            return field;
+        }
+    }
 
-    private static AudioMixerSnapshot AtmosSnapshot => field ??=
-        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
-            .FirstOrDefault(o => o.name == "at All Layers");
+    private static AudioMixerSnapshot AtmosSnapshot
+    {
+        get
+        {
+            if (!field) field =
+                Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+                    .FirstOrDefault(o => o.name == "at All Layers");
+            return field;
+        }
+    }
 
     public string musicSnapshot = "Normal";
     public string musicEffectSnapshot = "Normal";

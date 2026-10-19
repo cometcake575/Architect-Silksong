@@ -261,6 +261,7 @@ public static class ScriptEditorUI
         LayerName.fontSize = 14;
         LayerName.text = $"Layer\n{ScriptManager.Layer}";
         LayerName.alignment = TextAnchor.MiddleCenter;
+        LayerName.raycastTarget = false;
         
         var (lBtn, lt) = UIUtils.MakeTextButton("Left", "<", layerParent,
             new Vector2(-35, 45), new Vector2(0.5f, 0), new Vector2(0.5f, 0),

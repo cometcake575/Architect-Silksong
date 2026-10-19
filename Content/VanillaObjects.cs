@@ -11,6 +11,7 @@ using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Storage;
 using Architect.Utils;
+using GlobalEnums;
 using GlobalSettings;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -54,6 +55,61 @@ public static class VanillaObjects
         AddSurfaceObjects();
         AddMiscObjects();
         AddToolObjects();
+        AddSpikeObjects();
+    }
+
+    private static void AddSpikeObjects()
+    {
+        SpikeSlashReactionProfile cloverThornsProfile = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Clover_18", "Spike Collider",
+            o => cloverThornsProfile = o.GetComponent<SpikeSlashReaction>().profile));
+        Categories.Hazards.Add(new PreloadObject("Clover Spikes", "clover_spikes",
+            ("Clover_18", "Group/Grove_Spike (44)"),
+            preloadAction: o =>
+            {
+                HazardFixers.FixSpikes(o, 
+                    new Vector2(0, 2), 
+                    new Vector2(0.75f, 2.75f), 
+                    new Vector2(2.75f, 1.25f), 
+                    new Vector2(2, 0.75f));
+                o.transform.SetPositionZ(0.6f);
+            }, postSpawnAction: o => 
+                o.AddComponent<SpikeSlashReaction>().profile = cloverThornsProfile));
+        
+        Categories.Hazards.Add(new PreloadObject("Coral Spikes", "coral_spikes",
+            ("Coral_26", "Coral_Spikes_pin (10)/Coral_extras_01_0005_s3"),
+            preloadAction: o =>
+            {
+                HazardFixers.FixSpikes(o, 
+                    new Vector2(0.5f, -1.3f), 
+                    new Vector2(-0.5f, -1), 
+                    new Vector2(-0.3f, 0.8f), 
+                    new Vector2(1.3f, 0.6f));
+                o.transform.SetPositionZ(0.006f);
+            }));
+        
+        SpikeSlashReactionProfile swampFernProfile = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Shadow_02", "Spike Collider (2)",
+            o => swampFernProfile = o.GetComponent<SpikeSlashReaction>().profile));
+        Categories.Hazards.Add(new PreloadObject("Bile Spikes", "bile_spikes",
+            ("Shadow_02", "large_red_clump (6)/gloom_red_vines_0013_grass_01 (4)"),
+            preloadAction: o =>
+            {
+                HazardFixers.FixSpikes(o, 
+                    new Vector2(-1.1f, 1.5f), 
+                    new Vector2(0, 3), 
+                    new Vector2(1.3f, 1.8f), 
+                    new Vector2(1, 1));
+                o.transform.SetPositionZ(0.006f);
+            }, postSpawnAction: o =>
+            {
+                var cc2d = o.AddComponent<CircleCollider2D>();
+                o.layer = (int)PhysLayers.SOFT_TERRAIN;
+                cc2d.isTrigger = true;
+                cc2d.offset = new Vector2(0, 1.5f);
+                cc2d.radius = 1;
+                o.AddComponent<SpikeSlashReaction>().profile = swampFernProfile;
+            }));
     }
 
     private static void AddToolObjects()
@@ -1373,18 +1429,6 @@ public static class VanillaObjects
         Categories.Effects.Add(new PreloadObject("Background Pendra", "pendra_bg",
             ("Tut_02", "Tiny Dragonfly (3)"))
             .WithConfigGroup(ConfigGroup.Decorations));
-        
-        Categories.Hazards.Add(new PreloadObject("Clover Spikes", "clover_spikes",
-            ("Clover_18", "Group/Grove_Spike (44)"),
-            preloadAction: o =>
-            {
-                HazardFixers.FixSpikes(o, 
-                    new Vector2(0, 2), 
-                    new Vector2(0.75f, 2.75f), 
-                    new Vector2(2.75f, 1.25f), 
-                    new Vector2(2, 0.75f));
-                o.transform.SetPositionZ(0.6f);
-            })); 
 
         AddEnemy("Pendra", "pendra", ("Clover_05c", "Hornet Dragonfly"),
             postSpawnAction: EnemyFixers.FixPendra);
@@ -1918,6 +1962,8 @@ public static class VanillaObjects
             ("Shadow_02", "plank_plat (4)"), preloadAction: MiscFixers.FixBilePlat);
         AddSolid("Bilewater Platform 2", "swamp_plat_2",
             ("Shadow_26", "gloom_lift_destroy/gloom_lift_set/gloom_plat_lift destroy"));
+        AddSolid("Bilewater Platform 3", "swamp_plat_3",
+            ("Shadow_02", "plank_plat_spiked_swamp (1)"));
         
         Categories.Platforming.Add(new PreloadObject("Muck Pod", "swap_bounce_pod",
             ("Shadow_02", "Swamp Bounce Pod")));
@@ -2095,6 +2141,13 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.Judge)
             .WithBroadcasterGroup(BroadcasterGroup.Judge)
             .WithReceiverGroup(ReceiverGroup.Wakeable);
+
+        Categories.Attacks.Add(new PreloadObject("Fire Pillar", "fire_pillar",
+            ("localpoolprefabs_assets_areacoral", "Assets/Prefabs/Hornet Bosses/Last Judge Charge Bomb.prefab"),
+            notSceneBundle: true,
+            sprite: ResourceUtils.LoadSpriteResource("flame_pillar", pivot: new Vector2(0.5f, 0), ppu: 128),
+            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Antic").DisableAction(2))
+            .WithRotationGroup(RotationGroup.Eight));
 
         AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
             postSpawnAction:EnemyFixers.FixLastJudge)

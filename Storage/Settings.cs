@@ -12,6 +12,8 @@ public static class Settings
     public static Keybind Flip;
     public static Keybind ScaleUp;
     public static Keybind ScaleDown;
+    public static Keybind ZForward;
+    public static Keybind ZBackward;
     public static Keybind NextHotbar;
     public static Keybind OpenConfig;
     public static Keybind SaveObject;
@@ -105,6 +107,20 @@ public static class Settings
             "ScaleDown",
             KeyCode.Minus,
             "Decreases the scale of the object on the cursor"
+        ));
+        
+        ZForward = new Keybind(config.Bind(
+            "Keybinds",
+            "ZForward",
+            KeyCode.RightBracket,
+            "Moves the object on the cursor forwards"
+        ));
+        
+        ZBackward = new Keybind(config.Bind(
+            "Keybinds",
+            "ZBackward",
+            KeyCode.LeftBracket,
+            "Moves the object on the cursor backwards"
         ));
         
         NextHotbar = new Keybind(config.Bind(

@@ -518,13 +518,26 @@ public static class SceneUtils
         yield return SceneManager.UnloadSceneAsync(current);
     }
     
-    private static AtmosCue NoAtmosCue => field ??=
-        Resources.FindObjectsOfTypeAll<AtmosCue>().FirstOrDefault(o => o.name == "None");
-    
-    public static AudioMixerSnapshot AtmosSnapshot => field ??=
-        Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
-            .FirstOrDefault(o => o.name == "at All Layers");
-    
+    private static AtmosCue NoAtmosCue
+    {
+        get
+        {
+            if (!field) field = Resources.FindObjectsOfTypeAll<AtmosCue>().FirstOrDefault(o => o.name == "None");
+            return field;
+        }
+    }
+
+    public static AudioMixerSnapshot AtmosSnapshot
+    {
+        get
+        {
+            if (!field) field =
+                Resources.FindObjectsOfTypeAll<AudioMixerSnapshot>()
+                    .FirstOrDefault(o => o.name == "at All Layers");
+            return field;
+        }
+    }
+
     public static GameObject CreateSceneManager()
     {
         var sm = Object.Instantiate(_sceneManager);

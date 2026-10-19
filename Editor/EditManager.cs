@@ -549,6 +549,9 @@ public static class EditManager
         if (Settings.ScaleUp.IsPressed) SetScale(CurrentScale + Time.deltaTime);
         if (Settings.ScaleDown.IsPressed) SetScale(CurrentScale - Time.deltaTime);
 
+        if (Settings.ZForward.IsPressed) SetZ(CurrentZ - Time.deltaTime * 10);
+        if (Settings.ZBackward.IsPressed) SetZ(CurrentZ + Time.deltaTime * 10);
+
         var group = placeable.GetRotationGroup();
         if (Settings.UnsafeRotation.IsPressed) group = RotationGroup.All;
 

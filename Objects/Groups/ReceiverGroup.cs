@@ -377,7 +377,7 @@ public static class ReceiverGroup
         {
             if (b == null) return;
             o.GetComponent<DamageEnemies>().damageDealt = (int)b.GetVariable<float>("New Damage");
-        }))
+        }, true))
     ]);
     
     public static readonly List<EventReceiverType> BounceFlea = GroupUtils.Merge(Generic, [
