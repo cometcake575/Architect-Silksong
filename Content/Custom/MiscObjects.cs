@@ -1,3 +1,4 @@
+using System;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
@@ -179,29 +180,44 @@ public static class MiscObjects
             .WithRotationGroup(RotationGroup.Four);
     }
 
-    public static PlaceableObject CreateCustomHazard(string name, string id, Vector2[] points)
+    public static PlaceableObject CreateCustomHazard(string name, string id, Vector2[] points, 
+        Action<GameObject> postSpawnAction = null)
     {
-        var obj = new GameObject(name);
+        var obj = new GameObject(name)
+        {
+            layer = (int)PhysLayers.SOFT_TERRAIN
+        };
         obj.SetActive(false);
         Object.DontDestroyOnLoad(obj);
         
+        var dmg = new GameObject("Damager")
+        {
+            transform =
+            {
+                parent = obj.transform,
+                localPosition = Vector3.zero
+            },
+            layer = (int)PhysLayers.ENEMY_ATTACK
+        };
+        
         obj.transform.SetPositionZ(0.01f);
-
-        obj.layer = (int)PhysLayers.ENEMY_ATTACK;
 
         var col = obj.AddComponent<EdgeCollider2D>();
         col.isTrigger = true;
-
         col.points = points;
+        
+        var colDmg = dmg.AddComponent<EdgeCollider2D>();
+        colDmg.isTrigger = true;
+        colDmg.points = points;
 
-        var dh = obj.AddComponent<DamageHero>();
+        var dh = dmg.AddComponent<DamageHero>();
         obj.AddComponent<NonBouncer>();
         dh.damageDealt = 1;
         dh.hazardType = HazardType.SPIKES;
         
         obj.AddComponent<SpriteRenderer>().sprite = ResourceUtils.LoadSpriteResource(id, ppu:64);
 
-        return new CustomObject(name, id, obj)
+        return new CustomObject(name, id, obj, postSpawnAction: postSpawnAction)
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.Vines);
     }

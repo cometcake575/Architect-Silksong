@@ -63,7 +63,7 @@ public static class VanillaObjects
         SpikeSlashReactionProfile cloverThornsProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Clover_18", "Spike Collider",
             o => cloverThornsProfile = o.GetComponent<SpikeSlashReaction>().profile));
-        Categories.Hazards.Add(new PreloadObject("Clover Spikes", "clover_spikes",
+        Categories.Hazards.Add(new PreloadObject("Clover Thorns", "clover_spikes",
             ("Clover_18", "Group/Grove_Spike (44)"),
             preloadAction: o =>
             {
@@ -71,7 +71,8 @@ public static class VanillaObjects
                     new Vector2(0, 2), 
                     new Vector2(0.75f, 2.75f), 
                     new Vector2(2.75f, 1.25f), 
-                    new Vector2(2, 0.75f));
+                    new Vector2(2, 0.75f),
+                    new Vector2(0, 2));
                 o.transform.SetPositionZ(0.6f);
             }, postSpawnAction: o => 
                 o.AddComponent<SpikeSlashReaction>().profile = cloverThornsProfile));
@@ -84,14 +85,16 @@ public static class VanillaObjects
                     new Vector2(0.5f, -1.3f), 
                     new Vector2(-0.5f, -1), 
                     new Vector2(-0.3f, 0.8f), 
-                    new Vector2(1.3f, 0.6f));
+                    new Vector2(1.3f, 0.6f), 
+                    new Vector2(1.2f, -0.7f),
+                    new Vector2(0.5f, -1.3f));
                 o.transform.SetPositionZ(0.006f);
             }));
         
         SpikeSlashReactionProfile swampFernProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Shadow_02", "Spike Collider (2)",
             o => swampFernProfile = o.GetComponent<SpikeSlashReaction>().profile));
-        Categories.Hazards.Add(new PreloadObject("Bile Spikes", "bile_spikes",
+        Categories.Hazards.Add(new PreloadObject("Razor Fern", "bile_spikes",
             ("Shadow_02", "large_red_clump (6)/gloom_red_vines_0013_grass_01 (4)"),
             preloadAction: o =>
             {
@@ -99,7 +102,9 @@ public static class VanillaObjects
                     new Vector2(-1.1f, 1.5f), 
                     new Vector2(0, 3), 
                     new Vector2(1.3f, 1.8f), 
-                    new Vector2(1, 1));
+                    new Vector2(0.9f, 1), 
+                    new Vector2(0, 0.5f),
+                    new Vector2(-1.1f, 1.5f));
                 o.transform.SetPositionZ(0.006f);
             }, postSpawnAction: o =>
             {
@@ -110,6 +115,96 @@ public static class VanillaObjects
                 cc2d.radius = 1;
                 o.AddComponent<SpikeSlashReaction>().profile = swampFernProfile;
             }));
+        
+        SpikeSlashReactionProfile antSpikeProfile = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Ant_04", "Spike Collider",
+            o => antSpikeProfile = o.GetComponent<SpikeSlashReaction>().profile));
+        Categories.Hazards.Add(new PreloadObject("Ant Thorns", "ant_spikes",
+            ("Ant_04", "ant_spikes_collected (50)"),
+            preloadAction: o =>
+            {
+                HazardFixers.FixSpikes(o, 
+                    new Vector2(-2.8f, 0), 
+                    new Vector2(-1.5f, 0.5f), 
+                    new Vector2(0, 0), 
+                    new Vector2(1.5f, 0.5f),
+                    new Vector2(3, 0),
+                    new Vector2(3, -1),
+                    new Vector2(2, -1.5f),
+                    new Vector2(-1.5f, -1.5f),
+                    new Vector2(-2.8f, -1),
+                    new Vector2(-2.8f, 0));
+                o.transform.SetPositionZ(0.006f);
+            }, postSpawnAction: o =>
+            {
+                var bc2d = o.AddComponent<BoxCollider2D>();
+                o.layer = (int)PhysLayers.SOFT_TERRAIN;
+                bc2d.isTrigger = true;
+                bc2d.offset = new Vector2(0, -0.5f);
+                bc2d.size = new Vector2(5.8f, 2);
+                o.AddComponent<SpikeSlashReaction>().profile = antSpikeProfile;
+            }));
+        
+        SpikeSlashReactionProfile abyssSpikeProfile = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Abyss_13", "Abyss_thorn_clump/Spike Collider Vine",
+            o => abyssSpikeProfile = o.GetComponent<SpikeSlashReaction>().profile));
+        Categories.Hazards.Add(new PreloadObject("Abyss Vines", "abyss_vibes",
+            ("Abyss_13", "spike_vine (240)"),
+            preloadAction: o =>
+            {
+                HazardFixers.FixSpikes(o, 
+                    new Vector2(-2, 2),
+                    new Vector2(0, 2), 
+                    new Vector2(1, 1), 
+                    new Vector2(2, 0.8f), 
+                    new Vector2(3.3f, 0.2f),
+                    new Vector2(3.1f, -0.5f),
+                    new Vector2(2, -1.8f),
+                    new Vector2(0.8f, -2.3f),
+                    new Vector2(-0.8f, -1.9f),
+                    new Vector2(-1.3f, -1.3f),
+                    new Vector2(-3, -0.7f),
+                    new Vector2(-3.3f, -0.2f),
+                    new Vector2(-3.2f, 0.9f),
+                    new Vector2(-2, 2));
+                o.transform.SetPositionZ(0.006f);
+            }, postSpawnAction: o =>
+            {
+                var cc2d = o.AddComponent<CircleCollider2D>();
+                o.layer = (int)PhysLayers.SOFT_TERRAIN;
+                cc2d.isTrigger = true;
+                cc2d.radius = 2.75f;
+                o.AddComponent<SpikeSlashReaction>().profile = abyssSpikeProfile;
+            }));
+        
+        SpikeSlashReactionProfile shellwoodThornsProfile = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Shellwood_26", "Spike Collider (8)",
+            o => shellwoodThornsProfile = o.GetComponent<SpikeSlashReaction>().profile));
+        Categories.Hazards.Add(MiscObjects.CreateCustomHazard("Shellwood Brambles", "shellwood_thorns",
+        [
+            new Vector2(-3.272f, -1.265f),
+            new Vector2(-3.011f, 0.066f),
+            new Vector2(-1.269f, 0.777f),
+            new Vector2(0.474f, 1.182f),
+            new Vector2(2.553f, 1.113f),
+            new Vector2(3.554f, -0.694f),
+            new Vector2(0.474f, -1.382f),
+            new Vector2(-1.399f, -0.882f),
+            new Vector2(-3.272f, -1.265f)
+        ], postSpawnAction: o => o.AddComponent<SpikeSlashReaction>().profile = shellwoodThornsProfile));
+        
+        SpikeSlashReactionProfile surfaceThornsProfile = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Cradle_Destroyed_Challenge_01", "Spike Collider (3)",
+            o => surfaceThornsProfile = o.GetComponent<SpikeSlashReaction>().profile));
+        Categories.Hazards.Add(MiscObjects.CreateCustomHazard("Surface Thorns", "brown_vines",
+        [
+            new Vector2(-3.672f, -1.265f),
+            new Vector2(-2.4f, 0),
+            new Vector2(-1.089f, 0.077f),
+            new Vector2(0.874f, 1.282f),
+            new Vector2(2.353f, 0.813f),
+            new Vector2(3.454f, -1.574f)
+        ], postSpawnAction: o => o.AddComponent<SpikeSlashReaction>().profile = surfaceThornsProfile));
     }
 
     private static void AddToolObjects()
@@ -1082,16 +1177,6 @@ public static class VanillaObjects
         AddSolid("Thorn Platform 3", "thorn_plat_3",
             ("Cradle_Destroyed_Challenge_01", "thorn_plat (9)"),
             uiSprite: ResourceUtils.LoadSpriteResource("thorn_plat_3"));
-        
-        Categories.Hazards.Add(MiscObjects.CreateCustomHazard("Brown Vines", "brown_vines",
-        [
-            new Vector2(-3.672f, -1.265f),
-            new Vector2(-2.4f, 0),
-            new Vector2(-1.089f, 0.077f),
-            new Vector2(0.874f, 1.282f),
-            new Vector2(2.353f, 0.813f),
-            new Vector2(3.454f, -1.574f)
-        ]));
 
         Categories.Npcs.Add(new PreloadObject("Mr Mushroom NPC", "mr_mushroom_npc",
             ("Tut_03", "Mr Mushroom NPC"),
@@ -3143,19 +3228,6 @@ public static class VanillaObjects
 
     private static void AddShellwoodObjects()
     {
-        Categories.Hazards.Add(MiscObjects.CreateCustomHazard("Shellwood Thorns", "shellwood_thorns",
-        [
-            new Vector2(-3.272f, -1.265f),
-            new Vector2(-3.011f, 0.066f),
-            new Vector2(-1.269f, 0.777f),
-            new Vector2(0.474f, 1.182f),
-            new Vector2(2.553f, 1.113f),
-            new Vector2(3.554f, -0.694f),
-            new Vector2(0.474f, -1.382f),
-            new Vector2(-1.399f, -0.882f),
-            new Vector2(-3.272f, -1.265f)
-        ]));
-        
         AddSolid("Shellwood Platform 1", "wood_plat_1", 
             ("Shellwood_01", "shellwood_plat_float_thin"));
         AddSolid("Shellwood Platform 2", "wood_plat_2", 
