@@ -117,20 +117,56 @@ public static class ConfigGroup
     public static readonly List<ConfigType> GradeMarker = 
     [
         ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Base Settings ID", "grade_marker_base", (o, value) =>
+            {
+                if (Enum.TryParse<MapZone>(value.GetValue(), out var zone)) 
+                    o.GetComponent<CustomGradeMarker>().mapZone = zone;
+            }).WithDefaultValue("NONE")),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Base Settings Act 3?", "grade_marker_base_act3", (o, value) =>
+            {
+                if (value.GetValue() == 0) return;
+                o.GetComponent<CustomGradeMarker>().act3 = value.GetValue();
+            }).WithOptions("False", "True", "Vanilla").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Override Ambient Light", "grade_marker_ambient_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<CustomGradeMarker>().setAmbientColour = true;
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Ambient Light", "grade_marker_ambient", (o, value) =>
             {
                 o.GetComponent<GradeMarker>().ambientColor = value.GetValue();
             }, false).WithDefaultValue(Color.white)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Override Ambient Intensity", "grade_marker_ambient_intensity_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<CustomGradeMarker>().setAmbientIntensity = true;
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Ambient Intensity", "grade_marker_ambient_intensity", (o, value) =>
             {
                 o.GetComponent<GradeMarker>().ambientIntensity = value.GetValue();
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Override Hero Light", "grade_marker_hero_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<CustomGradeMarker>().setHeroLight = true;
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new ColourConfigType("Hero Light", "grade_marker_hero", (o, value) =>
             {
                 o.GetComponent<GradeMarker>().heroLightColor = value.GetValue();
             }, true).WithDefaultValue(Color.white)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Override Saturation", "grade_marker_saturation_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.GetComponent<CustomGradeMarker>().setSaturation = true;
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Saturation", "grade_marker_saturation", (o, value) =>
             {

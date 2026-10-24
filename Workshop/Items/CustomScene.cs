@@ -20,6 +20,15 @@ public class CustomScene : SpriteItem
     public Color AmbientLight = new(0.6824f, 0.6824f, 0.6824f, 1);
     public float AmbientIntensity = 0.72f;
     public float Saturation = 0.85f;
+    public float Alpha = 1;
+
+    public MapZone MapZone = MapZone.BONETOWN;
+    public int Act3;
+
+    public bool SetAmbientColour;
+    public bool SetAmbientIntensity;
+    public bool SetHeroLight;
+    public bool SetSaturation;
 
     public Vector2 MapPos;
     public string EIconUrl = string.Empty;

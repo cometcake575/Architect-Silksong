@@ -26,6 +26,8 @@ public static class WorkshopManager
 
     public static void Init()
     {
+        ConfigGroup.Init();
+        
         Register<CustomItem>("Item",
             new Vector2(-300, -150),
             ConfigGroup.CustomItem, 
@@ -65,8 +67,8 @@ public static class WorkshopManager
         Register<CustomScene>("Scene",
             new Vector2(-100, -225),
             ConfigGroup.Scene,
-            ConfigGroup.SceneMap,
-            ConfigGroup.SceneMapColour);
+            ConfigGroup.SceneLighting,
+            ConfigGroup.SceneMap);
         
         Register<CustomMateriumEntry>("Material",
             new Vector2(-300, -262.5f),

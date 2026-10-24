@@ -84,19 +84,19 @@ public class ColourConfigElement : ConfigElement
         _parent = o.RemoveOffset();
         _parent.anchoredPosition = pos;
 
-        var take = alpha ? 17.5f : 0;
-        _inputR = UIUtils.MakeTextbox("R", o, new Vector3(-35 - take, 0), 
+        var take = alpha ? 10 : 0;
+        _inputR = UIUtils.MakeTextbox("R", o, new Vector3(-20 - take, 0), 
             new Vector2(0, 0.5f), new Vector2(0, 0.5f), 
-            80, 25).Item1;
+            50, 25).Item1;
         _inputG = UIUtils.MakeTextbox("G", o, new Vector3(-take, 0), 
             new Vector2(0, 0.5f), new Vector2(0, 0.5f),
-            80, 25).Item1;
-        _inputB = UIUtils.MakeTextbox("B", o, new Vector3(35 - take, 0), 
+            50, 25).Item1;
+        _inputB = UIUtils.MakeTextbox("B", o, new Vector3(20 - take, 0), 
             new Vector2(0, 0.5f), new Vector2(0, 0.5f),
-            80, 25).Item1;
-        if (alpha) _inputA = UIUtils.MakeTextbox("A", o, new Vector3(52.5f, 0), 
+            50, 25).Item1;
+        if (alpha) _inputA = UIUtils.MakeTextbox("A", o, new Vector3(30, 0), 
             new Vector2(0, 0.5f), new Vector2(0, 0.5f),
-            80, 25).Item1;
+            50, 25).Item1;
 
         if (currentVal != null)
         {

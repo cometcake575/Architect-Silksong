@@ -594,7 +594,28 @@ public static class ConfigGroup
                 "WaterRun",
                 "PeakPuff",
                 "FlowerField").WithDefaultValue(0)
-        ),
+        )
+    ];
+    
+    public static readonly List<ConfigType> SceneLighting = [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomScene>("Base Settings ID", "grade_marker_base", (o, value) =>
+            {
+                if (Enum.TryParse<MapZone>(value.GetValue(), out var zone))
+                    o.MapZone = zone;
+            }).WithDefaultValue("NONE")),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomScene>("Base Settings Act 3?", "grade_marker_base_act3", (o, value) =>
+            {
+                if (value.GetValue() == 0) return;
+                o.Act3 = value.GetValue();
+            }).WithOptions("False", "True", "Vanilla").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomScene>("Override Hero Light", "grade_marker_hero_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.SetHeroLight = true;
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new ColourConfigType<CustomScene>("Hero Light", "scene_hero_light", (item, value) =>
             {
@@ -602,11 +623,23 @@ public static class ConfigGroup
             }, true).WithDefaultValue(Color.white)
         ),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomScene>("Override A. Light", "grade_marker_ambient_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.SetAmbientColour = true;
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new ColourConfigType<CustomScene>("Ambient Light", "scene_ambient_light", (item, value) =>
             {
                 item.AmbientLight = value.GetValue();
             }, false).WithDefaultValue(Color.white)
         ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomScene>("Override A. Intensity", "grade_marker_ambient_intensity_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.SetAmbientIntensity = true;
+            }).WithDefaultValue(true)),
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomScene>("Ambient Intensity", "scene_ambient_intensity", (item, value) =>
             {
@@ -614,9 +647,21 @@ public static class ConfigGroup
             }).WithDefaultValue(0.72f)
         ),
         ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomScene>("Override Saturation", "grade_marker_saturation_override", (o, value) =>
+            {
+                if (value.GetValue()) return;
+                o.SetSaturation = true;
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomScene>("Saturation", "scene_saturation", (item, value) =>
             {
                 item.Saturation = value.GetValue();
+            }).WithDefaultValue(1)
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomScene>("Alpha", "scene_alpha", (item, value) =>
+            {
+                item.Alpha = value.GetValue();
             }).WithDefaultValue(1)
         )
     ];
@@ -670,35 +715,42 @@ public static class ConfigGroup
             {
                 item.EPpu = value.GetValue();
             }).WithDefaultValue(100)
-        )
-    ];
-    
-    public static readonly List<ConfigType> SceneMapColour = [
+        ),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomScene>("Override Colour", "scene_override_col", (item, value) =>
+            new BoolConfigType<CustomScene>("Override Map Colour", "scene_override_col", (item, value) =>
             {
                 item.OverrideColour = value.GetValue();
             }).WithDefaultValue(false)
         ),
         ConfigurationManager.RegisterConfigType(
+            new ColourConfigType<CustomScene>("Map Colour", "scene_override_map_colour", (item, value) =>
+            {
+                item.MapColour = value.GetValue();
+            }, false).WithDefaultValue(Color.white)
+        )
+    ];
+
+    public static void Init()
+    {
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomScene>("Colour R", "scene_override_col_r", (item, value) =>
             {
                 item.MapColour.r = value.GetValue();
             }).WithDefaultValue(1)
-        ),
+        );
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomScene>("Colour G", "scene_override_col_g", (item, value) =>
             {
                 item.MapColour.g = value.GetValue();
             }).WithDefaultValue(1)
-        ),
+        );
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType<CustomScene>("Colour B", "scene_override_col_b", (item, value) =>
             {
                 item.MapColour.b = value.GetValue();
             }).WithDefaultValue(1)
-        )
-    ];
+        );
+    }
     
     public static readonly List<ConfigType> SceneGroup = [
         ConfigurationManager.RegisterConfigType(

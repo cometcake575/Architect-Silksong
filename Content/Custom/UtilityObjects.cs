@@ -52,6 +52,7 @@ public static class UtilityObjects
 
         Categories.Utility.Add(new PreloadObject("Grade Marker", "grade_marker",
             ("Bonetown", "GradeMarker (1)"),
+            preloadAction: o => o.AddComponent<CustomGradeMarker>(),
             sprite: ResourceUtils.LoadSpriteResource("grade_marker"))
             .WithConfigGroup(ConfigGroup.GradeMarker)
             .WithReceiverGroup(ReceiverGroup.GradeMarker));
