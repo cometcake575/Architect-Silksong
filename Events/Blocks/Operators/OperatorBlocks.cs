@@ -49,6 +49,7 @@ public static class OperatorBlocks
         Category.Data.RegisterBlock<RandomTextBlock>("Random Text", ConfigGroup.RandomText);
         
         Category.Data.RegisterBlock<MathsBlock>("Operation", ConfigGroup.Maths);
+        Category.Data.RegisterBlock<UOpBlock>("Unary Operation", ConfigGroup.UOp);
         Category.Data.RegisterBlock<JoinBlock>("Join Text");
         Category.Data.RegisterBlock<LengthBlock>("Text Length");
         Category.Data.RegisterBlock<TrigBlock>("Trig Operation", ConfigGroup.Trig);

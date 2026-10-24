@@ -1058,6 +1058,15 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> UOp =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<UOpBlock>("Mode", "uop_mode", 
+                    (b, f) => b.Mode = f.GetValue())
+                .WithOptions("Absolute", "Negative", "Round", "Floor", "Ceil").WithDefaultValue(0)
+        )
+    ];
+    
     public static readonly List<ConfigType> Trig =
     [
         ConfigurationManager.RegisterConfigType(
