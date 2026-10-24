@@ -137,6 +137,11 @@ public static class ConfigGroup
                 o.GetComponent<GradeMarker>().saturation = value.GetValue();
             }).WithDefaultValue(1)),
         ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Alpha", "grade_marker_alpha", (o, value) =>
+            {
+                o.GetComponent<GradeMarker>().alpha = value.GetValue();
+            }).WithDefaultValue(1)),
+        ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Cutoff Radius", "grade_marker_cutoff", (o, value) =>
             {
                 var gm = o.GetComponent<GradeMarker>();
@@ -2630,7 +2635,17 @@ public static class ConfigGroup
                     if (value.GetValue()) return;
                     var fsm = o.LocateMyFSM("Control");
                     fsm.GetState("Reparent").DisableAction(2);
-                }).WithDefaultValue(false))
+                }).WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Dust Offset", "grom_offset",
+                (o, value) =>
+                {
+                    if (value.GetValue() == 0) return;
+                    var i1 = o.transform.Find("Antic Rocks");
+                    i1.SetLocalPositionY(i1.localPosition.y + value.GetValue());
+                    var i2 = o.transform.Find("Antic Dust");
+                    i2.SetLocalPositionY(i2.localPosition.y + value.GetValue());
+                }).WithDefaultValue(0))
     ]);
     
     public static readonly List<ConfigType> Slowdown = GroupUtils.Merge(Enemies, [
@@ -2858,6 +2873,17 @@ public static class ConfigGroup
             {
                 ((SetIntValue)o.LocateMyFSM("Control").GetState("Init").Actions[2]).intValue = value.GetValue();
             }).WithDefaultValue(1))
+    ]);
+
+    public static readonly List<ConfigType> ConchBullet = GroupUtils.Merge(Visible, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Fire on Start", "conch_bullet_fire_on_start", (o, value) =>
+                {
+                    if (value.GetValue() == 0) return;
+                    var fsm = o.LocateMyFSM("Control");
+                    fsm.GetState("Init").AddAction(() => fsm.SendEvent(value.GetStringValue()));
+            }).WithOptions("False", "DL", "DR", "UL", "UR")
+            .WithDefaultValue(0))
     ]);
 
     public static readonly List<ConfigType> VelocityDamager = GroupUtils.Merge(Velocity, [DamagesEnemies]);

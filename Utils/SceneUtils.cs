@@ -495,7 +495,7 @@ public static class SceneUtils
         
         CreateGradeMarker(info.HeroLight, info.AmbientLight, info.Saturation, info.AmbientIntensity);
         
-        FsmHook.FsmMaster.OnSceneLoaded(scene, LoadSceneMode.Single);
+        FsmHook.FsmMaster?.OnSceneLoaded(scene, LoadSceneMode.Single);
         CreateTileMap(info);
 
         // Title reference for custom title screen editing

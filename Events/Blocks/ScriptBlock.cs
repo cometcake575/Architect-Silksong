@@ -647,7 +647,7 @@ public abstract class ScriptBlock
 
     public virtual MultiEdit Delete()
     {
-        if (!BlockObject) return null;
+        if (!EditManager.IsEditing) return null;
 
         List<IEdit> edits = [];
 

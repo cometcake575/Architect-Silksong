@@ -9,6 +9,10 @@ public static class OperatorBlocks
         // If
         Category.Logic.RegisterBlock<IfBlock>("If");
         
+        // Switch
+        Category.Logic.RegisterBlock<SwitchBlock>("Switch");
+        Category.Logic.RegisterHiddenBlock<SwitchBlock.TriggerBlock>("Switch Trigger", ConfigGroup.Switch);
+        
         // Comparisons
         Category.Logic.RegisterBlock<CompareBlock>("Compare", ConfigGroup.Compare);
         Category.Logic.RegisterBlock<StringCompareBlock>("Compare Text", ConfigGroup.StringCompare);

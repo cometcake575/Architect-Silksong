@@ -358,6 +358,25 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> ConchBullet = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("fire_dl", "FireDL", (o, b) =>
+        {
+            o.LocateMyFSM("Control").SendEvent("DL");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("fire_dr", "FireDR", (o, b) =>
+        {
+            o.LocateMyFSM("Control").SendEvent("DR");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("fire_ul", "FireUL", (o, b) =>
+        {
+            o.LocateMyFSM("Control").SendEvent("UL");
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("fire_ur", "FireUR", (o, b) =>
+        {
+            o.LocateMyFSM("Control").SendEvent("UR");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> MapperRing = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("set_velocity_ring", "SetVelocity", (o, b) =>
         {

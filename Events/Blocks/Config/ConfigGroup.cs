@@ -1032,6 +1032,14 @@ public static class ConfigGroup
         )
     ];
     
+    public static readonly List<ConfigType> Switch =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<SwitchBlock.TriggerBlock>("Value", "switch_value", 
+                (b, f) => b.Value = f.GetValue())
+        )
+    ];
+    
     public static readonly List<ConfigType> StringCompare =
     [
         ConfigurationManager.RegisterConfigType(
