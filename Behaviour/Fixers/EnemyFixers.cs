@@ -1669,24 +1669,40 @@ public static class EnemyFixers
     {
         var fsm = obj.LocateMyFSM("Bouncer Control");
         fsm.fsmTemplate = null;
-        fsm.GetState("Start Pause").AddAction(() => fsm.SetState("Left or Right?"), 11);
+        
+        var ff = obj.AddComponent<Freshfly>();
+        ff.fsm = fsm;
+        
+        fsm.GetState("Battle Check").AddAction(() =>
+        {
+            switch (ff.mode)
+            {
+                case 0:
+                    fsm.SendEvent("FINISHED");
+                    break;
+                case 1:
+                    fsm.SendEvent("FLY IN");
+                    break;
+                default:
+                    fsm.SendEvent("EGG");
+                    break;
+            }
+        }, 0);
+        fsm.GetState("Fly In Ready").AddAction(() => fsm.SendEvent("WAKE"));
+        fsm.GetState("Cam Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Start Pause").AddAction(() => fsm.SendEvent("FINISHED"), 11);
         obj.GetComponent<HealthManager>().hasSpecialDeath = false;
-
-        obj.AddComponent<Freshfly>().pos = obj.transform.position;
     }
 
-    private class Freshfly : PreviewableBehaviour
+    public class Freshfly : Wakeable
     {
-        public Vector3 pos;
-        
-        private void OnEnable()
-        {
-            if (isAPreview) return;
+        public int mode;
 
-            var fsm = GetComponent<PlayMakerFSM>();
-            if (fsm.enabled) return; 
-            transform.position = pos;
-            fsm.enabled = true;
+        public PlayMakerFSM fsm;
+
+        public override void DoWake()
+        {
+            fsm.SendEvent("WAKE");
         }
     }
 

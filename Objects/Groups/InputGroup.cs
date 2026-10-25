@@ -19,6 +19,8 @@ public static class InputGroup
     
     public static readonly List<(string, string)> EnemyDamager = [("New Damage", "Number")];
     
+    public static readonly List<(string, string)> Thornbloom = [("Fire Height", "Number")];
+    
     public static readonly List<(string, string)> TriggerZone = [("Layer", "Number")];
     
     public static readonly List<(string, string)> ComponentHook = [("New Value", "Any")];

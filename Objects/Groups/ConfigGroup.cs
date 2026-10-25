@@ -2524,8 +2524,21 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Spawn Mode", "spawn_telegraph_flyin", (o, value) =>
             {
-                if (value.GetValue() == 1) o.GetComponent<EnemyFixers.FlyIn>().flyIn = true;
+                if (value.GetValue() == 1)
+                {
+                    o.GetComponent<MeshRenderer>().enabled = false;
+                    o.GetComponent<EnemyFixers.FlyIn>().flyIn = true;
+                }
             }).WithOptions("None", "Fly In").WithDefaultValue(0))
+    ]);
+
+    public static readonly List<ConfigType> Freshfly = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Spawn Mode", "spawn_telegraph_freshfly", (o, value) =>
+            {
+                if (value.GetValue() == 0) return;
+                o.GetComponent<EnemyFixers.Freshfly>().mode = value.GetValue();
+            }).WithOptions("Normal", "Fly In", "Egg").WithPriority(-1))
     ]);
     
     public static readonly List<ConfigType> Aknids = GroupUtils.Merge(Enemies,
@@ -3837,6 +3850,18 @@ public static class ConfigGroup
                         o.GetComponent<CustomTransitionPoint>().pointType = value.GetValue();
                     })
                 .WithOptions("Door", "Left", "Right", "Top", "Bottom", "Wake").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Always Enter", "trans_facing_type",
+                    (o, value) =>
+                    {
+                        var val = value.GetValue();
+                        if (val == 0) return;
+                        
+                        var tp = o.GetComponent<TransitionPoint>();
+                        if (val == 1) tp.alwaysEnterLeft = true;
+                        else tp.alwaysEnterRight = true;
+                    })
+                .WithOptions("None", "Left", "Right").WithDefaultValue(0).WithPriority(-1)),
         ConfigurationManager.RegisterConfigType(
             new StringConfigType("Door ID", "trans_id", (o, value) =>
             {

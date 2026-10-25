@@ -358,6 +358,18 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Thornbloom = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("thornbloom_fire", "Fire", (o, b) =>
+        {
+            var height = b?.GetVariable<float>("Fire Height", 5) ?? 5;
+            var fsm = o.LocateMyFSM("Control");
+            var rf = (RandomFloat)fsm.GetState("Pos Top").actions[0];
+            rf.min = rf.max = o.transform.GetPositionY() + height;
+            
+            fsm.SendEvent("ATTACK TOP");
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> ConchBullet = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("fire_dl", "FireDL", (o, b) =>
         {

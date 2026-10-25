@@ -13,6 +13,7 @@ using Architect.Storage;
 using Architect.Utils;
 using GlobalEnums;
 using GlobalSettings;
+using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -1750,7 +1751,9 @@ public static class VanillaObjects
         AddEnemy("Freshfly", "freshfly",
             ("Slab_16b",
                 "Broodmother Scene Control/Broodmother Scene/Battle Scene Broodmother/Spawner Flies/Slab Fly Small Fresh"),
-            postSpawnAction: EnemyFixers.FixFreshfly);
+            postSpawnAction: EnemyFixers.FixFreshfly)
+            .WithConfigGroup(ConfigGroup.Freshfly)
+            .WithReceiverGroup(ReceiverGroup.Wakeable);
         
         AddEnemy("Broodmother", "broodmother",
             ("Slab_16b",
@@ -3095,6 +3098,18 @@ public static class VanillaObjects
             ("Cog_04", "cog_plat_float (2)"),
             preloadAction: MiscFixers.FocusFirstChild);
 
+        GameObject cogPlatSpike = null;
+        PreloadManager.RegisterPreload(new BasicPreload("Cog_04", "Spike Collider (6)", 
+            o => cogPlatSpike = o));
+        AddSolid("Cogworks Platform 3", "cog_plat_3", 
+            ("Cog_04", "cog_plat_side_type (1)"),
+            postSpawnAction: o =>
+            {
+                o.transform.GetChild(0).gameObject.AddComponent<NoClamberRegion>();
+                Object.Instantiate(cogPlatSpike, o.transform)
+                    .transform.localPosition = new Vector3(0.78f, 5.26f, 0.1317f);
+            });
+
         Categories.Interactable.Add(new PreloadObject("Bell Lock", "bell_lock",
             ("Arborium_10", "Music Box Sequence - EDITED/bells/music_box_support"),
             preloadAction: o =>
@@ -3274,6 +3289,24 @@ public static class VanillaObjects
         AddEnemy("Pollenica", "bloom_shooter", ("Arborium_03", "Bloom Shooter"),
                 preloadAction: EnemyFixers.RotateCorpse)
             .WithRotationGroup(RotationGroup.Eight);
+        
+        Categories.Attacks.Add(new PreloadObject("Thornbloom", "nyleth_spike",
+            ("Shellwood_11b_Memory", "Boss Scene/Spike Balls/Flower Queen Spike"),
+            postSpawnAction: o =>
+            {
+                var fsm = o.LocateMyFSM("Control");
+                var t2d1 = (Trigger2dEventLayer)fsm.GetState("Decel").actions[3];
+                t2d1.collideTag = "Untagged";
+                t2d1.collideLayer = (int)PhysLayers.TERRAIN;
+
+                var drop = fsm.GetState("Drop");
+                drop.DisableAction(3);
+                var t2d2 = (Trigger2dEventLayer)drop.actions[2];
+                t2d2.collideTag = "Untagged";
+                t2d2.collideLayer = (int)PhysLayers.TERRAIN;
+            })
+            .WithInputGroup(InputGroup.Thornbloom)
+            .WithReceiverGroup(ReceiverGroup.Thornbloom));
         
         AddEnemy("Wood Wasp", "wood_wasp", ("Shellwood_02", "Shellwood Wasp"));
         AddEnemy("Splinter", "splinter", ("Shellwood_02", "Stick Insect"),
@@ -4270,16 +4303,12 @@ public static class VanillaObjects
     private static PlaceableObject AddSolid(string name, string id, 
         (string, string) path,
         Sprite uiSprite = null,
-        [CanBeNull] Action<GameObject> preloadAction = null)
+        [CanBeNull] Action<GameObject> preloadAction = null,
+        [CanBeNull] Action<GameObject> postSpawnAction = null)
     {
         return Categories.Solids.Add(new PreloadObject(name, id, path, preloadAction: preloadAction, 
                 uiSprite: uiSprite,
-                postSpawnAction: o =>
-                {
-                    var sf = o.AddComponent<SpriteFlash>();
-                    sf.children = [];
-                    sf.parents = [];
-                }))
+                postSpawnAction: postSpawnAction))
             .WithRotationGroup(RotationGroup.Four)
             .WithConfigGroup(ConfigGroup.Colliders);
     }
