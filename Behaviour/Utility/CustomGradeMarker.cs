@@ -25,6 +25,7 @@ public class CustomGradeMarker : MonoBehaviour
                 : SceneManagerSettings.Conditions.None);
         Addressables.Release(handle);
 
+        if (settings == null) return;
         var gm = GetComponent<GradeMarker>();
         if (setSaturation) gm.saturation = settings.saturation;
         if (setHeroLight) gm.heroLightColor = settings.heroLightColor;

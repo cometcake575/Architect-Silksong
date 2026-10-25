@@ -508,18 +508,24 @@ public static class SceneUtils
         var heroLightColour = info.HeroLight;
         var ambientLight = info.AmbientLight;
         var ambientIntensity = info.AmbientIntensity;
-        
-        if (info.SetSaturation) saturation = settings.saturation;
-        if (info.SetHeroLight) heroLightColour = settings.heroLightColor;
-        if (info.SetAmbientIntensity) ambientIntensity = settings.defaultIntensity;
-        if (info.SetAmbientColour) ambientLight = settings.defaultColor;
-        
+
+        if (settings != null)
+        {
+            if (info.SetSaturation) saturation = settings.saturation;
+            if (info.SetHeroLight) heroLightColour = settings.heroLightColor;
+            if (info.SetAmbientIntensity) ambientIntensity = settings.defaultIntensity;
+            if (info.SetAmbientColour) ambientLight = settings.defaultColor;
+        }
+
         var gm = CreateGradeMarker(heroLightColour, ambientLight, saturation, ambientIntensity, info.Alpha);
-        
-        gm.redChannel = new AnimationCurve(settings.redChannel.keys);
-        gm.blueChannel = new AnimationCurve(settings.blueChannel.keys);
-        gm.greenChannel = new AnimationCurve(settings.greenChannel.keys);
-        
+
+        if (settings != null)
+        {
+            gm.redChannel = new AnimationCurve(settings.redChannel.keys);
+            gm.blueChannel = new AnimationCurve(settings.blueChannel.keys);
+            gm.greenChannel = new AnimationCurve(settings.greenChannel.keys);
+        }
+
         FsmHook.FsmMaster?.OnSceneLoaded(scene, LoadSceneMode.Single);
         CreateTileMap(info);
 
