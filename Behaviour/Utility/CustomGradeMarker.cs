@@ -7,7 +7,7 @@ namespace Architect.Behaviour.Utility;
 
 public class CustomGradeMarker : MonoBehaviour
 {
-    public MapZone mapZone = MapZone.BONETOWN;
+    public MapZone mapZone = MapZone.NONE;
     public int act3;
 
     public bool setAmbientColour;
@@ -17,6 +17,8 @@ public class CustomGradeMarker : MonoBehaviour
 
     private void Start()
     {
+        if (mapZone == MapZone.NONE) return;
+        
         var handle = Addressables.LoadAssetAsync<References>("ReferencesData");
         var references = handle.WaitForCompletion();
         var settings = references.sceneDefaultSettings.GetMapZoneSettingsRuntime(mapZone,

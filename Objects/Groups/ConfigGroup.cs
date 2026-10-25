@@ -1931,6 +1931,34 @@ public static class ConfigGroup
                 o.GetComponent<ObjectColourer>().recursive = value.GetValue();
             }).WithDefaultValue(true))
     ]);
+    
+    public static readonly List<ConfigType> ColourerHsv = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new IdConfigType("Object ID", "hsvcolourer_target", (o, value) =>
+            {
+                o.GetComponent<ObjectColourerHsv>().targetId = value.GetValue();
+            })),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Start Applied", "hsvcolourer_active", (o, value) =>
+            {
+                o.GetComponent<ObjectColourerHsv>().startApplied = value.GetValue();
+            }).WithDefaultValue(true)),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType("HSV Shift", "hsvcolourer_shift", (o, value) =>
+            {
+                o.GetComponent<ObjectColourerHsv>().Colour = value.GetValue();
+            }, false).WithDefaultValue(Color.black)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Colour Particles", "hsvcolourer_particles", (o, value) =>
+            {
+                o.GetComponent<ObjectColourerHsv>().particles = value.GetValue();
+            }).WithOptions("True", "False", "Only").WithDefaultValue(0)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("Recursive", "colourer_recursive", (o, value) =>
+            {
+                o.GetComponent<ObjectColourerHsv>().recursive = value.GetValue();
+            }).WithDefaultValue(true))
+    ]);
 
     public static readonly List<ConfigType> Gravity = GroupUtils.Merge(Visible, [
         ConfigurationManager.RegisterConfigType(new FloatConfigType("Gravity Scale", "gravity_scale",

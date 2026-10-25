@@ -15,6 +15,7 @@ using Architect.Objects.Groups;
 using Architect.Placements;
 using Architect.Prefabs;
 using Architect.Sharer;
+using Architect.Skins;
 using Architect.Storage;
 using Architect.Utils;
 using Architect.Workshop;
@@ -26,12 +27,14 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.41.7")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.41.8")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
+[BepInDependency("io.github.constructivecynicism.fsmmaster")]
 [BepInDependency("io.github.hk-speedrunning.quickwarp", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("Stitchwork", BepInDependency.DependencyFlags.SoftDependency)]
 public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGlobalDataMod<GlobalArchitectData>
 {
     internal static ArchitectPlugin Instance;
@@ -65,6 +68,7 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
         
         ActionManager.Init();
         CoopManager.Init();
+        SkinManager.Init();
         
         WorkshopManager.Init();
         ScriptManager.Init();

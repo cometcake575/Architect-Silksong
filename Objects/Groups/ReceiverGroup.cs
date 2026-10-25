@@ -1087,6 +1087,23 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> ColourerHsv = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("do_colour_hsv", "Colour", (o, b) =>
+        {
+            o.GetComponent<ObjectColourerHsv>().Apply(Mathf.Max(0, b?.GetVariable<float>("Fade Time") ?? 0));
+        })),
+        EventManager.RegisterReceiverType(new EventReceiverType("do_colour_dynamic_hsv", "DynamicColour", (o, b) =>
+        {
+            o.GetComponent<ObjectColourerHsv>().Apply(
+                Mathf.Max(0, b.GetVariable<float>("Fade Time")),
+                new Color(
+                    b.GetVariable<float>("H", 1), 
+                    b.GetVariable<float>("S", 1), 
+                    b.GetVariable<float>("V", 1))
+            );
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Transitions = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("transition", "Transition", o =>
         {

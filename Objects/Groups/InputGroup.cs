@@ -52,4 +52,11 @@ public static class InputGroup
         ("A", "Number"),
         ("Fade Time", "Number")
     ];
+    
+    public static readonly List<(string, string)> ColourerHsv = [
+        ("H", "Number"), 
+        ("S", "Number"),
+        ("V", "Number"), 
+        ("Fade Time", "Number")
+    ];
 }

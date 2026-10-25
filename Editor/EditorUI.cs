@@ -189,6 +189,7 @@ public static class EditorUI
         _currentlySelectedDesc.textComponent.raycastTarget = false;
         _currentlySelectedDesc.textComponent.verticalOverflow = VerticalWrapMode.Overflow;
         _currentlySelectedDesc.textComponent.fontSize = 10;
+        _currentlySelectedDesc.textComponent.supportRichText = true;
 
         var currentScene = UIUtils.MakeLabel("Current Scene", _canvasObj,
             new Vector3(50, 45, 0), Vector2.zero, Vector2.zero);

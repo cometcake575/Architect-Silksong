@@ -6,6 +6,7 @@ using Architect.Behaviour.Utility;
 using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
+using Architect.Skins;
 using Architect.Storage;
 using Architect.Utils;
 using BepInEx;
@@ -37,6 +38,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateObjectShaker());
         Categories.Utility.Add(CreateObjectSpawner());
         Categories.Utility.Add(CreateObjectColourer());
+        // Categories.Utility.Add(CreateObjectColourerHsv());
         Categories.Utility.Add(CreateTriggerZone());
         Categories.Utility.Add(CreateHitResponder());
         Categories.Utility.Add(CreateEnemyDamager());
@@ -755,15 +757,38 @@ public static class UtilityObjects
 
         colourer.AddComponent<ObjectColourer>();
 
-        return new CustomObject("Object Colourer", "object_colourer",
+        return new CustomObject("Object Colourer (RGBA)", "object_colourer",
                 colourer,
                 sprite: ResourceUtils.LoadSpriteResource("object_colourer", FilterMode.Point),
-                description: "Changes the colour of an object.\n" +
+                description: "Changes the RGBA colour of an object.\n" +
                              "This works with most objects, but not all of them.\n\n" +
                              "Find the ID of the object to copy using the Cursor tool.")
             .WithConfigGroup(ConfigGroup.Colourer)
             .WithInputGroup(InputGroup.Colourer)
             .WithReceiverGroup(ReceiverGroup.Colourer);
+    }
+
+    private static PlaceableObject CreateObjectColourerHsv()
+    {
+        ObjectColourerHsv.Init();
+        
+        var colourer = new GameObject("Object Colourer");
+        colourer.SetActive(false);
+        Object.DontDestroyOnLoad(colourer);
+
+        colourer.AddComponent<ObjectColourerHsv>();
+
+        var c = SkinManager.Active ? "lime" : "red";
+        return new CustomObject("Object Colourer (HSV)", "object_colourer_hsv",
+                colourer,
+                sprite: ResourceUtils.LoadSpriteResource("object_colourer_hsv", FilterMode.Point),
+                description: $"<color={c}>Requires the Stitchwork mod.</color>\n\n" +
+                             "Changes the HSV values of an object.\n" +
+                             "This works with most objects, but not all of them.\n\n" +
+                             "Find the ID of the object to copy using the Cursor tool.")
+            .WithConfigGroup(ConfigGroup.ColourerHsv)
+            .WithInputGroup(InputGroup.ColourerHsv)
+            .WithReceiverGroup(ReceiverGroup.ColourerHsv);
     }
 
     private static PlaceableObject CreateObjectAnchor()
