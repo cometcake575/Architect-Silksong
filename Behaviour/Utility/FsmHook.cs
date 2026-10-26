@@ -152,10 +152,14 @@ public class FsmHook : PreviewableBehaviour
     
     public static void Init()
     {
-        typeof(FsmMasterPlugin).Hook("Awake",
+        var setup = false;
+        typeof(FsmMasterPlugin).Hook("Update",
             (Action<FsmMasterPlugin> orig, FsmMasterPlugin self) =>
             {
                 orig(self);
+                if (setup) return;
+                
+                setup = true;
                 FsmMaster = self;
                 _editManager = self._editManager;
             });
