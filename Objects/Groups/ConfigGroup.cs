@@ -1954,7 +1954,7 @@ public static class ConfigGroup
                 o.GetComponent<ObjectColourerHsv>().particles = value.GetValue();
             }).WithOptions("True", "False", "Only").WithDefaultValue(0)),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Recursive", "colourer_recursive", (o, value) =>
+            new BoolConfigType("Recursive", "hsvcolourer_recursive", (o, value) =>
             {
                 o.GetComponent<ObjectColourerHsv>().recursive = value.GetValue();
             }).WithDefaultValue(true))
