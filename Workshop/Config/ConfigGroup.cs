@@ -1467,4 +1467,55 @@ public static class ConfigGroup
             })
         )
     ];
+    
+    public static readonly List<ConfigType> GameMode =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomGameMode>("Name", "gamemode_name", (item, value) =>
+            {
+                item.Title = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomGameMode>("Description", "gamemode_desc", (item, value) =>
+            {
+                item.Desc = value.GetValue();
+            })
+        ),
+        (NoteConfigType)"If set, this universal variable must be true for this gamemode to be available",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomGameMode>("Required Variable", "gamemode_req_var", (item, value) =>
+            {
+                item.RequiredBool = value.GetValue();
+            })
+        ),
+        (NoteConfigType)"This global variable will be set to true when in a save with this gamemode",
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomGameMode>("Set Variable", "gamemode_set_var", (item, value) =>
+            {
+                item.SetBool = value.GetValue();
+            })
+        ),
+        (NoteConfigType)"Lower priority gamemodes are higher in the list, Normal is 1, Steel Soul is 2",
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType<CustomGameMode>("Priority", "gamemode_priority", (item, value) =>
+            {
+                item.Priority = value.GetValue();
+            }).WithDefaultValue(3)
+        ),
+        (NoteConfigType)"Replace Normal or Steel Soul buttons",
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType<CustomGameMode>("Replace", "gamemode_replace", (item, value) =>
+            {
+                item.Replace = value.GetValue();
+            }).WithOptions("None", "Normal", "Steel").WithDefaultValue(0)
+        ),
+        (NoteConfigType)"Whether this should open a save in Steel Soul",
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomGameMode>("Steel Soul", "gamemode_steel", (item, value) =>
+            {
+                item.IsSteelSoul = value.GetValue();
+            }).WithDefaultValue(false)
+        )
+    ];
 }

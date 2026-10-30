@@ -130,6 +130,12 @@ public static class WorkshopManager
             new Vector2(-300, -450),
             ConfigGroup.MenuStyle);
         
+        CustomGameMode.Init();
+        Register<CustomGameMode>("Game Mode",
+            new Vector2(-100, -450),
+            ConfigGroup.SpriteItem,
+            ConfigGroup.GameMode);
+        
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,
                 CollectableItemManager self, Func<CollectableItem, bool> predicate) =>

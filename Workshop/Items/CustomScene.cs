@@ -22,7 +22,7 @@ public class CustomScene : SpriteItem
     public float Saturation = 0.85f;
     public float Alpha = 1;
 
-    public MapZone MapZone = MapZone.BONETOWN;
+    public MapZone MapZone = MapZone.NONE;
     public int Act3;
 
     public bool SetAmbientColour;
