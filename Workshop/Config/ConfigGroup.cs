@@ -1518,4 +1518,32 @@ public static class ConfigGroup
             }).WithDefaultValue(false)
         )
     ];
+    
+    public static readonly List<ConfigType> GameModeEntry =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomGameMode>("Skip Cinematic", "gamemode_skip_cinematic", (item, value) =>
+            {
+                item.SkipCinematic = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType<CustomGameMode>("Custom Start Location", "gamemode_custom_start", (item, value) =>
+            {
+                item.CustomEntry = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomGameMode>("Start Scene", "gamemode_scene", (item, value) =>
+            {
+                item.CustomEntryScene = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomGameMode>("Spawn Point", "gamemode_spawn", (item, value) =>
+            {
+                item.CustomEntrySpawn = value.GetValue();
+            })
+        )
+    ];
 }
