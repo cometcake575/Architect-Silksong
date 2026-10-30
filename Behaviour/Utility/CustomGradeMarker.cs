@@ -28,7 +28,9 @@ public class CustomGradeMarker : MonoBehaviour
         Addressables.Release(handle);
 
         if (settings == null) return;
+        if (!this) return;
         var gm = GetComponent<GradeMarker>();
+        if (!gm) return;
         if (setSaturation) gm.saturation = settings.saturation;
         if (setHeroLight) gm.heroLightColor = settings.heroLightColor;
         if (setAmbientIntensity) gm.ambientIntensity = settings.defaultIntensity;

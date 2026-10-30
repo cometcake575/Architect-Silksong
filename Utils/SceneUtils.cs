@@ -160,7 +160,6 @@ public static class SceneUtils
                 orig(self, destScene);
             });
         
-        
         var blankBackground = new SaveSlotBackgrounds.AreaBackground
         {
             BackgroundImage = ArchitectPlugin.BlankSprite,
@@ -682,5 +681,26 @@ public static class SceneUtils
         }
         
         Tilemap.Build();
+    }
+
+    public static bool CheckCustom()
+    {
+        var scene = PlayerData.instance.respawnScene;
+        CustomGameMode.CustomSceneLoaded = false;
+        
+        if (!CustomScenes.ContainsKey(scene)) return false;
+        
+        CustomGameMode.CustomSceneLoaded = true;
+        return true;
+    }
+
+    public static bool LoadCustom()
+    {
+        var scene = PlayerData.instance.respawnScene;
+        
+        if (!CustomScenes.ContainsKey(scene)) return false;
+        
+        GameManager.instance.ReadyForRespawn(true);
+        return true;
     }
 }

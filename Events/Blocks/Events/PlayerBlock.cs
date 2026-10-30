@@ -87,6 +87,27 @@ public class StateBlock : PlayerBlock
 {
     protected override string Name => "Player State";
     
+    protected override IEnumerable<string> Inputs => [
+        "Disable", 
+        "Enable",
+        "FaceLeft",
+        "FaceRight"
+    ];
+
+    protected override void Trigger(string trigger)
+    {
+        base.Trigger(trigger);
+        switch (trigger)
+        {
+            case "FaceLeft":
+                HeroController.instance.FaceLeft();
+                break;
+            case "FaceRight":
+                HeroController.instance.FaceRight();
+                break;
+        }
+    }
+
     protected override IEnumerable<string> Outputs => [
         "OnFaceLeft",
         "OnFaceRight",

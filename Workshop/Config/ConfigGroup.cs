@@ -1544,6 +1544,13 @@ public static class ConfigGroup
             {
                 item.CustomEntrySpawn = value.GetValue();
             })
+        ),
+        (NoteConfigType)"Save data to start from as JSON (optional)",
+        ConfigurationManager.RegisterConfigType(
+            new SaveConfigType<CustomGameMode>("Save Data", "gamemode_save", (item, value) =>
+            {
+                item.SaveData = value.GetValue();
+            })
         )
     ];
 }

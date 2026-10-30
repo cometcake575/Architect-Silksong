@@ -1,12 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Architect.Utils;
 using BepInEx;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using MonoMod.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -26,6 +30,12 @@ public class CustomGameMode : SpriteItem
     
     public string Title = string.Empty;
     public string Desc = string.Empty;
+
+    public string SaveData = string.Empty;
+    private static bool _willLoadSaveData;
+    private static string _saveData = string.Empty;
+
+    public static bool CustomSceneLoaded;
 
     public bool SkipCinematic;
     public bool CustomEntry;
@@ -76,11 +86,114 @@ public class CustomGameMode : SpriteItem
                         _customEntrySpawn = cSelf.customEntrySpawn;
                     }
 
+                    if (cSelf.loadSaveData)
+                    {
+                        _willLoadSaveData = true;
+                        _saveData = cSelf.saveData;
+                    }
+
                     _willSkipCinematic = cSelf.skipCinematic;
                 }
                 else _willSetBool = string.Empty;
                 
                 orig(self, eventData);
+            });
+        
+        typeof(GameManager).Hook(nameof(GameManager.StartNewGame),
+            (Action<GameManager, bool, bool> orig, GameManager self, bool permadeathMode, bool bossRushMode) =>
+            {
+                orig(self, permadeathMode, bossRushMode);
+                if (_willLoadSaveData)
+                {
+                    _willLoadSaveData = false;
+                    var saveData = SaveDataUtility.DeserializeSaveData<SaveGameData>(_saveData);
+                    PlayerData.instance = self.playerData = saveData.playerData;
+                    SceneData.instance = self.sceneData = saveData.sceneData;
+                }
+            });
+        
+        _ = new ILHook(typeof(OpeningSequence)
+                .GetMethod(nameof(OpeningSequence.StartAsync), BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetStateMachineTarget(),
+            il =>
+            {
+                var cursor = new ILCursor(il);
+                
+                // Goes to the point right before loading the scene
+                cursor.GotoNext(
+                    MoveType.After,
+                    instr => instr.MatchLdarg(0),
+                    instr => instr.MatchLdarg(0),
+                    instr => instr.OpCode == OpCodes.Ldfld,
+                    instr => instr.OpCode == OpCodes.Callvirt,
+                    instr => instr.OpCode == OpCodes.Stfld
+                );
+                
+                // Marks this point
+                var source = cursor.MarkLabel();
+                
+                // Goes to the line after trying to load the scene
+                cursor.GotoNext(
+                    MoveType.After,
+                    instr => instr.OpCode == OpCodes.Ldftn,
+                    instr => instr.OpCode == OpCodes.Newobj,
+                    instr => instr.OpCode == OpCodes.Call
+                );
+                // Marks this position
+                var afterLoad = cursor.MarkLabel();
+                
+                // Returns to point before loading scene, makes it skip scene load
+                cursor.GotoLabel(source);
+
+                cursor.Emit(OpCodes.Call, typeof(SceneUtils).GetMethod(nameof(SceneUtils.CheckCustom)));
+                cursor.Emit(OpCodes.Brtrue, afterLoad);
+                
+                // Go before activating
+                cursor.GotoNext(
+                    MoveType.After,
+                    instr => instr.OpCode == OpCodes.Ldfld,
+                    instr => instr.OpCode == OpCodes.Ldfld,
+                    instr => instr.OpCode == OpCodes.Stfld
+                );
+                var beforeActivate = cursor.MarkLabel();
+                
+                // After activating
+                cursor.GotoNext(
+                    MoveType.After,
+                    instr => instr.OpCode == OpCodes.Stfld,
+                    instr => instr.OpCode == OpCodes.Newobj,
+                    instr => instr.OpCode == OpCodes.Callvirt
+                );
+                var afterActivate = cursor.MarkLabel();
+                
+                // Returns to point before activating scene, makes it skip scene activation
+                cursor.GotoLabel(beforeActivate);
+
+                cursor.Emit(OpCodes.Call, typeof(SceneUtils).GetMethod(nameof(SceneUtils.LoadCustom)));
+                cursor.Emit(OpCodes.Brtrue, afterActivate);
+                
+                // Go before yield return
+                cursor.GotoNext(
+                    MoveType.After,
+                    instr => instr.OpCode == OpCodes.Ldc_I4_0,
+                    instr => instr.OpCode == OpCodes.Ldc_I4_0,
+                    instr => instr.OpCode == OpCodes.Callvirt
+                );
+                var beforeYr = cursor.MarkLabel();
+                
+                // After activating
+                cursor.GotoNext(
+                    MoveType.After,
+                    instr => instr.OpCode == OpCodes.Ldloc_2,
+                    instr => instr.OpCode == OpCodes.Stfld
+                );
+                var afterYr = cursor.MarkLabel();
+                
+                // Returns to point before activating scene, makes it skip scene activation
+                cursor.GotoLabel(beforeYr);
+
+                cursor.Emit(OpCodes.Call, typeof(SceneUtils).GetMethod(nameof(SceneUtils.CheckCustom)));
+                cursor.Emit(OpCodes.Brtrue, afterYr);
             });
 
         OpeningSequence seq = null;
@@ -98,11 +211,19 @@ public class CustomGameMode : SpriteItem
                     PlayerData.instance.respawnMarkerName = _customEntrySpawn;
                 }
             });
+        
+        AsyncOperationHandle<GameObject>? heroLoad = null;
+        typeof(GameManager).Hook(nameof(GameManager.LoadHeroPrefab),
+            (Func<GameManager, AsyncOperationHandle<GameObject>> orig, GameManager self) =>
+            {
+                heroLoad = orig(self);
+                return heroLoad.Value;
+            });
 
         _ = new Hook(typeof(ChainSequence).GetProperty(nameof(ChainSequence.IsPlaying))!.GetGetMethod(),
             (Func<ChainSequence, bool> orig, ChainSequence self) =>
             {
-                if (_willSkipCinematic && seq.isLevelReady)
+                if (_willSkipCinematic && (seq.isLevelReady || (CustomSceneLoaded && heroLoad is { IsDone: true })))
                 {
                     _willSkipCinematic = false;
                     return false;
@@ -183,6 +304,12 @@ public class CustomGameMode : SpriteItem
         startTrigger.requiredBool = RequiredBool;
         startTrigger.setBool = SetBool;
 
+        if (!SaveData.IsNullOrWhiteSpace())
+        {
+            startTrigger.loadSaveData = true;
+            startTrigger.saveData = SaveData;
+        }
+
         if (CustomEntry)
         {
             startTrigger.customEntry = true;
@@ -228,6 +355,8 @@ public class CustomGameMode : SpriteItem
         public string requiredBool;
         public string setBool;
 
+        public bool loadSaveData;
+        public string saveData;
         public bool customEntry;
         public bool skipCinematic;
         public string customEntryScene;
