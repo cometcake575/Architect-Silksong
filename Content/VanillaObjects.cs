@@ -2847,6 +2847,26 @@ public static class VanillaObjects
             .WithConfigGroup(ConfigGroup.BreakableDecor)
             .WithRotationGroup(RotationGroup.Four)
             .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        Categories.Misc.Add(new PreloadObject("Ducts Lamp", "ducts_lamp",
+                ("Aqueduct_03", "organ lamp (4)"),
+                preloadAction: o =>
+                {
+                    o.transform.SetPositionZ(0.009f);
+                    var bc2d = o.AddComponent<BoxCollider2D>();
+                    bc2d.size = new Vector2(1.64f, 2.5f);
+                    bc2d.offset = new Vector2(0, 0.95f);
+                    o.GetComponent<SpriteRenderer>().color = Color.white;
+                },
+                postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
+        Categories.Misc.Add(new PreloadObject("Ducts Wall Lamp", "ducts_wall_lamp",
+                ("Aqueduct_03", "organ lamp_mounted"),
+                postSpawnAction: MiscFixers.FixBreakable)
+            .WithConfigGroup(ConfigGroup.BreakableDecor)
+            .WithRotationGroup(RotationGroup.Four)
+            .WithBroadcasterGroup(BroadcasterGroup.Breakable));
 
         Categories.Misc.Add(new PreloadObject("Petrified Pilgrim 1", "pilgrim_petrified_1", 
             ("Coral_10", "pilgrim_fossil_break_larvae (4)"),

@@ -250,6 +250,7 @@ public abstract class ScriptBlock
         BlockInstance = BlockObject.AddComponent<ScriptBlockInstance>();
         BlockInstance.img = img;
         BlockInstance.Block = this;
+        BlockInstance.LayerChanged(ScriptManager.Layer);
 
         if (Name != null)
         {
@@ -557,13 +558,13 @@ public abstract class ScriptBlock
             if (ScriptManager.IsSelected(Block.BlockId) && ScriptManager.SelectedBlockIds.Count > 1)
             {
                 _isGroupDragging = true;
-                _groupOffsets = new List<(ScriptBlockInstance, Vector2)>();
+                _groupOffsets = [];
                 _groupStartMouse = eventData.position;
 
                 foreach (var id in ScriptManager.SelectedBlockIds)
                 {
                     if (!ScriptManager.Blocks.TryGetValue(id, out var b)) continue;
-                    if (b?.BlockInstance == null) continue;
+                    if (!b?.BlockInstance) continue;
                     var inst = b.BlockInstance;
                     var offset = (Vector2)inst.transform.position - _groupStartMouse;
                     _groupOffsets.Add((inst, offset));
