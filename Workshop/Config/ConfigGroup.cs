@@ -1553,4 +1553,26 @@ public static class ConfigGroup
             })
         )
     ];
+    
+    public static readonly List<ConfigType> Preload =
+    [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomPreloadObject>("Name", "preload_name", (item, value) =>
+            {
+                item.Name = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomPreloadObject>("Scene ID", "preload_scene_id", (item, value) =>
+            {
+                item.Scene = value.GetValue();
+            })
+        ),
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType<CustomPreloadObject>("Path", "preload_path", (item, value) =>
+            {
+                item.Path = value.GetValue();
+            })
+        )
+    ];
 }

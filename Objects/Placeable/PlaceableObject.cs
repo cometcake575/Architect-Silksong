@@ -82,6 +82,8 @@ public abstract class PlaceableObject : SelectableObject
         return _uiSprite ? _uiSprite : Sprite;
     }
 
+    private static readonly Sprite UnknownSprite = ResourceUtils.LoadSpriteResource("unknown", FilterMode.Point, ppu: 64);
+
     protected void FinishSetup(GameObject prefab)
     {
         Prefab = prefab;
@@ -116,8 +118,13 @@ public abstract class PlaceableObject : SelectableObject
             ParentScale = Vector3.one;
             LossyScale = Vector3.one;
         }
-        
-        if (!Sprite && !_uiSprite) ArchitectPlugin.Logger.LogError($"No sprite found for {_name}");
+
+        if (!Sprite && !_uiSprite)
+        {
+            SpritePreview = true;
+            Sprite = _uiSprite = UnknownSprite;
+            ArchitectPlugin.Logger.LogError($"No sprite found for {_name}");
+        }
     }
 
     public PlaceableObject WithRotationGroup(RotationGroup group)

@@ -15,6 +15,8 @@ public class Category(string name, int priority) : AbstractCategory
         return obj;
     }
 
+    public void Remove(PlaceableObject obj) => _objects.Remove(obj);
+
     public PlaceableObject AddStart(PlaceableObject obj) {
         _objects.Insert(0, obj);
         return obj;

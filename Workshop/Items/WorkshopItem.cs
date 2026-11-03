@@ -17,6 +17,8 @@ public abstract class WorkshopItem
     public string ExternalSource;
 
     public virtual string LoadScene => null;
+    
+    public virtual bool RegisterEarly => false;
 
     public List<ConfigType>[] Config;
     

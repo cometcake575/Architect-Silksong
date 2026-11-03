@@ -136,4 +136,10 @@ public static class PreloadManager
         if (!ToPreload.ContainsKey(obj.Scene)) ToPreload[obj.Scene] = [];
         ToPreload[obj.Scene].Add((obj.Path, obj));
     }
+    
+    public static void UnregisterPreload(IPreload obj)
+    {
+        if (ToPreload.TryGetValue(obj.Scene, out var value)) 
+            value.Remove((obj.Path, obj));
+    }
 }

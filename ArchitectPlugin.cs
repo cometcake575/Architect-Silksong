@@ -27,7 +27,7 @@ using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.42.1")]
+[BepInPlugin("com.cometcake575.architect", "Architect", "3.43.0")]
 [BepInDependency("org.silksong-modding.prepatcher")]
 [BepInDependency("org.silksong-modding.assethelper")]
 [BepInDependency("org.silksong-modding.modmenu")]
@@ -91,7 +91,6 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
 
         SharerManager.Init();
         
-        PreloadManager.Init();
         EditorUI.Setup();
         
         ConfigGroup.Init();
@@ -109,6 +108,9 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>, IGl
             });
         
         FindMaps();
+        
+        WorkshopManager.EarlySetup();
+        PreloadManager.Init();
     }
     
     private static void FindMaps()

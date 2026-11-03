@@ -137,6 +137,10 @@ public static class WorkshopManager
             ConfigGroup.GameMode,
             ConfigGroup.GameModeEntry);
         
+        Register<CustomPreloadObject>("Preload",
+            new Vector2(-300, -487.5f),
+            ConfigGroup.Preload);
+        
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,
                 CollectableItemManager self, Func<CollectableItem, bool> predicate) =>
@@ -234,15 +238,45 @@ public static class WorkshopManager
     }
 
     private static readonly List<WorkshopData> ExtWorkshops = [];
+    private static bool _setup;
     
-    public static void Setup()
+    public static void EarlySetup()
     {
-        CustomAchievement.Init();
-        SceneUtils.InitQWHook();
         StorageManager.LoadWorkshopData();
         foreach (var workshop in ExtWorkshops)
         {
-            foreach (var item in workshop.Items.OrderBy(i => i.GetPriority()))
+            foreach (var item in workshop.Items
+                         .Where(i => i.RegisterEarly)
+                         .OrderBy(i => i.GetPriority()))
+            {
+                if (WorkshopData.Items.Any(i => i.Id == item.Id)) continue;
+                foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
+                item.ExternalSource = workshop.ExternalSource;
+                item.Register();
+            }
+        }
+    }
+    
+    public static void Setup()
+    {
+        _setup = true;
+        CustomAchievement.Init();
+        SceneUtils.InitQWHook();
+        
+        foreach (var item in WorkshopData.Items
+                     .Where(i => !i.RegisterEarly)
+                     .OrderBy(i => i.GetPriority()))
+        {
+            foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
+            item.Register();
+        }
+        WorkshopUI.Refresh();
+        
+        foreach (var workshop in ExtWorkshops)
+        {
+            foreach (var item in workshop.Items
+                         .Where(i => !i.RegisterEarly)
+                         .OrderBy(i => i.GetPriority()))
             {
                 if (WorkshopData.Items.Any(i => i.Id == item.Id)) continue;
                 foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
@@ -266,6 +300,7 @@ public static class WorkshopManager
         WorkshopData = data;
         foreach (var item in WorkshopData.Items.OrderBy(i => i.GetPriority()))
         {
+            if (!_setup && !item.RegisterEarly) continue;
             foreach (var cfg in item.CurrentConfig.Values) cfg.Setup(item);
             item.Register();
         }

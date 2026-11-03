@@ -27,6 +27,7 @@ public static class ObjectUtils
         foreach (var fsm in obj.GetComponentsInChildren<PlayMakerFSM>(true)) 
             fsm.enabled = false;
         
+        obj.RemoveComponentsInChildren<ConstrainPosition>();
         obj.RemoveComponentsInChildren<FSMActivator>();
         obj.RemoveComponentsInChildren<IPersistentItem>();
         foreach (var ib in obj.GetComponentsInChildren<InteractableBase>()) 
