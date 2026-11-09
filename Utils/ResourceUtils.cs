@@ -63,7 +63,7 @@ public static class ResourceUtils
     }
 
     [CanBeNull]
-    internal static Sprite[] LoadSprites(string spritePath, bool point, float ppu, int hcount, int vcount)
+    internal static Sprite[] LoadSprites(string spritePath, bool point, float ppu, int hcount, int vcount, Vector2 pivot)
     {
         if (!File.Exists(spritePath)) return null;
 
@@ -81,7 +81,7 @@ public static class ResourceUtils
             for (var i = 0; i < hcount; i++)
             {
                 sprites[k] = Sprite.Create(tex, new Rect(width * i, height * j, width, height),
-                    new Vector2(0.5f, 0.5f), ppu);
+                    pivot, ppu);
                 k++;
             }
         }

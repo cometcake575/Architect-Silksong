@@ -2483,7 +2483,7 @@ public static class VanillaObjects
                 description: "Cuts out part of the vignette, can be used to make areas visible in darkness.",
                 preloadAction: MiscFixers.FixSpecialPngs)
             .WithConfigGroup(ConfigGroup.Png)
-            .WithRotationGroup(RotationGroup.All));
+            .WithRotationGroup(RotationGroup.All)).SpritePreview = true;
 
         Categories.Effects.Add(new PreloadObject("Memory Silk Effect", "memory_silk_effect",
                 ("Coral_Tower_01", "Memory Group/before/thread_memory/thread_memory_starter/strand1/strandbacking (1)"),

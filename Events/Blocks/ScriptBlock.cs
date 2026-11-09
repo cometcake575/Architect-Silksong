@@ -504,6 +504,7 @@ public abstract class ScriptBlock
 
         private string _setText;
         private bool _selected;
+        private Color _color;
 
         private void Update()
         {
@@ -515,9 +516,10 @@ public abstract class ScriptBlock
             }
             
             var selected = ScriptManager.IsSelected(Block.BlockId);
-            if (_selected != selected)
+            if (_selected != selected || _color != Block.Color)
             {
                 _selected = selected;
+                _color = Block.Color;
                 img.color = _selected
                     ? Color.Lerp(Block.Color, Settings.ScriptEditorBlockSelectedLerpColor.Value, 0.35f)
                     : Block.Color;

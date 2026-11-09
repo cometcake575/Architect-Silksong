@@ -3181,10 +3181,11 @@ public static class ConfigGroup
             {
                 var prev = o.GetOrAddComponent<PngPreview>();
                 var point = (prev?.point).GetValueOrDefault(true);
+                var pivot = (prev?.pivot).GetValueOrDefault(new Vector2(0.5f, 0.5f));
                 var ppu = (prev?.ppu).GetValueOrDefault(100);
                 var vcount = (prev?.vcount).GetValueOrDefault(1);
                 var hcount = (prev?.hcount).GetValueOrDefault(1);
-                CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, hcount, vcount,
+                CustomAssetManager.DoLoadSprite(value.GetValue(), point, ppu, hcount, vcount, pivot,
                     sprites =>
                     {
                         if (o)
@@ -3210,6 +3211,12 @@ public static class ConfigGroup
                     (o, value) => { o.GetComponentInChildren<PngObject>().ppu = value.GetValue(); },
                     (o, value, _) => { o.GetOrAddComponent<PngPreview>().ppu = value.GetValue(); })
                 .WithDefaultValue(100)
+                .WithPriority(-2)),
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Pivot", "png_pivot",
+                    (o, value) => { o.GetComponentInChildren<PngObject>().pivot = value.GetValue(); },
+                    (o, value, _) => { o.GetOrAddComponent<PngPreview>().pivot = value.GetValue(); })
+                .WithDefaultValue(new Vector2(0.5f, 0.5f))
                 .WithPriority(-2)),
         ConfigurationManager.RegisterConfigType(
             new DoubleIntConfigType("Frame Counts", "png_allframecount",
@@ -3356,7 +3363,7 @@ public static class ConfigGroup
                     .WithPriority(-2))
         ]);
 
-    public static readonly List<ConfigType> PngUI = GroupUtils.Merge(Png, [
+    public static readonly List<ConfigType> PngUI = GroupUtils.Merge(PhysicalPng, [
         RenderLayer,
         ConfigurationManager.RegisterConfigType(
             new Vector2ConfigType("Offset", "ui_png_offset",

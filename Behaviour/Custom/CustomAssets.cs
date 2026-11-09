@@ -28,6 +28,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
     private float _remainingFrameTime;
     
     public int frame;
+    public Vector2 pivot = new(0.5f, 0.5f);
     public string url;
     public bool point;
     public bool ignoreGlow;
@@ -52,7 +53,7 @@ public class PngObject : PreviewableBehaviour, IPlayable
         {
             _renderer.material = glow == 1 ? MiscFixers.SpriteMaterial : MiscFixers.ScreenHazeMaterial;
         }
-        CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, SaveSprites);
+        CustomAssetManager.DoLoadSprite(url, point, ppu, hcount, vcount, pivot, SaveSprites);
         _count = Mathf.Max(1, hcount * vcount - dummy);
 
         var anim = GetComponent<Animator>();
@@ -464,4 +465,6 @@ public class PngPreview : MonoBehaviour
     public int vcount = 1;
     
     public int hcount = 1;
+    
+    public Vector2 pivot = new(0.5f, 0.5f);
 }

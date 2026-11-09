@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Abilities;
 using Architect.Objects.Categories;
+using Architect.Sharer;
 using Architect.Storage;
 using Architect.Utils;
 using Architect.Workshop;
@@ -110,6 +111,7 @@ public static class PreloadManager
         WorkshopManager.Setup();
         CrestBinding.InitItcHook();
         CustomMenuStyle.SetStyle();
+        SharerManager.AdjustNavigations();
         
         Object.Destroy(_canvasObj);
         
