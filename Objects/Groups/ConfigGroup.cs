@@ -3460,6 +3460,39 @@ public static class ConfigGroup
                 .WithPriority(-2)),
         AlphaColour
     ]);
+    
+    public static readonly List<ConfigType> Txt = GroupUtils.Merge(Generic, [
+        ConfigurationManager.RegisterConfigType(
+            new StringConfigType("Text", "txt_text",
+                    (o, value) => { o.GetComponent<CustomText>().defaultText = value.GetValue(); })
+                .WithDefaultValue("Sample Text")),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Vertical Alignment", "txt_align_v", (o, value) =>
+            {
+                o.GetComponent<CustomText>().verticalAlignment = value.GetValue();
+            }).WithOptions("Top", "Middle", "Bottom").WithDefaultValue(1).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Horizontal Alignment", "txt_align_h", (o, value) =>
+            {
+                o.GetComponent<CustomText>().horizontalAlignment = value.GetValue();
+            }).WithOptions("Left", "Middle", "Right").WithDefaultValue(1).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new BoolConfigType("On HUD", "txt_hud",
+                    (o, value) => { o.GetComponent<CustomText>().onHud = value.GetValue(); })
+                .WithDefaultValue(false)),
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Area Size", "txt_size",
+                    (o, value) => { o.GetComponent<CustomText>().textAreaSize = value.GetValue(); })
+                .WithDefaultValue(new Vector2(20, 10))),
+        ConfigurationManager.RegisterConfigType(
+            new Vector2ConfigType("Offset", "txt_offset",
+                    (o, value) => { o.GetComponent<CustomText>().offset = value.GetValue(); })
+                .WithDefaultValue(Vector2.zero)),
+        ConfigurationManager.RegisterConfigType(
+            new ColourConfigType("Colour", "txt_colour",
+                    (o, value) => { o.GetComponent<CustomText>().textColour = value.GetValue(); }, true)
+                .WithDefaultValue(Color.white))
+    ]);
 
     public static readonly List<ConfigType> TriggerZones = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(

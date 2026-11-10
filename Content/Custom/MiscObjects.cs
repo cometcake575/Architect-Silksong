@@ -25,6 +25,8 @@ public static class MiscObjects
         
         Categories.Effects.AddStart(CreateAudioObject());
         
+        Categories.Effects.AddStart(CreateCustomText());
+        
         Categories.Effects.AddStart(CreateAsset<Mp4Object>("MP4", "custom_mp4", true, true)
             .WithConfigGroup(ConfigGroup.Mp4)
             .WithReceiverGroup(ReceiverGroup.Playable)
@@ -362,6 +364,22 @@ public static class MiscObjects
                 sprite: ResourceUtils.LoadSpriteResource("audio_player", ppu: 300))
             .WithConfigGroup(ConfigGroup.AudioPlayer)
             .WithReceiverGroup(ReceiverGroup.AudioPlayer);
+    }
+
+    private static PlaceableObject CreateCustomText()
+    {
+        var obj = new GameObject("Custom Text");
+        obj.SetActive(false);
+        Object.DontDestroyOnLoad(obj);
+
+        obj.AddComponent<CustomText>();
+
+        return new CustomObject("Custom Text", "custom_text", obj,
+            "Custom text that shows on the UI.",
+            sprite: ResourceUtils.LoadSpriteResource("custom_text", ppu: 300))
+            .WithConfigGroup(ConfigGroup.Txt)
+            .WithReceiverGroup(ReceiverGroup.Txt)
+            .WithInputGroup(InputGroup.Txt);
     }
 
     private static PlaceableObject CreateSquare()

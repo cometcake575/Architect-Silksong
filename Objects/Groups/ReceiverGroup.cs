@@ -782,6 +782,14 @@ public static class ReceiverGroup
         }))
     ]);
     
+    public static readonly List<EventReceiverType> Txt = GroupUtils.Merge(Generic, [
+        EventManager.RegisterReceiverType(new EventReceiverType("txt_set_text", "SetText", (o, b) =>
+        {
+            if (b == null) return;
+            o.GetComponent<CustomText>().SetText(b.GetVariable<string>("New Value"));
+        }))
+    ]);
+    
     public static readonly List<EventReceiverType> Playable = GroupUtils.Merge(Generic, [
         EventManager.RegisterReceiverType(new EventReceiverType("start_play", "Play", o =>
         {

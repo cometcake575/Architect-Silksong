@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
-public class Layerer : MonoBehaviour
+public class Layerer : PreviewableBehaviour
 {
     public string target;
     public int layer;
@@ -23,6 +23,7 @@ public class Layerer : MonoBehaviour
 
     private void Update()
     {
+        if (isAPreview) return;
         if (start)
         {
             Apply();
