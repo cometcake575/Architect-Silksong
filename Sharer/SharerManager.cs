@@ -183,6 +183,7 @@ public static class SharerManager
 
     public static void AdjustNavigations()
     {
+        if (!_uiManager) return;
         var optionsBtn = _uiManager.mainMenuButtons.optionsButton;
         var achievementsBtn = _uiManager.mainMenuButtons.achievementsButton;
         

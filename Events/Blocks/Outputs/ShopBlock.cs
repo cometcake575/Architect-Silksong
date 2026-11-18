@@ -33,12 +33,13 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
 
     public bool TakeControl = true;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
         var obj = new GameObject("[Architect] Shop Object");
         obj.SetActive(false);
         _shopOwner = obj.AddComponent<ShopOwner>();
         _shopOwner.shopPrefab = _shopPrefab;
+        return obj;
     }
     
     protected override void Trigger(string trigger)
@@ -99,7 +100,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
         
         public ShopItem Item;
 
-        public override void SetupReference()
+        public override GameObject SetupReference()
         {
             Item = ScriptableObject.CreateInstance<ShopItem>();
             var i = MiscUtils.GetSavedItem(ItemId);
@@ -121,6 +122,7 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
                 Event("OnPurchase");
                 Shop?.Refresh();
             });
+            return null;
         }
 
         protected override IEnumerable<(string, string)> InputVars => [("Available", "Boolean")];

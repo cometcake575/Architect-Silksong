@@ -13,7 +13,6 @@ using Architect.Events.Blocks.Operators;
 using Architect.Objects.Placeable;
 using Architect.Placements;
 using Architect.Utils;
-using BepInEx;
 using GlobalSettings;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;

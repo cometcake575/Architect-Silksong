@@ -137,7 +137,7 @@ public abstract class ScriptBlock
         {
             Reset();
             foreach (var cfg in CurrentConfig.Values) cfg.Setup(this);
-            if (!noReference) SetupReference();
+            if (!noReference) DoSetupReference();
         }
     }
     
@@ -626,7 +626,16 @@ public abstract class ScriptBlock
 
     protected virtual void DeserializeExtraData(Dictionary<string, string> data) { }
 
-    public virtual void SetupReference() { }
+    private GameObject _reference;
+
+    public void DoSetupReference()
+    {
+        _reference = SetupReference();
+    }
+
+    public virtual GameObject SetupReference() => null;
+
+    public GameObject GetReference() => _reference;
 
     public virtual void Reset() { }
 

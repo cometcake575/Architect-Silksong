@@ -14,7 +14,7 @@ public class SpawnPrefabBlock : ScriptBlock
         ("Y", "Number"), 
         ("Rot", "Number"),
         ("Scale", "Number"),
-        ("Flip", "Boolean"),];
+        ("Flip", "Boolean")];
 
     public override Color Color => ObjectBlock.ValidColor;
     protected override string Name => "Spawn Prefab";

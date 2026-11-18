@@ -38,11 +38,13 @@ public class CrestBlock : ScriptBlock
 
     private static readonly List<CrestBlockRef> References = [];
     
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        var cbr = new GameObject("[Architect] Crest Block Ref").AddComponent<CrestBlockRef>();
+        var obj = new GameObject("[Architect] Crest Block Ref");
+        var cbr = obj.AddComponent<CrestBlockRef>();
         cbr.Block = this;
         References.Add(cbr);
+        return obj;
     }
 
     public class CrestBlockRef : MonoBehaviour

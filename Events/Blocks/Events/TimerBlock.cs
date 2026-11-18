@@ -30,11 +30,13 @@ public class TimerBlock : ToggleableBlock
         _te.Restart();
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        _te = new GameObject("[Architect] Timer Block").AddComponent<TimerEvent>();
+        var obj = new GameObject("[Architect] Timer Block");
+        _te = obj.AddComponent<TimerEvent>();
         _te.Block = this;
         _te.cStartDelay = StartDelay;
+        return obj;
     }
 
     public class TimerEvent : MonoBehaviour

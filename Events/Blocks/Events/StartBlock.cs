@@ -8,9 +8,11 @@ public class StartBlock : ScriptBlock
     protected override IEnumerable<string> Outputs => ["PreStart", "OnStart"];
     protected override string Name => "On Room Load";
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        new GameObject("[Architect] Start Block").AddComponent<StartEvent>().Block = this;
+        var obj = new GameObject("[Architect] Start Block");
+        obj.AddComponent<StartEvent>().Block = this;
+        return obj;
     }
 
     public class StartEvent : MonoBehaviour

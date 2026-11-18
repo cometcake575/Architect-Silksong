@@ -18,7 +18,7 @@ public static class WorkshopManager
     
     public static readonly Dictionary<string, WorkshopItem> CustomItems = [];
     public static readonly Dictionary<string, WorkshopItem> CustomEntries = [];
-    public static readonly Dictionary<string, WorkshopItem> CustomCrests = [];
+    public static readonly Dictionary<string, WorkshopItem> OldCustomCrests = [];
     public static readonly Dictionary<string, WorkshopItem> CustomQuests = [];
     public static readonly Dictionary<string, WorkshopItem> CustomTools = [];
 
@@ -112,16 +112,9 @@ public static class WorkshopManager
             new Vector2(-100, -337.5f),
             ConfigGroup.Achievement);
         
-        CustomCrest.Init();
-        Register<CustomCrest>("Crest",
+        /*Register<CustomCrest>("New Crest",
             new Vector2(-300, -375),
-            ConfigGroup.Crest,
-            ConfigGroup.SpriteItem,
-            ConfigGroup.CrestSprites);
-        
-        Register<CustomCrest.CrestSlot>("Crest Slot",
-            new Vector2(-100, -375),
-            ConfigGroup.CrestSlot);
+            ConfigGroup.NewCrest); */
         
         SceneGroup.Init();
         
@@ -140,6 +133,17 @@ public static class WorkshopManager
         Register<CustomPreloadObject>("Preload",
             new Vector2(-300, -487.5f),
             ConfigGroup.Preload);
+        
+        CustomCrestOld.Init();
+        Register<CustomCrestOld>("Crest",
+            new Vector2(-300, -375),
+            ConfigGroup.Crest,
+            ConfigGroup.SpriteItem,
+            ConfigGroup.CrestSprites);
+        
+        Register<CustomCrestOld.CrestSlot>("Crest Slot",
+            new Vector2(-100, -375),
+            ConfigGroup.CrestSlot);
         
         typeof(CollectableItemManager).Hook(nameof(CollectableItemManager.InternalGetCollectedItems),
             (Func<CollectableItemManager, Func<CollectableItem, bool>, List<CollectableItem>> orig,
@@ -210,7 +214,7 @@ public static class WorkshopManager
                     item.Register();
                 }
             }
-            foreach (var (id, item) in CustomCrests.ToArray())
+            foreach (var (id, item) in OldCustomCrests.ToArray())
             {
                 if (!ToolItemManager.Instance.crestList.dictionary.ContainsKey(id))
                 {

@@ -770,7 +770,7 @@ public static class EnemyFixers
         }, 5);
     }
 
-    public class FlyIn : MonoBehaviour
+    public class FlyIn : PreviewableBehaviour
     {
         public bool flyIn;
     }
@@ -779,7 +779,7 @@ public static class EnemyFixers
     {
         private void Start()
         {
-            FixMaestro(gameObject, flyIn);
+            FixMaestro(gameObject, flyIn && !isAPreview);
         }
     }
 

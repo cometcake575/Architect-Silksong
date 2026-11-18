@@ -97,7 +97,7 @@ public abstract class CollectionBlock<T> : LinkedBlock
             foreach (var cfg in child.CurrentConfig.Values) cfg.Setup(child);
         }
         if (visual) Children.OrderChildren();
-        else foreach (var child in Children.Blocks) child.SetupReference();
+        else foreach (var child in Children.Blocks) child.DoSetupReference();
     }
 
     public override MultiEdit Delete()

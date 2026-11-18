@@ -63,7 +63,6 @@ public class Vector3ConfigValue(Vector3ConfigType type, Vector3 value) : ConfigV
 
 public class Vector3ConfigElement : ConfigElement
 {
-    private readonly RectTransform _parent;
     private readonly InputField _inputX;
     private readonly InputField _inputY;
     private readonly InputField _inputZ;
@@ -78,8 +77,7 @@ public class Vector3ConfigElement : ConfigElement
                 localScale = Vector3.one
             }
         };
-        _parent = o.RemoveOffset();
-        _parent.anchoredPosition = pos;
+        o.RemoveOffset().anchoredPosition = pos;
         
         (_inputX, _) = UIUtils.MakeTextbox("X", o, new Vector3(-35, 0), Vector2.zero, Vector2.zero, 
             80, 25);
@@ -121,11 +119,6 @@ public class Vector3ConfigElement : ConfigElement
             lastZ = s;
             apply.interactable = true;
         });
-    }
-
-    public override RectTransform GetElement()
-    {
-        return _parent;
     }
 
     public override string GetValue()

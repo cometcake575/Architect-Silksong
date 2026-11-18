@@ -204,6 +204,7 @@ public static class UIUtils
         label.textComponent = gameObject.AddComponent<TruncatableText>();
         label.textComponent.supportRichText = false;
         label.textComponent.horizontalOverflow = wrapMode;
+        label.textComponent.raycastTarget = false;
         
         trans.SetParent(parent.transform, false);
         trans.SetAsFirstSibling();

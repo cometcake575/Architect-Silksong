@@ -38,10 +38,12 @@ public class PlayerBlock : ToggleableBlock
     ];
     protected override string Name => "Player Listener";
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        var te = new GameObject("[Architect] Player Block").AddComponent<PlayerEvent>();
+        var obj = new GameObject("[Architect] Player Block");
+        var te = obj.AddComponent<PlayerEvent>();
         te.Block = this;
+        return obj;
     }
 
     public override object GetValue(string id)

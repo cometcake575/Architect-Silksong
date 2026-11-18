@@ -21,21 +21,20 @@ public class PlayerDataBoolBlock : ScriptBlock
     protected override IEnumerable<string> Inputs => ["Set"];
     protected override IEnumerable<string> Outputs => ["OnTrue", "OnFalse"];
     protected override IEnumerable<(string, string)> OutputVars => [("Value", "Boolean")];
-
-    
     
     protected override string Name => "PlayerData Control (Bool)";
 
     public string Data = string.Empty;
     public bool Value;
     
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
         var blockRef = new GameObject("[Architect] Bool Block");
         var blockRefInst = blockRef.AddComponent<BoolBlockRef>();
         blockRefInst.Block = this;
         if (!BlockRefs.ContainsKey(Data)) BlockRefs[Data] = [];
         BlockRefs[Data].Add(blockRefInst);
+        return blockRef;
     }
 
     public class BoolBlockRef : MonoBehaviour

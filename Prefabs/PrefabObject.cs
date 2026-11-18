@@ -161,6 +161,7 @@ public class Prefab : PreviewableBehaviour
 {
     public string id;
     public List<GameObject> spawns = [];
+    public List<GameObject> blockSpawns = [];
     private readonly Dictionary<string, List<ReceiveBlock>> _receivers = [];
     private readonly Dictionary<string, VarBlock> _vars = [];
     private readonly Dictionary<string, string> _constants = [];
@@ -173,11 +174,20 @@ public class Prefab : PreviewableBehaviour
 
     public void Destroy()
     {
-        foreach (var spawn in spawns)
+        DoDestroy(spawns);
+        DoDestroy(blockSpawns);
+        
+        return;
+        
+        void DoDestroy(List<GameObject> toDestroy)
         {
-            var prefab = spawn.GetComponent<Prefab>();
-            if (prefab) prefab.Destroy();
-            Destroy(spawn);
+            foreach (var spawn in toDestroy)
+            {
+                if (!spawn) continue;
+                var prefab = spawn.GetComponent<Prefab>();
+                if (prefab) prefab.Destroy();
+                Destroy(spawn);
+            }
         }
     }
 
@@ -246,6 +256,7 @@ public class Prefab : PreviewableBehaviour
         {
             var clone = block.Clone(name);
             clone.Setup(false, noReference: isAPreview);
+            if (clone.GetReference()) spawns.Add(clone.GetReference());
             switch (clone)
             {
                 case BroadcastBlock bb:
@@ -294,6 +305,7 @@ public class Prefab : PreviewableBehaviour
         var change = pos - transform.position;
         foreach (var spawn in spawns)
         {
+            if (!spawn) continue;
             spawn.transform.position += change;
         }
 
@@ -304,6 +316,7 @@ public class Prefab : PreviewableBehaviour
     {
         foreach (var spawn in spawns)
         {
+            if (!spawn) continue;
             spawn.transform.RotateAround(point, new Vector3(0, 0, 1), r - rot);
         }
 

@@ -102,9 +102,11 @@ public class NeedolinBlock : ToggleableBlock
         return id == "Playing" ? false : 0f;
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        new GameObject("[Architect] Needolin Block").AddComponent<NeedolinBlockRef>().Block = this;
+        var obj = new GameObject("[Architect] Needolin Block");
+        obj.AddComponent<NeedolinBlockRef>().Block = this;
+        return obj;
     }
 
     public class NeedolinBlockRef : MonoBehaviour

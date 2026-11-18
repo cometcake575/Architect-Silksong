@@ -49,25 +49,19 @@ public class SaveConfigValue<T>(SaveConfigType<T> type, string value)
 
 public class SaveConfigElement : ConfigElement
 {
-    private readonly Button _input;
     private readonly Button _apply;
     private string _value = string.Empty;
 
     public SaveConfigElement(GameObject parent, Button apply, Vector3 pos, [CanBeNull] string currentVal)
     {
-        (_input, _) = UIUtils.MakeTextButton("Config Input", "Extract", parent, pos, 
+        var (input, _) = UIUtils.MakeTextButton("Config Input", "Extract", parent, pos, 
             new Vector2(0, 0.5f), new Vector2(0, 0.5f), size:new Vector2(120, 25));
         _apply = apply;
         
-        var choice = _input.gameObject.AddComponent<ChoiceButton>();
+        var choice = input.gameObject.AddComponent<ChoiceButton>();
         choice.Cce = this;
 
         if (currentVal != null) _value = currentVal;
-    }
-
-    public override RectTransform GetElement()
-    {
-        return _input.transform as RectTransform;
     }
 
     public override string GetValue()

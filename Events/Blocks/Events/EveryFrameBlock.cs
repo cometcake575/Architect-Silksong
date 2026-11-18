@@ -23,10 +23,12 @@ public class EveryFrameBlock : ToggleableBlock
         _te.gameObject.SetActive(true);
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        _te = new GameObject("[Architect] Every Frame Block").AddComponent<TimerEvent>();
+        var obj = new GameObject("[Architect] Every Frame Block");
+        _te = obj.AddComponent<TimerEvent>();
         _te.Block = this;
+        return obj;
     }
 
     public class TimerEvent : MonoBehaviour

@@ -17,10 +17,12 @@ public class KeyBlock : ToggleableBlock
     public PlayerAction PlayerAction = null;
     public CustomKeybind Keybind = null;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        var te = new GameObject("[Architect] Key Listener Block").AddComponent<KeyEvent>();
+        var obj = new GameObject("[Architect] Key Listener Block");
+        var te = obj.AddComponent<KeyEvent>();
         te.Block = this;
+        return obj;
     }
     
     protected override void Trigger(string trigger)

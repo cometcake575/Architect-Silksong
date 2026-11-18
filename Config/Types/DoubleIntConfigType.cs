@@ -95,7 +95,7 @@ public class DoubleIntConfigElement : ConfigElement
         var lastX = _inputX.text;
         var lastY = _inputY.text;
 
-        _inputX.characterValidation = _inputY.characterValidation = InputField.CharacterValidation.Decimal;
+        _inputX.characterValidation = _inputY.characterValidation = InputField.CharacterValidation.Integer;
         
         _inputX.onValueChanged.AddListener(s =>
         {
@@ -109,11 +109,6 @@ public class DoubleIntConfigElement : ConfigElement
             lastY = s;
             apply.interactable = true;
         });
-    }
-
-    public override RectTransform GetElement()
-    {
-        return _parent;
     }
 
     public override string GetValue()

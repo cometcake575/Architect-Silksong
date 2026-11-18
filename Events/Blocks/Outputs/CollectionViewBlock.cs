@@ -31,7 +31,7 @@ public class CollectionViewBlock : CollectionBlock<CollectionViewBlock.Collectio
     private CollectionViewerDesk _cvd;
     private CollectionViewBoard _cbd;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
         var desk = Object.Instantiate(_deskPrefab);
         desk.name = "[Architect] Collection View";
@@ -53,6 +53,8 @@ public class CollectionViewBlock : CollectionBlock<CollectionViewBlock.Collectio
                 ConstructEventRegister = string.Empty
             });
         }
+
+        return desk;
     }
     
     protected override void Trigger(string trigger)
@@ -64,11 +66,6 @@ public class CollectionViewBlock : CollectionBlock<CollectionViewBlock.Collectio
     {
         public string ItemId = "Rosary_Set_Small";
         public string Section = "Sample Text";
-
-        public override void SetupReference()
-        {
-            
-        }
 
         protected override IEnumerable<(string, string)> InputVars => [("Available", "Boolean")];
         protected override IEnumerable<string> Outputs => ["OnPurchase"];

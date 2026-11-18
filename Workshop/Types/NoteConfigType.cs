@@ -21,7 +21,7 @@ public class NoteConfigType(
 
     public override ConfigValue Deserialize(string data)
     {
-        return new NoteConfigValue(this, data);
+        return new NoteConfigValue(data);
     }
         
     public static implicit operator NoteConfigType(string s)
@@ -30,8 +30,7 @@ public class NoteConfigType(
     }
 }
 
-public class NoteConfigValue(NoteConfigType type, string value) :
-    ConfigValue<NoteConfigType>(type)
+public class NoteConfigValue(string value) : ConfigValue<NoteConfigType>(null)
 {
     public override string SerializeValue()
     {
@@ -41,18 +40,10 @@ public class NoteConfigValue(NoteConfigType type, string value) :
 
 public class NoteConfigElement : ConfigElement
 {
-    private readonly Button _input;
-
     public NoteConfigElement(Button apply)
     {
-        _input = apply;
         apply.gameObject.SetActive(false);
         apply.GetComponent<UIUtils.LabelledButton>().label.gameObject.SetActive(false);
-    }
-
-    public override RectTransform GetElement()
-    {
-        return _input.transform as RectTransform;
     }
 
     public override string GetValue()

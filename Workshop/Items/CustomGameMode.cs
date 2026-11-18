@@ -260,6 +260,7 @@ public class CustomGameMode : SpriteItem
 
         var content = UIManager.instance.playModeMenuScreen.transform.Find("Content");
         var btn = content.Find("NormalButton").gameObject;
+        var steelBtn = content.Find("SteelButton").gameObject;
 
         _go = Object.Instantiate(btn, content);
         _go.name = $"{Id}Button";
@@ -292,7 +293,7 @@ public class CustomGameMode : SpriteItem
         customBtn.forceInactive = Replace switch
         {
             1 => btn,
-            2 => content.Find("SteelButton").gameObject,
+            2 => steelBtn,
             _ => null
         };
         customBtn.Update();
@@ -338,9 +339,23 @@ public class CustomGameMode : SpriteItem
         public float priority;
         public GameObject forceInactive;
 
+        private MenuButton _mb;
+
+        private void Awake()
+        {
+            _mb = GetComponent<MenuButton>();
+        }
+
         public void Update()
         {
             if (forceInactive) forceInactive.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            var nav = _mb.navigation;
+            nav.mode = Navigation.Mode.Automatic;
+            _mb.navigation = nav;
         }
 
         private void OnDisable()

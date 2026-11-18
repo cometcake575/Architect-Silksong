@@ -40,7 +40,7 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
 
     private QuestBoardInteractable _qbi;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
         var bo = Object.Instantiate(_questBoard);
         bo.transform.position = new Vector3(-9999, -9999);
@@ -67,6 +67,8 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
         qib.GetAvailableQuestsFunc = _qbi.GetDisplayedQuests;
         
         _qbi.questBoardPrefab = null;
+
+        return bo;
     }
     
     protected override void Trigger(string trigger)
@@ -99,9 +101,10 @@ public class QuestboardBlock : CollectionBlock<QuestboardBlock.QuestBlock>
 
         public BasicQuestBase Quest;
 
-        public override void SetupReference()
+        public override GameObject SetupReference()
         {
             Quest = QuestManager.instance.masterList.GetByName(QuestName) as FullQuestBase;
+            return null;
         }
         
         protected override IEnumerable<(string, string)> InputVars => [("Available", "Boolean")];

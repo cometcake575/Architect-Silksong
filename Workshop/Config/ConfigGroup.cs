@@ -141,7 +141,7 @@ public static class ConfigGroup
             }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
         ),
         (NoteConfigType) "",
-        (NoteConfigType) "'Sub' for Music Cues",
+        (NoteConfigType) "'Action' for Music Cues",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomCue>("Layer 3 URL", "music_cue_wav_url_3", (item, value) =>
             {
@@ -155,7 +155,7 @@ public static class ConfigGroup
             }).WithOptions("Implicit", "ExplicitOn", "ExplicitOff").WithDefaultValue(0)
         ),
         (NoteConfigType) "",
-        (NoteConfigType) "'Action' for Music Cues",
+        (NoteConfigType) "'Sub' for Music Cues",
         ConfigurationManager.RegisterConfigType(
             new StringConfigType<CustomCue>("Layer 4 URL", "music_cue_wav_url_4", (item, value) =>
             {
@@ -1247,32 +1247,32 @@ public static class ConfigGroup
     public static readonly List<ConfigType> Crest =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest>("Unlock Prefix", "crest_name_prefix", (item, value) =>
+            new StringConfigType<CustomCrestOld>("Unlock Prefix", "crest_name_prefix", (item, value) =>
             {
                 item.NamePrefix = value.GetValue();
             }).WithDefaultValue("Bound the Crest of")
         ),
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest>("Name", "crest_name", (item, value) =>
+            new StringConfigType<CustomCrestOld>("Name", "crest_name", (item, value) =>
             {
                 item.Name = value.GetValue();
             })
         ),
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest>("Description", "crest_desc", (item, value) =>
+            new StringConfigType<CustomCrestOld>("Description", "crest_desc", (item, value) =>
             {
                 item.Desc = value.GetValue();
             })
         ),
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest>("Equip Desc", "crest_equip_desc", (item, value) =>
+            new StringConfigType<CustomCrestOld>("Equip Desc", "crest_equip_desc", (item, value) =>
             {
                 item.EquipText = value.GetValue();
             }).WithDefaultValue("To change Crest, open the Crest screen of the Menu while resting at a bench.")
         ),
         (NoteConfigType)"Determines the moveset for the crest, does not affect the bind",
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType<CustomCrest>("Base Movement", "crest_base_movement", (item, value) =>
+            new ChoiceConfigType<CustomCrestOld>("Base Movement", "crest_base_movement", (item, value) =>
             {
                 item.Movement = value.GetStringValue();
             }).WithOptions(
@@ -1292,37 +1292,37 @@ public static class ConfigGroup
     public static readonly List<ConfigType> CrestSprites =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest>("Silhouette URL", "png_crest_sil_url", (item, value) =>
+            new StringConfigType<CustomCrestOld>("Silhouette URL", "png_crest_sil_url", (item, value) =>
             {
                 item.HIconUrl = value.GetValue();
             })
         ),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomCrest>("Anti Aliasing", "png_crest_sil_antialias", (item, value) =>
+            new BoolConfigType<CustomCrestOld>("Anti Aliasing", "png_crest_sil_antialias", (item, value) =>
             {
                 item.HPoint = !value.GetValue();
             }).WithDefaultValue(true)
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomCrest>("Pixels Per Unit", "png_crest_sil_ppu", (item, value) =>
+            new FloatConfigType<CustomCrestOld>("Pixels Per Unit", "png_crest_sil_ppu", (item, value) =>
             {
                 item.HPpu = value.GetValue();
             }).WithDefaultValue(100)
         ),
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest>("Glow URL", "png_crest_glow_url", (item, value) =>
+            new StringConfigType<CustomCrestOld>("Glow URL", "png_crest_glow_url", (item, value) =>
             {
                 item.GIconUrl = value.GetValue();
             })
         ),
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomCrest>("Anti Aliasing", "png_crest_glow_antialias", (item, value) =>
+            new BoolConfigType<CustomCrestOld>("Anti Aliasing", "png_crest_glow_antialias", (item, value) =>
             {
                 item.GPoint = !value.GetValue();
             }).WithDefaultValue(true)
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomCrest>("Pixels Per Unit", "png_crest_glow_ppu", (item, value) =>
+            new FloatConfigType<CustomCrestOld>("Pixels Per Unit", "png_crest_glow_ppu", (item, value) =>
             {
                 item.GPpu = value.GetValue();
             }).WithDefaultValue(100)
@@ -1332,38 +1332,38 @@ public static class ConfigGroup
     public static readonly List<ConfigType> CrestSlot =
     [
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomCrest.CrestSlot>("Crest ID", "crest_target_id", (item, value) =>
+            new StringConfigType<CustomCrestOld.CrestSlot>("Crest ID", "crest_target_id", (item, value) =>
             {
                 item.CrestId = value.GetValue();
             })
         ),
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType<CustomCrest.CrestSlot>("Type", "crest_slot_type", (item, value) =>
+            new ChoiceConfigType<CustomCrestOld.CrestSlot>("Type", "crest_slot_type", (item, value) =>
             {
                 item.ToolType = (ToolItemType)value.GetValue();
             }).WithDefaultValue(0).WithOptions("Red", "Blue", "Yellow", "Skill")
         ),
         ConfigurationManager.RegisterConfigType(
-            new ChoiceConfigType<CustomCrest.CrestSlot>("Direction", "crest_slot_dir", (item, value) =>
+            new ChoiceConfigType<CustomCrestOld.CrestSlot>("Direction", "crest_slot_dir", (item, value) =>
             {
                 item.Binding = (AttackToolBinding)value.GetValue();
             }).WithDefaultValue(0).WithOptions("Neutral", "Up", "Down")
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomCrest.CrestSlot>("X Pos", "crest_slot_x", (item, value) =>
+            new FloatConfigType<CustomCrestOld.CrestSlot>("X Pos", "crest_slot_x", (item, value) =>
             {
                 item.Pos.x = value.GetValue();
             }).WithDefaultValue(0)
         ),
         ConfigurationManager.RegisterConfigType(
-            new FloatConfigType<CustomCrest.CrestSlot>("Y Pos", "crest_slot_y", (item, value) =>
+            new FloatConfigType<CustomCrestOld.CrestSlot>("Y Pos", "crest_slot_y", (item, value) =>
             {
                 item.Pos.y = value.GetValue();
             }).WithDefaultValue(0)
         ),
         (NoteConfigType)"At least one slot must be unlocked by default",
         ConfigurationManager.RegisterConfigType(
-            new BoolConfigType<CustomCrest.CrestSlot>("Start Locked", "crest_slot_locked", (item, value) =>
+            new BoolConfigType<CustomCrestOld.CrestSlot>("Start Locked", "crest_slot_locked", (item, value) =>
             {
                 item.Lock = value.GetValue();
             }).WithDefaultValue(false)
@@ -1575,4 +1575,43 @@ public static class ConfigGroup
             })
         )
     ];
+    
+    public static readonly List<ConfigType> NewCrest =
+    [
+        new SubConfigGroup("Configuring Attack:", new Dictionary<string, List<ConfigType>>
+        {
+                ["Attack"] = MakeCrestConfigs("attack"),
+                ["Attack Alt"] = MakeCrestConfigs("alt_attack"),
+                ["Up Attack"] = MakeCrestConfigs("up_attack"),
+                ["Up Attack Alt"] = MakeCrestConfigs("up_alt_attack"),
+        })
+    ];
+
+    private static readonly string[] NormalAttacks =
+    [
+        "",
+        ""
+    ];
+    private static List<ConfigType> MakeCrestConfigs(string attackType)
+    {
+        var attack = new ChoiceConfigType<CustomCrest>("Attack",
+            $"{attackType}_source",
+            (crest, value) =>
+            {
+                crest.AttackSource = value.GetStringValue();
+            }).WithOptions("None", "Hunter", "Architect", "Witch").WithDefaultValue(0);
+        ConfigurationManager.RegisterConfigType(attack);
+        
+        var source = ConfigurationManager.RegisterConfigType(new ChoiceConfigType<CustomCrest>("Source",
+            $"{attackType}_source",
+            (crest, value) =>
+            {
+                crest.AttackSource = value.GetStringValue();
+            }).WithOptions("Hunter", "Architect", "Witch").WithDefaultValue(0));
+        return
+        [
+            source,
+            attack
+        ];
+    }
 }

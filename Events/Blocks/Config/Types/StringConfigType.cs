@@ -2,7 +2,6 @@ using System;
 using Architect.Utils;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Architect.Events.Blocks.Config.Types;
@@ -78,11 +77,6 @@ public class StringConfigElement : ConfigElement
             last = s;
             apply.interactable = true;
         });
-    }
-
-    public override RectTransform GetElement()
-    {
-        return _input.transform as RectTransform;
     }
 
     public override string GetValue()

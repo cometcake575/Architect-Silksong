@@ -425,8 +425,13 @@ public static class WorkshopUI
 
     private static bool _saved;
 
+    public static WorkshopItem Current;
+    public static bool IsNew;
+
     public static void Open(WorkshopItem item, bool isNew)
     {
+        Current = item;
+        IsNew = isNew;
         _saved = !isNew;
         if (isNew)
         {
@@ -464,49 +469,8 @@ public static class WorkshopUI
             }
             foreach (var configType in configGroup)
             {
-                var txt = UIUtils.MakeLabel(
-                    "Config Title",
-                    _configParent,
-                    new Vector3(x + 100, y),
-                    new Vector2(0, 0.5f),
-                    new Vector2(0, 0.5f)).textComponent;
-                txt.text = configType.Name;
-                txt.fontSize = 8;
-                txt.alignment = TextAnchor.MiddleLeft;
-                
-                var (btn, _) = UIUtils.MakeTextButton(
-                    "Config Apply",
-                    "Apply",
-                    _configParent, 
-                    new Vector2(x + 220, y),
-                    new Vector2(0, 0.5f),
-                    new Vector2(0, 0.5f));
-                btn.interactable = false;
-                
-                var inp = configType.CreateInput(_configParent, btn, new Vector3(x + 155, y), 
-                    (isNew ?
-                        configType.GetDefaultValue() :
-                        item.CurrentConfig.GetValueOrDefault(configType.Id))?.SerializeValue());
+                configType.SetupUI(_configParent, x, y);
                 y -= 12;
-                
-                btn.onClick.AddListener(Apply);
-                if (isNew) Apply();
-
-                continue;
-                
-                void Apply()
-                {
-                    btn.interactable = false;
-                    var val = inp.GetValue();
-                    if (val.Length == 0)
-                        item.CurrentConfig.Remove(configType.Id);
-                    else
-                    {
-                        var cfg = configType.Deserialize(inp.GetValue());
-                        cfg.Setup(item);
-                        item.CurrentConfig[configType.Id] = cfg;
-                    }
-                }
             }
 
             y -= 24;

@@ -14,7 +14,7 @@ public class CounterBlock : ScriptBlock
     public int Count;
     private int _count;
 
-    public override void SetupReference()
+    public override void Reset()
     {
         _count = 0;
     }

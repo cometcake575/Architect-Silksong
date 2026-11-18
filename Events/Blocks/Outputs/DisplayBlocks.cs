@@ -57,9 +57,10 @@ public class TextBlock : ScriptBlock
     
     public bool Decorators;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        _display = new GameObject("[Architect] Text Display").AddComponent<TextDisplay>();
+        var obj = new GameObject("[Architect] Text Display");
+        _display = obj.AddComponent<TextDisplay>();
         _display.Block = this;
         _display.takeControl = TakeControl;
 
@@ -71,6 +72,7 @@ public class TextBlock : ScriptBlock
         _display.decorators = Decorators;
         
         _display.Setup();
+        return obj;
     }
 
     protected override void Trigger(string trigger)
@@ -97,9 +99,10 @@ public class ChoiceBlock : ScriptBlock
 
     private ChoiceDisplay _display;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        _display = new GameObject("[Architect] Text Display").AddComponent<ChoiceDisplay>();
+        var obj = new GameObject("[Architect] Text Display");
+        _display = obj.AddComponent<ChoiceDisplay>();
         _display.Block = this;
         _display.takeControl = TakeControl;
 
@@ -109,6 +112,7 @@ public class ChoiceBlock : ScriptBlock
         _display.useItem = UseItem;
         _display.currencyType = CurrencyType;
         _display.cost = Cost;
+        return obj;
     }
 
     protected override void Trigger(string trigger)
@@ -135,15 +139,18 @@ public class HandInBlock : CollectionBlock<HandInBlock.HandInItemBlock>
 
     private ChoiceDisplay _display;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        _display = new GameObject("[Architect] Text Display").AddComponent<ChoiceDisplay>();
+        var obj = new GameObject("[Architect] Text Display");
+        _display = obj.AddComponent<ChoiceDisplay>();
         _display.Block = this;
         _display.takeControl = TakeControl;
 
         _display.text = Text;
         _display.takeItem = TakeItems;
         _display.useItem = true;
+
+        return obj;
     }
 
     protected override void Trigger(string trigger)
@@ -194,10 +201,12 @@ public class InputBlock : ScriptBlock
         
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        _display = new GameObject("[Architect] Text Display").AddComponent<InputDisplay>();
+        var obj = new GameObject("[Architect] Text Display");
+        _display = obj.AddComponent<InputDisplay>();
         _display.Block = this;
+        return obj;
     }
     
     protected override void Trigger(string trigger)
@@ -256,10 +265,11 @@ public class SongBlock : ScriptBlock
         Delay = 1;
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
         _collection = ScriptableObject.CreateInstance<LocalisedTextCollection>();
         _collection.data = new LocalisedTextCollectionData(new LocalisedString("ArchitectMod", Text));
+        return null;
     }
 
     protected override void Trigger(string trigger)

@@ -74,11 +74,6 @@ public class IntConfigElement : ConfigElement
         });
     }
 
-    public override RectTransform GetElement()
-    {
-        return _input.transform as RectTransform;
-    }
-
     public override string GetValue()
     {
         return _input.text;

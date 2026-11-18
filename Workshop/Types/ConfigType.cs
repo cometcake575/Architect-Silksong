@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using Architect.Editor;
+using Architect.Utils;
 using Architect.Workshop.Items;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -21,6 +24,52 @@ public abstract class ConfigType(string name, string id)
     public abstract ConfigElement CreateInput(GameObject parent, Button apply, Vector3 pos, [CanBeNull] string currentVal);
 
     internal abstract void RunAction(WorkshopItem item, ConfigValue value);
+
+    public void SetupUI(GameObject parent, float x, float y)
+    {
+        var txt = UIUtils.MakeLabel(
+            "Config Title",
+            parent,
+            new Vector3(x + 100, y),
+            new Vector2(0, 0.5f),
+            new Vector2(0, 0.5f)).textComponent;
+        txt.text = Name;
+        txt.fontSize = 8;
+        txt.alignment = TextAnchor.MiddleLeft;
+                
+        var (btn, _) = UIUtils.MakeTextButton(
+            "Config Apply",
+            "Apply",
+            parent, 
+            new Vector2(x + 220, y),
+            new Vector2(0, 0.5f),
+            new Vector2(0, 0.5f));
+        btn.interactable = false;
+                
+        var inp = CreateInput(parent, btn, new Vector3(x + 155, y), 
+            (WorkshopUI.IsNew ?
+                GetDefaultValue() :
+                WorkshopUI.Current.CurrentConfig.GetValueOrDefault(Id))?.SerializeValue());
+                
+        btn.onClick.AddListener(Apply);
+        if (WorkshopUI.IsNew) Apply();
+
+        return;
+                
+        void Apply()
+        {
+            btn.interactable = false;
+            var val = inp.GetValue();
+            if (val.Length == 0)
+                WorkshopUI.Current.CurrentConfig.Remove(Id);
+            else
+            {
+                var cfg = Deserialize(inp.GetValue());
+                cfg.Setup(WorkshopUI.Current);
+                WorkshopUI.Current.CurrentConfig[Id] = cfg;
+            }
+        }
+    }
 }
 
 public abstract class ConfigType<TType, TValue>(
@@ -79,7 +128,5 @@ public abstract class ConfigValue<TType>(TType type) : ConfigValue
 
 public abstract class ConfigElement
 {
-    public abstract RectTransform GetElement();
-
     public abstract string GetValue();
 }

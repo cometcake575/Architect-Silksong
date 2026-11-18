@@ -140,11 +140,12 @@ public class ObjectBlock : ScriptBlock
         TypeId = data["object_type"];
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        if (!PlacementManager.Objects.TryGetValue(TargetId, out _referencedObject)) return;
+        if (!PlacementManager.Objects.TryGetValue(TargetId, out _referencedObject)) return null;
         _reference = _referencedObject.AddComponent<ObjectBlockReference>();
         _reference.Block = this;
+        return null;
     }
 
     protected override void Trigger(string trigger)

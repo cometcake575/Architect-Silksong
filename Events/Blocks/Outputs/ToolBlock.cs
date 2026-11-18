@@ -30,10 +30,12 @@ public class ToolBlock : ScriptBlock
         return tool ? tool.SavedData.AmountLeft : 0;
     }
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        var te = new GameObject("[Architect] Receive Block").AddComponent<ToolEvent>();
+        var obj = new GameObject("[Architect] Receive Block");
+        var te = obj.AddComponent<ToolEvent>();
         te.Block = this;
+        return obj;
     }
 
     public class ToolEvent : MonoBehaviour

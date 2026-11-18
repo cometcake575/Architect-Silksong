@@ -18,7 +18,7 @@ public class PngBlock : ScriptBlock
     public bool Point;
     public float Ppu;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
         var obj = new GameObject("[Architect] Custom PNG")
             { transform = { localPosition = new Vector3(-9999, -9999) } };
@@ -32,6 +32,8 @@ public class PngBlock : ScriptBlock
         pngObj.ppu = Ppu;
         
         obj.SetActive(true);
+
+        return obj;
     }
 
     public override object GetValue(string id)

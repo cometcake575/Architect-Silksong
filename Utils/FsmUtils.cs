@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using HutongGames.PlayMaker;
 
 namespace Architect.Utils;
@@ -31,6 +32,56 @@ public static class FsmUtils
     public static void DisableAction(this FsmState state, int index)
     {
         state.Actions[index].Enabled = false;
+    }
+    
+    public static void DisableActions(this FsmState state, params int[] indexes)
+    {
+        foreach (var index in indexes) state.Actions[index].Enabled = false;
+    }
+
+    public static void AddEvent(this FsmState state, string eve, int index = 0)
+    {
+        state.AddAction(() => state.fsm.FsmComponent.SendEvent(eve), index);
+    }
+    
+    public static void AddTransition(this FsmState state, string onEventName, string toStateName)
+    {
+        var transitions = state.Transitions;
+        var fsmTransitionArray = new FsmTransition[transitions.Length + 1];
+        var fsmTransition = new FsmTransition
+        {
+            ToState = toStateName,
+            ToFsmState = state.Fsm.GetState(toStateName),
+            FsmEvent = FsmEvent.GetFsmEvent(onEventName)
+        };
+        int index;
+        for (index = 0; index < transitions.Length; ++index)
+            fsmTransitionArray[index] = transitions[index];
+        fsmTransitionArray[index] = fsmTransition;
+        state.Transitions = fsmTransitionArray;
+    }
+    
+    public static FsmTransition GetTransition(this FsmState state, string onEventName)
+    {
+        var transitions = state.Transitions;
+        return transitions.FirstOrDefault(t => t.EventName == onEventName);
+    }
+
+    public static void ChangeTransition(this FsmState state, string eve, string toState)
+    {
+        FsmTransition transition = state.GetTransition(eve);
+        transition.ToState = toState;
+        transition.ToFsmState = state.Fsm.GetState(toState);
+    }
+
+    public static T GetAction<T>(this FsmState state, int index) where T : FsmStateAction
+    {
+        return state.Actions[index] as T;
+    }
+    
+    public static T[] GetActionsOfType<T>(this FsmState state) where T : FsmStateAction
+    {
+        return state.Actions.Where(fsmStateAction => fsmStateAction.GetType() == typeof(T)).Cast<T>().ToArray();
     }
 
     public static void AddAction(this FsmState state, Action action, int index = -1, bool everyFrame = false)

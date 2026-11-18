@@ -11,10 +11,12 @@ public class MultiplayerOutBlock : ScriptBlock
     
     public string EventName;
 
-    public override void SetupReference()
+    public override GameObject SetupReference()
     {
-        var te = new GameObject("[Architect] Multiplayer Out Block").AddComponent<MpEvent>();
+        var obj = new GameObject("[Architect] Multiplayer Out Block");
+        var te = obj.AddComponent<MpEvent>();
         te.Block = this;
+        return obj;
     }
 
     public class MpEvent : MonoBehaviour
