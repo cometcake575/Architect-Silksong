@@ -14,8 +14,6 @@ public interface IPreload
 
     public void SetAsset(ManagedAsset<GameObject> asset);
 
-    public void MarkLoaded();
-
     public bool IsNotSceneBundle { get; }
     
     public bool ShouldAlwaysLoad { get; }

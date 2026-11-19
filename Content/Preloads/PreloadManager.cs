@@ -101,7 +101,6 @@ public static class PreloadManager
                 continue;
             }
 
-            preload.MarkLoaded();
             ArchitectPlugin.Instance.StartCoroutine(Prepare(preload, asset));
         }
 

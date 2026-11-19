@@ -343,8 +343,7 @@ public static class StorageManager
                 }
                 foreach (var o in scene.Placements.Where(o => o != null))
                 {
-                    if (o.GetPlacementType() is PreloadObject preload) 
-                        preload.ShouldLoad = true;
+                    o.GetPlacementType().ShouldLoad = true;
                 }
             }
         }
@@ -395,7 +394,7 @@ public static class StorageManager
         foreach (var (scene, data) in levels)
         {
             foreach (var pt in data.Placements
-                         .Select(placement => placement.GetPlacementType()).OfType<PreloadObject>())
+                         .Select(placement => placement.GetPlacementType()).Where(p => !p.Loaded))
             {
                 placeable.Add(pt);
             }

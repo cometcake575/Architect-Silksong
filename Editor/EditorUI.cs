@@ -514,7 +514,7 @@ public static class EditorUI
             
             switch (obj)
             {
-                case PreloadObject { Loaded: false }:
+                case PlaceableObject { Loaded: false }:
                     return;
                 case SavedObject saved:
                 {
@@ -1013,10 +1013,7 @@ public static class EditorUI
                         continue;
                 }
 
-                if (placeable is PreloadObject { Loaded: false })
-                {
-                    yield return placeable.EnsureLoaded();
-                }
+                yield return placeable.EnsureLoaded();
 
                 if (id != _refreshRoutineId) yield break;
                 

@@ -14,6 +14,8 @@ public static class EventManager
     
     public static EventReceiverType RegisterReceiverType(EventReceiverType type)
     {
+        if (ReceiverTypes.ContainsKey(type.Id)) 
+            ArchitectPlugin.Logger.LogWarning($"{type.Id} is already a registered receiver type!");
         return ReceiverTypes[type.Id] = type;
     }
     

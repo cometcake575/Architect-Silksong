@@ -123,7 +123,7 @@ public class ArchitectClientAddon : ClientAddon
         else
         {
             foreach (var placement in levelData.Placements
-                         .Where(p => p.GetPlacementType() is PreloadObject { Loaded: false })) 
+                         .Where(p => !p.GetPlacementType().Loaded)) 
                 yield return placement.GetPlacementType().EnsureLoaded();
             StorageManager.WipeScheduledEdits(packet.SceneName);
             StorageManager.SaveScene(packet.SceneName, levelData);

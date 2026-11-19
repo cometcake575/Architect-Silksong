@@ -38,6 +38,9 @@ public abstract class PlaceableObject : SelectableObject
     public int Tk2dRotation;
     public float ZPosition;
     public bool HasSetZ;
+    
+    public bool ShouldLoad;
+    public bool Loaded { get; protected set; }
 
     public bool IgnoreScale;
     
