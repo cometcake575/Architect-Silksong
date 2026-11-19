@@ -33,6 +33,7 @@ public class PreloadObject : PlaceableObject, IPreload
         Sprite uiSprite = null)
         : base(name, id, description, postSpawnAction, sprite, uiSprite)
     {
+        Loaded = false;
         Scene = path.Item1;
         Path = path.Item2;
         IsNotSceneBundle = notSceneBundle;

@@ -40,7 +40,7 @@ public abstract class PlaceableObject : SelectableObject
     public bool HasSetZ;
     
     public bool ShouldLoad;
-    public bool Loaded { get; protected set; }
+    public bool Loaded { get; protected set; } = true;
 
     public bool IgnoreScale;
     
