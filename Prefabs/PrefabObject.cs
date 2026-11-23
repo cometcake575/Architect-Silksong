@@ -176,6 +176,7 @@ public class Prefab : PreviewableBehaviour
     {
         DoDestroy(spawns);
         DoDestroy(blockSpawns);
+        Destroy(gameObject);
         
         return;
         

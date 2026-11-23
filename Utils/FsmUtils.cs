@@ -69,7 +69,7 @@ public static class FsmUtils
 
     public static void ChangeTransition(this FsmState state, string eve, string toState)
     {
-        FsmTransition transition = state.GetTransition(eve);
+        var transition = state.GetTransition(eve);
         transition.ToState = toState;
         transition.ToFsmState = state.Fsm.GetState(toState);
     }

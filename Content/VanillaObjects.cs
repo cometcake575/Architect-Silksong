@@ -77,7 +77,8 @@ public static class VanillaObjects
                 o.transform.SetPositionZ(0.6f);
             }, postSpawnAction: o => 
                 o.AddComponent<SpikeSlashReaction>().profile = cloverThornsProfile)
-            .WithConfigGroup(ConfigGroup.Vines));
+            .WithConfigGroup(ConfigGroup.Vines)
+            .WithRotationGroup(RotationGroup.All));
         
         Categories.Hazards.Add(new PreloadObject("Coral Spikes", "coral_spikes",
             ("Coral_26", "Coral_Spikes_pin (10)/Coral_extras_01_0005_s3"),
@@ -91,7 +92,8 @@ public static class VanillaObjects
                     new Vector2(1.2f, -0.7f),
                     new Vector2(0.5f, -1.3f));
                 o.transform.SetPositionZ(0.006f);
-            }).WithConfigGroup(ConfigGroup.Vines));
+            }).WithConfigGroup(ConfigGroup.Vines)
+            .WithRotationGroup(RotationGroup.All));
         
         SpikeSlashReactionProfile swampFernProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Shadow_02", "Spike Collider (2)",
@@ -116,7 +118,8 @@ public static class VanillaObjects
                 cc2d.offset = new Vector2(0, 1.5f);
                 cc2d.radius = 1;
                 o.AddComponent<SpikeSlashReaction>().profile = swampFernProfile;
-            }).WithConfigGroup(ConfigGroup.Vines));
+            }).WithConfigGroup(ConfigGroup.Vines)
+            .WithRotationGroup(RotationGroup.All));
         
         SpikeSlashReactionProfile antSpikeProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Ant_04", "Spike Collider",
@@ -145,7 +148,8 @@ public static class VanillaObjects
                 bc2d.offset = new Vector2(0, -0.5f);
                 bc2d.size = new Vector2(5.8f, 2);
                 o.AddComponent<SpikeSlashReaction>().profile = antSpikeProfile;
-            }).WithConfigGroup(ConfigGroup.Vines));
+            }).WithConfigGroup(ConfigGroup.Vines)
+            .WithRotationGroup(RotationGroup.All));
         
         SpikeSlashReactionProfile abyssSpikeProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Abyss_13", "Abyss_thorn_clump/Spike Collider Vine",
@@ -177,7 +181,8 @@ public static class VanillaObjects
                 cc2d.isTrigger = true;
                 cc2d.radius = 2.75f;
                 o.AddComponent<SpikeSlashReaction>().profile = abyssSpikeProfile;
-            }).WithConfigGroup(ConfigGroup.Vines));
+            }).WithConfigGroup(ConfigGroup.Vines)
+            .WithRotationGroup(RotationGroup.All));
         
         SpikeSlashReactionProfile shellwoodThornsProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Shellwood_26", "Spike Collider (8)",
@@ -193,7 +198,8 @@ public static class VanillaObjects
             new Vector2(0.474f, -1.382f),
             new Vector2(-1.399f, -0.882f),
             new Vector2(-3.272f, -1.265f)
-        ], postSpawnAction: o => o.AddComponent<SpikeSlashReaction>().profile = shellwoodThornsProfile));
+        ], postSpawnAction: o => o.AddComponent<SpikeSlashReaction>().profile = shellwoodThornsProfile)
+        .WithRotationGroup(RotationGroup.All));
         
         SpikeSlashReactionProfile surfaceThornsProfile = null;
         PreloadManager.RegisterPreload(new BasicPreload("Cradle_Destroyed_Challenge_01", "Spike Collider (3)",
@@ -206,7 +212,8 @@ public static class VanillaObjects
             new Vector2(0.874f, 1.282f),
             new Vector2(2.353f, 0.813f),
             new Vector2(3.454f, -1.574f)
-        ], postSpawnAction: o => o.AddComponent<SpikeSlashReaction>().profile = surfaceThornsProfile));
+        ], postSpawnAction: o => o.AddComponent<SpikeSlashReaction>().profile = surfaceThornsProfile)
+        .WithRotationGroup(RotationGroup.All));
     }
 
     private static void AddToolObjects()

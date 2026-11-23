@@ -131,6 +131,8 @@ public static class PreviewUtils
             gameObject.RemoveComponentsInChildren<AmbientSway>();
             gameObject.RemoveComponentsInChildren<PlayFromRandomFrameMecanim>();
             gameObject.RemoveComponentsInChildren<Crawler>();
+            gameObject.RemoveComponentsInChildren<Climber>();
+            gameObject.RemoveComponentsInChildren<RangeAttacker>();
             if (!Storage.Settings.HitboxesInEditor.Value && !type.HitboxPreview)
             {
                 gameObject.RemoveComponentsInChildren<Collider2D>();

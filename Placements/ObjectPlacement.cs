@@ -184,6 +184,7 @@ public class ObjectPlacement(
         
         _spawningPreview = true;
         var obj = SpawnObject(pos, extraId);
+        if (!obj) return null;
         _previewObject = obj;
         
         if (type.SpritePreview)

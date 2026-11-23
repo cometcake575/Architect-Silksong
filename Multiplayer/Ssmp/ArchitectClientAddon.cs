@@ -103,10 +103,20 @@ public class ArchitectClientAddon : ClientAddon
         }
         else
         {
-            var action = new PlaceObjects(StorageManager.DeserializePlacements(json));
-            if (packet.SceneName == GameManager.instance.sceneName) ActionManager.ReceiveAction(action);
-            else action.Execute(packet.SceneName);
+            var placements = StorageManager.DeserializePlacements(json);
+            ArchitectPlugin.Instance.StartCoroutine(SavePlacements(placements, packet.SceneName));
         }
+    }
+
+    private static IEnumerator SavePlacements(List<ObjectPlacement> placements, string scene)
+    {
+        foreach (var placement in placements
+                     .Where(p => !p.GetPlacementType().Loaded)) 
+            yield return placement.GetPlacementType().EnsureLoaded();
+        
+        var action = new PlaceObjects(placements);
+        if (scene == GameManager.instance.sceneName) ActionManager.ReceiveAction(action);
+        else action.Execute(scene);
     }
 
     private static IEnumerator SaveData(LevelData levelData, PlacePacketData packet)
