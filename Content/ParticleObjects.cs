@@ -4,6 +4,7 @@ using Architect.Behaviour.Fixers;
 using Architect.Config;
 using Architect.Config.Types;
 using Architect.Content.Preloads;
+using Architect.Editor;
 using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;

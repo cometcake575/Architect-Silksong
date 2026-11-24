@@ -5,6 +5,7 @@ using System.Linq;
 using Architect.Behaviour.Custom;
 using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
+using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Utils;
 using Architect.Workshop.Items;
@@ -773,13 +774,25 @@ public static class EnemyFixers
     public class FlyIn : PreviewableBehaviour
     {
         public bool flyIn;
+
+        public void SetFlyIn()
+        {
+            flyIn = true;
+            GetComponent<MeshRenderer>().enabled = false;
+        }
+
+        protected virtual void Start()
+        {
+            if (isAPreview) GetComponent<MeshRenderer>().enabled = true;
+        }
     }
 
     public class Maestro : FlyIn
     {
-        private void Start()
+        protected override void Start()
         {
-            FixMaestro(gameObject, flyIn && !isAPreview);
+            base.Start();
+            FixMaestro(gameObject, flyIn);
         }
     }
 
@@ -1685,12 +1698,14 @@ public static class EnemyFixers
                     break;
                 default:
                     fsm.SendEvent("EGG");
+                    obj.transform.Find("Egg").gameObject.SetActive(true);
                     break;
             }
         }, 0);
         fsm.GetState("Fly In Ready").AddAction(() => fsm.SendEvent("WAKE"));
         fsm.GetState("Cam Check").AddAction(() => fsm.SendEvent("FINISHED"), 0);
-        fsm.GetState("Start Pause").AddAction(() => fsm.SendEvent("FINISHED"), 11);
+        fsm.GetState("Start Pause").DisableActions(11, 12, 13);
+        fsm.GetState("Check Pos").DisableAction(1);
         obj.GetComponent<HealthManager>().hasSpecialDeath = false;
     }
 
@@ -2383,6 +2398,10 @@ public static class EnemyFixers
         }, 0);
         var de = fsm.GetState("Death Explode");
         de.transitions = [];
+        de.AddAction(() =>
+        {
+            if (obj.GetComponent<ConfigGroup.JournalKillDisablerMarker>()) Object.Destroy(obj);
+        }, 13);
         de.AddAction(() => Object.Destroy(obj));
 
         fsm.FsmGlobalTransitions.First(o => o.EventName == "FINAL BLOCK")
@@ -3673,6 +3692,13 @@ public static class EnemyFixers
         FixB("Slam ML", 1);
         FixB("Slam R", 1);
         FixB("Slam L", 1);
+
+        var slamScale = fsm.FsmVariables.FindFsmFloat("Slam Scale");
+        fsm.GetState("To HandSlam Antic").AddAction(() =>
+        {
+            if (slamScale.Value < 0) slamScale.Value = -1;
+            else slamScale.Value = 1;
+        }, 0);
 
         return;
 

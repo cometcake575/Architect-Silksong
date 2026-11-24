@@ -346,7 +346,7 @@ public static class ConfigGroup
             }).WithDefaultValue(1.2f)
         ),
         ConfigurationManager.RegisterConfigType(
-            new StringConfigType<CustomItem>("Used Audio URL", "wav_url2", (item, value) =>
+            new StringConfigType<CustomItem>("Cap Audio URL", "wav_url2", (item, value) =>
             {
                 item.WavURL2 = value.GetValue();
             })

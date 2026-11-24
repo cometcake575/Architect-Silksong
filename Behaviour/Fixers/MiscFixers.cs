@@ -847,9 +847,7 @@ public static class MiscFixers
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
 
-            var ce = fsm.GetState("Convo End");
-            if (ce == null) return;
-            ce.AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
+            fsm.GetState("Dialogue End").AddAction(() => gameObject.BroadcastEvent("OnFinish"), 0);
         }
     }
     
@@ -902,7 +900,7 @@ public static class MiscFixers
         private void Start()
         {
             var fsm = gameObject.LocateMyFSM("Behaviour");
-            fsm.GetState("State?").AddAction(() => fsm.SendEvent("FINISHED"), 3);
+            fsm.GetState("State?").AddAction(() => fsm.SendEvent("FINISHED"), 4);
             var dialogue = (RunDialogue)fsm.GetState("Repeat").actions[0];
             dialogue.Sheet = "ArchitectMod";
             dialogue.Key = text;
@@ -2228,6 +2226,20 @@ public static class MiscFixers
                     GameCameras.instance.HUDIn();
                 }
             });
+        }
+    }
+
+    public static void FlipBasicNpc(GameObject obj, bool flip)
+    {
+        if (flip) {
+            obj.transform.SetScaleY(-obj.transform.GetScaleY());
+            var npcBase = obj.GetComponentInChildren<NPCControlBase>();
+            if (npcBase) npcBase.talkPosition = npcBase.talkPosition switch
+            {
+                NPCControlBase.TalkPositions.Left => NPCControlBase.TalkPositions.Right,
+                NPCControlBase.TalkPositions.Right => NPCControlBase.TalkPositions.Left,
+                _ => npcBase.talkPosition
+            };
         }
     }
 }

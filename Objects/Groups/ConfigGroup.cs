@@ -1107,7 +1107,7 @@ public static class ConfigGroup
                                            value.GetValue() * EditManager.CurrentScale);
                     if (EditManager.CurrentlyFlipped) o.transform.SetScaleX(-o.transform.GetScaleX());
                 })
-            .WithDefaultValue(Vector2.one))
+            .WithDefaultValue(Vector2.one).WithPriority(-1))
     ]);
     
     public static readonly List<ConfigType> EnviroRegion = GroupUtils.Merge(Stretchable, [
@@ -2551,13 +2551,13 @@ public static class ConfigGroup
     ]);
 
     public static readonly List<ConfigType> CustomEnemy = GroupUtils.Merge(Enemies, 
-        GroupUtils.Merge(Stretchable, GroupUtils.Merge(Gravity, GroupUtils.Merge(EnemyManager, [
+        GroupUtils.Merge(Stretchable, GroupUtils.Merge(Gravity, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Contact Damage", "custom_enemy_contact_dmg", (o, value) =>
             {
                 o.GetComponent<DamageHero>().damageDealt = value.GetValue();
             }).WithDefaultValue(1))
-    ]))));
+    ])));
 
     public static readonly List<ConfigType> Hornfly = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
@@ -2573,8 +2573,7 @@ public static class ConfigGroup
             {
                 if (value.GetValue() == 1)
                 {
-                    o.GetComponent<MeshRenderer>().enabled = false;
-                    o.GetComponent<EnemyFixers.FlyIn>().flyIn = true;
+                    o.GetComponent<EnemyFixers.FlyIn>().SetFlyIn();
                 }
             }).WithOptions("None", "Fly In").WithDefaultValue(0))
     ]);

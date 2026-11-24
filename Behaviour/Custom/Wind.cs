@@ -186,6 +186,7 @@ public class Wind : MonoBehaviour
         var triggers = ps.trigger;
         triggers.enabled = true;
         var trigger = particles.AddComponent<BoxCollider2D>();
+        trigger.isTrigger = true;
         trigger.offset = new Vector2(5, 0);
         trigger.size = new Vector2(10, 10);
 

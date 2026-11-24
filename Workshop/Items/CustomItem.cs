@@ -165,7 +165,7 @@ public class CustomItem : SpriteItem
             CollectableItemManager.Instance.masterList.Add(this);
             if (MementoList && _item.ItemType == CustomItemType.Memento) MementoList.Add(this);
         }
-
+        
         public void SetSprite(Sprite sprite)
         {
             icon = sprite;

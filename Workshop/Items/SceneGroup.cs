@@ -284,6 +284,32 @@ public class SceneGroup : SpriteItem
                     ? cmz.SceneGroup.HasMap()
                     : orig(self);
             });
+        
+        typeof(InventoryWideMap).Hook(nameof(InventoryWideMap.PositionIcon),
+            (Action<InventoryWideMap, Transform, Vector2, bool, MapZone> orig, 
+                InventoryWideMap self,
+                Transform icon,
+                Vector2 mapBoundsPos,
+                bool isActive,
+                MapZone currentMapZone) =>
+            {
+                orig(self, icon, mapBoundsPos, isActive, currentMapZone);
+                if (!isActive) return;
+
+                string sceneId;
+                if (icon == self.compassIcon) 
+                    sceneId = GameManager.instance.sceneName;
+                else if (icon == self.corpseIcon) 
+                    sceneId = PlayerData.instance.HeroCorpseScene;
+                else return;
+
+                if (SceneUtils.CustomScenes.TryGetValue(sceneId, out var scene) &&
+                    SceneUtils.SceneGroups.TryGetValue(scene.Group, out var group) && group.HasMap())
+                {
+                    icon.transform.position = group.MapPos;
+                    icon.gameObject.SetActive(true);
+                }
+            });
     }
 
     public bool HasMap()
@@ -312,6 +338,7 @@ public class SceneGroup : SpriteItem
         MapZone = _mapObject.GetComponent<InventoryItemWideMapZone>();
         MapZone.Selectables = [null, null, null, null];
         MapZone.zoomToZone = GlobalEnums.MapZone.NONE;
+        MapZone.compassNodes = [Vector2.zero];
 
         var cmz = _mapObject.AddComponent<CustomMapZone>();
         cmz.SceneGroup = this;

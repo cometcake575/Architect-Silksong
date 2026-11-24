@@ -646,7 +646,7 @@ public static class VanillaObjects
         
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 2", "lava_crumble_plat_b",
             ("Under_19", "lava_crumble_plat"))
-            .WithConfigGroup(ConfigGroup.CrumblePlat));
+            .WithConfigGroup(ConfigGroup.CrumblePlat)).SpritePreview = true;
 
         AddEnemy("Cogwork Underfly", "understore_auto", ("Under_19", "Understore Automaton"),
             postSpawnAction: o =>
@@ -715,7 +715,8 @@ public static class VanillaObjects
             ("Under_03d", "Black Thread States/Normal World/Understore Large Worker"),
             preloadAction: MiscFixers.FixLoam)
             .WithConfigGroup(ConfigGroup.Npcs)
-            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
+            .WithFlipAction(MiscFixers.FlipBasicNpc));
         
         typeof(HeroTreadmill).Hook(nameof(HeroTreadmill.OnBeforeHeroConveyor),
             (Action<HeroTreadmill, Vector2> orig, HeroTreadmill self, Vector2 velocity) =>
@@ -1932,7 +1933,8 @@ public static class VanillaObjects
                 ("Peak_Mask_Maker", "Peak Mask Maker"),
                 postSpawnAction: MiscFixers.FixMaskMaker)
             .WithConfigGroup(ConfigGroup.MaskMaker)
-            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
+            .WithFlipAction(MiscFixers.FlipBasicNpc));
 
         Categories.Misc.Add(new PreloadObject("Fayforn (Ground)", "fayforn_npc",
                 ("Peak_08b", "DJ Get Sequence/Fayforn Ground Sit NPC"),
@@ -3024,11 +3026,13 @@ public static class VanillaObjects
                 o.AddComponent<MiscFixers.MushroomTablet>();
             }).WithConfigGroup(ConfigGroup.Dialogue)
         .WithReceiverGroup(ReceiverGroup.MushTablet)
-        .WithBroadcasterGroup(BroadcasterGroup.Finishable));
+        .WithBroadcasterGroup(BroadcasterGroup.Finishable)
+        .WithFlipAction(MiscFixers.FlipBasicNpc));
 
         Categories.Misc.Add(new PreloadObject("Abyss Tablet", "abyss_tablet",
             ("Abyss_02b", "Abyss_lore_stone")
-        ).WithConfigGroup(ConfigGroup.LoreTablets));
+        ).WithConfigGroup(ConfigGroup.LoreTablets)
+        .WithFlipAction(MiscFixers.FlipBasicNpc));
     }
 
     private static void AddMemoriumObjects()
@@ -3207,7 +3211,8 @@ public static class VanillaObjects
             ("Belltown", "Pin Pilgrim"),
             preloadAction: MiscFixers.FixPinPilgrim)
             .WithConfigGroup(ConfigGroup.Npcs)
-            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
+            .WithFlipAction(MiscFixers.FlipBasicNpc));
 
         Categories.Npcs.Add(new PreloadObject("Pavo NPC", "pavo_normal",
             ("Belltown", "Town States/Spinner Defeated/Bagpipers Not Here/Belltown Greeter NPC"),
@@ -3474,7 +3479,12 @@ public static class VanillaObjects
             .WithBroadcasterGroup(BroadcasterGroup.Activatable));
         
         Categories.Interactable.Add(new PreloadObject("Skarr Cage", "ant_trap_cage", 
-            ("Ant_04", "Hunter Trap Cage (1)"))
+            ("Ant_04", "Hunter Trap Cage (1)"),
+            preloadAction: o =>
+            {
+                o.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+                o.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
+            })
             .WithReceiverGroup(ReceiverGroup.Trap)
             .WithConfigGroup(ConfigGroup.PersistentBreakable));
 
@@ -3755,7 +3765,7 @@ public static class VanillaObjects
 
         Categories.Platforming.Add(new PreloadObject("Crumbling Rocks 1", "lava_crumble_plat",
                 ("Dock_02b", "lava_crumble_plat (5)"))
-            .WithConfigGroup(ConfigGroup.CrumblePlat));
+            .WithConfigGroup(ConfigGroup.CrumblePlat)).SpritePreview = true;
 
         Categories.Hazards.Add(new PreloadObject("Hot Coals", "hot_coal",
             ("Bone_East_03", "lava_rocks_top_glower"),
@@ -3974,7 +3984,8 @@ public static class VanillaObjects
             ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Flea Games Host NPC"),
             preloadAction: MiscFixers.FixFleamaster)
             .WithConfigGroup(ConfigGroup.Npcs)
-            .WithBroadcasterGroup(BroadcasterGroup.Npcs));
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
+            .WithFlipAction(MiscFixers.FlipBasicNpc));
         
         /*Categories.Misc.Add(new PreloadObject("Juggle Flea", "juggle_flea",
             ("Aqueduct_05_festival", "Caravan_States/Flea Festival/Flea Game - Juggling/Bellfleas/Bellflea Juggler"),
@@ -4250,7 +4261,8 @@ public static class VanillaObjects
                 "Black Thread States/Normal World/RestBench Control/Bench Getting Repaired/Fixer Pilgrim Bench Repair"),
             postSpawnAction: MiscFixers.AddComponent<MiscFixers.Flick>))
             .WithConfigGroup(ConfigGroup.Npcs)
-            .WithBroadcasterGroup(BroadcasterGroup.Npcs);
+            .WithBroadcasterGroup(BroadcasterGroup.Npcs)
+            .WithFlipAction(MiscFixers.FlipBasicNpc);
 
         Categories.Misc.Add(new PreloadObject("Front Egg Statue", "shard_statue_4", 
             ("Tut_01b", "Shell Shard Fossil Tiny Front"),

@@ -394,7 +394,7 @@ public class PlaceScriptBlock(ScriptBlock block, bool local, bool needsSetup = f
 
     public IEdit Undo()
     {
-        return new RemoveScriptBlock(block, local);
+        return block.Delete();
     }
 }
 

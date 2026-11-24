@@ -133,6 +133,7 @@ public static class PreviewUtils
             gameObject.RemoveComponentsInChildren<Crawler>();
             gameObject.RemoveComponentsInChildren<Climber>();
             gameObject.RemoveComponentsInChildren<RangeAttacker>();
+            gameObject.RemoveComponentsInChildren<SlideSurface>();
             if (!Storage.Settings.HitboxesInEditor.Value && !type.HitboxPreview)
             {
                 gameObject.RemoveComponentsInChildren<Collider2D>();

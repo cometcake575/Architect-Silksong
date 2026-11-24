@@ -14,6 +14,7 @@ using Architect.Storage;
 using Architect.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Architect.Prefabs;
@@ -205,6 +206,8 @@ public class Prefab : PreviewableBehaviour
             GetComponentInParent<SpriteRenderer>().color = Color.red;
             return;
         }
+
+        var title = GameManager.instance.sceneName.EndsWith("_title");
         
         if (!PrefabManager.Prefabs.TryGetValue(id, out var o)) 
             o = PrefabManager.Prefabs[id] = StorageManager.LoadScene($"Prefab_{id}");
@@ -249,6 +252,7 @@ public class Prefab : PreviewableBehaviour
                         placement.GetId() + name,
                         obj);
                     spawns.Add(obj);
+                    if (title) SceneManager.MoveGameObjectToScene(obj, gameObject.scene);
                 }
             }
         }

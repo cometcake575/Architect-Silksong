@@ -101,7 +101,8 @@ public class CustomMenuStyle : WorkshopItem
                 var isCustom = StyleLookup.TryGetValue(self.Styles[index], out var custom);
                 
                 if (PreloadManager.HasPreloaded) GlobalArchitectData.Instance.MenuStyle = isCustom ? custom.Id : string.Empty;
-                
+
+                if (!UIManager.instance || !UIManager.instance.gameTitle) return;
                 var title = UIManager.instance.gameTitle.gameObject;
                 title.GetOrAddComponent<LogoTitleBlocker>().Style = custom;
                 title.SetActive(!isCustom || !custom.HideTitle);
@@ -136,7 +137,6 @@ public class CustomMenuStyle : WorkshopItem
 
         if (_ms)
         {
-
             _parent = new GameObject(Id)
             {
                 transform =
@@ -145,6 +145,13 @@ public class CustomMenuStyle : WorkshopItem
                     localPosition = new Vector3(-5f, -7.8454f, 3.5469f)
                 }
             };
+            if (_ms.name == "Ending Styles")
+            {
+                var credits = Object.Instantiate(_ms.transform.Find("Menu_Style").Find("Hornet_Credits_Scroll").gameObject, 
+                    _parent.transform, true);
+                foreach (Transform child in credits.transform) if (child.name == "Audio") 
+                    Object.Destroy(child.gameObject);
+            }
             _parent.SetActive(false);
 
             _lsc = _parent.AddComponent<LoadSceneContents>();
@@ -159,7 +166,6 @@ public class CustomMenuStyle : WorkshopItem
                 BlurPlaneVibranceOffset = BluePlaneVibrancy,
                 AmbientIntensity = AmbientIntensity
             };
-
 
             var styles = _ms.Styles.ToList();
             styles.Add(_style);
@@ -247,7 +253,7 @@ public class CustomMenuStyle : WorkshopItem
             _faders = _scene.GetRootGameObjects()
                 .SelectMany(o => o.GetComponentsInChildren<MenuForegroundMarker.MenuFader>());
             
-            Fade(_ms.isInSubMenu ? 0 : 1, 0);
+            Fade(_ms.isInSubMenu || _ms.name == "Ending Styles" ? 0 : 1, 0);
         }
 
         private void OnDisable()
