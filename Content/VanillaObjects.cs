@@ -1810,7 +1810,8 @@ public static class VanillaObjects
         Categories.Hazards.Add(new PreloadObject("Slab Trap", "slab_trap",
                 ("Slab_05", "spike_trap_slab_jail"),
                 preloadAction: o => 
-                    o.transform.GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>()));
+                    o.transform.GetChild(1).gameObject.AddComponent<PlaceableObject.SpriteSource>())
+            .WithRotationGroup(RotationGroup.Four));
 
         Categories.Interactable.Add(new PreloadObject("Slab Lever", "jail_lever",
                 ("Slab_22", "slab_jail_lever"), postSpawnAction: InteractableFixers.FixLever)

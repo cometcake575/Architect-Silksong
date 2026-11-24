@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Architect.Behaviour.Custom;
+using Architect.Behaviour.Fixers;
 using Architect.Behaviour.Utility;
 using Architect.Objects.Categories;
 using Architect.Objects.Groups;
@@ -29,6 +30,7 @@ public static class UtilityObjects
         Categories.Utility.Add(CreatePlasmifier());
         Categories.Utility.Add(CreateShielder());
         Categories.Utility.Add(CreateCustomHazard());
+        Categories.Utility.Add(CreateCustomEnemy());
         
         Categories.Utility.Add(CreateObjectAnchor());
         Categories.Utility.Add(CreateObjectLayerer());
@@ -1050,6 +1052,46 @@ public static class UtilityObjects
                 sprite: CustomHazard.SquareZone,
                 description: "Deals damage on contact.")
             .WithConfigGroup(ConfigGroup.CustomHazard);
+    }
+
+    private static PlaceableObject CreateCustomEnemy()
+    {
+        return new PreloadObject("Blank Enemy", "custom_enemy", ("Bone_06", "Bone Flyer (2)"),
+                sprite: ResourceUtils.LoadSpriteResource("custom_enemy", FilterMode.Point, ppu: 64),
+                preloadAction: FixCustomEnemy)
+            .WithConfigGroup(ConfigGroup.CustomEnemy)
+            .WithBroadcasterGroup(BroadcasterGroup.Enemies)
+            .WithOutputGroup(OutputGroup.Enemies)
+            .WithReceiverGroup(ReceiverGroup.Enemies);
+
+        void FixCustomEnemy(GameObject obj)
+        {
+            obj.AddComponent<EnemyFixers.DisableHealthScaling>();
+            var eder = obj.GetComponent<EnemyDeathEffectsRegular>();
+            eder.journalRecord = null;
+            eder.corpsePrefab = null;
+
+            var bc2d = obj.GetComponent<BoxCollider2D>();
+            bc2d.size = new Vector2(3.2f, 3.2f);
+            bc2d.offset = Vector2.zero;
+            
+            obj.RemoveComponent<PlayMakerFSM>();
+            obj.RemoveComponent<tk2dSprite>();
+            obj.RemoveComponent<tk2dSpriteAnimator>();
+            obj.RemoveComponent<MeshRenderer>();
+            obj.RemoveComponent<MeshFilter>();
+            obj.RemoveComponent<EventRegister>();
+            obj.RemoveComponent<NeedolinTextOwner>();
+            obj.RemoveComponent<EnemySingDuration>();
+            obj.RemoveComponent<PlayMakerFixedUpdate>();
+            obj.RemoveComponent<PlayMakerCollisionEnter2D>();
+            obj.RemoveComponent<PlayMakerCollisionExit2D>();
+            obj.RemoveComponent<LineOfSightDetector>();
+            obj.RemoveComponent<ObjectBounce>();
+            obj.RemoveComponent<AudioSource>();
+            obj.RemoveComponent<PersonalObjectPool>();
+            foreach (Transform child in obj.transform) Object.Destroy(child.gameObject);
+        }
     }
 
     public static readonly Sprite SquareDamager = ResourceUtils.LoadSpriteResource("enemy_damager", FilterMode.Point, ppu:64);

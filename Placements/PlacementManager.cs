@@ -230,7 +230,7 @@ public static class PlacementManager
             obj = HeroController.instance.gameObject;
             return true;
         }
-        if (!Objects.TryGetValue(path, out obj)) return false;
+        if (!Objects.TryGetValue(path, out obj) || !obj) return false;
         var oh = obj.GetComponent<ObjectHook>();
         if (oh)
         {

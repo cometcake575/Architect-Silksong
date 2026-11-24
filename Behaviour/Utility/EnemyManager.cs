@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Architect.Behaviour.Fixers;
 using Architect.Placements;
+using Architect.Prefabs;
 using Architect.Utils;
 using BepInEx;
 using Silksong.AssetHelper.ManagedAssets;
@@ -24,6 +26,10 @@ public class EnemyManager : MonoBehaviour
 
     public string hitEffectsProfile;
     public string deathEffectsProfile;
+
+    public string overrideJournalRecord;
+
+    public string overrideCorpse = string.Empty;
 
     private GameObject _enemy;
 
@@ -151,13 +157,20 @@ public class EnemyManager : MonoBehaviour
         if (!_enemy) return;
 
         PrepareCorpse();
-        StartCoroutine(PrepareDeath());
+        
+        var deathEffects = _enemy.GetComponentInChildren<EnemyDeathEffectsRegular>(true);
+        if (deathEffects)
+        {
+            StartCoroutine(PrepareDeath(deathEffects));
+            SetJournalRecord(deathEffects);
+        }
 
         var hitEffects = _enemy.GetComponentInChildren<EnemyHitEffectsRegular>(true);
-        if (!hitEffects) return;
-        
-        StartCoroutine(PrepareHit(hitEffects));
-        PrepareBlood(hitEffects);
+        if (hitEffects)
+        {
+            StartCoroutine(PrepareHit(hitEffects));
+            PrepareBlood(hitEffects);
+        }
     }
 
     public void ActivateCorpse()
@@ -169,6 +182,14 @@ public class EnemyManager : MonoBehaviour
         
         corpse.transform.SetParent(null);
         corpse.SetActive(true);
+    }
+
+    private void SetJournalRecord(EnemyDeathEffectsRegular deathEffects)
+    {
+        if (overrideJournalRecord.IsNullOrWhiteSpace()) return;
+        var entry = EnemyJournalManager.Instance.recordList.list
+            .FirstOrDefault(o => o.name == overrideJournalRecord);
+        deathEffects.journalRecord = entry;
     }
 
     private void PrepareBlood(EnemyHitEffectsRegular hitEffects)
@@ -199,11 +220,8 @@ public class EnemyManager : MonoBehaviour
         }
     }
     
-    private IEnumerator PrepareDeath()
+    private IEnumerator PrepareDeath(EnemyDeathEffectsRegular deathEffects)
     {
-        var deathEffects = _enemy.GetComponentInChildren<EnemyDeathEffectsRegular>();
-        if (!deathEffects) yield break;
-        
         if (!deathEffectsProfile.IsNullOrWhiteSpace() &&
             DeathProfiles.TryGetValue(deathEffectsProfile, out var dProfile))
         {
@@ -216,8 +234,32 @@ public class EnemyManager : MonoBehaviour
 
     private void PrepareCorpse()
     {
-        if (corpseMode == -1) return;
-        
+        switch (corpseMode)
+        {
+            case -1:
+                return;
+            case 4:
+            {
+                var ede = _enemy.GetComponentInChildren<EnemyDeathEffects>(true);
+                if (!ede) return;
+                ede.corpsePrefab = null;
+                
+                var prefabObj = new GameObject($"[Architect] Corpse Prefab Spawner {_enemy.name}")
+                {
+                    transform = { 
+                        parent = _enemy.transform,
+                        localPosition = Vector3.zero
+                    }
+                };
+                prefabObj.SetActive(false);
+                var prefab = prefabObj.AddComponent<Prefab>();
+                prefab.id = overrideCorpse;
+                
+                ede.instantiatedCorpses = [prefabObj];
+                return;
+            }
+        }
+
         var corpse = GetCorpse();
         if (!corpse) return;
 

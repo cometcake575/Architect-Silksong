@@ -2187,7 +2187,12 @@ public static class ConfigGroup
                 new ChoiceConfigType("Corpse Mode", "enemy_manager_corpse_mode", (o, value) =>
                 {
                     o.GetComponent<EnemyManager>().corpseMode = value.GetValue();
-                }).WithOptions("Normal", "BounceAway", "FallThrough", "None")),
+                }).WithOptions("Normal", "BounceAway", "FallThrough", "None", "Custom")),
+            ConfigurationManager.RegisterConfigType(
+                new StringConfigType("Custom Corpse Prefab", "enemy_manager_custom_corpse", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().overrideCorpse = value.GetValue();
+                })),
             ConfigurationManager.RegisterConfigType(
                 new BoolConfigType("Override Blood Colour", "enemy_manager_override_blood", (o, value) =>
                 {
@@ -2219,6 +2224,11 @@ public static class ConfigGroup
                 new StringConfigType("Death Effects", "enemy_manager_death_effects", (o, value) =>
                 {
                     o.GetComponent<EnemyManager>().deathEffectsProfile = value.GetValue();
+                })),
+            ConfigurationManager.RegisterConfigType(
+                new StringConfigType("Journal Record", "enemy_manager_journal_record", (o, value) =>
+                {
+                    o.GetComponent<EnemyManager>().overrideJournalRecord = value.GetValue();
                 }))
     ]);
 
@@ -2472,7 +2482,7 @@ public static class ConfigGroup
                     if (!value.GetValue()) return;
                     var fsm = o.LocateMyFSM("Control");
                     fsm.GetState("Dormant").AddAction(() => fsm.SendEvent("ALERT"));
-                }).WithDefaultValue((true))),
+                }).WithDefaultValue(true)),
         Invincible
     ]);
 
@@ -2539,6 +2549,15 @@ public static class ConfigGroup
                 }
             }).WithDefaultValue(true))
     ]);
+
+    public static readonly List<ConfigType> CustomEnemy = GroupUtils.Merge(Enemies, 
+        GroupUtils.Merge(Stretchable, GroupUtils.Merge(Gravity, GroupUtils.Merge(EnemyManager, [
+        ConfigurationManager.RegisterConfigType(
+            new IntConfigType("Contact Damage", "custom_enemy_contact_dmg", (o, value) =>
+            {
+                o.GetComponent<DamageHero>().damageDealt = value.GetValue();
+            }).WithDefaultValue(1))
+    ]))));
 
     public static readonly List<ConfigType> Hornfly = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(

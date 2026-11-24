@@ -60,7 +60,6 @@ public static class ConfigGroup
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType<CustomJournalEntry>("Requirement", "journal_requirements", (item, value) =>
             {
-                
                 item.Required = (EnemyJournalRecord.RequiredTypes)value.GetValue();
             }).WithOptions("None", "Required", "Steel Soul").WithDefaultValue(1)
         ),

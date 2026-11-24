@@ -257,7 +257,7 @@ public class Prefab : PreviewableBehaviour
         {
             var clone = block.Clone(name);
             clone.Setup(false, noReference: isAPreview);
-            if (clone.GetReference()) spawns.Add(clone.GetReference());
+            if (clone.GetReference()) blockSpawns.Add(clone.GetReference());
             switch (clone)
             {
                 case BroadcastBlock bb:

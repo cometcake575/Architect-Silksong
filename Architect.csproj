@@ -20,7 +20,7 @@
   <PropertyGroup>
     <!--These properties will control the generated plugin info. Version is also used by various parts of the build system.-->
     <AssemblyTitle>Architect</AssemblyTitle>
-    <Version>3.43.6</Version>
+    <Version>3.44.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -63,7 +63,7 @@
       <Binaries Include="$(TargetDir)/$(TargetName).pdb" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(Binaries)" DestinationFolder="$(SilksongFolder)/BepInEx/plugins/$(TargetName)" />
+    <Copy SourceFiles="@(Binaries)" DestinationFolder="/Users/amykapila/Documents/Cogfly/test/BepInEx/plugins/Architect" />
 
     <PropertyGroup>
       <ExportFolder>bin/Publish</ExportFolder>
