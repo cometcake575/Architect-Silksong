@@ -199,6 +199,7 @@ public static class PlacementManager
         }
 
         ScriptManager.IsLocal = wasLocal;
+        ScriptManager.Layer = 1;
         ScriptManager.Layer = 0;
     }
 

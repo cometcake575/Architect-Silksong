@@ -533,9 +533,9 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Four));
         
         AddEnemy("Muckroach", "dustroach", ("Dust_05", "Dustroach"));
-        /*AddEnemy("Slubberlug", "dustroach_pollywog",
+        AddEnemy("Slubberlug", "dustroach_pollywog",
             ("Shadow_13", "Dustroach Pollywog Control/Dustroach Pollywog Pool/Dustroach Pollywog"),
-            postSpawnAction: EnemyFixers.FixSlubberlug);*/
+            postSpawnAction: EnemyFixers.FixSlubberlug);
         
         Categories.Attacks.Add(new PreloadObject("Caltrop", "caltrop",
                 ("localpoolprefabs_assets_areadust.bundle", 
@@ -1231,7 +1231,7 @@ public static class VanillaObjects
         AddEnemy("Imoba", "imoba", ("Cradle_Destroyed_Challenge_01", "Spike Lazy Flyer"),
             preloadAction: EnemyFixers.FixPatroller).WithConfigGroup(ConfigGroup.Patroller);
         AddEnemy("Skrill", "surface_scuttler", ("Abandoned_town", "Surface Scuttler"),
-            postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.SimpleEnemies);
+            postSpawnAction: EnemyFixers.FixSkrill).WithConfigGroup(ConfigGroup.NonPersistentEnemies);
     }
 
     private static void AddDuctObjects()
@@ -1552,7 +1552,11 @@ public static class VanillaObjects
         AddEnemy("Thread Raker", "thread_raker",
             ("Greymoor_05", "Scene Control/Farmer Enemies/Farmer Centipede (1)"),
             preloadAction: EnemyFixers.KeepActiveRemoveConstrainPos,
-            postSpawnAction: o => o.LocateMyFSM("Control").GetState("Init").DisableAction(2));
+            postSpawnAction: o =>
+            {
+                o.AddComponent<EnemyFixers.Teleplane>();
+                o.LocateMyFSM("Control").GetState("Init").DisableAction(2);
+            }).WithConfigGroup(ConfigGroup.HorizontalTeleplane);
 
         Categories.Attacks.Add(new PreloadObject("Pitchfork", "pitchfork",
             ("localpoolprefabs_assets_areagreymoor", "Assets/Prefabs/Hornet Enemies/Centipede Farmer Projectile.prefab"), 
@@ -2261,7 +2265,7 @@ public static class VanillaObjects
             .WithRotationGroup(RotationGroup.Eight));
 
         AddEnemy("Last Judge", "last_judge", ("Coral_Judge_Arena", "Boss Scene/Last Judge"),
-            postSpawnAction:EnemyFixers.FixLastJudge)
+            postSpawnAction: EnemyFixers.FixLastJudge)
             .WithConfigGroup(ConfigGroup.LastJudge)
             .WithBroadcasterGroup(BroadcasterGroup.LastJudge)
             .WithOutputGroup(OutputGroup.LastJudge);
@@ -2896,7 +2900,7 @@ public static class VanillaObjects
                 sprite: ResourceUtils.LoadSpriteResource("explosion", ppu:82))
             .WithReceiverGroup(ReceiverGroup.RuneBomb)
             .WithRotationGroup(RotationGroup.All)
-            .WithConfigGroup(ConfigGroup.Damager));
+            .WithConfigGroup(ConfigGroup.EnemyDamager));
         
         PreloadManager.RegisterPreload(new BasicPreload(
             "localpoolprefabs_assets_shared.bundle", 
@@ -3116,7 +3120,13 @@ public static class VanillaObjects
                 var anim = o.GetComponent<tk2dSpriteAnimator>();
                 anim.defaultClipId = anim.GetClipIdByName("Battler");
             },
-            postSpawnAction: EnemyFixers.FixCogworker);
+            postSpawnAction: EnemyFixers.FixCogworker)
+            .WithConfigGroup(ConfigGroup.Cogworker);
+
+        Categories.Utility.Add(new PreloadObject("Cogworker Site", "cogworker_site",
+            ("Cog_07", "Black Thread States/Normal World/Song Automaton Fly Spot"),
+            preloadAction: MiscFixers.FixRotation)
+            .WithRotationGroup(RotationGroup.All));
         
         AddEnemy("Cogwork Clapper", "cog_clapper",
             ("Cog_07", "Black Thread States/Normal World/Repairable Scene/Song Automaton Ball (1)"),

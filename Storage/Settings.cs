@@ -49,6 +49,7 @@ public static class Settings
     public static ConfigEntry<bool> BlockInventoryInEditMode;
     public static ConfigEntry<bool> LoadAllAssets;
     public static ConfigEntry<bool> TransTransGates;
+    public static ConfigEntry<bool> UltrawideMode;
     
     public static ConfigEntry<int> SaveSlot; 
     
@@ -345,6 +346,13 @@ public static class Settings
             "TransTransGates",
             false,
             "Makes transition gates have the trans flag on them (requires reloading the game to apply)"
+        );
+        
+        UltrawideMode = config.Bind(
+            "Options",
+            "UltrawideMode",
+            false,
+            "Ensures everything fits on the editor, can make some things end up very small"
         );
         
         SaveSlot = config.Bind(

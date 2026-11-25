@@ -642,6 +642,8 @@ public static class EditManager
                 .SelectMany(o => o.GetComponentsInChildren<CameraLockArea>())
                 .FirstOrDefault(o => o.InsideCount > 0);
             if (lockArea) lockArea.OnInsideStateChanged(true);
+
+            ArchitectPlugin.Instance.StartCoroutine(SendEnteredSceneEvent());
         }
 
         if (HoveredObject != null)
@@ -655,6 +657,12 @@ public static class EditManager
         _groupSelectionBox.gameObject.SetActive(false);
 
         orig(self);
+    }
+
+    private static IEnumerator SendEnteredSceneEvent()
+    {
+        yield return new WaitForSeconds(0.1f);
+        EventRegister.SendEvent("HERO ENTERED SCENE");
     }
 
     // Reloads the current scene, in order to refresh objects or update edit mode

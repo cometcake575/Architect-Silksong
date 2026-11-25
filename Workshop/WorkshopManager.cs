@@ -168,8 +168,26 @@ public static class WorkshopManager
         typeof(HeroController).Hook(nameof(HeroController.ThrowTool),
             (Action<HeroController, bool> orig, HeroController self, bool isAutoThrow) =>
             {
-                if (self.willThrowTool)
+                if (self.willThrowTool && (isAutoThrow || Time.timeAsDouble >= self.canThrowTime))
                 {
+                    PlayMakerFSM eventTarget = null;
+                    switch (self.willThrowTool.type)
+                    {
+                        case ToolItemType.Skill:
+                            eventTarget = self.skillEventTarget;
+                            break;
+                        case ToolItemType.Red:
+                        {
+                            eventTarget = self.toolEventTarget;
+                            break;
+                        }
+                    }
+
+                    var stateName = string.Empty;
+                    if (eventTarget) stateName = eventTarget.ActiveStateName;
+                    orig(self, isAutoThrow);
+                    if (eventTarget && stateName == eventTarget.ActiveStateName) return;
+
                     if (CustomTool.List.Contains(self.willThrowTool.name))
                     {
                         switch (self.willThrowTool.type)
@@ -182,14 +200,11 @@ public static class WorkshopManager
                                 self.DidUseAttackTool(self.willThrowTool.SavedData);
                                 break;
                             }
-                            case ToolItemType.Blue:
-                            case ToolItemType.Yellow:
-                            default:
-                                break;
                         }
                     }
 
                     ToolBlock.DoBroadcast(self.willThrowTool.name);
+                    return;
                 }
                 orig(self, isAutoThrow);
             });

@@ -2578,6 +2578,27 @@ public static class ConfigGroup
             }).WithOptions("None", "Fly In").WithDefaultValue(0))
     ]);
 
+    public static readonly List<ConfigType> Cogworker = GroupUtils.Merge(Enemies, [
+        ConfigurationManager.RegisterConfigType(
+            new ChoiceConfigType("Mode", "cogworker_mode", (o, value) =>
+            {
+                switch (value.GetValue())
+                {
+                    case 1:
+                        o.GetComponent<EnemyFixers.FlyIn>().SetFlyIn();
+                        break;
+                    case 2:
+                        o.GetComponent<tk2dSpriteAnimator>().defaultClipId = 1;
+                        break;
+                }
+            }).WithOptions("Battler", "FlyIn", "Worker").WithDefaultValue(0).WithPriority(-1)),
+        ConfigurationManager.RegisterConfigType(
+            new FloatConfigType("Alert Radius", "cogworker_alert_radius", (o, value) =>
+            {
+                o.transform.Find("Alert Range").GetComponent<CircleCollider2D>().radius = value.GetValue();
+            }).WithDefaultValue(5))
+    ]);
+
     public static readonly List<ConfigType> Freshfly = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Spawn Mode", "spawn_telegraph_freshfly", (o, value) =>
@@ -2788,8 +2809,11 @@ public static class ConfigGroup
             })
     );
 
-    public static readonly List<ConfigType> Damager = GroupUtils.Merge(Generic, [
-        DamagesEnemies,
+    public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Generic, [
+        DamagesEnemies
+    ]);
+
+    public static readonly List<ConfigType> Damager = GroupUtils.Merge(EnemyDamager, [
         ConfigurationManager.RegisterConfigType(
             new IntConfigType("Damage Amount", "damager_amount", (o, value) =>
             {
@@ -3036,13 +3060,15 @@ public static class ConfigGroup
             }).WithDefaultValue(false))
     ]);
 
-    public static readonly List<ConfigType> Surgeon = GroupUtils.Merge(HideBody, [
+    public static readonly List<ConfigType> HorizontalTeleplane = GroupUtils.Merge(Enemies, [
         ConfigurationManager.RegisterConfigType(
             new FloatConfigType("Dig Range", "surgeon_range", (o, value) =>
             {
                 o.GetComponent<EnemyFixers.Teleplane>().width = value.GetValue();
             }).WithDefaultValue(5))
     ]);
+
+    public static readonly List<ConfigType> Surgeon = GroupUtils.Merge(HideBody, GroupUtils.Merge(HorizontalTeleplane, []));
 
     public static readonly List<ConfigType> Clawmaiden = GroupUtils.Merge(HideBody, [
         ConfigurationManager.RegisterConfigType(
@@ -3654,7 +3680,7 @@ public static class ConfigGroup
                 .WithDefaultValue(false))
     ]);
 
-    public static readonly List<ConfigType> EnemyDamager = GroupUtils.Merge(Stretchable, [
+    public static readonly List<ConfigType> CustomEnemyDamager = GroupUtils.Merge(Stretchable, [
         ConfigurationManager.RegisterConfigType(
             new ChoiceConfigType("Shape", "enemy_damager_shape",
                     (o, value) =>

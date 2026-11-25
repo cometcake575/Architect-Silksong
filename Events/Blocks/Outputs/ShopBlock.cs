@@ -56,6 +56,23 @@ public class ShopBlock : CollectionBlock<ShopBlock.ShopItemBlock>
             .Select(i => i.Item)
             .ToArray();
         _shopOwner.SpawnUpdateShop();
+        
+        var costSpriteRenderer = _shopOwner.ShopObject.transform
+            .Find("Item Confirm Group").Find("Confirm").Find("Costs").Find("Money").Find("Geo Sprite")
+            .GetComponent<SpriteRenderer>();
+        var rosarySprite = costSpriteRenderer.sprite;
+
+        var il = _shopOwner.ShopObject.transform
+            .Find("Item List Group").Find("Item List");
+        var ilc = il.gameObject.LocateMyFSM("Item List Control");
+        var currentItem = ilc.FsmVariables.FindFsmInt("Current Item");
+        var sms = il.GetComponent<ShopMenuStock>();
+        ilc.GetState("Activate Confirm Group").AddAction(() =>
+        {
+            var itemStats = sms.availableStock[currentItem.Value];
+            var currencyType = itemStats.Item.currencyType;
+            costSpriteRenderer.sprite = currencyType == CurrencyType.Shard ? itemStats.shardSprite : rosarySprite;
+        }, 0);
     }
 
     private IEnumerator Coroutine()

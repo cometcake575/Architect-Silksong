@@ -271,6 +271,7 @@ public class CustomGameMode : SpriteItem
         _go.transform.Find("Text").GetComponent<AutoLocalizeTextUI>().text = (LocalStr)Title;
         _go.transform.Find("DescriptionText").GetComponent<AutoLocalizeTextUI>().text = (LocalStr)Desc;
         
+        _go.RemoveComponentsInChildren<CustomGameButton>();
         var customBtn = _go.AddComponent<CustomGameButton>();
         customBtn.priority = Priority;
 
@@ -319,6 +320,7 @@ public class CustomGameMode : SpriteItem
         }
 
         startTrigger.skipCinematic = SkipCinematic;
+        _go.SetActive(true);
 
         base.Register();
     }

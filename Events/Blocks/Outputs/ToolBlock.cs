@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -79,7 +80,7 @@ public class ToolBlock : ScriptBlock
             case "TakeUses":
                 if (!tool) return;
                 var sd2 = tool.SavedData;
-                sd2.AmountLeft += Amount;
+                sd2.AmountLeft = Math.Max(sd2.AmountLeft - Amount, 0);
                 tool.SavedData = sd2;
                 
                 ToolItemManager.ReportAllBoundAttackToolsUpdated();

@@ -127,6 +127,11 @@ public static class CursorManager
         }
 
         var rot = EditManager.CurrentRotation + type.Prefab.transform.GetRotation2D();
+        if (type.SpritePreview)
+        {
+            rot += type.Tk2dRotation + type.ChildRotation;
+            Offset = PreviewUtils.CalculateOffset(type, EditManager.CurrentlyFlipped, EditManager.CurrentRotation, EditManager.CurrentScale);
+        }
         _cursorObject.transform.SetRotation2D(rot);
 
         _cursorObject.transform.localScale = (type.IgnoreScale ? Vector3.one : type.Prefab.transform.localScale)

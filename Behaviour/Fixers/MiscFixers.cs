@@ -640,6 +640,7 @@ public static class MiscFixers
 
     public static void FixGarmondBoss(GameObject obj)
     {
+        EnemyFixers.BlockMusicOn(obj);
         FixGarmond(obj);
 
         var fsm = obj.LocateMyFSM("Control");
@@ -2232,7 +2233,7 @@ public static class MiscFixers
     public static void FlipBasicNpc(GameObject obj, bool flip)
     {
         if (flip) {
-            obj.transform.SetScaleY(-obj.transform.GetScaleY());
+            obj.transform.SetScaleX(-obj.transform.GetScaleX());
             var npcBase = obj.GetComponentInChildren<NPCControlBase>();
             if (npcBase) npcBase.talkPosition = npcBase.talkPosition switch
             {

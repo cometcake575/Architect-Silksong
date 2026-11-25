@@ -14,6 +14,7 @@ using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -94,6 +95,30 @@ public static class EnemyFixers
                 fsm.GetState("Antic").DisableAction(2);
             }
         };
+        
+        typeof(ApplyMusicCue).Hook(nameof(ApplyMusicCue.OnEnter),
+            (Action<ApplyMusicCue> orig, ApplyMusicCue self) =>
+            {
+                if (self.fsmComponent && self.fsmComponent.GetComponent<BlockMusic>())
+                {
+                    self.Finish();
+                    return;
+                }
+
+                orig(self);
+            });
+        
+        typeof(TransitionToAudioSnapshot).Hook(nameof(TransitionToAudioSnapshot.OnEnter),
+            (Action<TransitionToAudioSnapshot> orig, TransitionToAudioSnapshot self) =>
+            {
+                if (self.fsmComponent && self.fsmComponent.GetComponent<BlockMusic>())
+                {
+                    self.Finish();
+                    return;
+                }
+
+                orig(self);
+            });
         
         typeof(HealthManager).Hook("ApplyDamageScaling",
             (Func<HealthManager, HitInstance, HitInstance> orig, HealthManager self, HitInstance hit) => 
@@ -320,6 +345,9 @@ public static class EnemyFixers
         public bool moveRight;
         public bool moveUp;
         public bool moveDown;
+        
+        [FormerlySerializedAs("censer")] public GameObject censerThrow;
+        public GameObject chain;
 
         private void OnCollisionStay2D(Collision2D other)
         {
@@ -340,6 +368,12 @@ public static class EnemyFixers
                     break;
             }
         }
+
+        private void OnDisable()
+        {
+            chain.SetActive(false);
+            censerThrow.SetActive(false);
+        }
     }
 
     public static void FixLastJudge(GameObject obj)
@@ -351,6 +385,10 @@ public static class EnemyFixers
 
         var fsm = obj.LocateMyFSM("Control");
         fsm.GetState("Dormant").AddAction(() => fsm.SetState("Intro Roar Antic"));
+        
+        // Objects to disable on LJ disable
+        lj.censerThrow = fsm.FsmVariables.FindFsmGameObject("Censer Throw").Value;
+        lj.chain = fsm.FsmVariables.FindFsmGameObject("Chain").Value;
         
         fsm.GetState("First Idle").AddAction(() => fsm.SendEvent("ENCOUNTERED"), 0);
 
@@ -434,6 +472,7 @@ public static class EnemyFixers
 
         var stun = fsm.GetState("Stun Start");
         stun.AddAction(AdjustGroundPosForGround, 0);
+        stun.AddAction(MakeDynamic, 0);
         
         fsm.GetState("Stomp JumpAntic").AddAction(MakeDynamic, 0);
         fsm.GetState("OJump Antic").AddAction(MakeDynamic, 0);
@@ -956,6 +995,7 @@ public static class EnemyFixers
 
     public static void FixGroal(GameObject obj)
     {
+        BlockMusicOn(obj);
         var fsm = obj.LocateMyFSM("Control");
 
         var hm = obj.GetComponent<HealthManager>();
@@ -1152,6 +1192,7 @@ public static class EnemyFixers
 
     public static void FixMossMother(GameObject obj)
     {
+        BlockMusicOn(obj);
         var fsm = obj.LocateMyFSM("Control");
         
         // Variables to align
@@ -1219,6 +1260,7 @@ public static class EnemyFixers
 
     public static void FixSkullTyrant(GameObject obj)
     {
+        BlockMusicOn(obj);
         if (obj.GetComponent<MiscFixers.PreviewState>()) return;
         var fsm = obj.LocateMyFSM("Behaviour");
         
@@ -1271,8 +1313,23 @@ public static class EnemyFixers
         }, 0);
     }
 
+    public class BlockMusic : MonoBehaviour;
+
+    public static void BlockMusicOn(GameObject obj)
+    {
+        obj.AddComponent<BlockMusic>();
+        var ede = obj.GetComponent<EnemyDeathEffects>();
+        if (ede)
+        {
+            ede.PreInstantiate();
+            var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
+            if (corpse) corpse.AddComponent<BlockMusic>();
+        }
+    }
+
     public static void FixSavageBeastfly(GameObject obj)
     {
+        BlockMusicOn(obj);
         var fsm = obj.LocateMyFSM("Control");
         
         // Not invulnerable
@@ -1595,9 +1652,20 @@ public static class EnemyFixers
         obj.LocateMyFSM("Control").FsmVariables.FindFsmBool("Battler").value = false;
     }
 
+    private class Clawmaiden : MonoBehaviour
+    {
+        public GameObject spear;
+        
+        private void OnDisable()
+        {
+            spear.SetActive(false);
+        }
+    }
+
     public static void FixClawmaiden(GameObject obj)
     {
         obj.AddComponent<Teleplane>();
+        obj.AddComponent<Clawmaiden>().spear = obj.LocateMyFSM("Control").FsmVariables.FindFsmGameObject("Spear").Value;
     }
 
     public static void FixVaultborn(GameObject obj)
@@ -1649,6 +1717,7 @@ public static class EnemyFixers
 
     public static void FixBroodmother(GameObject obj)
     {
+        BlockMusicOn(obj);
         RemoveConstrainPosition(obj);
         
         var fsm = obj.LocateMyFSM("Control");
@@ -1745,6 +1814,7 @@ public static class EnemyFixers
 
     public static void FixSecondSentinelBoss(GameObject obj)
     {
+        BlockMusicOn(obj);
         var ede = obj.GetComponent<EnemyDeathEffects>();
         ede.PreInstantiate();
         var corpse = ede.GetInstantiatedCorpse(AttackTypes.Generic);
@@ -1988,6 +2058,7 @@ public static class EnemyFixers
 
     public static void FixFirstSinner(GameObject obj)
     {
+        BlockMusicOn(obj);
         if (obj.GetComponent<MiscFixers.PreviewState>()) return;
         RemoveConstrainPosition(obj);
 
@@ -2549,6 +2620,7 @@ public static class EnemyFixers
 
     public static void FixGiantFlea(GameObject obj)
     {
+        BlockMusicOn(obj);
         var fsm = obj.LocateMyFSM("Control");
         var init = fsm.GetState("Init");
         init.DisableAction(4);
@@ -3028,6 +3100,7 @@ public static class EnemyFixers
 
     public static void FixCrawfather(GameObject obj)
     {
+        BlockMusicOn(obj);
         var cf = obj.AddComponent<Crawfather>();
         
         var fsm = obj.LocateMyFSM("Control");
@@ -3150,6 +3223,12 @@ public static class EnemyFixers
                     break;
                 case "Long Spear":
                     longSpear = so;
+                    break;
+                case "Roar Spikes":
+                    fsm.GetState("Roar").AddAction(() =>
+                    {
+                        so.transform.SetPosition2D(obj.transform.position + new Vector3(0, 7));
+                    }, 0);
                     break;
             }
         }
@@ -3393,6 +3472,7 @@ public static class EnemyFixers
     public static PlayMakerFSM FixTrobbio(GameObject obj, GameObject flareObj, GameObject floorObj, GameObject burstObj,
         [CanBeNull] Action<float, PlayMakerFSM> yPos = null)
     {
+        BlockMusicOn(obj);
         var flares = Object.Instantiate(flareObj);
         flares.name = obj.name + " Flares";
         var floor = Object.Instantiate(floorObj);
@@ -3574,14 +3654,12 @@ public static class EnemyFixers
         head.AddComponent<PlaceableObject.SpriteSource>();
         
         var fc = obj.AddComponent<FourthChorus>();
-        fc.parent = obj;
         fc.head = head;
     }
 
     public class FourthChorus : MonoBehaviour
     {
         public GameObject plats;
-        public GameObject parent;
         public GameObject head;
         public bool threaded;
         public bool doPlats;
@@ -3592,13 +3670,14 @@ public static class EnemyFixers
             if (threaded)
             {
                 threaded = false;
-                foreach (var par in parent.GetComponentsInChildren<tk2dSprite>(true))
+                foreach (var par in GetComponentsInChildren<tk2dSprite>())
                 {
-                    if (par.gameObject != gameObject) par.color = Color.black;
+                    par.EnableKeyword("BLACKTHREAD");
                 }
-                foreach (var par in parent.GetComponentsInChildren<SpriteRenderer>(true))
+                foreach (var par in GetComponentsInChildren<SpriteRenderer>(true))
                 {
-                    if (par.gameObject != gameObject) par.color = Color.black;
+                    par.material.shader = ObjectColourer.FlashShader;
+                    par.material.EnableKeyword("BLACKTHREAD");
                 }
             }
             if (_done) return;
@@ -3615,6 +3694,7 @@ public static class EnemyFixers
 
     public static void FixFourthChorus(GameObject obj)
     {
+        BlockMusicOn(obj);
         var fsm = obj.transform.GetChild(0).gameObject.LocateMyFSM("Control");
         var fc = obj.GetComponent<FourthChorus>();
         
@@ -3719,6 +3799,7 @@ public static class EnemyFixers
 
     public static void FixShakra(GameObject obj)
     {
+        BlockMusicOn(obj);
         RemoveConstrainPosition(obj);
 
         Object.Destroy(obj.LocateMyFSM("Dialogue"));
@@ -3929,33 +4010,80 @@ public static class EnemyFixers
 
     private class TweenFixer : MonoBehaviour;
 
+    private class Cogworker : FlyIn
+    {
+        public PlayMakerFSM fsm;
+        
+        protected override void Start()
+        {
+            base.Start();
+            if (isAPreview) return;
+
+            var tb = fsm.GetState("Translate Back");
+            if (flyIn)
+            {
+                var szr = GetComponent<SetZRandom>();
+                tb.AddAction(() =>
+                {
+                    if (szr) szr.enabled = false;
+                }, 0);
+                fsm.GetState("Activate").AddAction(() =>
+                {
+                    if (szr) szr.enabled = true;
+                }, 0);
+            } else
+            {
+                tb.DisableAction(0);
+                fsm.GetState("Fly In").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+                GetComponent<tk2dSprite>().color = Color.white;
+            }
+            fsm.SendEvent("BATTLE START");
+        }
+    }
+
     public static void FixCogworker(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("Batlle Ready").AddAction(() => fsm.SendEvent("BATTLE START"), 0);
-        fsm.GetState("Translate Back").DisableAction(0);
-        fsm.GetState("Fly In").AddAction(() => fsm.SendEvent("FINISHED"), 0);
+        fsm.GetState("Working").Actions[7].Enabled = true;
+        fsm.GetState("Work End").Actions[11].Enabled = true;
+        fsm.GetState("Chase Target").Actions[10].Enabled = true;
+        obj.AddComponent<Cogworker>().fsm = fsm;
     }
 
     public static void FixSlubberlug(GameObject obj)
     {
         var fsm = obj.LocateMyFSM("Control");
-        fsm.GetState("Death Air").DisableAction(5);
-        var pos = obj.transform.position;
 
+        var deathAir = fsm.GetState("Death Air");
+        deathAir.DisableAction(5);
         var died = false;
-        fsm.GetState("Death Air").AddAction(() => died = true, 0);
+        deathAir.AddAction(() => died = true, 0);
 
         var dormant = fsm.GetState("Dormant");
+        var rb2d = obj.GetComponent<Rigidbody2D>();
+        var launchVelocity = fsm.FsmVariables.FindFsmVector2("Launch Velocity");
         dormant.AddAction(() =>
         {
-            if (died) Object.Destroy(obj);
+            if (died) 
+            {
+                Object.Destroy(obj);
+                return;
+            }
+
+            launchVelocity.Value = 
+                new Vector2((Random.value > 0.5f ? -1 : 1) * Random.Range(6, 9), Random.Range(26, 33));
+            rb2d.gravityScale = 0;
+            rb2d.linearVelocity = Vector2.zero;
             obj.transform.GetChild(3).gameObject.SetActive(true);
-            obj.transform.position = pos;
             fsm.SendEvent("SPAWN");
-        });
+        }, 0);
+        
+        fsm.GetState("Leap Out").AddAction(() => rb2d.gravityScale = 0.85f, 0);
+        
+        obj.LocateMyFSM("Land Control").enabled = false;
         
         fsm.GetState("Home Dir").AddAction(() => fsm.SendEvent(Random.value > 0.5f ? "L" : "R"));
+        fsm.GetState("Splash In").AddEvent("FINISHED");
     }
 
     public class Lace : Wakeable

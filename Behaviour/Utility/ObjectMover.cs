@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Architect.Behaviour.Utility;
 
+[DefaultExecutionOrder(1)]
 public class ObjectMover : MonoBehaviour
 {
     public string targetId = "";
@@ -36,8 +37,10 @@ public class ObjectMover : MonoBehaviour
             if (overrideTarget) _target = overrideTarget;
             if (_target || PlacementManager.TryGetValue(targetId, out _target))
             {
-                if (_target.GetComponent<ObjectAnchor>())
+                var anchor = _target.GetComponent<ObjectAnchor>();
+                if (anchor)
                 {
+                    if (anchor.customParent) return;
                     _target = _target.transform.parent.gameObject;
                     if (!_target)
                     {

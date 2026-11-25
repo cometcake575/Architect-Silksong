@@ -15,6 +15,7 @@ using UnityEngine.Animations;
 
 namespace Architect.Behaviour.Utility;
 
+[DefaultExecutionOrder(0)]
 public class ObjectAnchor : PreviewableBehaviour
 {
     private static readonly Material TrailMaterial = new(Shader.Find("Sprites/Default"));
@@ -31,6 +32,8 @@ public class ObjectAnchor : PreviewableBehaviour
     public float startRotation;
     public float pauseTime;
 
+    public bool customParent;
+    
     public bool moving = true;
     
     public bool stickPlayer = true;
@@ -117,6 +120,7 @@ public class ObjectAnchor : PreviewableBehaviour
             if (!PlacementManager.TryGetValue(parentId, out var parent)) parent = ObjectUtils.FindGameObject(targetId);
             if (parent)
             {
+                customParent = true;
                 var sp = parent.GetComponent<SplineObjects.SplinePoint>();
                 if (sp && sp.spline) SetupSpline(sp);
                 else

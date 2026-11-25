@@ -1148,7 +1148,7 @@ public static class UtilityObjects
                         o.BroadcastEvent("OnDamage");
                     };
                 })
-            .WithConfigGroup(ConfigGroup.EnemyDamager)
+            .WithConfigGroup(ConfigGroup.CustomEnemyDamager)
             .WithReceiverGroup(ReceiverGroup.EnemyDamager)
             .WithBroadcasterGroup(BroadcasterGroup.EnemyDamager)
             .WithOutputGroup(OutputGroup.EnemyDamager)

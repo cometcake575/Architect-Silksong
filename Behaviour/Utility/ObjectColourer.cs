@@ -143,9 +143,15 @@ public class ObjectColourer : PreviewableBehaviour
 
     private int _current;
 
-    private static readonly Shader FlashShader = 
-        Resources.FindObjectsOfTypeAll<Shader>()
-        .First(o => o.name == "Sprites/Default-ColorFlash");
+    public static Shader FlashShader
+    {
+        get
+        {
+            if (field) return field;
+            return field = Resources.FindObjectsOfTypeAll<Shader>()
+                    .First(o => o.name == "Sprites/Default-ColorFlash");
+        }
+    }
 
     public IEnumerator DoApply(float fadeTime, Color color, bool forceAlpha)
     {

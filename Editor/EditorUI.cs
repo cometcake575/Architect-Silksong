@@ -112,8 +112,17 @@ public static class EditorUI
         Object.DontDestroyOnLoad(_canvasObj);
 
         _canvasObj.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-        _canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        var scaler = _canvasObj.AddComponent<CanvasScaler>();
+        scaler.screenMatchMode = Settings.UltrawideMode.Value ? 
+            CanvasScaler.ScreenMatchMode.Expand : CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         _canvasObj.AddComponent<GraphicRaycaster>();
+
+        Settings.UltrawideMode.SettingChanged += (_, _) =>
+        {
+            scaler.screenMatchMode = Settings.UltrawideMode.Value ? 
+                CanvasScaler.ScreenMatchMode.Expand : CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        };
 
         _mapUI = new GameObject("Map Editor UI")
         {
